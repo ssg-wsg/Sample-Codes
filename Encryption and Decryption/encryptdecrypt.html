@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+				integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+	</head>
+	<body>
+		<div id="encryption">
+			<h1>Encryption/Decryption</h1>
+			<table>
+				<tr>
+					<th>Key in (Base64)</th>
+					<td><input type="text" id="key"/></td>
+					<td><em>Fill in your encryption key here</em></td>
+				</tr>
+				<tr>
+					<th>Original String</th>
+					<td><textarea id="originalString"></textarea></td>
+					<td><em>Fill in the content that needs to be encrypted here<br/>
+					Click on "<strong>Encrypt</strong>" button to get the encrypted string based on the key provided</em></td>
+				</tr>
+				<tr>
+					<th>Encrypted String</th>
+					<td><textarea id="encryptedString"></textarea></td>
+					<td><em>Encrypted string will be shown here<br/>
+					Click on "<strong>Decrypt</strong>" button to get the decrypted string based on the key provided</em></td>
+				</tr>
+				<tr>
+					<th>Decrypted String</th>
+					<td><textarea id="decryptedString"></textarea></td>
+					<td><em>Decrypted string will be shown here<br/>
+					It should be the same as the original string</em></td>
+				</tr>
+			</table>
+			<p>
+			<div>
+				<button id="Encrypt" onclick="encrypt();">Encrypt</button>
+				<button id="Decrypt" onclick="decrypt()">Decrypt</button>
+			</div>
+			</p>
+			<script>
+			  function encrypt() {
+				var key = $("#key").val();
+				var cipher = CryptoJS.AES.encrypt(
+					$("#originalString").val(),
+					CryptoJS.enc.Base64.parse(key), {
+					  iv: CryptoJS.enc.Utf8.parse('SSGAPIInitVector'),
+					  mode: CryptoJS.mode.CBC,
+					  keySize: 256 / 32,
+					  padding: CryptoJS.pad.Pkcs7
+					});
+				var encrypted = CryptoJS.enc.Base64.stringify(cipher.ciphertext);
+				$("#encryptedString").val(encrypted);
+			  }
+
+			  function decrypt() {
+				var key = $("#key").val();
+				var cipher = CryptoJS.AES.decrypt(
+					$("#encryptedString").val(),
+					CryptoJS.enc.Base64.parse(key), {
+					  iv: CryptoJS.enc.Utf8.parse('SSGAPIInitVector'),
+					  mode: CryptoJS.mode.CBC,
+					  keySize: 256 / 32,
+					  padding: CryptoJS.pad.Pkcs7
+					});
+				var decrypted = cipher.toString(CryptoJS.enc.Utf8);
+				$("#decryptedString").val(decrypted);
+			  }
+			</script>
+		</div>
+	</body>
+</html>
