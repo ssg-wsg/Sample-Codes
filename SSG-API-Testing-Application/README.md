@@ -2,4 +2,4 @@
 INTRODUCTION
 ------------
 
-SSG API Testing Application is used to guide and provide solution to kickstart application developing for the 15 mandated APIs. With the sample codes and guides, developers able to learn and understand the 4 main areas of 15 mandated APIs. In addition, this testing application able to help Training Providers to keep with the timeline and accelerate the integration process. The testing application folder includes application source codes, installation guides, video guides, user guides and user journey.
+The testing application folder includes application source codes, installation guides, video guides and user guides. With these materials, developers would be able to better understand the 4 main areas of the 15 mandated APIs. The API Testing Application has also been developed to guide and ease developers to kickstart the application development for the 15 mandated APIs, which in turn would also facilitate Training Providers to accelerate the integration process and onboard within the timeframe. 
