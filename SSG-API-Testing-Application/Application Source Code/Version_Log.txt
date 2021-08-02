@@ -1,0 +1,5 @@
+V1.5 - Added a message box error if there is invalid cert path before Calling the API
+V1.4 - Added Optional Field Label in Search Assessment, Fixed Tooltip description between Course Ref Number and Internal Course Ref Number, Removed messagebox when successfully delete course run. Removed V1.3 updates
+V1.3 - Added error message if failed to call API due to missing/wrong Cert and Key Path
+V1.2 - Fixed Bug in Set Configuration
+V1 - Initial Release

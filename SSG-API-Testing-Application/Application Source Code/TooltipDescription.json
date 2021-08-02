@@ -1,0 +1,96 @@
+{
+    "Action":"The action intended by calling this API",
+    "assessmentDate":"Date the assessment was conducted",
+    
+    "Block": "Example: 112A",
+    "Building": "Example: Building ABC",
+    
+    "CourseReferenceNumber": "Internal Course Reference Number - SSG-generated unique reference number for the course\nExample of Internal Course References Number: TGS-12345678",
+    "CourseRegistrationDateOpen":"Opening Registration Date should not be later than Closing Registration Date\nExample: 20210617(YYYYMMDD)",
+    "CourseRegistrationDateClose":"Closing Registration Date should not be earlier than Opening Registration Date\nExample: 20210621(YYYYMMDD)",
+    "CourseStartDate":"Course Start Date should not be earlier than Opening/Closing Registration Dates \nExample: 20210628(YYYYMMDD)",
+    "CourseEndDate":"Course End Date should not be earlier than Opening/Closing Registration Dates\nExample: 20210628(YYYYMMDD)",
+    "CourseVacCode":"Indication of the Course vacancy information code \nExample: 01",
+    "CourseVacDescription":"Indication of the Course vacancy information code \nExample: Description",
+    "CourseRunId": "The Course Run Id is used as a URL for GET Request Call\nExample: https://api.ssg-wsg.sg/courses/runs/{runId}",
+    "conferringInstitute":"UEN/branch code of the supporting assessment TP for the results. If left blank, the trainingPartner.code is set as the default value.",
+    "collectionStatus":"Status of the trainee's or employer's payment of the course fees to the training partner",
+    "CourseAdminEmail":"Example: test@gmail.com",
+    "CorpPassId":"Corppass Id given",
+
+    "discountAmount":"Amount of discount the training partner is deducting from course fees",
+    "DOB":"Trainee's date of birth \nExample: 1950-10-16",
+
+    "EnrolRefNum": "Indication of the Reference Number generated during the creation of Enrolment.\nExample:ENR-2003-123456",
+    "enrolmentStatus":"Status of the trainee's of the enrolment to the course",
+    "enrolmentDate": "Date of the Enrolment\n Example: 2020-05-15",
+    "ExternalCourseReferenceNumber":"External Course Reference Number -SSG-generated unique reference number for the course\nExample of External Course References Number: TGS-12345678",
+
+    "Floor": "Information of Floor is required if Mode of training is not 2 or 4.\nExample: 15",
+    "field": "Field to sort by. Available fields -updatedOn, -createdOn. Will default to updatedOn if null",
+
+    "Grade":"The letter grade of the assessment, entered as A-F, if applicable",
+
+    "InfoTypeCode": "Indication of the Course run schedule info code \nExample: 01",
+    "InfoTypeDescription": "Indication of the the description of Course run schedule info \nExample: Description",
+    "IntakeSize": "Indication of the maximum pax for a class. Example: 50",
+
+    "lastUpdateDateTo": "Optional parameter. This will return records up till the specified date. Format YYYY-MM-DD\n Example: 2020-02-01",
+    "lastUpdateDateFrom" : "Mandatory if retrieveType is DELTA. This will return records with last update date same or greater than this input value. Format YYYY-MM-DD.\nExample: 2020-01-01",
+
+    "ModeOfTraining":"Indication the type of training conducted \nExample: 2 - Asynchronous eLearning",
+
+    "NumberOfHours":"No of Hours or duration on the session attended. Range from 0.5 - 8.0. The field is mandatory only for \"On-the-Job\" Mode of Training.",
+
+    "RegisteredUserCount": "Indication of course run registered user count. This number cannot be more than intakeSize + threshold\nExample: 60",
+    "Room": "Information of Room is required if Mode of training is not 2 or 4.\nExample: 24",
+
+    "order" : "Sort order. Ascending - asc, Descending - desc. Will default to desc if null",
+
+    "PostalCode": "Information of Postal Code is required if Mode of training is not 2 or 4.\nExample: 123455",
+    "PrimaryVenue": "Indication if the course session location is Primary Venue. If the value is true, API will pick the venue information from course run and update to session venue.\nExample: true",
+    "Phone":"Country Code* - Area Code - Phone Number*",
+    "page":"Page number of page displayed, starting from 0",
+    "pageSize":"The number of items to be displayed on one page.",
+
+    "Result":"The outcome of the assessment, specified as pass, fail or exempt",
+    
+    "Street": "Example: Street ABC",
+    "ScheduleInfo": "Indication of the Course run schedule info \nExample: Sat / 5 Sats / 9am - 6pm",
+    "SessionId":"Indication of the ID of the session\n Eg: TGS-2020000703-224596-S1",
+    "SessionMonth":"Indication of the Month of the session\n Eg: 112021",
+    "SessionStartDate":"Start Date should not be later than End Date \nExample: 20210616(YYYYMMDD) ",
+    "SessionStartTime":"Start time should not be later than End Time if session is on the same day.\nExample: 17:30 (HH:MM)",
+    "SessionEndDate":"End Date should not be earlier than Start Date \nExample: 20210621(YYYYMMDD) ",
+    "SessionEndTime":"End time should not be earlier than Start Time if session is on the same day.\nExample: 18:30 (HH:MM)",
+    "skillCode":"The competency or skill code assessed for the course, derived from the course data in the Training Partners Gateway",
+    "Score":"The numerical score or percentage score of the assessment, entered as a whole number, if applicable",
+    "SponsorshipType":"Sponsorship type for the course enrolment",
+    "status":"Status of enrolment records to be searched",
+    "StatusCode":"Attendance Taken Status Code\n Example: 1",
+    "SurveyLanguage":"Survey Language used for sending out the survey.",
+
+    "TrainerCode":"Indication whether the trainer is a new or existing trainer\n\nExample: 1 - Existing",
+    "TrainerDescription":"Example: Description of the Trainer",
+    "TrainerID" : "Indication of the unique Trainer id for existing trainer. For new trainer, leave it blank. \nExample: 123",
+    "TrainerName":"Example: John",
+    "TrainerEmail":"Example: john@gmail.com",
+    "TrainerExperience": "Example: 5 years Experience",
+    "TrainerLinkedlnURL": "Indication of trainer linkedin URL (optional). For existing trainer, leave this field empty\nExample: https://sg.linkedin.com/company/linkedin/abc",
+    "TrainerSalutationID": "Indication of the salutation of trainer. For existing trainer, leave this field empty\nExample: 1(Mr)",
+    "TrainerAreaOfPractice": "Indication of the Key Domain / Sector Areas of Practice of the trainer (required for new trainer). For existing trainer, leave this field empty\nexample: Testing Management in Computer Application",
+    "inTrainingProviderProfile": "Indicate whether to add the new trainer information to Training Provider's Profile.\nExample: true",
+    "TrainerssecEQA": "Example: 12\nSSEC EQA",
+    "TrainerssecDescription": "Indication of the description of the linked ssec-EQA\nExample: EQA test 4" ,
+    "TpCode":"Code for the training partner conducting the course for which the trainee is enrolled",
+    "TraineeIdType":"Trainee's ID type",
+    "TraineeId":"Trainee's government-issued ID number\n Example S1234567H",
+    "TraineeName":"Name of Trainee",
+    "Threshold": "Indication of any additional pax that can register above maximum pax. If threshold = 10, Total allowed registration pax is intakeSize + threshold = 60\nExample: 60",
+    
+    "UEN": "UEN of the training partner organisation conducting the course for which the trainee is enrolled",
+    "Unit": "Information of Unit is required if Mode of training is 2 not or 4.\nExample: 001",
+
+    "WheelChairAccess": "Indication if the course run location is wheel chair accessible\nExample: true"
+    
+}
