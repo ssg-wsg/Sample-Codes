@@ -19,3 +19,6 @@ OTHER INFORMATION
 
  * If you have specific technical queries, you may also hop over to Stack Overflow for other techincal discussions:
    https://stackoverflow.com/search?q=ssg-wsg
+   
+ * API changes will impact your application. To ensure you receive the latest updates, login to your Profile in Developer Portal (https://developer.ssg-wsg.gov.sg) to update your contact details now!
+   
