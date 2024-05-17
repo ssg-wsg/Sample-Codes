@@ -1,12 +1,22 @@
 import base64
+import logging
+import os
+import tempfile
+
 import streamlit as st
 
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
+from core.system.cleaner import clean_temp
 from tempfile import NamedTemporaryFile
 
 # initialise all variables
 init()
+
+# initialise cron process
+clean_temp()
+
+st.set_page_config(page_title="Home", page_icon="🏠")
 
 with st.sidebar:
     if st.button("Configs", key="config_display"):
@@ -34,7 +44,9 @@ with st.form(key="init_config"):
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False)
 
     if st.form_submit_button():
-        if all([uen, enc_key, cert_pem, key_pem]) and verify_uen(uen):
+        if not verify_uen(uen):
+            st.error("Invalid UEN provided!")
+        elif all([uen, enc_key, cert_pem, key_pem]):
             try:
                 # save the byte stream into a temp file to give it a path for passing it to requests
                 st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
@@ -49,6 +61,6 @@ with st.form(key="init_config"):
                 st.session_state["encryption_key"] = enc_key
                 st.success("Configurations loaded!")
             except base64.binascii.Error:
-                st.error("Certificate or private key is invalid.")
+                st.error("Certificate or private key is invalid!")
         else:
             st.error("Please fill up the above configuration details needed for the demo app!")

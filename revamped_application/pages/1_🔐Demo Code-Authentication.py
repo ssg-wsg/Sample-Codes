@@ -7,6 +7,8 @@ from utils.streamlit_utils import display_config
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 
+st.set_page_config(page_title="Demo Code", page_icon="🔐")
+
 CERT_AUTH_PYTHON = '''
 import requests
  

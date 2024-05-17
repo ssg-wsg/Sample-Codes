@@ -23,7 +23,7 @@ class HTTPRequestBuilder:
 
     def __init__(self):
         self.endpoint = ""
-        # x-api-version is not mentioned here
+        # x-api-version is not mentioned here, leaving it out uses the latest API version
         self.header = {"accept": "application/json"}
         self.params = {}
         self.body = {}
@@ -101,9 +101,6 @@ class HTTPRequestBuilder:
 
         if not isinstance(key, str):
             raise ValueError("Key must be a string")
-
-        if not isinstance(value, str):
-            raise ValueError("Value must be a string")
 
         self.params[key] = value
         return self
@@ -237,7 +234,9 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
         http_code_handler(response.status_code)
         st.json(response.json())
     except json.decoder.JSONDecodeError:
-        # likely that the returns are not in JSON format
+        # can ignore the not defined error, since JSON decode errors mean that there is a response,
+        # but the body is not JSON serialisable, so we have to default to reading the text data from the
+        # response
         st.code(response.text, language="text")
     except ConnectionError:
         # the endpoint url is likely malformed here

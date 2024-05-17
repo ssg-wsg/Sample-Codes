@@ -2,29 +2,27 @@ import requests
 
 from typing import Literal
 
-from core.models.course_runs import RunInfo
+from core.models.course_runs import AddRunInfo
 from core.abc.abstract_course import ABCCourse
 from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
 
 
-class EditCourseRun(ABCCourse):
+class AddCourseRun(ABCCourse):
     """
-    Class used for editing a course run
+    Class used for adding a course run
     """
 
     _TYPE: Literal["POST"] = "POST"
 
-    def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: RunInfo):
+    def __init__(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
-        self._prepare(runId, include_expired, runinfo)
+        self._prepare(include_expired, runinfo)
 
     def __repr__(self):
-        return self.req.repr(EditCourseRun._TYPE)
+        return self.req.repr(AddCourseRun._TYPE)
 
-    def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: RunInfo) -> None:
+    def _prepare(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo) -> None:
         """
         Scaffolds the request body and prepares it for execution
 
@@ -35,7 +33,7 @@ class EditCourseRun(ABCCourse):
 
         self.req = HTTPRequestBuilder() \
             .with_endpoint(ALTERNATIVE_PROD_URL) \
-            .with_direct_argument(f"/courses/courseRuns/edit/{runId}")
+            .with_direct_argument(f"/courses/courseRuns/publish")
 
         match include_expired:
             case "Yes":

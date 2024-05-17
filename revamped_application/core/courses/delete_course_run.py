@@ -40,8 +40,7 @@ class DeleteCourseRun(ABCCourse):
 
         self.req = HTTPRequestBuilder() \
             .with_endpoint(ALTERNATIVE_PROD_URL) \
-            .with_api_version("v1.0") \
-            .with_direct_argument(f"/{runId}")
+            .with_direct_argument(f"/courses/courseRuns/edit/{runId}")
 
         match include_expired:
             case "Yes":

@@ -1,6 +1,6 @@
 import requests
 
-from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from utils.http import HTTPRequestBuilder, BASE_PROD_URL
 from core.abc.abstract_course import ABCCourse
 
 from typing import Literal
@@ -13,7 +13,7 @@ class ViewCourseRun(ABCCourse):
 
     _TYPE: Literal["GET"] = "GET"
 
-    def __init__(self, runId: str, include_expired: bool):
+    def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, include_expired)
@@ -23,7 +23,7 @@ class ViewCourseRun(ABCCourse):
 
         return self.req.repr(ViewCourseRun._TYPE)
 
-    def _prepare(self, runId: str, include_expired: bool) -> None:
+    def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
         Creates an HTTP get request for getting course runs by runId
 
@@ -32,10 +32,14 @@ class ViewCourseRun(ABCCourse):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
-            .with_api_version("v1.0") \
-            .with_direct_argument(f"/{runId}") \
-            .with_param("includeExpiredCourses", "true" if include_expired else "false")
+            .with_endpoint(BASE_PROD_URL) \
+            .with_direct_argument(f"/courses/courseRuns/id/{runId}")
+
+        match include_expired:
+            case "Yes":
+                self.req = self.req.with_param("includeExpiredCourses", "true")
+            case "No":
+                self.req = self.req.with_param("includeExpiredCourses", "false")
 
     def execute(self) -> requests.Response:
         """
