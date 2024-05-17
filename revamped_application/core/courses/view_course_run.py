@@ -48,4 +48,4 @@ class ViewCourseRun(ABCCourse):
         :return: requests.Response object
         """
 
-        return self.req.post()
+        return self.req.get()
