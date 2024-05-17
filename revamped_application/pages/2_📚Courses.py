@@ -204,8 +204,7 @@ with add:
                                                     max_chars=300))
             runsession.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                        options=["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                                                       format_func=lambda
-                                                           x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
+                                                       format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
                                                        key=f"mode_of_training_{i}"))
             runsession.set_startDate(st.date_input("Start date of course session",
                                                    help="YYYYMMDD or YYYY-MM-DD format only",
@@ -659,8 +658,7 @@ with edit:
                                                     max_chars=300))
             runsession.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                        options=["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                                                       format_func=lambda
-                                                           x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
+                                                       format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
                                                        key=f"mode_of_training_{i}"))
             runsession.set_startDate(st.date_input("Start date of course session",
                                                    help="YYYYMMDD or YYYY-MM-DD format only",

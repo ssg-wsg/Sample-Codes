@@ -11,13 +11,13 @@ st.set_page_config(page_title="Demo Code", page_icon="🔐")
 
 CERT_AUTH_PYTHON = '''
 import requests
- 
+
 try:
     request_url = input("Enter the Open Authentication endpoint URL: ")
     response = requests.get(request_url, cert=("path/to/cert.pem", "path/to/key.pem"))
     print("Response code: ", response.status_code)
     print("Response body: ", response.json())
-except: 
+except:
     print("Please check to make sure that the endpoint URL or the path to certificates is valid!")
 '''
 
@@ -148,11 +148,13 @@ var https = require('https'),                  // Module for https
        method: 'GET',					// Method : Get or POST
        key: fs.readFileSync('C://exampleDirectory/MTLS-Sample/key.pem'),		//Input the directory for key.pem
        cert: fs.readFileSync('C://exampleDirectory/MTLS-Sample/cert.pem') 		//Input the directory for cert.pem
-       //passphrase: 'InputPassWord' 						//Input the passphrase, please remember to put ',' End of Line for cert 		
+       //passphrase: 'InputPassWord' 						                    //Input the passphrase, please
+                                                                                //remember to put ',' End of Line for
+                                                                                //cert
     };
 
     makeAPICall = function(response) {
-       var str = '';    
+       var str = '';
        response.on('data', function (chunk) {
           str += chunk;
        });
@@ -401,7 +403,8 @@ if (err) {
     var api_name = result.api_name;
     var file_name = result.file_name;
 
-    //Buffer() requires a number, array or string as the first parameter, and an optional encoding type as the second parameter. 
+    //Buffer() requires a number, array or string as the first parameter, and an optional encoding type as the second
+    // parameter.
     // Default is utf8, possible encoding types are ascii, utf8, ucs2, base64, binary, and hex
     var login = Buffer.from(result.clientID + ":" + result.secret);
     // If we don't use toString(), JavaScript assumes we want to convert the object to utf8.
@@ -425,10 +428,12 @@ if (err) {
     // Send the proper header information along with the request
     // setRequestHeader() sets the value of an HTTP request header.
 
-    // "application/x-www-form-urlencoded" represents an URL encoded form. This is the default value if enctype attribute is not set to anything.
+    // "application/x-www-form-urlencoded" represents an URL encoded form. This is the default value if enctype
+    // attribute is not set to anything.
     reqtoken.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // The "Basic" authentication scheme is used, the credentials are constructed like - The resulting string is (base64 encoded).
+    // The "Basic" authentication scheme is used, the credentials are constructed like - The resulting string is
+    //(base64 encoded).
     reqtoken.setRequestHeader("Authorization", "Basic " + loginDetails);
 
     reqtoken.send(data);
@@ -439,7 +444,7 @@ if (err) {
         var response = reqtoken.responseText;
         var jsondata = JSON.parse(response);
         token = jsondata["access_token"];
-        // The console. log() is a function in JavaScript which is used to print any kind of variables 
+        // The console. log() is a function in JavaScript which is used to print any kind of variables
         console.log(token)
         var reqget = new XMLHttpRequest();
         var urlgetjson = api_name;
@@ -513,9 +518,7 @@ with cert_auth:
     if st.button("Request!", key="cert_button"):
         if all([test_url, cert_key, secret_key]):
             try:
-                with tempfile.NamedTemporaryFile() as certfile, \
-                     tempfile.NamedTemporaryFile() as keyfile:
-
+                with tempfile.NamedTemporaryFile() as certfile, tempfile.NamedTemporaryFile() as keyfile:
                     certfile.write(cert_auth)
                     keyfile.write(secret_key)
 

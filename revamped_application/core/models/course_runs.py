@@ -282,10 +282,10 @@ class RunTrainerInfo(ABCCourseInfo):
         self.idNumber: str = None
         self.idType_code: Literal["SB", "SP", "SO", "FP", "OT"] = None
         self.idType_description: Literal["Singapore Pink Identification Card",
-        "Singapore Blue Identification Card",
-        "FIN/Work Permit",
-        "Foreign Passport",
-        "Others"] = None
+                                         "Singapore Blue Identification Card",
+                                         "FIN/Work Permit",
+                                         "Foreign Passport",
+                                         "Others"] = None
         self.roles: list[dict] = []
         self.inTrainingProviderProfile: Optional[bool] = None
         self.domainAreaOfPractice: Optional[str] = None
@@ -555,7 +555,7 @@ class RunInfo(ABCCourseInfo):
     REGISTRATION_DATE_DESCRIPTION_CLOSING = ("Course run registration opening date as YYYYMMDD format, "
                                              "timezone -> UTC+08:00")
 
-    def __init__(self, action: Literal["delete", "update"] = "update"):
+    def __init__(self, action: Literal["delete", "update"]="update"):
         if action not in ["add", "update", "delete"]:
             raise ValueError(f"Invalid action: {action}")
 
