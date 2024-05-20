@@ -60,6 +60,8 @@ def display_status() -> None:
 
 @st.experimental_dialog("Configs", width="large")
 def display_config() -> None:
+    """Displays all the loaded configuration variables"""
+
     st.markdown("**UEN:** ")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
     st.markdown("**Encryption Key:** ")

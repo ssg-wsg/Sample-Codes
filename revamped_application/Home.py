@@ -43,9 +43,9 @@ with st.form(key="init_config"):
     cert_pem = st.file_uploader("Upload your Certificate Key", type=["pem"], accept_multiple_files=False)
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False)
 
-    if st.form_submit_button():
+    if st.form_submit_button("Load"):
         if not verify_uen(uen):
-            st.error("Invalid UEN provided!")
+            st.error("Error! Invalid **UEN** provided!")
         elif all([uen, enc_key, cert_pem, key_pem]):
             try:
                 # save the byte stream into a temp file to give it a path for passing it to requests
