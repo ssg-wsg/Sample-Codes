@@ -19,6 +19,6 @@ class TestPyCodeStyle(unittest.TestCase):
     def test_pep8_conformance(self):
         """Tests that all Python code files conform to PEP8 style."""
 
-        style = StyleGuide(config_file='../../.pep8')
+        style = StyleGuide(config_file='.pep8')
         result = style.check_files(TestPyCodeStyle._enumerate_all_dirs())
         self.assertEqual(0, result.total_errors, "Found errors or warnings")

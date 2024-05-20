@@ -293,7 +293,7 @@ class RunTrainerInfo(ABCCourseInfo):
         self.linkedInURL: Optional[str] = None
         self.salutationId: Optional[Literal[1, 2, 3, 4, 5, 6]] = None
         self.photo_name: Optional[str] = None
-        self.photo_content: Optional[bytes] = None
+        self.photo_content: Optional[UploadedFile] = None
         self.linkedSsecEQAs: Optional[list[dict]] = []
 
     def __repr__(self):
@@ -492,8 +492,8 @@ class RunTrainerInfo(ABCCourseInfo):
 
         self.photo_name = photo_name
 
-    def set_photo_content(self, photo_content: bytes) -> None:
-        if photo_content is not None and not isinstance(photo_content, bytes):
+    def set_photo_content(self, photo_content: UploadedFile) -> None:
+        if photo_content is not None and not isinstance(photo_content, UploadedFile):
             raise ValueError("Invalid photo_content")
 
         self.photo_content = photo_content
@@ -871,8 +871,8 @@ class RunInfo(ABCCourseInfo):
 
         self.file_Name = file_Name
 
-    def set_file_content(self, file_content: bytes) -> None:
-        if file_content is not None and not isinstance(file_content, bytes):
+    def set_file_content(self, file_content: UploadedFile) -> None:
+        if file_content is not None and not isinstance(file_content, UploadedFile):
             raise ValueError("Invalid file content")
 
         self.file_content = file_content
