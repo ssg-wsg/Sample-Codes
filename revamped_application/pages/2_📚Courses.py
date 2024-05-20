@@ -8,8 +8,9 @@ from core.courses.edit_course_run import EditCourseRun
 from core.courses.add_course_run import AddCourseRun
 from core.courses.view_course_sessions import ViewCourseSessions
 from core.models.course_runs import RunInfo, RunSessionInfo, RunTrainerInfo, DeleteRunInfo, AddRunInfo, \
-    RunSessionAddInfo, MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS
-from utils.http import handle_error
+    RunSessionAddInfo
+from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS, NUM2MONTH
+from utils.http_utils import handle_error
 from utils.streamlit_utils import init, display_config
 
 init()
@@ -197,7 +198,7 @@ with add:
                                             value=0)
 
         for i in range(num_sessions):
-            runsession: RunSessionInfo = RunSessionAddInfo("add")
+            runsession: RunSessionAddInfo = RunSessionAddInfo("add")
 
             st.markdown(f"##### Session {i + 1}")
             runsession.set_session_id(st.text_input(label="Course session ID", key=f"session_id_{i}",
@@ -210,7 +211,7 @@ with add:
                                                    help="YYYYMMDD or YYYY-MM-DD format only",
                                                    key=f"start_date_{i}"))
 
-            if runsession.modeOfTraining in ["2", "4"]:
+            if runsession.is_asynchronous_or_on_the_job():
                 runsession.set_endDate(runsession.startDate)
                 runsession.set_startTime(datetime(hour=0, minute=0, year=runsession.startDate.year,
                                                   month=runsession.startDate.month, day=runsession.startDate.day)
@@ -435,7 +436,7 @@ with add:
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
-        st.json(repr(add_runinfo))
+        st.json(add_runinfo.payload(verify=False))
 
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
@@ -454,7 +455,6 @@ with add:
                 request, response = st.tabs(["Request", "Response"])
 
                 ac = AddCourseRun(runs, include_expired, add_runinfo)
-                resp = None
 
                 with request:
                     st.subheader("Request")
@@ -501,7 +501,6 @@ with delete:
                 request, response = st.tabs(["Request", "Response"])
 
                 dc = DeleteCourseRun(runs, include_expired, del_runinfo)
-                resp = None
 
                 with request:
                     st.subheader("Request")
@@ -889,7 +888,7 @@ with edit:
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
-        st.json(repr(runinfo))
+        st.json(runinfo.payload(verify=False))
 
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
@@ -904,13 +903,12 @@ with edit:
 
             if errors is not None:
                 st.error(
-                    "Some errors are detected with your inputs:\n" + "\n".join(errors)
+                    "Some errors are detected with your inputs:\n\n- " + "\n- ".join(errors)
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
 
                 ec = EditCourseRun(runs, include_expired, runinfo)
-                resp = None
 
                 with request:
                     st.subheader("Request")
@@ -943,7 +941,7 @@ with sessions:
         month, year = st.columns(2)
         month_value = month.selectbox(label="Select Month value",
                                       options=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                      format_func=lambda x: ViewCourseSessions.NUM2MONTH[x],
+                                      format_func=lambda x: NUM2MONTH[x],
                                       help="The month of the sessions to retrieve",
                                       key="view-sessions-month")
         year_value = year.number_input(label="Select Year value",
@@ -959,11 +957,14 @@ with sessions:
     if st.button("Send", key="view_session_button"):
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!")
+        elif len(runs):
+            st.error("Make sure to specify your Course Run ID before proceeding!")
+        elif len(crn) == 0:
+            st.error("Make sure to specify your Course Reference Number before proceeding!")
         else:
             request, response = st.tabs(["Request", "Response"])
 
             vc = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
-            resp = None
 
             with request:
                 st.subheader("Request")

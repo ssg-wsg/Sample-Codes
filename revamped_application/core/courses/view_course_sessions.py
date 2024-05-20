@@ -3,32 +3,18 @@ import datetime
 import requests
 import streamlit as st
 
-from utils.http import HTTPRequestBuilder, BASE_PROD_URL
-from core.abc.abstract_course import ABCCourse
+from utils.http_utils import HTTPRequestBuilder, BASE_PROD_URL
+from core.abc.abstract import AbstractRequest
 
 from typing import Literal, Optional
 
 
-class ViewCourseSessions(ABCCourse):
+class ViewCourseSessions(AbstractRequest):
     """
     Class used for viewing course sessions.
     """
 
     _TYPE: Literal["GET"] = "GET"
-    NUM2MONTH: dict[int, str] = {
-        1: "Jan",
-        2: "Feb",
-        3: "Mar",
-        4: "Apr",
-        5: "May",
-        6: "Jun",
-        7: "Jul",
-        8: "Aug",
-        9: "Sep",
-        10: "Oct",
-        11: "Nov",
-        12: "Dec"
-    }
 
     def __init__(self, runId: str, crn: str, session_month: Optional[str], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]):
@@ -56,6 +42,8 @@ class ViewCourseSessions(ABCCourse):
         self.req = HTTPRequestBuilder() \
             .with_endpoint(BASE_PROD_URL) \
             .with_direct_argument(f"/courses/runs/{runId}/sessions") \
+            .with_header("accept", "application/json") \
+            .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \
             .with_param("courseReferenceNumber", crn)
 

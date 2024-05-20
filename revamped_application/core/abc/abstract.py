@@ -3,8 +3,8 @@ import requests
 from abc import ABC, abstractmethod
 
 
-class ABCCourse(ABC):
-    """Abstract class to represent a course related action"""
+class AbstractRequest(ABC):
+    """Abstract class to represent the interface that all request-related classes should implement"""
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
@@ -12,6 +12,10 @@ class ABCCourse(ABC):
 
     @abstractmethod
     def __repr__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
         pass
 
     @abstractmethod
@@ -27,8 +31,11 @@ class ABCCourse(ABC):
         pass
 
 
-class ABCCourseInfo(ABC):
-    """Abstract class to represent a collection of information to be passed into a request as a request body"""
+class AbstractRequestInfo(ABC):
+    """
+    Abstract class used to represent the collection of information to pass into the
+    different APIs
+    """
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
@@ -44,8 +51,12 @@ class ABCCourseInfo(ABC):
 
     @abstractmethod
     def validate(self) -> None | list[str]:
+        """Validates the inputs passed to the APIs"""
+
         pass
 
     @abstractmethod
-    def payload(self, as_json_str: bool = False) -> dict | str:
+    def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
+        """Returns the payload to attach to the request for the Attendance API"""
+
         pass

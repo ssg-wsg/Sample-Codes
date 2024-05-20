@@ -1,12 +1,12 @@
 import requests
 
-from utils.http import HTTPRequestBuilder, BASE_PROD_URL
-from core.abc.abstract_course import ABCCourse
+from utils.http_utils import HTTPRequestBuilder, BASE_PROD_URL
+from core.abc.abstract import AbstractRequest
 
 from typing import Literal
 
 
-class ViewCourseRun(ABCCourse):
+class ViewCourseRun(AbstractRequest):
     """
     Class used for viewing course runs.
     """
@@ -33,6 +33,8 @@ class ViewCourseRun(ABCCourse):
 
         self.req = HTTPRequestBuilder() \
             .with_endpoint(BASE_PROD_URL) \
+            .with_header("accept", "application/json") \
+            .with_header("Content-Type", "application/json") \
             .with_direct_argument(f"/courses/courseRuns/id/{runId}")
 
         match include_expired:

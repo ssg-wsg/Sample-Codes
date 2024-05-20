@@ -44,16 +44,16 @@ with st.form(key="init_config"):
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False)
 
     if st.form_submit_button():
-        if not verify_uen(uen):
+        if len(uen) > 0 and not verify_uen(uen):
             st.error("Invalid UEN provided!")
-        elif all([uen, enc_key, cert_pem, key_pem]):
+        elif all([uen, enc_key, cert_pem, key_pem]) and len(uen) > 0 and len(enc_key) > 0:
             try:
                 # save the byte stream into a temp file to give it a path for passing it to requests
-                st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
+                st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["cert_pem"].write(cert_pem.read())
                 st.session_state["cert_pem"] = st.session_state["cert_pem"].name
 
-                st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
+                st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["key_pem"].write(cert_pem.read())
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
 
