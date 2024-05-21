@@ -26,13 +26,14 @@ class AddCourseRun(ABCCourse):
         """
         Scaffolds the request body and prepares it for execution
 
-        :param runId: Run ID
         :param include_expired:  Indicate whether to retrieve expired courses or not
         :param runinfo: Response body encapsulation
         """
 
         self.req = HTTPRequestBuilder() \
             .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_header("accept", "application/json") \
+            .with_header("Content-Type", "application/json") \
             .with_direct_argument(f"/courses/courseRuns/publish")
 
         match include_expired:

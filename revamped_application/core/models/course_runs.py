@@ -42,11 +42,7 @@ SALUTATIONS: dict[int, str] = {
 class RunSessionInfo(ABCCourseInfo):
     """Encapsulates all information regarding a course run's sessions"""
 
-    def __init__(self, action: Literal["add", "update", "delete"]):
-        if action not in ["add", "update", "delete"]:
-            raise ValueError(f"Invalid action: {action}")
-
-        self.action: Literal["add", "update", "delete"] = action
+    def __init__(self):
         self.sessionId: Optional[str] = None
         self.startDate: Optional[datetime.date] = None
         self.endDate: Optional[datetime.date] = None
@@ -72,9 +68,6 @@ class RunSessionInfo(ABCCourseInfo):
     def validate(self) -> None | list[str]:
         errors = []
 
-        if self.action is None or len(self.action) == 0:
-            errors.append("No action specified!")
-
         if self.venue_floor is None or len(self.venue_floor) == 0:
             errors.append("No venue floor is specified!")
 
@@ -92,12 +85,12 @@ class RunSessionInfo(ABCCourseInfo):
 
     def payload(self, as_json_str: bool = False) -> dict | str:
         pl = {
-            "action": self.action,
+            "action": "update",
             "sessionId": self.sessionId,
-            "startDate": self.startDate.strftime("%Y%m%d"),
-            "endDate": self.endDate.strftime("%Y%m%d"),
-            "startTime": self.startTime.strftime("%H:%M:%S"),
-            "endTime": self.endTime.strftime("%H:%M:%S"),
+            "startDate": self.startDate.strftime("%Y%m%d") if self.startDate is not None else None,
+            "endDate": self.endDate.strftime("%Y%m%d") if self.endDate is not None else None,
+            "startTime": self.startTime.strftime("%H:%M:%S") if self.startTime is not None else None,
+            "endTime": self.endTime.strftime("%H:%M:%S") if self.endTime is not None else None,
             "modeOfTraining": self.modeOfTraining,
             "venue": {
                 "block": self.venue_block,
@@ -117,6 +110,9 @@ class RunSessionInfo(ABCCourseInfo):
 
         return pl
 
+    def is_require_venue(self) -> bool:
+        return self.modeOfTraining is None and self.modeOfTraining != "2" and self.modeOfTraining != "4"
+
     def set_session_id(self, session_id: str) -> None:
         if not isinstance(session_id, str):
             raise ValueError("Invalid session id")
@@ -130,7 +126,7 @@ class RunSessionInfo(ABCCourseInfo):
         self.startDate = startDate
 
     def set_endDate(self, endDate: datetime.date) -> None:
-        if not isinstance(endDate, datetime.date):
+        if endDate is not None and not isinstance(endDate, datetime.date):
             raise ValueError("Invalid end date")
 
         self.endDate = endDate
@@ -222,8 +218,8 @@ class RunSessionInfo(ABCCourseInfo):
 
 
 class RunSessionAddInfo(RunSessionInfo):
-    def __init__(self, action: Literal["add", "update", "delete"]) -> None:
-        super().__init__(action)
+    def __init__(self) -> None:
+        super().__init__()
 
     def validate(self) -> None | list[str]:
         errors = []
@@ -264,16 +260,22 @@ class RunSessionAddInfo(RunSessionInfo):
         if len(errors) > 0:
             return errors
 
+    def payload(self, as_json_str: bool = False):
+        pl = super().payload(as_json_str=False)
+        pl["action"] = "add"
+
+        if as_json_str:
+            return json.dumps(pl)
+
+        return pl
+
 
 # ===== Trainer Info ===== #
 class RunTrainerInfo(ABCCourseInfo):
     """Encapsulates all information regarding a trainer in a course run"""
 
-    def __init__(self, action: Literal["add", "update", "delete"]):
-        if action not in ["add", "update", "delete"]:
-            raise ValueError(f"Invalid action: {action}")
-
-        self.trainerType_code: Literal["1", "2"] = None
+    def __init__(self):
+        self.trainerType_code: str = None
         self.trainerType_description: str = None
         self.indexNumber: Optional[int] = None
         self.id: Optional[str] = None
@@ -365,18 +367,6 @@ class RunTrainerInfo(ABCCourseInfo):
 
         return pl
 
-    def is_existing_trainer(self):
-        if self.trainerType_code is None:
-            raise ValueError("Unable to infer trainer type as no trainer type code was provided!")
-
-        return self.trainerType_code == "1"
-
-    def is_new_trainer(self):
-        if self.trainerType_code is None:
-            raise ValueError("Unable to infer trainer type as no trainer type code was provided!")
-
-        return self.trainerType_code == "2"
-
     def set_trainer_type_code(self, trainer_type: str) -> None:
         if not isinstance(trainer_type, str):
             raise ValueError("Invalid trainer type")
@@ -424,18 +414,7 @@ class RunTrainerInfo(ABCCourseInfo):
             raise ValueError("Invalid trainer idType")
 
         self.idType_code = idType
-
-        match idType:
-            case "SB":
-                self.idType_description = "Singapore Blue Identification Card"
-            case "SP":
-                self.idType_description = "Singapore Pink Identification Card"
-            case "SO":
-                self.idType_description = "Fin/Work Permit"
-            case "FP":
-                self.idType_description = "Foreign Passport"
-            case "OT":
-                self.idType_description = "Others"
+        self.idType_description = ID_TYPE[idType]
 
     def set_trainer_roles(self, roles: list[dict]) -> None:
         if not isinstance(roles, list):
@@ -512,8 +491,8 @@ class RunTrainerInfo(ABCCourseInfo):
 
 
 class RunTrainerAddInfo(RunTrainerInfo):
-    def __init__(self, action: Literal["add", "update", "delete"]) -> None:
-        super().__init__(action)
+    def __init__(self) -> None:
+        super().__init__()
 
     def validate(self) -> None | list[str]:
         errors = []
@@ -546,7 +525,7 @@ class RunTrainerAddInfo(RunTrainerInfo):
 
 # ===== Run Info ===== #
 class RunInfo(ABCCourseInfo):
-    """Encapsulates all information regarding a course run"""
+    """Encapsulates all information regarding the editing of a single course run"""
 
     ACTION_DESCRIPTION = "Action to be performed to the course run, i.e. update or delete"
     SEQUENCE_NUMBER_DESCRIPTION = "Sequence number, defaults to 0"
@@ -555,34 +534,30 @@ class RunInfo(ABCCourseInfo):
     REGISTRATION_DATE_DESCRIPTION_CLOSING = ("Course run registration opening date as YYYYMMDD format, "
                                              "timezone -> UTC+08:00")
 
-    def __init__(self, action: Literal["delete", "update"]="update"):
-        if action not in ["add", "update", "delete"]:
-            raise ValueError(f"Invalid action: {action}")
-
-        self.action = action
+    def __init__(self):
         self.crid: str = None
         self.sequenceNumber: Optional[int] = None
-        self.registrationDates_opening: datetime.date = None
-        self.registrationDates_closing: datetime.date = None
-        self.courseDates_start: datetime.date = None
-        self.courseDates_end: datetime.date = None
-        self.scheduleInfoType_code: str = None
+        self.registrationDates_opening: Optional[datetime.date] = None
+        self.registrationDates_closing: Optional[datetime.date] = None
+        self.courseDates_start: Optional[datetime.date] = None
+        self.courseDates_end: Optional[datetime.date] = None
+        self.scheduleInfoType_code: Optional[str] = None
         self.scheduleInfoType_description: Optional[str] = None
         self.scheduleInfo: Optional[str] = None
         self.venue_block: Optional[str] = None
         self.venue_street: Optional[str] = None
-        self.venue_floor: str = None
-        self.venue_unit: str = None
+        self.venue_floor: Optional[str] = None
+        self.venue_unit: Optional[str] = None
         self.venue_building: Optional[str] = None
-        self.venue_postalCode: str = None
-        self.venue_room: str = None
+        self.venue_postalCode: Optional[str] = None
+        self.venue_room: Optional[str] = None
         self.venue_wheelChairAccess: Optional[bool] = None
         self.intakeSize: Optional[int] = None
         self.threshold: Optional[int] = None
         self.registeredUserCount: Optional[int] = None
         self.modeOfTraining: Optional[str] = None
         self.courseAdminEmail: Optional[str] = None
-        self.courseVacancy_code: str = None
+        self.courseVacancy_code: Optional[str] = None
         self.courseVacancy_description: Optional[str] = None
         self.file_Name: Optional[str] = None
         self.file_content: Optional[UploadedFile] = None
@@ -599,46 +574,7 @@ class RunInfo(ABCCourseInfo):
         errors = []
 
         if self.crid is None or len(self.crid) == 0:
-            errors.append("No Course Reference ID specified")
-
-        if self.action is None or len(self.action) == 0:
-            errors.append("No action specfied")
-
-        if self.registrationDates_opening is None:
-            errors.append("No opening registrationDates specfied")
-
-        if self.registrationDates_closing is None:
-            errors.append("No closing registrationDates specfied")
-
-        if self.registrationDates_opening > self.registrationDates_closing:
-            errors.append("Registration dates opening date must be before closing date")
-
-        if self.courseDates_start is None:
-            errors.append("No start registrationDates specfied")
-
-        if self.courseDates_end is None:
-            errors.append("No end registrationDates specfied")
-
-        if self.courseDates_start > self.courseDates_end:
-            errors.append("Registration start date must be before registration end date")
-
-        if self.scheduleInfoType_code is None or len(self.scheduleInfoType_code) == 0:
-            errors.append("No scheduleInfoTypeCode specfied")
-
-        if self.venue_floor is None or len(self.venue_floor) == 0:
-            errors.append("No venue floor is specified")
-
-        if self.venue_unit is None or len(self.venue_unit) == 0:
-            errors.append("No venue unit is specified")
-
-        if self.venue_postalCode is None or len(self.venue_postalCode) == 0:
-            errors.append("No venue postal code is specified")
-
-        if self.venue_room is None or len(self.venue_room) == 0:
-            errors.append("No venue room is specified")
-
-        if self.courseVacancy_code is None or len(self.courseVacancy_code) == 0:
-            errors.append("No course vacancy code is specified")
+            errors.append("No Course Reference ID specified!")
 
         if len(self.sessions) > 0:
             for session in self.sessions:
@@ -666,15 +602,19 @@ class RunInfo(ABCCourseInfo):
                 }
             },
             "run": {
-                "action": self.action,
+                "action": "update",
                 "sequenceNumber": self.sequenceNumber,
                 "registrationDates": {
-                    "opening": int(self.registrationDates_opening.strftime("%Y%m%d")),
-                    "closing": int(self.registrationDates_closing.strftime("%Y%m%d")),
+                    "opening": (int(self.registrationDates_opening.strftime("%Y%m%d"))
+                                if self.registrationDates_opening is not None else None),
+                    "closing": (int(self.registrationDates_closing.strftime("%Y%m%d"))
+                                if self.registrationDates_closing is not None else None),
                 },
                 "courseDates": {
-                    "start": int(self.courseDates_start.strftime("%Y%m%d")),
-                    "end": int(self.courseDates_end.strftime("%Y%m%d")),
+                    "start": (int(self.courseDates_start.strftime("%Y%m%d"))
+                              if self.courseDates_start is not None else None),
+                    "end": (int(self.courseDates_end.strftime("%Y%m%d"))
+                            if self.courseDates_end is not None else None),
                 },
                 "scheduleInfoType": {
                     "code": self.scheduleInfoType_code,
@@ -714,6 +654,9 @@ class RunInfo(ABCCourseInfo):
             return json.dumps(pl)
 
         return pl
+
+    def is_require_venue(self) -> bool:
+        return self.modeOfTraining is None and self.modeOfTraining != "2" and self.modeOfTraining != "4"
 
     def set_crid(self, crn: str) -> None:
         if not isinstance(crn, str):
@@ -906,7 +849,7 @@ class DeleteRunInfo(RunInfo):
     """Encapsulates all information regarding the deletion of a course run"""
 
     def __init__(self) -> None:
-        super().__init__(action="delete")
+        super().__init__()
         self.includeExpired: Literal["Select a value", "Yes", "No"] = None
 
     def validate(self) -> None | list[str]:
@@ -926,7 +869,7 @@ class DeleteRunInfo(RunInfo):
                     "uen": st.session_state["uen"]
                 },
                 "run": {
-                    "action": self.action
+                    "action": "delete"
                 }
             }
         }
@@ -1016,3 +959,66 @@ class AddRunInfo(RunInfo):
 
         if len(errors) > 0:
             return errors
+
+    def payload(self, as_json_str: bool = False) -> dict | str:
+        pl = {
+            "course": {
+                "courseReferenceNumber": self.crid,
+                "trainingProvider": {
+                    "uen": st.session_state["uen"]
+                }
+            },
+            "runs": [
+                {
+                    "sequenceNumber": self.sequenceNumber,
+                    "registrationDates": {
+                        "opening": (int(self.registrationDates_opening.strftime("%Y%m%d"))
+                                    if self.registrationDates_opening is not None else None),
+                        "closing": (int(self.registrationDates_closing.strftime("%Y%m%d"))
+                                    if self.registrationDates_closing is not None else None),
+                    },
+                    "courseDates": {
+                        "start": (int(self.courseDates_start.strftime("%Y%m%d"))
+                                  if self.courseDates_start is not None else None),
+                        "end": (int(self.courseDates_end.strftime("%Y%m%d"))
+                                if self.courseDates_end is not None else None),
+                    },
+                    "scheduleInfoType": {
+                        "code": self.scheduleInfoType_code,
+                        "description": self.scheduleInfoType_description
+                    },
+                    "scheduleInfo": self.scheduleInfo,
+                    "venue": {
+                        "block": self.venue_block,
+                        "street": self.venue_street,
+                        "floor": self.venue_floor,
+                        "unit": self.venue_unit,
+                        "building": self.venue_building,
+                        "postalCode": self.venue_postalCode,
+                        "room": self.venue_room,
+                        "wheelChairAccess": self.venue_wheelChairAccess
+                    },
+                    "intakeSize": self.intakeSize,
+                    "threshold": self.threshold,
+                    "registeredUserCount": self.registeredUserCount,
+                    "modeOfTraining": self.modeOfTraining,
+                    "courseAdminEmail": self.courseAdminEmail,
+                    "courseVacancy": {
+                        "code": self.courseVacancy_code,
+                        "description": self.courseVacancy_description
+                    },
+                    "file": {
+                        "Name": self.file_Name,
+                        "content": (base64.b64encode(self.file_content.getvalue() if self.file_content else b"")
+                                    .decode("utf-8")),
+                    },
+                    "sessions": list(map(lambda x: x.payload(), self.sessions)),
+                    "linkCourseRunTrainer": list(map(lambda x: x.payload(), self.linkCourseRunTrainer))
+                }
+            ]
+        }
+
+        if as_json_str:
+            return json.dumps(pl)
+
+        return pl
