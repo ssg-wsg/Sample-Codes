@@ -50,4 +50,6 @@ GRADES = ["A", "B", "C", "D", "E", "F"]
 RESULTS = ["Pass", "Fail", "Exempt"]
 ID_TYPE = ["NRIC", "FIN", "OTHERS"]
 ASSESSMENT_UPDATE_VOID_ACTIONS = ["update", "void"]
+SORT_FIELD = ["updatedOn", "createdOn", "assessmentDate"]
+SORT_ORDER = ["asc", "desc"]
 

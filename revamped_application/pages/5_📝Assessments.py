@@ -3,8 +3,11 @@ import streamlit as st
 from core.assessments.create_assessment import CreateAssessment
 from core.assessments.update_void_assessment import UpdateVoidAssessment
 from core.assessments.view_assessment import ViewAssessment
-from core.constants import GRADES, RESULTS, ID_TYPE, ASSESSMENT_UPDATE_VOID_ACTIONS
-from core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo
+from core.assessments.search_assessment import SearchAssessment
+from core.constants import GRADES, RESULTS, ID_TYPE, ASSESSMENT_UPDATE_VOID_ACTIONS, SORT_FIELD, \
+    SORT_ORDER
+from core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo, \
+    SearchAssessmentInfo
 from utils.http_utils import handle_error
 from utils.streamlit_utils import init, display_config
 
@@ -121,9 +124,9 @@ with update_void:
                                                    key="update-void-assessment-action"))
 
     st.subheader("Course Info")
-    update_void_assessment.set_course_referenceNumber(st.text_input(label="Enter the Course Reference Number",
-                                                                    max_chars=100,
-                                                                    key="update-void-assessment-reference-number"))
+    update_void_assessment.set_assessment_referenceNumber(st.text_input(label="Enter the Assessment Reference Number",
+                                                                        max_chars=100,
+                                                                        key="update-void-assessment-reference-number"))
 
     if update_void_assessment.is_update():
         st.subheader("Trainee Info")
@@ -187,8 +190,96 @@ with update_void:
             with response:
                 st.subheader("Response")
                 handle_error(lambda: uva.execute())
+
 with find:
-    pass
+    st.header("Find Assessments")
+    st.markdown("You can use this API to find/search/query for an assessment record.")
+    search_assessment = SearchAssessmentInfo()
+
+    st.subheader("Query Parameters")
+    if st.checkbox("Specify Last Update Date From?", key="search-last-update-date-from"):
+        search_assessment.set_lastUpdateDateFrom(st.date_input(label="Select Last Update Date",
+                                                               key="search-last-update-date-from-input"))
+
+    if st.checkbox("Specify Last Update Date To?", key="search-last-update-date-to"):
+        search_assessment.set_lastUpdateDateTo(st.date_input(label="Select Last Update Date",
+                                                             key="search-last-update-date-to-input"))
+
+    if st.checkbox("Specify Sort By Field?", key="search-sort-by-field"):
+        search_assessment.set_sortBy_field(st.selectbox(label="Select Sort By Field",
+                                                        options=SORT_FIELD,
+                                                        key="search-sort-by-field-input"))
+
+    if st.checkbox("Specify Sort Order?", key="search-sort-order"):
+        search_assessment.set_sortBy_order(st.selectbox(label="Select Sort Order",
+                                                        options=SORT_ORDER,
+                                                        key="search-sort-by-order-input"))
+
+    search_assessment.set_page(st.number_input(label="Page Number",
+                                               min_value=0,
+                                               value=0,
+                                               key="search-page-number"))
+    search_assessment.set_pageSize(st.number_input(label="Page Size",
+                                                   min_value=1,
+                                                   max_value=100,
+                                                   key="search-page-size"))
+
+    st.subheader("Assessment Query Parameters")
+    if st.checkbox("Specify Course Run ID?", key="search-course-run-id"):
+        search_assessment.set_courseRunId(st.text_input(label="Select Course Run ID",
+                                                        key="search-course-run-id-input"))
+
+    if st.checkbox("Specify Course Reference Number?", key="search-course-reference-number"):
+        search_assessment.set_courseReferenceNumber(st.text_input(label="Select Course Reference Number",
+                                                                  max_chars=50,
+                                                                  key="search-course-reference-number-input"))
+
+    if st.checkbox("Specify Trainee ID?", key="search-trainee-id"):
+        search_assessment.set_trainee_id(st.text_input(label="Select Trainee ID Number",
+                                                       max_chars=20,
+                                                       key="search-trainee-id-input"))
+
+    if st.checkbox("Specify Enrolment Reference Number?", key="search-enrolment-reference-number"):
+        search_assessment.set_enrolment_referenceNumber(st.text_input(label="Select Enrolment Reference Number",
+                                                                      key="search-enrolment-reference-number-input"))
+
+    if st.checkbox("Specify Skill Code?", key="search-skill-code"):
+        search_assessment.set_skillCode(st.text_input(label="Enter the Skill Code",
+                                                      max_chars=30,
+                                                      key="search-skill-code-input"))
+
+    if st.checkbox("Specify Training Partner Code?", key="search-training-partner-code"):
+        search_assessment.set_trainingPartner_code(st.text_input(label="Enter the Training Partner Code",
+                                                                 max_chars=15,
+                                                                 key="search-training-partner-code-input"))
+
+    st.divider()
+    st.subheader("Preview Request Body")
+    with st.expander("Request Body"):
+        st.json(search_assessment.payload(verify=False))
+
+    st.subheader("Send Request")
+    st.markdown("Click the `Send` button below to send the request to the API!")
+
+    if st.button("Send", key="search-button"):
+        errors = search_assessment.validate()
+
+        if errors is not None:
+            st.error(
+                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+            )
+        else:
+            request, response = st.tabs(["Request", "Response"])
+
+            sa = SearchAssessment(search_assessment)
+
+            with request:
+                st.subheader("Request")
+                st.code(repr(sa), language="text")
+
+            with response:
+                st.subheader("Response")
+                handle_error(lambda: sa.execute())
 
 with view:
     st.header("View Assessment")
@@ -208,7 +299,7 @@ with view:
         else:
             request, response = st.tabs(["Request", "Response"])
 
-            va = ViewAssessment(arn)
+            va = SearchAssessment(arn)
 
             with request:
                 st.subheader("Request")

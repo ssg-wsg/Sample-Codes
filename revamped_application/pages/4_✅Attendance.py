@@ -36,7 +36,7 @@ with view:
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    crn = st.text_input("Key in the Course Reference Number", key="crn_view_sessions")
+    crn = st.text_input("Key in the Assessment Reference Number", key="crn_view_sessions")
     session_id = st.text_input("Enter Session ID",
                                help="The course session ID to be retrieved; encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",

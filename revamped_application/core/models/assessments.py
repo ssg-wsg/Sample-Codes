@@ -5,7 +5,8 @@ import datetime
 from typing import Optional, Literal
 
 from core.abc.abstract import AbstractRequestInfo
-from core.constants import GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS
+from core.constants import GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS, \
+    SORT_FIELD, SORT_ORDER
 from utils.json_utils import remove_null_fields
 
 
@@ -187,6 +188,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
     def __init__(self):
         super().__init__()
         self._action: Literal["update", "void"] = None
+        self._assessmentReferenceNumber: str = None
 
     def validate(self) -> None | list[str]:
         if self._action is None or self._action not in ["update", "void"]:
@@ -222,6 +224,12 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
 
         return pl
 
+    def set_assessment_referenceNumber(self, assessment_reference_number: str) -> None:
+        if not isinstance(assessment_reference_number, str):
+            raise ValueError(f"Invalid Assessment Reference Number provided")
+
+        self._assessmentReferenceNumber = assessment_reference_number
+
     def is_void(self) -> bool:
         return self._action == "void"
 
@@ -233,3 +241,166 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             raise ValueError(f"Invalid Action provided")
 
         self._action = action
+
+
+class SearchAssessmentInfo(AbstractRequestInfo):
+    """Encapsulates information about the searching for an assessment record"""
+
+    def __init__(self):
+        self._lastUpdateDateTo: Optional[datetime.date] = None
+        self._lastUpdateDateFrom: Optional[datetime.date] = None
+        self._sortBy_field: Optional[Literal["updatedOn", "createdOn", "assessmentDate"]] = None
+        self._sortBy_order: Optional[str] = None
+        self._parameters_page: int = None
+        self._parameters_pageSize: int = None
+        self._assessment_courseRunId: Optional[str] = None
+        self._assessment_referenceNumber: Optional[str] = None
+        self._assessment_traineeId: Optional[str] = None
+        self._assessment_enrolement_referenceNumber: Optional[str] = None
+        self._assessment_skillCode: Optional[str] = None
+        self._trainingPartner_code: Optional[str] = None
+
+    def __repr__(self):
+        return self.payload(verify=False, as_json_str=True)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def validate(self) -> None | list[str]:
+        errors = []
+
+        if self._lastUpdateDateTo is not None and self._lastUpdateDateFrom is not None \
+                and (self._lastUpdateDateFrom > self._lastUpdateDateTo):
+            errors.append("Last Update Date From cannot be greater than Last Update Date To!")
+
+        if self._parameters_page is None:
+            errors.append("Page number is not specified!")
+
+        if self._parameters_pageSize is None:
+            errors.append("Page size is not specified!")
+
+        if len(errors) > 0:
+            return errors
+
+    def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
+        if verify:
+            validation = self.validate()
+
+            if validation is not None and len(validation) > 0:
+                raise AttributeError("There are some required fields that are missing! Use payload() to find the "
+                                     "missing fields!")
+
+        pl = {
+            "meta": {
+                "lastUpdateDateTo": (self._lastUpdateDateTo.strftime("%Y-%m-%d")
+                                     if self._lastUpdateDateTo is not None else None),
+                "lastUpdateDateFrom": (self._lastUpdateDateFrom.strftime("%Y-%m-%d")
+                                       if self._lastUpdateDateFrom is not None else None),
+            },
+            "sortBy": {
+                "field": self._sortBy_field,
+                "order": self._sortBy_order,
+            },
+            "parameters": {
+                "page": self._parameters_page,
+                "pageSize": self._parameters_pageSize,
+            },
+            "assessment": {
+                "course": {
+                    "run": {
+                        "id": self._assessment_courseRunId
+                    },
+                    "referenceNumber": self._assessment_referenceNumber,
+                }
+            },
+            "trainee": {
+                "id": self._assessment_traineeId,
+            },
+            "enrolment": {
+                "referenceNumber": self._assessment_enrolement_referenceNumber
+            },
+            "skillCode": self._assessment_skillCode,
+            "trainingPartner": {
+                "uen": st.session_state["uen"],
+                "code": self._trainingPartner_code,
+            }
+        }
+
+        pl = remove_null_fields(pl)
+
+        if as_json_str:
+            return json.dumps(pl)
+
+        return pl
+
+    def set_lastUpdateDateTo(self, lastUpdateDateTo: datetime.date) -> None:
+        if not isinstance(lastUpdateDateTo, datetime.date):
+            raise ValueError(f"Invalid Last Update Date provided")
+
+        self._lastUpdateDateTo = lastUpdateDateTo
+
+    def set_lastUpdateDateFrom(self, lastUpdateDateFrom: datetime.date) -> None:
+        if not isinstance(lastUpdateDateFrom, datetime.date):
+            raise ValueError(f"Invalid Last Update Date provided")
+
+        self._lastUpdateDateFrom = lastUpdateDateFrom
+
+    def set_sortBy_field(self, sortBy_field: str) -> None:
+        if not isinstance(sortBy_field, str) or sortBy_field not in SORT_FIELD:
+            raise ValueError(f"Invalid Sort By Field provided")
+
+        self._sortBy_field = sortBy_field
+
+    def set_sortBy_order(self, sortBy_order: str) -> None:
+        if not isinstance(sortBy_order, str) or sortBy_order not in SORT_ORDER:
+            raise ValueError(f"Invalid Sort By Order provided")
+
+        self._sortBy_order = sortBy_order
+
+    def set_page(self, page: int) -> None:
+        if not isinstance(page, int):
+            raise ValueError(f"Invalid Page provided")
+
+        self._parameters_page = page
+
+    def set_pageSize(self, pageSize: int) -> None:
+        if not isinstance(pageSize, int):
+            raise ValueError(f"Invalid Page size provided")
+
+        self._parameters_pageSize = pageSize
+
+    def set_courseRunId(self, courseRunId: str) -> None:
+        if not isinstance(courseRunId, str):
+            raise ValueError(f"Invalid Course Run ID provided")
+
+        self._assessment_courseRunId = courseRunId
+
+    def set_courseReferenceNumber(self, courseReferenceNumber: str) -> None:
+        if not isinstance(courseReferenceNumber, str):
+            raise ValueError(f"Invalid Course Reference Number provided")
+
+        self._assessment_referenceNumber = courseReferenceNumber
+
+    def set_trainee_id(self, traineeId: str) -> None:
+        if not isinstance(traineeId, str):
+            raise ValueError(f"Invalid Trainee ID provided")
+
+        self._assessment_traineeId = traineeId
+
+    def set_enrolment_referenceNumber(self, enrolmentReferenceNumber: str) -> None:
+        if not isinstance(enrolmentReferenceNumber, str):
+            raise ValueError(f"Invalid Enrolment Reference Number provided")
+
+        self._assessment_enrolement_referenceNumber = enrolmentReferenceNumber
+
+    def set_skillCode(self, skillCode: str) -> None:
+        if not isinstance(skillCode, str):
+            raise ValueError(f"Invalid Skill Code provided")
+
+        self._assessment_skillCode = skillCode
+
+    def set_trainingPartner_code(self, trainingPartner_code: str) -> None:
+        if not isinstance(trainingPartner_code, str):
+            raise ValueError(f"Invalid Training Partner Code provided")
+
+        self._trainingPartner_code = trainingPartner_code
