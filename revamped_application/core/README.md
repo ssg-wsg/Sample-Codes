@@ -23,9 +23,9 @@ This folder contains core functionality code for the Attendance APIs.
 
 This folder contains code functionality code for the Courses APIs.
 
-## `enrollment`
+## `enrolment`
 
-This folder contains core functionality code for the Enrollment APIs.
+This folder contains core functionality code for the Enrolment APIs.
 
 ## `models`
 
