@@ -23,6 +23,7 @@ with st.sidebar:
         display_config()
 
 
+st.image("assets/sf.png", width=200)
 st.title("SSG API Demo")
 st.markdown("Welcome to the SSG API Demo App!\n\n"
             "Select any one of the pages on the left sidebar to view sample codes for each of the different crucial "
