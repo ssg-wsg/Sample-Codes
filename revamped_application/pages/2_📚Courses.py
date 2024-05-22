@@ -42,12 +42,12 @@ with view:
     runs = st.text_input(label="Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
-                         key="course-run-id")
+                         key="view-course-run-id")
 
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view_button"):
+    if st.button("Send", key="view-button"):
         if not runs:
             st.error("Key in your course run ID to proceed!")
         else:
@@ -67,36 +67,37 @@ with add:
     st.markdown("You can use this API to add/publish one or more course runs with sessions.")
     st.warning("**Add Course Runs requires your UEN to proceed. Make sure that you have loaded it up "
                "properly under the Home page before proceeding!**")
+    st.warning("Currently you are only able to add one course run at a time. Adding multiple course runs "
+               "will be available in the future!")
 
     # ===== BASIC RUN INFO ===== #
     st.subheader("`run` details")
     st.markdown("Note that `registrationDates`, `courseDates`, `scheduleInfoType`, `scheduleInfo`, "
-                "`courseVacancy`, `modeOfTraining` and `courseAdminEmail` are required for this add action!")
+                "`courseVacancy`, `modeOfTraining` and `courseAdminEmail` are required for this **add** action!")
+
     # create a store for the parameters to pass into the backend
     add_runinfo = AddRunInfo()
     include_expired = st.selectbox(label="Include expired courses?",
                                    options=["Select a value", "Yes", "No"],
-                                   key="view-expired-add")
+                                   key="add-expired")
     add_runinfo.set_crid(st.text_input(label="Key in the Course Reference Number",
-                                       key="crn_add"))
-    add_runinfo.set_sequence_number(st.number_input(
-        label="Run Sequence Number",
-        value=0,
-        help="Defaults to 0",
-        key="run-sequence-number-add"
-    ))
+                                       key="add-crn"))
+    add_runinfo.set_sequence_number(st.number_input(label="Run Sequence Number",
+                                                    value=0,
+                                                    help="Defaults to 0",
+                                                    key="add-run-sequence-number"))
 
     st.markdown("#### Registration Dates")
     col1, col2 = st.columns(2)
 
     with col1:
         add_runinfo.set_registrationDates_opening(st.date_input(label="Opening Date",
-                                                                key="opening_date_add",
+                                                                key="add-opening-date",
                                                                 help=RunInfo.REGISTRATION_DATE_DESCRIPTION_OPENING))
 
     with col2:
         add_runinfo.set_registrationDates_closing(st.date_input(label="Closing Date",
-                                                                key="closing_date_add",
+                                                                key="add-closing-date",
                                                                 help=RunInfo.REGISTRATION_DATE_DESCRIPTION_CLOSING))
 
     st.markdown("#### Course Dates")
@@ -104,91 +105,91 @@ with add:
 
     with col1:
         add_runinfo.set_courseDates_start(st.date_input(label="Course Start Date",
-                                                        key="start_date_add",
+                                                        key="add-start-date",
                                                         help="Course run start opening dates as YYYYMMDD"))
 
     with col2:
         add_runinfo.set_courseDates_end(st.date_input(label="Course End Date",
-                                                      key="end_date_add",
+                                                      key="add-end-date",
                                                       help="Course run end opening dates as YYYYMMDD"))
 
     st.markdown("#### Schedule Info Type")
     add_runinfo.set_scheduleInfoType_code(st.text_input(label="Schedule Code",
-                                                        key="schedule_code_add",
+                                                        key="add-schedule-code",
                                                         help="Course run schedule info code"))
     add_runinfo.set_scheduleInfoType_description(st.text_area(label="Schedule Description",
-                                                              key="schedule_description_add",
+                                                              key="add-schedule-description",
                                                               help="Course run schedule info description",
                                                               max_chars=32))
 
     add_runinfo.set_scheduleInfo(st.text_input(label="Schedule Info",
-                                               key="schedule_info_add",
+                                               key="add-schedule-info",
                                                help="String representing Course run schedule info"))
 
     st.markdown("#### Venue Info")
-    if st.checkbox("Specify Venue Block?", key="specify_venue_info_add"):
+    if st.checkbox("Specify Venue Block?", key="specify-add-venue-block-info"):
         add_runinfo.set_venue_block(st.text_input(label="Block",
-                                                  key="block_optional_add",
+                                                  key="add-venue-block",
                                                   help="Course run block",
                                                   max_chars=10))
 
-    if st.checkbox("Specify Venue Block?", key="specify_venue_block_add"):
+    if st.checkbox("Specify Venue Street?", key="specify-add-venue-street-info"):
         add_runinfo.set_venue_street(st.text_input(label="Street",
-                                                   key="street_optional_add",
+                                                   key="add-venue-street",
                                                    help="Course run street",
                                                    max_chars=32))
 
-    if st.checkbox("Specify Venue Building?", key="specify_venue_building_add"):
+    if st.checkbox("Specify Venue Building?", key="specify-add-venue-building-info"):
         add_runinfo.set_venue_building(st.text_input(label="Building",
-                                                     key="building_optional_add",
+                                                     key="add-venue-building",
                                                      help="Course run building",
                                                      max_chars=66))
 
-    if st.checkbox("Specify Wheelchair Accessible?", key="specify_wheelchair_accessible_add"):
+    if st.checkbox("Specify Wheelchair Accessible?", key="specify-add-wheelchair-accessible-info"):
         add_runinfo.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
                                                             options=["Select a value", "Yes", "No"],
-                                                            key="wheelchair_access_add",
+                                                            key="add-venue-wheelchair-accessible",
                                                             help="Indication that the course run location is "
                                                                  "wheelchair accessible"))
 
     add_runinfo.set_venue_floor(st.text_input(label="Floor",
-                                              key="floor_add",
+                                              key="add-venue-floor",
                                               help="Course run floor",
                                               max_chars=3))
     add_runinfo.set_venue_unit(st.text_input(label="Unit",
-                                             key="unit_add",
+                                             key="add-venue-unit",
                                              help="Course run unit",
                                              max_chars=5))
     add_runinfo.set_venue_postalCode(st.text_input(label="Postal Code",
-                                                   key="postalCode_add",
+                                                   key="add-venue-postal-code",
                                                    help="Course run postal code",
                                                    max_chars=6))
     add_runinfo.set_venue_room(st.text_input(label="Room",
-                                             key="room_add",
+                                             key="add-venue-room",
                                              help="Course run room",
                                              max_chars=255))
 
     st.markdown("#### Course Intake Details")
-    if st.checkbox("Specify Intake Size?", key="specify_intake_size_add"):
+    if st.checkbox("Specify Intake Size?", key="specify-add-intake-size-info"):
         add_runinfo.set_intakeSize(st.number_input(label="Intake Size",
-                                                   key="intake_size_add",
+                                                   key="add-intake-size",
                                                    value=0,
                                                    min_value=0,
                                                    help="Course run intake size. It represents the max number of pax "
                                                         "for a class"))
 
-    if st.checkbox("Specify Intake Threshold?", key="specify_intake_threshold_add"):
+    if st.checkbox("Specify Intake Threshold?", key="specify-add-intake-threshold-info"):
         add_runinfo.set_threshold(st.number_input(label="Threshold",
-                                                  key="threshold_add",
+                                                  key="add-intake-threshold",
                                                   value=0,
                                                   min_value=0,
-                                                  help="Course run threshold. Any additional pax that can register above "
-                                                       "maximum pax.\ne.g. threshold = `10`, then total allowed "
+                                                  help="Course run threshold. Any additional pax that can register "
+                                                       "above maximum pax.\ne.g. threshold = `10`, then total allowed "
                                                        "registration pax is `intake size + threshold = 60`"))
 
-    if st.checkbox("Specify Registered User Count?", key="specify_registered_user_count_add"):
+    if st.checkbox("Specify Registered User Count?", key="specify-add-registered-user-count-info"):
         add_runinfo.set_registeredUserCount(st.number_input(label="Registered Users Count",
-                                                            key="registered_user_count_add",
+                                                            key="add-registered-user-count",
                                                             value=0,
                                                             min_value=0,
                                                             help="Course run registered user count. This number cannot "
@@ -196,11 +197,11 @@ with add:
 
     st.markdown("#### Course Admin Details")
     add_runinfo.set_modeOfTraining(st.selectbox(label="Mode of Training",
-                                                key="mode_of_training_add",
+                                                key="add-mode-of-training",
                                                 options=MODE_OF_TRAINING_MAPPING.keys(),
                                                 format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"))
     add_runinfo.set_courseAdminEmail(st.text_input(label="Course Admin Email",
-                                                   key="course_admin_email_add",
+                                                   key="add-course-admin-email",
                                                    help="Course admin email is under course run level "
                                                         "that can receive the email from 'QR code "
                                                         "Attendance Taking', 'Course Atendance with error'"
@@ -209,24 +210,24 @@ with add:
 
     st.markdown("#### Course Vacancy Details")
     add_runinfo.set_courseVacancy_code(st.text_input(label="Vacancy Code",
-                                                     key="vacancy_code_add",
+                                                     key="add-course-vacancy-code",
                                                      help="Course run vacancy code",
                                                      max_chars=1))
     add_runinfo.set_courseVacancy_description(st.text_input(label="Vacancy Description",
-                                                            key="vacancy_description_add",
+                                                            key="add-course-vacancy-description",
                                                             help="Course run vacancy description",
                                                             max_chars=128))
 
     st.markdown("#### File Details")
-    if st.checkbox("Specify File Name?", key="specify_file_name_add"):
+    if st.checkbox("Specify File Name?", key="specify-add-file-Name-info"):
         add_runinfo.set_file_Name(st.text_input(label="File Name",
-                                                key="file_name_add",
+                                                key="add-file-name",
                                                 help="Physical file name of the course run",
                                                 max_chars=255))
 
-    if st.checkbox("Specify File Content?", key="specify_file_content_add"):
+    if st.checkbox("Specify File Content?", key="specify-add-file-content-info"):
         add_runinfo.set_file_content(st.file_uploader(label="File Content",
-                                                      key="file_content_add",
+                                                      key="add-file-content",
                                                       help="File content of the course run in binary",
                                                       accept_multiple_files=False))
 
@@ -242,11 +243,14 @@ with add:
                 "course session `startTime` & `endTime` will be based on user input."
                 )
 
-    with st.expander("Course Session Details", expanded=False):
+    with st.expander("Course Session Details", expanded=True):
         num_sessions: int = st.number_input(label="Key in the number of sessions in the Course Run",
-                                            key="num_sessions",
+                                            key="add-num-session",
                                             min_value=0,
                                             value=0)
+
+        if num_sessions > 0:
+            st.divider()
 
         for i in range(num_sessions):
             runsession: RunSessionInfo = RunSessionAddInfo()
@@ -255,19 +259,19 @@ with add:
             runsession.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                        options=MODE_OF_TRAINING_MAPPING.keys(),
                                                        format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
-                                                       key=f"mode_of_training_{i}"))
+                                                       key=f"add-session-mode-of-training_{i}"))
 
             col1, col2 = st.columns(2)
 
             with col1:
                 runsession.set_startDate(st.date_input(label="Start date of course session",
                                                        help="YYYYMMDD or YYYY-MM-DD format only",
-                                                       key=f"start_date_{i}"))
+                                                       key=f"add-session-start-date-{i}"))
 
             if runsession.modeOfTraining in ["2", "4"]:
                 with col1:
                     runsession.set_startTime(st.time_input(label="Start time of course session",
-                                                           key=f"startTime_add_{i}",
+                                                           key=f"add-session-start-time-{i}",
                                                            disabled=True,
                                                            value=datetime(hour=0,
                                                                           minute=0,
@@ -277,11 +281,11 @@ with add:
 
                 with col2:
                     runsession.set_endDate(st.date_input(label="End date of course session",
-                                                         key=f"endDate_add_{i}",
+                                                         key=f"add-session-end-date-{i}",
                                                          value=runsession.startDate,
                                                          disabled=True))
                     runsession.set_endTime(st.time_input(label="End time of course session",
-                                                         key=f"endTime_add_{i}",
+                                                         key=f"add-session-end-time-{i}",
                                                          disabled=True,
                                                          value=datetime(hour=23,
                                                                         minute=59,
@@ -295,71 +299,72 @@ with add:
                 with col1:
                     runsession.set_startTime(st.time_input("Start time of course session",
                                                            help="HH:mm:ss/HH:mm format only",
-                                                           key=f"startTime_add_{i}"))
+                                                           key=f"add-session-start-time-{i}"))
 
                 with col2:
                     runsession.set_endDate(st.date_input(label="End date of course session",
                                                          help="YYYYMMDD or YYYY-MM-DD format only",
-                                                         key=f"endDate_add_{i}"))
+                                                         key=f"add-session-end-date-{i}"))
                     runsession.set_endTime(st.time_input("End time of course session",
                                                          help="HH:mm:ss/HH:mm format only",
-                                                         key=f"endTime_add_{i}"))
+                                                         key=f"add-session-end-time-{i}"))
 
             st.markdown(f"###### Venue")
-            if st.checkbox("Specify Venue Block?", key=f"specify_session_venue_block_add_{i}"):
+            if st.checkbox("Specify Venue Block?", key=f"specify-add-session-venue-block-{i}"):
                 runsession.set_venue_block(st.text_input(label="Block",
-                                                         key=f"block_optional_{i}",
+                                                         key=f"add-session-venue-block-{i}",
                                                          help="Course run block",
                                                          max_chars=10))
 
-            if st.checkbox("Specify Venue Street", key=f"specify_session_venue_street_add_{i}"):
+            if st.checkbox("Specify Venue Street", key=f"specify-add-session-venue-street-{i}"):
                 runsession.set_venue_street(st.text_input(label="Street",
-                                                          key=f"street_optional_{i}",
+                                                          key=f"add-session-venue-street-{i}",
                                                           help="Course run street",
                                                           max_chars=32))
 
-            if st.checkbox("Specify Venue Building", key=f"specify_session_venue_building_block_add_{i}"):
+            if st.checkbox("Specify Venue Building", key=f"specify-add-session-venue-building-{i}"):
                 runsession.set_venue_building(st.text_input(label="Building",
-                                                            key=f"building_optional_{i}",
+                                                            key=f"add-session-venue-building-{i}",
                                                             help="Course run building",
                                                             max_chars=66))
 
-            if st.checkbox("Specify Venue Wheelchair Accessible?", key=f"specify_venue_wheelchair_accessible_add_{i}"):
+            if st.checkbox("Specify Venue Wheelchair Accessible?",
+                           key=f"specify-add-session-venue-wheelchair-{i}"):
                 runsession.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
                                                                    options=["Select a value", "Yes", "No"],
-                                                                   key=f"wheelchair_access_{i}",
+                                                                   key=f"add-session-venue-wheelchair-{i}",
                                                                    help="Indication that the course run "
                                                                         "location is wheelchair accessible"))
 
-            if st.checkbox("Specify Primary Venue?", key="specify_venue_primary_add"):
+            if st.checkbox("Specify Primary Venue?", key=f"specify-add-session-primary-venue-{i}"):
                 runsession.set_venue_primaryVenue(st.selectbox(
                     label="Primary Venue",
                     options=["Select a value", "Yes", "No"],
                     help="Indication that the course session is the Primary Venue. If `true`, API will pick the venue "
                          "information from course run and update to session venue",
-                    key=f"venue_primary_venue_{i}"))
+                    key=f"add-session-venue-primary-venue-{i}"))
 
             runsession.set_venue_floor(st.text_input(label="Floor",
-                                                     key=f"floor_{i}",
+                                                     key=f"add-session-floor-{i}",
                                                      help="Course run floor",
                                                      max_chars=3))
             runsession.set_venue_unit(st.text_input(label="Unit",
-                                                    key=f"unit_{i}",
+                                                    key=f"add-session-venue-unit-{i}",
                                                     help="Course run unit",
                                                     max_chars=5))
             runsession.set_venue_postalCode(st.text_input(label="Postal Code",
-                                                          key=f"postalCode_{i}",
+                                                          key=f"add-session-venue-postal-code-{i}",
                                                           help="Course run postal code",
                                                           max_chars=6))
             runsession.set_venue_room(st.text_input(label="Room",
-                                                    key=f"room_{i}",
+                                                    key=f"add-session-venue-room-{i}",
                                                     help="Course run room",
                                                     max_chars=255))
 
-            add_runinfo.add_session(runsession)
-
             if i != num_sessions - 1:
                 st.divider()
+
+            add_runinfo.add_session(runsession)
 
     # ===== RUN TRAINERS INFO ===== #
     st.subheader("Add `trainer` details")
@@ -373,40 +378,43 @@ with add:
 
     with st.expander("Add Trainer Details", expanded=False):
         num_trainers: int = st.number_input(label="Key in the number of trainers in the Course Run",
-                                            key="num_trainers",
+                                            key="add-num-trainers",
                                             min_value=0,
                                             value=0)
+
+        if num_trainers > 0:
+            st.divider()
 
         for i in range(num_trainers):
             runtrainer = RunTrainerAddInfo()
 
             st.markdown(f"##### Trainer {i + 1}")
             runtrainer.set_trainer_type_code(st.text_input(label="Trainer Type",
-                                                           key=f"add_trainer_code_{i}",
+                                                           key=f"add-trainer-type-{i}",
                                                            max_chars=1))
             runtrainer.set_trainer_type_description(st.text_input(label="Trainer Description",
-                                                                  key=f"add_trainer_description_{i}",
+                                                                  key=f"add-trainer-type-description-{i}",
                                                                   max_chars=128))
 
             st.markdown("###### Trainer Particulars")
-            if st.checkbox("Specify Trainer Index Number", key=f"specify_trainer_index_number_{i}"):
+            if st.checkbox("Specify Trainer Index Number", key=f"specify-add-trainer-index-number-{i}"):
                 runtrainer.set_indexNumber(st.number_input(label="Trainer Index Number",
                                                            min_value=0,
                                                            value=0,
-                                                           key=f"add_trainer_index_number_{i}"))
+                                                           key=f"add-trainer-index-number-{i}"))
 
             if st.checkbox("Specify Unique Trainer ID?",
-                           key=f"specify_trainer_unique_id_{i}",
+                           key=f"add-trainer-unique-trainer-id-{i}",
                            help="Do not select this field if you are specifying a new Trainer!"):
                 runtrainer.set_trainer_id(st.text_input(label="Trainer ID",
-                                                        key=f"add_trainer_id_{i}",
+                                                        key=f"add-trainer-unique-id-identifier-{i}",
                                                         max_chars=50))
 
             runtrainer.set_trainer_name(st.text_input(label="Trainer Name",
-                                                      key=f"add_trainer_name_{i}",
+                                                      key=f"add-trainer-name-{i}",
                                                       max_chars=66))
             runtrainer.set_trainer_email(st.text_input(label="Trainer Email",
-                                                       key=f"add_trainer_email_{i}",
+                                                       key=f"add-trainer-email-{i}",
                                                        max_chars=320))
 
             st.markdown("###### Trainer ID")
@@ -417,22 +425,22 @@ with add:
                                                            options=ID_TYPE.keys(),
                                                            format_func=lambda x: f"{x}: {ID_TYPE[x]}",
                                                            help="Trainer ID Type Code",
-                                                           key=f"add_trainer_id_code_{i}"))
+                                                           key=f"add-trainer-id-code-{i}"))
 
             with col2:
                 runtrainer.set_trainer_idNumber(st.text_input(label="Trainer ID Number",
-                                                              key=f"add_trainer_id_number_{i}",
+                                                              key=f"add-trainer-id-number-{i}",
                                                               help="Refers to the NRIC/FIN/Passport number of "
                                                                    "the trainer",
                                                               max_chars=50))
 
             st.markdown("###### Trainer Roles")
-            if st.checkbox("Trainer", key=f"add-trainer-role-{i}"):
+            if st.checkbox("Trainer", key=f"specify-add-trainer-role-trainer-{i}"):
                 runtrainer.add_trainer_role({
                     "id": 1,
                     "name": "Trainer"
                 })
-            if st.checkbox("Assessor", key=f"add-assessor-role-{i}"):
+            if st.checkbox("Assessor", key=f"specify-add-trainer-assessor-{i}"):
                 runtrainer.add_trainer_role({
                     "id": 2,
                     "name": "Assessor"
@@ -440,63 +448,60 @@ with add:
 
             st.markdown("###### Trainer Profile")
             if st.checkbox("Specify In Training Provider Profile?",
-                           key=f"specify-add-training-provider-profile-{i}"):
+                           key=f"specify-add-trainer-training-provider-profile-{i}"):
                 runtrainer.set_inTrainingProviderProfile(st.selectbox(label="Set in-training provider profile",
                                                                       options=["Select a value", "Yes", "No"],
-                                                                      key=f"in_training_provider_profile_{i}"))
+                                                                      key=f"add-trainer-training-provider-"
+                                                                          f"profile-{i}"))
 
-            if st.checkbox("Specify Domain Area of Practice?", key=f"specify-add-domain-area-{i}"):
+            if st.checkbox("Specify Domain Area of Practice?", key=f"specify-add-trainer-domain-area-{i}"):
                 runtrainer.set_domainAreaOfPractice(st.text_area(
                     label="Domain Area of Practice",
                     help="This field indicates the Key Domain/Sector Areas of practice of the trainer (required for "
                          "new trainer).",
-                    key=f"trainer_domainarea_{i}",
+                    key=f"add-trainer-domain-area-{i}",
                     max_chars=1000))
 
-            if st.checkbox("Specify Experience?", key=f"specify-add-experience-{i}"):
+            if st.checkbox("Specify Experience?", key=f"specify-add-trainer-experience-{i}"):
                 runtrainer.set_experience(st.text_input(
                     label="Experience",
-                    key=f"experience_{i}",
+                    key=f"add-trainer-experience-{i}",
                     max_chars=1000
                 ))
 
-            if st.checkbox("Specify LinkedIn URL?", key=f"specify-add-linkedin-url-{i}"):
+            if st.checkbox("Specify LinkedIn URL?", key=f"specify-add-trainer-linkedin-{i}"):
                 runtrainer.set_linkedInURL(st.text_input(
                     label="LinkedIn URL",
-                    key=f"linkedin_url_{i}",
+                    key=f"add-trainer-linkedin-{i}",
                     max_chars=255
                 ))
 
-            if st.checkbox("Specify Salutation ID?", key=f"specify-add-salutation-id-{i}"):
+            if st.checkbox("Specify Salutation ID?", key=f"specify-add-trainer-salutation-{i}"):
                 runtrainer.set_salutationId(st.selectbox(
                     label="Salutations of the Trainer",
-                    options=[1, 2, 3, 4, 5, 6],
-                    format_func=lambda x: SALUTATIONS[x]
+                    options=SALUTATIONS.keys(),
+                    format_func=lambda x: SALUTATIONS[x],
+                    key=f"add-trainer-salutation-id-code-{i}",
                 ))
 
             st.markdown("###### Photo")
-            if st.checkbox("Specify Photo Name?", key=f"specify-add-photo-name-{i}"):
+            if st.checkbox("Specify Photo Name?", key=f"specify-add-trainer-photo-name-{i}"):
                 runtrainer.set_photo_name(st.text_input(label="File Name",
-                                                        key=f"file_name_{i}",
+                                                        key=f"add-trainer-photo-{i}",
                                                         help="Physical file name of the course run",
                                                         max_chars=255))
 
-            if st.checkbox("Specify Photo Content?", key=f"specify-add-photo-content-{i}"):
-                runtrainer.set_photo_content(st.file_uploader(
-                    label="File Content",
-                    key=f"file_content_{i}",
-                    help="File content of the course run in binary",
-                    accept_multiple_files=False
-                ))
+            if st.checkbox("Specify Photo Content?", key=f"specify-add-trainer-photo-content-{i}"):
+                runtrainer.set_photo_content(st.file_uploader(label="File Content",
+                                                              key=f"add-trainer-photo-content-{i}",
+                                                              help="File content of the course run in binary",
+                                                              accept_multiple_files=False))
 
-            st.divider()
             st.markdown("###### Linked SSEC EQAs")
-            linkedssec = st.number_input(
-                label="Number of Linked SSEC EQAs",
-                key=f"add-linkedSsecEQAs-{i}",
-                min_value=0,
-                value=0,
-            )
+            linkedssec = st.number_input(label="Number of Linked SSEC EQAs",
+                                         key=f"add-trainer-linkedssec-{i}",
+                                         min_value=0,
+                                         value=0,)
 
             for j in range(linkedssec):
                 # create a dict first then fill in
@@ -504,21 +509,25 @@ with add:
 
                 st.markdown(f"*Linked SSEC EQA {j + 1}*")
 
-                if st.checkbox("Specify SSEC EQA", key=f"add-linkedSsecEQA-{i}-{j}"):
+                if st.checkbox("Specify SSEC EQA", key=f"specify-add-trainer-linkedssec-{i}-{j}"):
                     temp_ssec["ssecEQA"]["code"] = st.text_input(
                         label="SSEC EQA Code",
-                        key=f"linkedSsecEQAs_code_add_{i}_{j}",
+                        key=f"add-trainer-linkedssec-{i}-{j}",
                         max_chars=2)
 
-                if st.checkbox("Specify SSEC EQA Description", key=f"add-linkedSsecEQA-description-{i}-{j}"):
+                if st.checkbox("Specify SSEC EQA Description",
+                               key=f"specify-add-trainer-linkedssec-description-{i}-{j}"):
                     temp_ssec["description"] = st.text_area(
                         label="Description",
                         help="This field is used to indicate the qualification level of the trainer. For existing "
                              "trainer, please do not input this information.",
-                        key=f"linkedSsecEQAs_add_description_{i}_{j}",
+                        key=f"add-trainer-linkedssec-description-{i}-{j}",
                         max_chars=1000)
 
                 runtrainer.add_linkedSsecEQA(temp_ssec)
+
+            if i != num_trainers - 1:
+                st.divider()
 
             add_runinfo.add_linkCourseRunTrainer(runtrainer)
 
@@ -530,7 +539,7 @@ with add:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="add_button"):
+    if st.button("Send", key="add-button"):
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!")
         else:
@@ -573,41 +582,39 @@ with edit_delete:
     runtype = st.selectbox(label="Select Action",
                            options=["delete", "update"],
                            format_func=lambda x: x.upper(),
-                           key="run-action-delete")
+                           key="edit-run-action")
 
     if runtype == "delete":
         runinfo = DeleteRunInfo()
     elif runtype == "update":
         runinfo = RunInfo()
-    else:
-        st.error("Unknown run type selected!")
 
     include_expired = st.selectbox(label="Include expired courses?",
                                    options=["Select a value", "Yes", "No"],
-                                   key="view-expired-edit")
+                                   key="edit-expired")
     runinfo.set_crid(st.text_input("Key in the Course Reference Number", key="crn_edit"))
     runs = st.text_input(label="Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
-                         key="course-run-id-edit")
+                         key="edit-course-run-id")
 
     if runtype == "update":
-        if st.checkbox("Specify Sequence Number?", key="specify-sequence-number"):
+        if st.checkbox("Specify Sequence Number?", key="specify-edit-run-sequence-number"):
             runinfo.set_sequence_number(st.number_input(label="Run Sequence Number",
                                                         value=0,
                                                         help="Defaults to 0",
-                                                        key="run-sequence-number-edit"))
+                                                        key="edit-run-sequence-number"))
 
         st.markdown("#### Course Admin Details")
-        if st.checkbox("Specify Mode of Training?", key="mode-of-training"):
+        if st.checkbox("Specify Mode of Training?", key="specify-edit-mode-of-training"):
             runinfo.set_modeOfTraining(st.selectbox(label="Mode of Training",
-                                                    key="mode_of_training_edit",
+                                                    key="edit-mode-of-training",
                                                     options=MODE_OF_TRAINING_MAPPING.keys(),
                                                     format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"))
 
-        if st.checkbox("Specify Course Admin Email?", key="specify-admin-email"):
+        if st.checkbox("Specify Course Admin Email?", key="specify-edit-course-admin-email"):
             runinfo.set_courseAdminEmail(st.text_input(label="Course Admin Email",
-                                                       key="course_admin_email",
+                                                       key="edit-course-admin-email",
                                                        help="Course admin email is under course run level "
                                                             "that can receive the email from 'QR code "
                                                             "Attendance Taking', 'Course Atendance with error'"
@@ -615,142 +622,144 @@ with edit_delete:
                                                        max_chars=255))
 
         st.markdown("#### Course Vacancy Details")
-        if st.checkbox("Specify Course Vacancy?", key="specify-vacancy"):
+        if st.checkbox("Specify Course Vacancy?", key="specify-edit-vacancy-code"):
             runinfo.set_courseVacancy_code(st.text_input(label="Vacancy Code",
-                                                         key="vacancy_code",
+                                                         key="edit-vacancy-code",
                                                          help="Course run vacancy code",
                                                          max_chars=1))
 
-            if st.checkbox("Specify Course Vacancy Description?", key="specify-vacancy-description"):
+            if st.checkbox("Specify Course Vacancy Description?", key="specify-edit-vacancy-description"):
                 runinfo.set_courseVacancy_description(st.text_input(label="Vacancy Description",
-                                                                    key="vacancy_description",
+                                                                    key="edit-vacancy-description",
                                                                     help="Course run vacancy description",
                                                                     max_chars=128))
 
         st.markdown("#### Registration Dates")
-        if st.checkbox("Specify Registration Dates?", key="specify-registrationDates"):
+        if st.checkbox("Specify Registration Dates?", key="specify-edit-registrationDates"):
             col1, col2 = st.columns(2)
 
             with col1:
                 runinfo.set_registrationDates_opening(st.date_input(label="Opening Date",
-                                                                    key="opening_date",
+                                                                    key="edit-opening-date",
                                                                     help=RunInfo.REGISTRATION_DATE_DESCRIPTION_OPENING))
 
             with col2:
                 runinfo.set_registrationDates_closing(st.date_input(label="Closing Date",
-                                                                    key="closing_date",
+                                                                    key="edit-closing-date",
                                                                     help=RunInfo.REGISTRATION_DATE_DESCRIPTION_CLOSING))
 
         st.markdown("#### Course Dates")
-        if st.checkbox("Specify Course Dates?", key="specify-courseDates"):
+        if st.checkbox("Specify Course Dates?", key="specify-edit-courseDates"):
             col1, col2 = st.columns(2)
 
             with col1:
-                runinfo.set_courseDates_start(st.date_input(label="Course Start Date", key="start_date",
+                runinfo.set_courseDates_start(st.date_input(label="Course Start Date",
+                                                            key="edit-start-date",
                                                             help="Course run start opening dates as YYYYMMDD"))
 
             with col2:
                 runinfo.set_courseDates_end(st.date_input(label="Course End Date",
-                                                          key="end_date",
+                                                          key="edit-end-date",
                                                           help="Course run end opening dates as YYYYMMDD"))
 
         st.markdown("#### Schedule Info Type")
-        if st.checkbox("Specify Course Info Type?", key="specify-schedule-info-type"):
+        if st.checkbox("Specify Course Info Type?", key="specify-edit-schedule-info-type"):
             runinfo.set_scheduleInfoType_code(st.text_input(label="Schedule Code",
-                                                            key="schedule_code",
+                                                            key="edit-schedule-info-type-code",
                                                             help="Course run schedule info code"))
 
-            if st.checkbox("Specify Schedule Info Type Description?", key="specify-schedule-info-type-description"):
+            if st.checkbox("Specify Schedule Info Type Description?",
+                           key="specify-edit-schedule-info-type-description"):
                 runinfo.set_scheduleInfoType_description(
                     st.text_area(label="Schedule Description",
-                                 key="schedule_description",
+                                 key="edit-schedule-info-type-description",
                                  help="Course run schedule info description",
                                  max_chars=32))
 
-        if st.checkbox("Specify Schedule Info Description?", key="specify-schedule-info-description"):
+        if st.checkbox("Specify Schedule Info Description?", key="specify-edit-schedule-info-description"):
             runinfo.set_scheduleInfo(st.text_input(label="Schedule Info",
-                                                   key="schedule_info",
+                                                   key="edit-schedule-info-description",
                                                    help="String representing Course run schedule info"))
 
         st.markdown("#### Venue Info")
-        if st.checkbox("Specify Venue Info?", key="specify-venue-info"):
-            if st.checkbox("Specify Venue Block?", key="specify_venue_block"):
+        if st.checkbox("Specify Venue Info?", key="specify-edit-venue-info"):
+            if st.checkbox("Specify Venue Block?", key="specify-edit-venue-block"):
                 runinfo.set_venue_block(st.text_input(label="Block",
-                                                      key="block_optional",
+                                                      key="edit-venue-block",
                                                       help="Course run block",
                                                       max_chars=10))
 
-            if st.checkbox("Specify Venue Street?", key="specify_venue_street"):
+            if st.checkbox("Specify Venue Street?", key="specify-edit-venue-street"):
                 runinfo.set_venue_street(st.text_input(label="Street",
-                                                       key="street_optional",
+                                                       key="edit-venue-street",
                                                        help="Course run street",
                                                        max_chars=32))
 
-            if st.checkbox("Set Venue Building?", key="set_venue_building"):
+            if st.checkbox("Set Venue Building?", key="specify-edit-venue-building"):
                 runinfo.set_venue_building(st.text_input(label="Building",
-                                                         key="building_optional",
+                                                         key="edit-venue-building",
                                                          help="Course run building",
                                                          max_chars=66))
 
-            if st.checkbox("Set Venue Wheelchair Access?", key="set_venue_wheelchair"):
+            if st.checkbox("Set Venue Wheelchair Access?", key="specify-edit-venue-wheelchair"):
                 runinfo.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
                                                                 options=["Select a value", "Yes", "No"],
-                                                                key="wheelchair_access",
+                                                                key="edit-venue-wheelchair",
                                                                 help="Indication that the course run location is "
                                                                      "wheelchair accessible"))
 
             runinfo.set_venue_floor(st.text_input(label="Floor",
-                                                  key="floor",
+                                                  key="edit-venue-floor",
                                                   help="Course run floor",
                                                   max_chars=3))
             runinfo.set_venue_unit(st.text_input(label="Unit",
-                                                 key="unit",
+                                                 key="edit-venue-unit",
                                                  help="Course run unit",
                                                  max_chars=5))
             runinfo.set_venue_postalCode(st.text_input(label="Postal Code",
-                                                       key="postalCode",
+                                                       key="edit-venue-postal-code",
                                                        help="Course run postal code",
                                                        max_chars=6))
             runinfo.set_venue_room(st.text_input(label="Room",
-                                                 key="room",
+                                                 key="edit-venue-room",
                                                  help="Course run room",
                                                  max_chars=255))
 
         st.markdown("#### Course Intake Details")
-        if st.checkbox("Specify Intake Size?", key="specify-intake-size"):
+        if st.checkbox("Specify Intake Size?", key="specify-edit-intake-size"):
             runinfo.set_intakeSize(st.number_input(label="Intake Size",
-                                                   key="intake_size",
+                                                   key="edit-intake-size",
                                                    value=0,
                                                    min_value=0,
                                                    help="Course run intake size. It represents the max number of pax "
                                                         "for a class"))
-        if st.checkbox("Specify Threshold?", key="specify-threshold"):
+        if st.checkbox("Specify Threshold?", key="specify-edit-threshold"):
             runinfo.set_threshold(st.number_input(label="Threshold",
-                                                  key="threshold",
+                                                  key="edit-threshold",
                                                   value=0,
                                                   min_value=0,
                                                   help="Course run threshold. Any additional pax that can register "
                                                        "above maximum pax.\ne.g. threshold = `10`, then total allowed "
                                                        "registration pax is `intake size + threshold = 60`"))
 
-        if st.checkbox("Specify Registered User Count?", key="specify-registered_user_count"):
+        if st.checkbox("Specify Registered User Count?", key="specify-edit-registered_user_count"):
             runinfo.set_registeredUserCount(st.number_input(label="Registered Users Count",
-                                                            key="registered_user_count",
+                                                            key="edit-registered-user-count",
                                                             value=0,
                                                             min_value=0,
                                                             help="Course run registered user count. This number cannot "
                                                                  "be more than `intake size + threshold`"))
 
         st.markdown("#### File Details")
-        if st.checkbox("Specify File Name?", key="specify-file-name"):
+        if st.checkbox("Specify File Name?", key="specify-edit-file-name"):
             runinfo.set_file_Name(st.text_input(label="File Name",
-                                                key="file_name",
+                                                key="edit-file-name",
                                                 help="Physical file name of the course run",
                                                 max_chars=255))
 
-        if st.checkbox("Specify File Content?", key="specify-file-content"):
+        if st.checkbox("Specify File Content?", key="specify-edit-file-content"):
             runinfo.set_file_content(st.file_uploader(label="File Content",
-                                                      key="file_content",
+                                                      key="edit-file-content",
                                                       help="File content of the course run in binary",
                                                       accept_multiple_files=False))
 
@@ -766,103 +775,112 @@ with edit_delete:
                     "course session `startTime` & `endTime` will be based on user input."
                     )
 
-        if st.checkbox("Specify Session Details?", key="specify-session-details"):
+        if st.checkbox("Specify Session Details?", key="specify-edit-session-details"):
             with st.expander("Course Session Details", expanded=False):
                 num_sessions: int = st.number_input(label="Key in the number of sessions in the Course Run",
-                                                    key="num_sessions_edit",
+                                                    key="edit-num-sessions",
                                                     min_value=0,
                                                     value=0)
+
+                if num_sessions > 0:
+                    st.divider()
 
                 for i in range(num_sessions):
                     runsession: RunSessionInfo = RunSessionInfo()
 
                     st.markdown(f"##### Session {i + 1}")
-                    if st.checkbox("Specify Session ID?", key=f"specify-session-{i}"):
+                    if st.checkbox("Specify Session ID?", key=f"specify-edit-session-id-{i}"):
                         runsession.set_session_id(st.text_input(label="Course session ID",
-                                                                key=f"session_id_{i}",
+                                                                key=f"edit-session-id-{i}",
                                                                 max_chars=300))
 
-                    if st.checkbox("Sepcify Mode of Training", key=f"specify-modeof_training-{i}"):
+                    if st.checkbox("Sepcify Mode of Training?", key=f"specify-mode-of_training-{i}"):
                         runsession.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                                    options=MODE_OF_TRAINING_MAPPING.keys(),
                                                                    format_func=(lambda x:
                                                                                 f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"),
-                                                                   key=f"mode_of_training_{i}"))
+                                                                   key=f"edit-mode-of-training-{i}"))
 
-                    if st.checkbox("Specify Session Start Date?", key=f"specify-session-start-date-{i}"):
-                        runsession.set_startDate(st.date_input(label="Start date of course session",
-                                                               help="YYYYMMDD or YYYY-MM-DD format only",
-                                                               key=f"start_date_{i}"))
+                    col1, col2 = st.columns(2)
 
-                    if st.checkbox("Specify Session End Date?", key=f"specify-session-end-date-{i}"):
-                        runsession.set_endDate(st.date_input(label="End date of course session",
-                                                             help="YYYYMMDD or YYYY-MM-DD format only",
-                                                             key=f"end_date_{i}"))
+                    with col1:
+                        if st.checkbox("Specify Session Start Date?", key=f"specify-edit-session-start-date-{i}"):
+                            runsession.set_startDate(st.date_input(label="Start date of course session",
+                                                                   help="YYYYMMDD or YYYY-MM-DD format only",
+                                                                   key=f"edit-session-start-date-{i}"))
+                        if st.checkbox("Specify Session Start Time?", key=f"specify-edit-session-start-time-{i}"):
+                            runsession.set_startTime(st.time_input(label="Start time of course session",
+                                                                   help="HH:mm:ss/HH:mm format only",
+                                                                   key=f"edit-session-start-time-{i}"))
 
-                    if st.checkbox("Specify Session Start Time", key=f"specify-session-start-time-{i}"):
-                        runsession.set_startTime(st.time_input(label="Start time of course session",
-                                                               help="HH:mm:ss/HH:mm format only",
-                                                               key=f"start_time_{i}"))
-
-                    if st.checkbox("Specify Session End Time", key=f"specify-session-end-time-{i}"):
-                        runsession.set_endTime(st.time_input(label="End time of course session",
-                                                             help="HH:mm:ss/HH:mm format only",
-                                                             key=f"end_time_{i}"))
+                    with col2:
+                        if st.checkbox("Specify Session End Date?", key=f"specify-edit-session-end-date-{i}"):
+                            runsession.set_endDate(st.date_input(label="End date of course session",
+                                                                 help="YYYYMMDD or YYYY-MM-DD format only",
+                                                                 key=f"edit-session-end-date-{i}"))
+                        if st.checkbox("Specify Session End Time?", key=f"specify-edit-session-end-time-{i}"):
+                            runsession.set_endTime(st.time_input(label="End time of course session",
+                                                                 help="HH:mm:ss/HH:mm format only",
+                                                                 key=f"edit-session-end-time-{i}"))
 
                     st.markdown(f"###### Venue")
-                    if st.checkbox("Specify Venue", key=f"specify-venue-{i}"):
-                        if st.checkbox("Specify Venue Block", key=f"specify-venue-block-{i}"):
+                    if st.checkbox("Specify Venue", key=f"specify-edit-session-venue-{i}"):
+                        if st.checkbox("Specify Venue Block", key=f"specify-edit-session-venue-block-{i}"):
                             runsession.set_venue_block(
                                 st.text_input(label="Block",
-                                              key=f"block_optional_{i}",
+                                              key=f"edit-venue-block-{i}",
                                               help="Course run block",
                                               max_chars=10))
 
-                        if st.checkbox("Specify Venue Street", key=f"specify-venue-street-{i}"):
+                        if st.checkbox("Specify Venue Street", key=f"specify-edit-session-venue-street-{i}"):
                             runsession.set_venue_street(st.text_input(label="Street",
-                                                                      key=f"street_optional_{i}",
+                                                                      key=f"edit-venue-street-{i}",
                                                                       help="Course run street",
                                                                       max_chars=32))
 
-                        if st.checkbox("Specify Venue Building", key=f"specify-venue-building-{i}"):
+                        if st.checkbox("Specify Venue Building", key=f"specify-edit-session-venue-building-{i}"):
                             runsession.set_venue_building(st.text_input(label="Building",
-                                                                        key=f"building_optional_{i}",
+                                                                        key=f"edit-venue-building-{i}",
                                                                         help="Course run building",
                                                                         max_chars=66))
 
                         runsession.set_venue_floor(st.text_input(label="Floor",
-                                                                 key=f"floor_{i}",
+                                                                 key=f"edit-session-venue-floor{i}",
                                                                  help="Course run floor",
                                                                  max_chars=3))
                         runsession.set_venue_unit(st.text_input(label="Unit",
-                                                                key=f"unit_{i}",
+                                                                key=f"edit-session-venue-unit-{i}",
                                                                 help="Course run unit",
                                                                 max_chars=5))
                         runsession.set_venue_postalCode(st.text_input(label="Postal Code",
-                                                                      key=f"postalCode_{i}",
+                                                                      key=f"edit-session-venue-postal-code-{i}",
                                                                       help="Course run postal code",
                                                                       max_chars=6))
                         runsession.set_venue_room(st.text_input(label="Room",
-                                                                key=f"room_{i}",
+                                                                key=f"edit-session-venue-room-{i}",
                                                                 help="Course run room",
                                                                 max_chars=255))
 
-                        if st.checkbox("Specify Wheelchair Access?", key=f"specify-wheelchair-access-{i}"):
+                        if st.checkbox("Specify Wheelchair Access?", key=f"specify-edit-session-wheelchair-access-{i}"):
                             runsession.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
                                                                                options=["Select a value", "Yes", "No"],
-                                                                               key=f"wheelchair_access_{i}",
+                                                                               key=f"edit-session-wheelchair-"
+                                                                                   f"access-{i}",
                                                                                help="Indication that the course "
                                                                                     "run location is wheelchair "
                                                                                     "accessible"))
 
-                        if st.checkbox("Specify Primary Venue?", key=f"specify-primary-venue-{i}"):
+                        if st.checkbox("Specify Primary Venue?", key=f"specify-edit-session-primary-venue-{i}"):
                             runsession.set_venue_primaryVenue(st.selectbox(
                                 label="Primary Venue",
                                 options=["Select a value", "Yes", "No"],
                                 help="Indication that the course session is the Primary Venue. If `true`, API "
                                      "will pick the venue information from course run and update to session venue",
-                                key=f"venue_primary_venue_{i}"
+                                key=f"edit-session-venue-primary-venue-{i}"
                             ))
+
+                    if i != num_sessions - 1:
+                        st.divider()
 
                     runinfo.add_session(runsession)
 
@@ -878,40 +896,44 @@ with edit_delete:
             "is set to `true`, the new added Trainer will be saved into Trainer profile as well as linked to "
             "this specific course run; otherwise this trainer is linked ot this specific course run only.")
 
-        if st.checkbox("Specify Trainer", key="specify-trainer"):
+        if st.checkbox("Specify Trainer", key="specify-num-trainer"):
             with st.expander("Add Trainer Details", expanded=False):
                 num_trainers: int = st.number_input(label="Key in the number of trainers in the Course Run",
-                                                    key="num_trainers_edit",
+                                                    key="num-trainers",
                                                     min_value=0,
                                                     value=0)
+
+                if num_trainers > 0:
+                    st.divider()
 
                 for i in range(num_trainers):
                     runtrainer = RunTrainerInfo()
 
                     st.markdown(f"##### Trainer {i + 1}")
                     runtrainer.set_trainer_type_code(st.text_input(label="Trainer Type",
-                                                                   key=f"trainer_code_{i}",
+                                                                   key=f"edit-trainer-trainer-code-{i}",
                                                                    max_chars=1))
                     runtrainer.set_trainer_type_description(st.text_input(label="Trainer Description",
                                                                           key=f"trainer_description_{i}",
                                                                           max_chars=128))
 
-                    # index number is skipped
-                    if st.checkbox("Specify Trainer ID?", key=f"specify-trainer-id-{i}"):
+                    if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
+                        runtrainer.set_indexNumber(st.number_input(label="Trainer Index",
+                                                                   min_value=0,
+                                                                   value=0,
+                                                                   key=f"edit-trainer-trainer-index-number-{i}"))
+
+                    if st.checkbox("Specify Trainer ID?", key=f"specify-edit-trainer-trainer-id-{i}"):
                         runtrainer.set_trainer_id(st.text_input(label="Trainer ID",
-                                                                key=f"trainer_id_{i}",
+                                                                key=f"edit-trainer-trainer-id-{i}",
                                                                 max_chars=50))
 
                     st.markdown("###### Trainer Particulars")
-                    runtrainer.set_indexNumber(st.number_input(label="Trainer Index",
-                                                               min_value=0,
-                                                               value=0,
-                                                               key=f"trainer_index_number_{i}"))
                     runtrainer.set_trainer_name(st.text_input(label="Trainer Name",
-                                                              key=f"trainer_name_{i}",
+                                                              key=f"edit-trainer-trainer-name-{i}",
                                                               max_chars=66))
                     runtrainer.set_trainer_email(st.text_input(label="Trainer Email",
-                                                               key=f"trainer_email_{i}",
+                                                               key=f"edit-trainer-trainer-email-{i}",
                                                                max_chars=320))
 
                     st.markdown("###### Trainer ID")
@@ -922,22 +944,22 @@ with edit_delete:
                                                                    options=ID_TYPE.keys(),
                                                                    format_func=lambda x: f"{x}: {ID_TYPE[x]}",
                                                                    help="Trainer ID Type Code",
-                                                                   key=f"trainer_id_code_{i}"))
+                                                                   key=f"edit-trainer-trainer-id-code-{i}"))
 
                     with col2:
                         runtrainer.set_trainer_idNumber(st.text_input(label="Trainer ID Number",
-                                                                      key=f"trainer_id_number_{i}",
+                                                                      key=f"edit-trainer-trainer-id-number-{i}",
                                                                       help="Refers to the NRIC/FIN/Passport "
                                                                            "number of the trainer",
                                                                       max_chars=50))
 
                     st.markdown("###### Trainer Roles")
-                    if st.checkbox("Trainer", key=f"select-trainer-role-{i}"):
+                    if st.checkbox("Trainer", key=f"specify-edit-trainer-trainer-role-{i}"):
                         runtrainer.add_trainer_role({
                             "id": 1,
                             "name": "Trainer"
                         })
-                    if st.checkbox("Assessor", key=f"select-assessor-roles-{i}"):
+                    if st.checkbox("Assessor", key=f"specify-edit-trainer-assessor-roles-{i}"):
                         runtrainer.add_trainer_role({
                             "id": 2,
                             "name": "Assessor"
@@ -945,45 +967,46 @@ with edit_delete:
 
                     st.markdown("###### Trainer Profile")
                     if st.checkbox("Specify In Training Provider Profile?",
-                                   key=f"specify-training-provider-profile-{i}"):
+                                   key=f"specify-edit-trainer-training-provider-profile-{i}"):
                         runtrainer.set_inTrainingProviderProfile(st.selectbox(
                             label="Set in-training provider profile",
                             options=["Select a value", "Yes", "No"],
-                            key=f"in_training_provider_profile_{i}"))
+                            key=f"edit-trainer-training-provider-profile-{i}"))
 
-                    if st.checkbox("Specify Domain Area of Practice?", key=f"specify-domain-area-{i}"):
+                    if st.checkbox("Specify Domain Area of Practice?", key=f"specify-edit-trainer-domain-area-{i}"):
                         runtrainer.set_domainAreaOfPractice(st.text_area(
                             label="Domain Area of Practice",
                             help="This field indicates the Key Domain/Sector Areas of practice of the trainer "
                                  "(required for new trainer).",
-                            key=f"trainer_domainarea_{i}",
+                            key=f"edit-trainer-domain-area-{i}",
                             max_chars=1000))
 
-                    if st.checkbox("Specify Experience?", key=f"specify-experience-{i}"):
+                    if st.checkbox("Specify Experience?", key=f"specify-edit-trainer-experience-{i}"):
                         runtrainer.set_experience(st.text_input(label="Experience",
-                                                                key=f"experience_{i}",
+                                                                key=f"edit-trainer-experience-{i}",
                                                                 max_chars=1000))
 
-                    if st.checkbox("Specify LinkedIn URL?", key=f"specify-linkedin-url-{i}"):
+                    if st.checkbox("Specify LinkedIn URL?", key=f"specify-edit-trainer-linkedin-url-{i}"):
                         runtrainer.set_linkedInURL(st.text_input(label="LinkedIn URL",
-                                                                 key=f"linkedin_url_{i}",
+                                                                 key=f"trainer-linkedin-url-{i}",
                                                                  max_chars=255))
 
-                    if st.checkbox("Specify Salutation ID?", key=f"specify-salutation-id-{i}"):
+                    if st.checkbox("Specify Salutation ID?", key=f"specify-edit-trainer-salutation-id-{i}"):
                         runtrainer.set_salutationId(st.selectbox(label="Salutations of the Trainer",
+                                                                 key=f"edit-trainer-salutation-id-{i}",
                                                                  options=SALUTATIONS.keys(),
                                                                  format_func=lambda x: SALUTATIONS[x]))
 
                     st.markdown("###### Photo")
-                    if st.checkbox("Specify Photo Name?", key=f"specify-photo-name-{i}"):
+                    if st.checkbox("Specify Photo Name?", key=f"specify-edit-trainer-photo-name-{i}"):
                         runtrainer.set_photo_name(st.text_input(label="File Name",
-                                                                key=f"file_name_{i}",
+                                                                key=f"edit-trainer-photo-name-{i}",
                                                                 help="Physical file name of the course run",
                                                                 max_chars=255))
 
-                    if st.checkbox("Specify Photo Content?", key=f"specify-photo-content-{i}"):
+                    if st.checkbox("Specify Photo Content?", key=f"specify-edit-trainer-photo-content-{i}"):
                         runtrainer.set_photo_content(st.file_uploader(label="File Content",
-                                                                      key=f"file_content_{i}",
+                                                                      key=f"edit-trainer-photo-content-{i}",
                                                                       help="File content of the course run in "
                                                                            "binary",
                                                                       accept_multiple_files=False))
@@ -991,7 +1014,7 @@ with edit_delete:
                     st.markdown("###### Linked SSEC EQAs")
                     linkedssec = st.number_input(
                         label="Number of Linked SSEC EQAs",
-                        key=f"edit-linkedSsecEQAs-{i}",
+                        key=f"edit-trainer-num-linked-sseceqas-{i}",
                         min_value=0,
                         value=0,
                     )
@@ -1002,18 +1025,19 @@ with edit_delete:
 
                         st.markdown(f"*Linked SSEC EQA {j + 1}*")
 
-                        if st.checkbox("Specify SSEC EQA", key=f"edit-linkedSsecEQA-{i}-{j}"):
+                        if st.checkbox("Specify SSEC EQA", key=f"specify-edit-trainer-linkedSsecEQA-{i}-{j}"):
                             temp_ssec["ssecEQA"]["code"] = st.text_input(label="SSEC EQA Code",
-                                                                         key=f"linkedSsecEQAs_code_edit_{i}_{j}",
+                                                                         key=f"edit-trainer-linkedSsecEQA-{i}-{j}",
                                                                          max_chars=2)
 
-                        if st.checkbox("Specify SSEC EQA Description", key=f"edit-linkedSsecEQA-description-{i}-{j}"):
+                        if st.checkbox("Specify SSEC EQA Description",
+                                       key=f"specify-edit-linkedSsecEQA-description-{i}-{j}"):
                             temp_ssec["description"] = st.text_area(label="Description",
                                                                     help="This field is used to indicate the "
                                                                          "qualification level of the trainer. "
                                                                          "For existing trainer, please do not "
                                                                          "input this information.",
-                                                                    key=f"linkedSsecEQAs_description_{i}_{j}",
+                                                                    key=f"edit-linkedSsecEQA-description-{i}-{j}",
                                                                     max_chars=1000)
 
                         runtrainer.add_linkedSsecEQA(temp_ssec)
@@ -1031,7 +1055,7 @@ with edit_delete:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="edit_button"):
+    if st.button("Send", key="edit-button"):
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!")
         elif not runs:
@@ -1045,15 +1069,12 @@ with edit_delete:
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
-
                 ec = None
 
                 if runtype == "update":
                     ec = EditCourseRun(runs, include_expired, runinfo)
                 elif runtype == "delete":
                     ec = DeleteCourseRun(runs, include_expired, runinfo)
-
-                resp = None
 
                 with request:
                     st.subheader("Request")
@@ -1074,15 +1095,15 @@ with sessions:
                                    options=["Select a value", "Yes", "No"],
                                    key="view-sessions-expired")
 
-    crn = st.text_input("Key in the Course Reference Number", key="crn_view_sessions")
+    crn = st.text_input("Key in the Course Reference Number", key="view-sessions-crn")
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
-                         key="course-run-id-view_sessions")
+                         key="view-sessions-course-run-id")
 
     month_value, year_value = None, None
 
-    if st.checkbox("Specify Month and Year to retrieve?", key="view-sessions-month-year"):
+    if st.checkbox("Specify Month and Year to retrieve?", key="specify-view-sessions-month-year"):
         month, year = st.columns(2)
         month_value = month.selectbox(label="Select Month value",
                                       options=ViewCourseSessions.NUM2MONTH.keys(),
@@ -1099,14 +1120,12 @@ with sessions:
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view_session_button"):
+    if st.button("Send", key="view-session-button"):
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!")
         else:
             request, response = st.tabs(["Request", "Response"])
-
             vc = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
-            resp = None
 
             with request:
                 st.subheader("Request")

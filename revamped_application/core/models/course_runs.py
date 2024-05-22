@@ -356,7 +356,8 @@ class RunTrainerInfo(ABCCourseInfo):
                 "salutationId": self.salutationId,
                 "photo": {
                     "name": self.photo_name,
-                    "content": self.photo_content
+                    "content": (base64.b64encode(self.photo_content.getvalue() if self.photo_content else b"")
+                                .decode("utf-8"))
                 },
                 "linkedSsecEQAs": self.linkedSsecEQAs
             }
