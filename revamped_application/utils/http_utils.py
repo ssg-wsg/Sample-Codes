@@ -2,6 +2,7 @@ import json
 
 import requests
 import streamlit as st
+import pprint
 
 from utils.streamlit_utils import init, http_code_handler
 from typing import Self, Any, Callable
@@ -183,15 +184,12 @@ class HTTPRequestBuilder:
                    .append("?" if len(self.params) > 0 else ""))
 
         for i, (k, v) in enumerate(self.params.items()):
+            builder = (builder.append(k)
+                       .append("=")
+                       .append(v))
+
             if i == len(self.params) - 1:
-                builder = (builder.append(k)
-                           .append("=")
-                           .append(v))
-            else:
-                builder = (builder.append(k)
-                           .append("=")
-                           .append(v)
-                           .append("&"))
+                builder = (builder.append("&"))
 
         builder = (builder.newline()
                    .newline()

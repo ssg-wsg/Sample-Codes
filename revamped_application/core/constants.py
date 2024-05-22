@@ -53,3 +53,7 @@ ASSESSMENT_UPDATE_VOID_ACTIONS = ["update", "void"]
 SORT_FIELD = ["updatedOn", "createdOn", "assessmentDate"]
 SORT_ORDER = ["asc", "desc"]
 
+# ====== ENROLMENT CONSTANTS ===== #
+COLLECTION_STATUS = ["Pending Payment", "Partial Payment", "Full Payment"]
+COLLECTION_STATUS_CANCELLED = COLLECTION_STATUS + ["Cancelled"]
+SPONSORSHIP_TYPE = ["EMPLOYER", "INDIVIDUAL"]
