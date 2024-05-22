@@ -1,7 +1,7 @@
 import json
 import streamlit as st
 
-from typing import Optional, Literal
+from typing import Optional
 
 from utils.json_utils import remove_null_fields
 from core.abc.abstract import AbstractRequestInfo
