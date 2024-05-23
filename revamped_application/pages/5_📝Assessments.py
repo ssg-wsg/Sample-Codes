@@ -299,7 +299,7 @@ with view:
         else:
             request, response = st.tabs(["Request", "Response"])
 
-            va = SearchAssessment(arn)
+            va = ViewAssessment(arn)
 
             with request:
                 st.subheader("Request")
