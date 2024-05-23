@@ -1,15 +1,18 @@
 import streamlit as st
 
 from core.models.enrolment import CreateEnrolmentInfo, UpdateEnrolmentInfo, CancelEnrolmentInfo, \
-    UpdateEnrolmentFeeCollectionInfo
+    UpdateEnrolmentFeeCollectionInfo, SearchEnrolmentInfo
 from core.enrolment.create_enrolment import CreateEnrolment
 from core.enrolment.view_enrolment import ViewEnrolment
 from core.enrolment.update_enrolment import UpdateEnrolment
 from core.enrolment.cancel_enrolment import CancelEnrolment
+from core.enrolment.search_enrolment import SearchEnrolment
 from core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFeeCollection
-from core.constants import ID_TYPE, COLLECTION_STATUS, SPONSORSHIP_TYPE, COLLECTION_STATUS_CANCELLED
+from core.constants import ID_TYPE, COLLECTION_STATUS, SPONSORSHIP_TYPE, COLLECTION_STATUS_CANCELLED, \
+    ENROLMENT_SORT_FIELD, SORT_ORDER, ENROLMENT_STATUS
 from utils.http_utils import handle_error
 from utils.streamlit_utils import init, display_config
+from utils.verify import verify_uen
 
 init()
 
@@ -80,10 +83,15 @@ with create:
 
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
-        create_enrolment.set_employer_uen(st.text_input(label="Employer UEN",
-                                                        max_chars=50,
-                                                        help="Employer organisation's UEN",
-                                                        key="enrolment-employer-uen"))
+        uen = st.text_input(label="Employer UEN",
+                            max_chars=50,
+                            help="Employer organisation's UEN",
+                            key="enrolment-employer-uen")
+
+        if not verify_uen(uen):
+            st.warning("**Employer UEN** is not a valid UEN!")
+
+        create_enrolment.set_employer_uen(uen)
 
     if st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.set_trainee_employer_contact_fullName(st.text_input(
@@ -195,7 +203,7 @@ with create:
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
-                ce = CreateEnrolment()
+                ce = CreateEnrolment(create_enrolment)
 
                 with request:
                     st.subheader("Request")
@@ -204,6 +212,7 @@ with create:
                 with response:
                     st.subheader("Response")
                     handle_error(lambda: ce.execute())
+
 
 with update:
     st.header("Update Enrolment")
@@ -326,17 +335,27 @@ with update:
     if st.button("Send", key="update-button"):
         if len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your enrolment reference number before proceeding!")
+
+        if not st.session_state["uen"]:
+            st.error("Make sure to fill in your UEN before proceeding!")
         else:
-            request, response = st.tabs(["Request", "Response"])
-            ce = UpdateEnrolment(enrolment_reference_num, update_enrolment)
+            errors = create_enrolment.validate()
+            if errors is not None:
+                st.error(
+                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                )
+            else:
+                request, response = st.tabs(["Request", "Response"])
+                ce = UpdateEnrolment(enrolment_reference_num, update_enrolment)
 
-            with request:
-                st.subheader("Request")
-                st.code(repr(ce), language="text")
+                with request:
+                    st.subheader("Request")
+                    st.code(repr(ce), language="text")
 
-            with response:
-                st.subheader("Response")
-                handle_error(lambda: ce.execute())
+                with response:
+                    st.subheader("Response")
+                    handle_error(lambda: ce.execute())
+
 
 with cancel:
     st.header("Cancel Enrolment")
@@ -371,39 +390,186 @@ with cancel:
                 st.subheader("Response")
                 handle_error(lambda: cancel_en.execute())
 
+
 with search:
     st.header("Search Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching "
                 "of existing enrolment records")
+    st.warning("**Search Enrolment may require your UEN to proceed. Make sure that you have loaded it up "
+               "properly under the Home page before proceeding!**")
+
+    search_enrolment = SearchEnrolmentInfo()
+
+    st.subheader("Meta Info")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.checkbox("Specify Last Updated Date From?", key="specify-search-enrolment-last-updated-from"):
+            search_enrolment.set_lastUpdateDateFrom(st.date_input(label="Last Updated Date From",
+                                                                  key="search-enrolment-last-updated-from",
+                                                                  format="YYYY-MM-DD",
+                                                                  help="This parameter is mandatory if retrieveType is "
+                                                                       "DELTA. This will return records with last "
+                                                                       "update date same or greater than this "
+                                                                       "input value. Format YYYY-MM-DD."))
+
+    with col2:
+        if st.checkbox("Specify Last Updated Date To?", key="specify-search-enrolment-last-updated-to"):
+            search_enrolment.set_lastUpdateDateTo(st.date_input(label="Last Updated Date To",
+                                                                key="search-enrolment-last-updated-to",
+                                                                format="YYYY-MM-DD",
+                                                                help="Optional parameter. This will return records up "
+                                                                     "till the specified date. Format YYYY-MM-DD."))
+
+    st.subheader("Sort By Info")
+    col3, col4 = st.columns(2)
+
+    with col3:
+        if st.checkbox("Specify Sort By Field?", key="specify-search-enrolment-sort-by-field"):
+            search_enrolment.set_sortBy_field(st.selectbox(label="Sort By Field",
+                                                           options=ENROLMENT_SORT_FIELD,
+                                                           help="Field to sort by. Available fields -updatedOn, "
+                                                                "-createdOn. Will default to updatedOn if null",
+                                                           key="search-enrolment-sort-by-field"))
+
+    with col4:
+        if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
+            search_enrolment.set_sortBy_order(st.selectbox(label="Sort By Order",
+                                                           options=SORT_ORDER,
+                                                           help="Sort order. Ascending - asc, Descending - desc. "
+                                                                "Will default to desc if null",
+                                                           key="search-enrolment-sort-by-order"))
+
+    st.subheader("Enrolment Info")
+    if st.checkbox("Specify Course Run ID?", key="specify-search-enrolment-course-run-id"):
+        search_enrolment.set_course_run_id(st.text_input(label="Course Run ID",
+                                                         key="search-enrolment-course-run-id",
+                                                         help="The ID for the course run",
+                                                         max_chars=20))
+
+    if st.checkbox("Specify Enrolment Reference Number?", key="specify-search-enrolment-enrolment-reference-number"):
+        search_enrolment.set_course_referenceNumber(st.text_input(label="Enrolment Reference Number",
+                                                                  key="search-enrolment-enrolment-reference-number",
+                                                                  help="The Enrolment Reference Number",
+                                                                  max_chars=100))
+
+    if st.checkbox("Specify Enrolment Status?", key="specify-search-enrolment-status"):
+        search_enrolment.set_course_status(st.selectbox(label="Enrolment Status",
+                                                        options=ENROLMENT_STATUS,
+                                                        key="search-enrolment-status",
+                                                        help="Status of enrolment records to be searched"))
+
+    col5, col6 = st.columns(2)
+    with col5:
+        if st.checkbox("Specify Trainee ID Type?", key="specify-search-enrolment-trainee-id-type"):
+            search_enrolment.set_trainee_idType(st.selectbox(label="Trainee ID Type",
+                                                             options=ID_TYPE,
+                                                             key="search-enrolment-trainee-id-type",
+                                                             help="Trainee's ID type"))
+
+    with col6:
+        if st.checkbox("Specify Trainee ID?", key="specify-search-enrolment-trainee-id"):
+            search_enrolment.set_trainee_id(st.text_input(label="Trainee ID",
+                                                          key="search-enrolment-trainee-id",
+                                                          help="Trainee's government-issued ID number",
+                                                          max_chars=20))
+
+    if st.checkbox("Specify Fee Collection Status?", key="specify-search-enrolment-fee-collection-status"):
+        search_enrolment.set_trainee_fee_collection_status(st.selectbox(label="Fee Collection Status",
+                                                                        options=COLLECTION_STATUS_CANCELLED,
+                                                                        key="search-enrolment-fee-collection-status",
+                                                                        help="Status of the trainee's or employer's "
+                                                                             "payment of the course fees "
+                                                                             "to the training partner"))
+
+    if st.checkbox("Specify Employee UEN?", key="specify-search-enrolment-employee-uen"):
+        uen = st.text_input(label="Employee UEN",
+                            key="search-enrolment-employee-uen",
+                            max_chars=50,
+                            help="Employer organisation's UEN number")
+
+        if not verify_uen(uen):
+            st.warning("**Employer UEN** is not a valid UEN!")
+
+        search_enrolment.set_employer_uen(uen)
+
+    if st.checkbox("Specify Enrolment Date?", key="specify-search-enrolment-date"):
+        search_enrolment.set_trainee_enrolmentDate(st.date_input(label="Enrolment Date",
+                                                                 key="search-enrolment-date",
+                                                                 format="YYYY-MM-DD",
+                                                                 help="Enrolment date"))
+
+    if st.checkbox("Specify Sponsorship Type?", key="specify-search-enrolment-sponsorship-type"):
+        search_enrolment.set_trainee_sponsorshipType(st.selectbox(label="Sponsorship Type",
+                                                                  options=SPONSORSHIP_TYPE,
+                                                                  help="Trainee's sponsorship type",
+                                                                  key="search-enrolment-sponsorship-type"))
+
+    if st.checkbox("Specify Training Partner UEN?", key="specify-search-enrolment-training-partner-uen"):
+        uen = st.text_input(
+                label="Training Partner UEN",
+                max_chars=12,
+                help="UEN of the training partner organisation conducting the course for "
+                     "which the trainee is enrolled. Must match UEN passed in the header.\n\n"
+                     "If unspecified, the default loaded training partner UEN will be used.",
+                key="search-enrolment-training-partner-uen")
+
+        if not verify_uen(uen):
+            st.warning("**Training Partner UEN** is not a valid UEN!")
+
+        search_enrolment.set_trainingPartner_uen(uen)
+
+    if st.checkbox("Specify Training Partner Code?", key="specify-search-enrolment-training-partner-code"):
+        search_enrolment.set_trainingPartner_code(st.text_input(label="Training Partner Code",
+                                                                key="search-enrolment-training-partner-code",
+                                                                max_chars=15,
+                                                                help="Code for the training partner conducting the "
+                                                                     "course for which the trainee is enrolled"))
+
+    st.subheader("Query Parameters Info")
+    search_enrolment.set_page(st.number_input(label="Page",
+                                              min_value=0,
+                                              value=0,
+                                              key="search-enrolment-page-number",
+                                              help="Page number of page displayed, starting from 0"))
+
+    search_enrolment.set_page_size(st.number_input(label="Page Size",
+                                                   min_value=1,
+                                                   max_value=100,
+                                                   value=20,
+                                                   key="search-enrolment-page-size",
+                                                   help="The number of items to be displayed on one page."))
 
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
-        st.json(create_enrolment.payload(verify=False))
+        st.json(search_enrolment.payload(verify=False))
 
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="search-button"):
-        if not st.session_state["uen"]:
-            st.error("Make sure to fill in your UEN before proceeding!")
+        if not st.session_state["uen"] and not search_enrolment.has_training_partner_uen():
+            st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
+                     " before proceeding!")
         else:
-            errors = create_enrolment.validate()
+            errors = search_enrolment.validate()
             if errors is not None:
                 st.error(
                     "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
-                ce = CreateEnrolment()
+                se = SearchEnrolment(search_enrolment)
 
                 with request:
                     st.subheader("Request")
-                    st.code(repr(ce), language="text")
+                    st.code(repr(se), language="text")
 
                 with response:
                     st.subheader("Response")
-                    handle_error(lambda: ce.execute())
+                    handle_error(lambda: se.execute())
+
 
 with view:
     st.header("View Enrolment")
@@ -430,6 +596,7 @@ with view:
         with response:
             st.subheader("Response")
             handle_error(lambda: ve.execute())
+
 
 with update_fee:
     st.header("Update Enrolment Fee Collection")
