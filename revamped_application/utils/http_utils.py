@@ -225,15 +225,14 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
                       This function should also return the response object from the request.
     """
 
-
-
     try:
-        response = throwable()
-        http_code_handler(response.status_code)
-        try:
-            st.json(response.json())
-        except json.decoder.JSONDecodeError:
-            st.code(response.text, language="text")
+        with st.spinner(text="Processing..."):
+            response = throwable()
+            http_code_handler(response.status_code)
+            try:
+                st.json(response.json())
+            except json.decoder.JSONDecodeError:
+                st.code(response.text, language="text")
     except ConnectionError:
         # the endpoint url is likely malformed here
         st.error("Check the inputs that you have used for the API request and check that "
