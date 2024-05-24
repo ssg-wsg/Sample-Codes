@@ -12,10 +12,10 @@ class CourseSessionAttendance(AbstractRequest):
 
     _TYPE: Literal["GET"] = "GET"
 
-    def __init__(self, runId: str, crn: str, session_id: str, include_expired: Literal["Select a value", "Yes", "No"]):
+    def __init__(self, runId: int, crn: str, session_id: str):
         super().__init__()
         self.req: HTTPRequestBuilder = None
-        self._prepare(runId, crn, session_id, include_expired)
+        self._prepare(runId, crn, session_id)
 
     def __repr__(self):
         return self.req.repr(CourseSessionAttendance._TYPE)
@@ -23,15 +23,13 @@ class CourseSessionAttendance(AbstractRequest):
     def __str__(self):
         return self.__repr__()
 
-    def _prepare(self, runId: str, crn: str, session_id: str,
-                 include_expired: Literal["Select a value", "Yes", "No"]) -> None:
+    def _prepare(self, runId: int, crn: str, session_id: str) -> None:
         """
         Creates an HTTP get request for getting all course sessions
 
         :param runId: Run ID
         :param crn: CRN
         :param session_id: Course Session ID
-        :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
         self.req = HTTPRequestBuilder() \
@@ -40,12 +38,6 @@ class CourseSessionAttendance(AbstractRequest):
             .with_param("uen", st.session_state["uen"]) \
             .with_param("courseReferenceNumber", crn) \
             .with_param("sessionId", session_id)
-
-        match include_expired:
-            case "Yes":
-                self.req = self.req.with_param("includeExpiredCourses", "true")
-            case "No":
-                self.req = self.req.with_param("includeExpiredCourses", "false")
 
     def execute(self) -> requests.Response:
         """

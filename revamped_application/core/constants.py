@@ -51,3 +51,17 @@ RESULTS = ["Pass", "Fail", "Exempt"]
 ID_TYPE = ["NRIC", "FIN", "OTHERS"]
 ASSESSMENT_UPDATE_VOID_ACTIONS = ["update", "void"]
 
+# ===== ATTENDANCE CONSTANTS ===== #
+ATTENDANCE_CODE_MAPPINGS = {
+    "1": "Confirmed",
+    "2": "Unconfirmed",
+    "3": "Rejected",
+    "4": "TP Voided"
+}
+
+SURVEY_LANGUAGE_MAPPINGS = {
+    "EL": "English",
+    "MN": "Mandarin",
+    "MY": "Malay",
+    "TM": "Tamil"
+}

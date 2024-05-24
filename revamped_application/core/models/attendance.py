@@ -3,34 +3,13 @@ import streamlit as st
 
 from typing import Optional
 
+from core.constants import ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, ATTENDANCE_CODE_MAPPINGS
 from utils.json_utils import remove_null_fields
 from core.abc.abstract import AbstractRequestInfo
 
 
 class UploadAttendanceInfo(AbstractRequestInfo):
     """Encapsulates all information regarding a course session attendance"""
-
-    ATTENDANCE_CODE_MAPPINGS = {
-        "1": "Confirmed",
-        "2": "Unconfirmed",
-        "3": "Rejected",
-        "4": "TP Voided"
-    }
-
-    ID_TYPE_MAPPINGS = {
-        "SB": "Singapore Blue",
-        "SP": "Singapore Pink",
-        "SO": "Fin/Work Permit",
-        "FP": "Foreign Passport",
-        "OT": "Others"
-    }
-
-    SURVEY_LANGUAGE_MAPPINGS = {
-        "EL": "English",
-        "MN": "Mandarin",
-        "MY": "Malay",
-        "TM": "Tamil"
-    }
 
     def __init__(self):
         self._sessionId: str = None
@@ -57,7 +36,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         errors = []
 
         if self._sessionId is None or len(self._sessionId) == 0:
-            errors.append("No sessionId specified!")
+            errors.append("No session ID specified!")
 
         if self._trainee_id is None or len(self._trainee_id) == 0:
             errors.append("No trainee ID specified!")
@@ -68,7 +47,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         if self._trainee_email is None or len(self._trainee_email) == 0:
             errors.append("No trainee email specified!")
 
-        if self._trainee_id_type not in UploadAttendanceInfo.ID_TYPE_MAPPINGS:
+        if self._trainee_id_type not in ID_TYPE_MAPPING:
             errors.append("Unknown trainee ID type!")
 
         if self._contactNumber_mobile is None or len(self._contactNumber_mobile) == 0:
@@ -84,7 +63,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
             errors.append("No reference number specified!")
 
         if self._corppassId is None or len(self._corppassId) == 0:
-            errors.append("No corp pass ID specified!")
+            errors.append("No CorpPass ID specified!")
 
         if len(errors) > 0:
             return errors
@@ -117,7 +96,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
                             "areaCode": self._contactNumber_areacode,
                             "countryCode": self._contactNumber_countryCode,
                         },
-                        "numberOfHours": self._numberOfHours,
+                        "numberOfHours": round(self._numberOfHours, 2) if self._numberOfHours is not None else None,
                         "surveyLanguage": {
                             "code": self._surveyLanguage_code,
                         }
@@ -137,12 +116,12 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
     def set_sessionId(self, sessionId: str) -> None:
         if not isinstance(sessionId, str):
-            raise ValueError("Invalid sessionId")
+            raise ValueError("Invalid session ID")
 
         self._sessionId = sessionId
 
     def set_statusCode(self, status_code: str) -> None:
-        if not isinstance(status_code, str):
+        if not isinstance(status_code, str) or status_code not in ATTENDANCE_CODE_MAPPINGS:
             raise ValueError("Invalid status code")
 
         self._status_code = status_code
@@ -166,26 +145,26 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         self._trainee_email = trainee_email
 
     def set_trainee_id_type(self, trainee_id_type: str) -> None:
-        if not isinstance(trainee_id_type, str):
+        if not isinstance(trainee_id_type, str) or trainee_id_type not in ID_TYPE_MAPPING:
             raise ValueError("Invalid trainee ID type")
 
         self._trainee_id_type = trainee_id_type
 
     def set_contactNumber_mobile(self, contactNumber_mobile: str) -> None:
         if not isinstance(contactNumber_mobile, str):
-            raise ValueError("Invalid trainee number")
+            raise ValueError("Invalid trainee contact number")
 
         self._contactNumber_mobile = contactNumber_mobile
 
     def set_contactNumber_areacode(self, contactNumber_areacode: int) -> None:
         if not isinstance(contactNumber_areacode, int):
-            raise ValueError("Invalid contact number area code")
+            raise ValueError("Invalid trainee contact number area code")
 
         self._contactNumber_areacode = contactNumber_areacode
 
     def set_contactNumber_countryCode(self, contactNumber_countryCode: int) -> None:
         if not isinstance(contactNumber_countryCode, int):
-            raise ValueError("Invalid contact number country code")
+            raise ValueError("Invalid trainee contact number country code")
 
         self._contactNumber_countryCode = contactNumber_countryCode
 
@@ -196,7 +175,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         self._numberOfHours = numberOfHours
 
     def set_surveyLanguage_code(self, surveyLanguage_code: str) -> None:
-        if not isinstance(surveyLanguage_code, str):
+        if not isinstance(surveyLanguage_code, str) or surveyLanguage_code not in SURVEY_LANGUAGE_MAPPINGS:
             raise ValueError("Invalid survey language code")
 
         self._surveyLanguage_code = surveyLanguage_code
@@ -209,6 +188,6 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
     def set_corppassId(self, corppassId: str) -> None:
         if not isinstance(corppassId, str):
-            raise ValueError("Invalid corp pass ID")
+            raise ValueError("Invalid CorpPass ID")
 
         self._corppassId = corppassId

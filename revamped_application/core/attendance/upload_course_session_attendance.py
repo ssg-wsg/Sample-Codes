@@ -12,7 +12,7 @@ class UploadCourseSessionAttendance(AbstractRequest):
 
     _TYPE: Literal["POST"] = "POST"
 
-    def __init__(self, runId: str, attendanceInfo: UploadAttendanceInfo):
+    def __init__(self, runId: int, attendanceInfo: UploadAttendanceInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, attendanceInfo)
@@ -23,7 +23,7 @@ class UploadCourseSessionAttendance(AbstractRequest):
     def __str__(self):
         return self.__repr__()
 
-    def _prepare(self, runId: str, attendanceInfo: UploadAttendanceInfo) -> None:
+    def _prepare(self, runId: int, attendanceInfo: UploadAttendanceInfo) -> None:
         self.req = HTTPRequestBuilder() \
             .with_endpoint(BASE_PROD_URL) \
             .with_header("accept", "application/json") \
