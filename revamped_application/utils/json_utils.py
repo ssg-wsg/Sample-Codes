@@ -1,15 +1,25 @@
-def remove_null_fields(d: dict) -> dict:
+from typing import Sequence
+
+
+def remove_null_fields(d: dict, exclude: Sequence[str] = ()) -> dict:
     """
     Removes any empty fields from a dictionary. This method is destructive and works directly on
     the input dictionary itself
+
+    :param d: Dictionary to remove fields from
+    :param exclude: Sequence of fields to exclude
+    :return: Dictionary with fields removed
     """
 
     keys_to_remove = []
 
     for k, v in d.items():
+        if k in exclude:
+            continue
+
         # recurse deeply if a dict is found
         if isinstance(v, dict):
-            d[k] = remove_null_fields(v)
+            d[k] = remove_null_fields(v, exclude)
 
             # remove any returned dict that is empty
             if len(d[k]) == 0:

@@ -44,14 +44,8 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         if self._trainee_name is None or len(self._trainee_name) == 0:
             errors.append("No trainee name specified!")
 
-        if self._trainee_email is None or len(self._trainee_email) == 0:
-            errors.append("No trainee email specified!")
-
         if self._trainee_id_type not in ID_TYPE_MAPPING:
             errors.append("Unknown trainee ID type!")
-
-        if self._contactNumber_mobile is None or len(self._contactNumber_mobile) == 0:
-            errors.append("No mobile number specified!")
 
         if self._contactNumber_countryCode is None:
             errors.append("No country code specified!")
@@ -64,6 +58,15 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         if self._corppassId is None or len(self._corppassId) == 0:
             errors.append("No CorpPass ID specified!")
+
+        if self._trainee_email is None and (self._contactNumber_mobile is None or len(self._contactNumber_mobile) == 0):
+            errors.append("You need to specify either the trainee's mobile number or email address!")
+
+        # optional param verification
+        if self._trainee_email is not None and len(self._trainee_email) == 0:
+            errors.append("No trainee email specified!")
+
+
 
         if len(errors) > 0:
             return errors
@@ -107,7 +110,8 @@ class UploadAttendanceInfo(AbstractRequestInfo):
             "corppassId": self._corppassId
         }
 
-        pl = remove_null_fields(pl)
+        # we can exclude the areaCode field and allow it to be null, as documented in the API reference
+        pl = remove_null_fields(pl, exclude=("areaCode", ))
 
         if as_json_str:
             return json.dumps(pl)

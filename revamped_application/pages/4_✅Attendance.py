@@ -18,7 +18,7 @@ with st.sidebar:
 st.header("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
-st.info("**This API requires your requests and data to be encrypted!**")
+st.info("**This API requires your *requests* to be encrypted!**\n\n")
 
 view, upload = st.tabs(["Course Session Attendance", "Upload Course Session Attendance"])
 
@@ -114,7 +114,8 @@ with upload:
                                                     max_chars=66,
                                                     key="trainee-name-upload-attendance"))
 
-    if st.checkbox("Specify Trainee Email?", key="specify-trainee-email-upload-attendance"):
+    if st.checkbox("Specify Trainee Email?", key="specify-trainee-email-upload-attendance",
+                   help="Either email address or contact number is mandatory"):
         uploadAttendance.set_trainee_email(st.text_input(label="Enter Trainee Email",
                                                          help="Email of the trainee; either email or contact number is "
                                                               "necessary",
@@ -136,6 +137,8 @@ with upload:
 
     uploadAttendance.set_contactNumber_mobile(col5.text_input(label="Enter Mobile Number of Trainee",
                                                               max_chars=15,
+                                                              help="Either email address or contact number is "
+                                                                   "mandatory",
                                                               key="contact-number-mobile-upload-attendance"))
 
     st.subheader("Course Information")
