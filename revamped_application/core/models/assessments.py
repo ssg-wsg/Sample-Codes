@@ -7,6 +7,7 @@ from typing import Optional, Literal
 from core.abc.abstract import AbstractRequestInfo
 from core.constants import GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS, \
     SORT_FIELD, SORT_ORDER
+from utils.verify import verify_uen
 from utils.json_utils import remove_null_fields
 
 
@@ -15,7 +16,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
     def __init__(self):
         self._grade: Optional[Literal["A", "B", "C", "D", "E", "F"]] = None
-        self._score: Optional[int | float] = None
+        self._score: Optional[int] = None
         self._course_runId: str = None
         self._course_referenceNumber: str = None
         self._result: Literal["Pass", "Fail", "Exempt"] = None
@@ -33,8 +34,9 @@ class CreateAssessmentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
+        warnings = []
 
         if self._course_runId is None or len(self._course_runId) == 0:
             errors.append("No Course Run ID is provided!")
@@ -60,14 +62,21 @@ class CreateAssessmentInfo(AbstractRequestInfo):
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
             errors.append("No Training Partner Code is provided!")
 
-        if len(errors) > 0:
-            return errors
+        # verify optionals
+        if self._skillCode is not None and len(self._skillCode) == 0:
+            warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
+
+        if self._conferringInstitute_code is not None and len(self._conferringInstitute_code) == 0:
+            warnings.append("Conferring Institute Code is empty even though Conferring Institute Code is marked "
+                            "as specified!")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -115,8 +124,8 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
         self._grade = grade
 
-    def set_score(self, score: float | int) -> None:
-        if not isinstance(score, float) and not isinstance(score, int):
+    def set_score(self, score: int) -> None:
+        if not isinstance(score, int):
             raise ValueError(f"Invalid Score provided")
 
         self._score = score
@@ -190,15 +199,33 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         self._action: Literal["update", "void"] = None
         self._assessmentReferenceNumber: str = None
 
-    def validate(self) -> None | list[str]:
-        if self._action is None or self._action not in ["update", "void"]:
-            return ["No action provided!"]
+    def validate(self) -> tuple[list[str], list[str]]:
+        errors = []
+        warnings = []
+
+        if self._assessmentReferenceNumber is None or len(self._assessmentReferenceNumber) == 0:
+            errors.append("Invalid Assessment Reference Number provided!")
+
+        if self._action is None or self._action not in ASSESSMENT_UPDATE_VOID_ACTIONS:
+            errors.append("No action provided!")
+
+        if self._result is not None and self._result not in RESULTS:
+            errors.append("Result must be of values: [Pass, Fail, Exempt]")
+
+        # optionals check
+        if self._trainee_fullName is not None and len(self._trainee_fullName) == 0:
+            warnings.append("Trainee Full Name is empty even though Trainee Full Name is marked as specified!")
+
+        if self._skillCode is not None and len(self._skillCode) == 0:
+            warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -223,6 +250,9 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             return json.dumps(pl)
 
         return pl
+
+    def get_assessment_reference_number(self) -> str:
+        return self._assessmentReferenceNumber
 
     def set_assessment_referenceNumber(self, assessment_reference_number: str) -> None:
         if not isinstance(assessment_reference_number, str):
@@ -258,6 +288,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
         self._assessment_traineeId: Optional[str] = None
         self._assessment_enrolement_referenceNumber: Optional[str] = None
         self._assessment_skillCode: Optional[str] = None
+        self._trainingPartner_uen: Optional[str] = None
         self._trainingPartner_code: Optional[str] = None
 
     def __repr__(self):
@@ -266,8 +297,9 @@ class SearchAssessmentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
+        warnings = []
 
         if self._lastUpdateDateTo is not None and self._lastUpdateDateFrom is not None \
                 and (self._lastUpdateDateFrom > self._lastUpdateDateTo):
@@ -279,14 +311,41 @@ class SearchAssessmentInfo(AbstractRequestInfo):
         if self._parameters_pageSize is None:
             errors.append("Page size is not specified!")
 
-        if len(errors) > 0:
-            return errors
+        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and \
+                not verify_uen(self._trainingPartner_uen):
+            errors.append("Invalid Training Partner UEN specified!")
+
+        # optionals check
+        if self._assessment_courseRunId is not None and len(self._assessment_courseRunId) == 0:
+            warnings.append("Course Run ID is empty even though Course Run ID is marked as specified!")
+
+        if self._assessment_referenceNumber is not None and len(self._assessment_referenceNumber) == 0:
+            warnings.append("Reference Number is empty even though Reference Number is marked as specified!")
+
+        if self._assessment_traineeId is not None and len(self._assessment_traineeId) == 0:
+            warnings.append("Trainee ID is empty even though Trainee ID is marked as specified!")
+
+        if self._assessment_enrolement_referenceNumber is not None and \
+                len(self._assessment_enrolement_referenceNumber) == 0:
+            warnings.append("Enrolment Reference Number is empty even though Enrolment Reference Number "
+                            "is marked as specified!")
+
+        if self._assessment_skillCode is not None and len(self._assessment_skillCode) == 0:
+            warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
+
+        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) == 0:
+            warnings.append("Training Partner UEN is empty even thought Training Partner UEN is marked as specified!")
+
+        if self._trainingPartner_code is not None and len(self._trainingPartner_code) == 0:
+            warnings.append("Training Partner Code is empty even though Training Partner Code is marked as specified!")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if err is not None and len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -321,7 +380,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
             },
             "skillCode": self._assessment_skillCode,
             "trainingPartner": {
-                "uen": st.session_state["uen"],
+                "uen": self._trainingPartner_uen if self._trainingPartner_uen is not None else st.session_state["uen"],
                 "code": self._trainingPartner_code,
             }
         }
@@ -404,3 +463,9 @@ class SearchAssessmentInfo(AbstractRequestInfo):
             raise ValueError(f"Invalid Training Partner Code provided")
 
         self._trainingPartner_code = trainingPartner_code
+
+    def set_trainingPartner_uen(self, uen: str) -> None:
+        if not isinstance(uen, str):
+            raise ValueError(f"Invalid Training Partner UEN provided")
+
+        self._trainingPartner_uen = uen

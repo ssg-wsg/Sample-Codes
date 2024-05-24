@@ -35,7 +35,7 @@ class UpdateVoidAssessment(AbstractRequest):
             .with_endpoint(ALTERNATIVE_PROD_URL) \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
-            .with_direct_argument(f"/tpg/assessments/details/{assessment_info.get_referenceNumber()}") \
+            .with_direct_argument(f"/tpg/assessments/details/{assessment_info.get_assessment_reference_number()}") \
             .with_body(assessment_info.payload())
 
     def execute(self) -> requests.Response:
