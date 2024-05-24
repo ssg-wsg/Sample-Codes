@@ -41,7 +41,7 @@ with view:
                                    help="Indicate whether retrieve expired course or not",
                                    key="view-expired")
     runs = st.text_input(label="Enter Course Run ID",
-                         help="The Course Run Id is used as a URL for GET Request Call"
+                         help="The Course Run Id is used as a parameter for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="view-course-run-id")
 
@@ -609,7 +609,6 @@ with add:
                 request, response = st.tabs(["Request", "Response"])
 
                 ac = AddCourseRun(runs, include_expired, add_runinfo)
-                resp = None
 
                 with request:
                     st.subheader("Request")

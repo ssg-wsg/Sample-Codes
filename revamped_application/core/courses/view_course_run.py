@@ -23,6 +23,11 @@ class ViewCourseRun(ABCCourse):
 
         return self.req.repr(ViewCourseRun._TYPE)
 
+    def __str__(self):
+        """String representation of this ViewCourseRun instance"""
+
+        return self.__repr__()
+
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
         Creates an HTTP get request for getting course runs by runId

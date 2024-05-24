@@ -21,7 +21,14 @@ class EditCourseRun(ABCCourse):
         self._prepare(runId, include_expired, runinfo)
 
     def __repr__(self):
+        """Representation of this EditCourseRun instance"""
+
         return self.req.repr(EditCourseRun._TYPE)
+
+    def __str__(self):
+        """String representation of this EditCourseRun instance"""
+
+        return self.__repr__()
 
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
                  runinfo: RunInfo) -> None:
