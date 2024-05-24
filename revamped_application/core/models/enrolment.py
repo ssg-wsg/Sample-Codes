@@ -341,19 +341,23 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
             except ValueError:
                 errors.append("Employer Phone Number is not a number!")
 
-        if self._trainee_contactNumber_areaCode is not None and \
-                len(self._trainee_contactNumber_areaCode) != 0:
+        if self._trainee_contactNumber_areaCode is not None and len(self._trainee_contactNumber_areaCode) != 0:
             try:
                 int(self._trainee_contactNumber_areaCode)
             except ValueError:
                 errors.append("Trainee Area Code is not a number!")
 
-        if self._trainee_contactNumber_countryCode is not None and \
-                len(self._trainee_contactNumber_countryCode) != 0:
+        if self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) != 0:
             try:
                 int(self._trainee_contactNumber_countryCode)
             except ValueError:
                 errors.append("Trainee Country Code is not a number!")
+
+        if self._trainee_contactNumber_phoneNumber is not None and len(self._trainee_contactNumber_phoneNumber) != 0:
+            try:
+                int(self._trainee_contactNumber_phoneNumber)
+            except ValueError:
+                errors.append("Trainee Phone Number is not a number!")
 
         if len(errors) > 0:
             return errors
@@ -409,7 +413,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
         return pl
 
     def set_trainee_fees_collectionStatus(self, collectionStatus: Literal[
-        "Pending Payment", "Partial Payment", "Full Payment", "Cancelled"]):
+            "Pending Payment", "Partial Payment", "Full Payment", "Cancelled"]):
         if not isinstance(collectionStatus, str) or collectionStatus not in COLLECTION_STATUS_CANCELLED:
             raise ValueError("Invalid Collection Status provided!")
 

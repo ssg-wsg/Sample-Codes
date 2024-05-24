@@ -339,22 +339,22 @@ with update:
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!")
         else:
-            errors = create_enrolment.validate()
+            errors = update_enrolment.validate()
             if errors is not None:
                 st.error(
                     "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
-                ce = UpdateEnrolment(enrolment_reference_num, update_enrolment)
+                ue = UpdateEnrolment(enrolment_reference_num, update_enrolment)
 
                 with request:
                     st.subheader("Request")
-                    st.code(repr(ce), language="text")
+                    st.code(repr(ue), language="text")
 
                 with response:
                     st.subheader("Response")
-                    handle_error(lambda: ce.execute())
+                    handle_error(lambda: ue.execute())
 
 
 with cancel:
