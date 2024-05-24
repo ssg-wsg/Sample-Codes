@@ -53,7 +53,7 @@ def display_status() -> None:
     """
 
     if not check_status():
-        st.error("There are some configuration variables missing!")
+        st.error("There are some configuration variables missing!", icon="🚨")
     else:
         st.success("All configuration variables are present and loaded!")
 
@@ -90,17 +90,17 @@ def http_code_handler(code: Union[int, str]) -> None:
 
     if code < 200:
         # info responses
-        st.info(f"{base_str} {code}")
+        st.info(f"{base_str} {code}", icon="ℹ️")
         return
     elif code < 300:
         # successful responses
-        st.success(f"{base_str} {code}")
+        st.success(f"{base_str} {code}", icon="✅")
         return
     elif code < 400:
         # redirection responses
-        st.info(f"{base_str} {code}")
+        st.info(f"{base_str} {code}", icon="ℹ️")
         return
     elif code < 600:
         # client/server error
-        st.error(f"{base_str} {code}")
+        st.error(f"{base_str} {code}", icon="🚨")
         return

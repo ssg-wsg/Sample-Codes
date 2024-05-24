@@ -1,8 +1,4 @@
 import base64
-import logging
-import os
-import tempfile
-
 import streamlit as st
 
 from utils.streamlit_utils import init, display_config
@@ -46,7 +42,7 @@ with st.form(key="init_config"):
 
     if st.form_submit_button("Load"):
         if not verify_uen(uen):
-            st.error("Error! Invalid **UEN** provided!")
+            st.error("Error! Invalid **UEN** provided!", icon="🚨")
         elif all([uen, enc_key, cert_pem, key_pem]):
             try:
                 # save the byte stream into a temp file to give it a path for passing it to requests
@@ -62,6 +58,6 @@ with st.form(key="init_config"):
                 st.session_state["encryption_key"] = enc_key
                 st.success("Configurations loaded!")
             except base64.binascii.Error:
-                st.error("Certificate or private key is invalid!")
+                st.error("Certificate or private key is invalid!", icon="🔐")
         else:
-            st.error("Please fill up the above configuration details needed for the demo app!")
+            st.error("Please fill up the above configuration details needed for the demo app!", icon="🚨")
