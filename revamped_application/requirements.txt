@@ -4,3 +4,4 @@ pep8>=1.7.1
 requests>=2.31.0
 cryptography>=42.0.7
 schedule>=1.2.1
+streamlit-nested-layout>=0.1.3

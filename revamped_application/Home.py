@@ -1,5 +1,6 @@
 import base64
 import streamlit as st
+import streamlit_nested_layout
 
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
