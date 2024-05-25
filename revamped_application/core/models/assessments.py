@@ -26,6 +26,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
         self._skillCode: Optional[str] = None
         self._assessmentDate: datetime.date = None
         self._trainingPartner_code: str = None
+        self._trainingPartner_uen: Optional[str] = None
         self._conferringInstitute_code: Optional[str] = None
 
     def __repr__(self):
@@ -62,7 +63,10 @@ class CreateAssessmentInfo(AbstractRequestInfo):
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
             errors.append("No Training Partner Code is provided!")
 
-        # verify optionals
+        if self._trainingPartner_uen is not None and not verify_uen(self._trainingPartner_uen):
+            errors.append("Specified Training Partner UEN is invalid!")
+
+        # optional parameter verification
         if self._skillCode is not None and len(self._skillCode) == 0:
             warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
 
@@ -99,7 +103,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
                 "skillCode": self._skillCode,
                 "assessmentDate": self._assessmentDate.strftime("%Y-%m-%d"),
                 "trainingPartner": {
-                    "uen": st.session_state["uen"],
+                    "uen": st.session_state["uen"] if self._trainingPartner_uen is None else self._trainingPartner_uen,
                     "code": self._trainingPartner_code
                 },
                 "conferringInstitute": {
@@ -178,6 +182,12 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
         self._assessmentDate = assessmentDate
 
+    def set_trainingPartner_uen(self, uen: str) -> None:
+        if not isinstance(uen, str):
+            raise ValueError(f"Invalid Training Partner UEN provided")
+
+        self._trainingPartner_uen = uen
+
     def set_trainingPartner_code(self, trainingPartner_code: str) -> None:
         if not isinstance(trainingPartner_code, str):
             raise ValueError(f"Invalid Training Partner Code provided")
@@ -207,7 +217,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             errors.append("Invalid Assessment Reference Number provided!")
 
         if self._action is None or self._action not in ASSESSMENT_UPDATE_VOID_ACTIONS:
-            errors.append("No action provided!")
+            errors.append("No Action provided!")
 
         if self._result is not None and self._result not in RESULTS:
             errors.append("Result must be of values: [Pass, Fail, Exempt]")
@@ -259,9 +269,6 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             raise ValueError(f"Invalid Assessment Reference Number provided")
 
         self._assessmentReferenceNumber = assessment_reference_number
-
-    def is_void(self) -> bool:
-        return self._action == "void"
 
     def is_update(self) -> bool:
         return self._action == "update"
@@ -334,7 +341,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
             warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
 
         if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) == 0:
-            warnings.append("Training Partner UEN is empty even thought Training Partner UEN is marked as specified!")
+            warnings.append("Training Partner UEN is empty even though Training Partner UEN is marked as specified!")
 
         if self._trainingPartner_code is not None and len(self._trainingPartner_code) == 0:
             warnings.append("Training Partner Code is empty even though Training Partner Code is marked as specified!")

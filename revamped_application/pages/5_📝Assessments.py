@@ -22,7 +22,7 @@ with st.sidebar:
 st.header("Assessments")
 st.markdown("The Assessments API allows you to create, update, void, find and view assessments that are "
             "assigned to your trainees in your courses!")
-st.info("**This API requires your *requests* and *payload* to be encrypted!**")
+st.info("**These APIs requires your *requests* to be encrypted and returns *encrypted responses*!**", icon="ℹ️")
 
 create, update_void, find, view = st.tabs([
     "Create Assessment", "Update/Void Assessment", "Find Assessment", "View Assessment"
@@ -31,8 +31,17 @@ create, update_void, find, view = st.tabs([
 with create:
     st.header("Create Assessment")
     st.markdown("You can use this API to create an assessment record for trainees enrolled in your courses.")
+    if st.session_state["uen"] is None:
+        st.warning("**Create Assessment requires your UEN to proceed. Make sure that you have loaded it up "
+                   "properly under the Home page before proceeding!**", icon="⚠️")
 
     create_assessment_info = CreateAssessmentInfo()
+    if st.checkbox("Override Training Partner UEN?", key="specify-create-assessment-tp-uen",
+                   help="If specified, this will override the UEN provided under the Home page!"):
+        create_assessment_info.set_trainingPartner_uen(st.text_input(label="Training Partner UEN",
+                                                                     key="create-assessment-tp-uen",
+                                                                     max_chars=12))
+
     st.subheader("Course Info")
     create_assessment_info.set_course_runId(st.text_input(label="Enter the Course Run ID",
                                                           max_chars=20,
@@ -117,23 +126,17 @@ with create:
     if st.button("Send", key="edit-button"):
         errors, warnings = create_assessment_info.validate()
 
-        if len(errors) > 0:
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings)
-                )
+        if len(warnings) > 0:
+            st.warning(
+                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+            )
 
+        if len(errors) > 0:
             st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
             )
         else:
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings)
-                )
-
             request, response = st.tabs(["Request", "Response"])
-
             ec = CreateAssessment(create_assessment_info)
 
             with request:
@@ -172,21 +175,29 @@ with update_void:
                                                                       key="update-void-assessment-trainee-full-name"))
 
         st.subheader("Assessment Info")
-        if st.checkbox("Update Grade?", key="update-void-grade"):
-            update_void_assessment.set_grade(st.selectbox(label="Select Grade",
-                                                          options=GRADES,
-                                                          help="The letter grade of the assessment, entered as A-F, "
-                                                               "if applicable",
-                                                          key="update-void-assessment-grade"))
+        col1, col2, col3 = st.columns(3)
+        if col1.checkbox("Update Grade?", key="update-void-grade"):
+            update_void_assessment.set_grade(col1.selectbox(label="Select Grade",
+                                                            options=GRADES,
+                                                            help="The letter grade of the assessment, entered as A-F, "
+                                                                 "if applicable",
+                                                            key="update-void-assessment-grade"))
 
-        if st.checkbox("Update Score?", key="update-void-score"):
-            update_void_assessment.set_score(st.number_input(label="Select Score",
-                                                             min_value=0,
-                                                             value=0,
-                                                             help="The numerical score or percentage score of the "
-                                                                  "assessment, entered as a whole number, "
-                                                                  "if applicable",
-                                                             key="update-void-assessment-score"))
+        if col2.checkbox("Update Score?", key="update-void-score"):
+            update_void_assessment.set_score(col2.number_input(label="Select Score",
+                                                               min_value=0,
+                                                               value=0,
+                                                               help="The numerical score or percentage score of the "
+                                                                    "assessment, entered as a whole number, "
+                                                                    "if applicable",
+                                                               key="update-void-assessment-score"))
+
+        if col3.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
+            update_void_assessment.set_result(col3.selectbox(label="Select Result",
+                                                             options=RESULTS,
+                                                             help="The outcome of the assessment, specified as pass, "
+                                                                  "fail or exempt",
+                                                             key="update-void-assessment-result"))
 
         if st.checkbox("Update Skill Code?", key="will-update-void-assessment-skill-code"):
             update_void_assessment.set_skillCode(st.text_input(label="Enter the Skill Code",
@@ -195,13 +206,6 @@ with update_void:
                                                                     "course, derived from the course data in the "
                                                                     "Training Partners Gateway",
                                                                key="update-void-assessment-skill-code"))
-
-        if st.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
-            update_void_assessment.set_result(st.selectbox(label="Select Result",
-                                                           options=RESULTS,
-                                                           help="The outcome of the assessment, specified as pass, "
-                                                                "fail or exempt",
-                                                           key="update-void-assessment-result"))
 
         if st.checkbox("Update Assessment Date?", key="will-update-void-assessment-date"):
             update_void_assessment.set_assessmentDate(st.date_input(label="Select Assessment Date",
@@ -219,22 +223,17 @@ with update_void:
     if st.button("Send", key="update-void-button"):
         errors, warnings = update_void_assessment.validate()
 
-        if len(errors) > 0:
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings)
-                )
+        if len(warnings) > 0:
+            st.warning(
+                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+            )
 
+        if len(errors) > 0:
             st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
             )
         else:
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings)
-                )
             request, response = st.tabs(["Request", "Response"])
-
             uva = UpdateVoidAssessment(update_void_assessment)
 
             with request:
@@ -352,18 +351,17 @@ with find:
     if st.button("Send", key="search-button"):
         errors, warnings = search_assessment.validate()
 
+        if len(warnings) > 0:
+            st.warning(
+                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+            )
+
         if len(errors) > 0:
             st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
             )
         else:
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings)
-                )
-
             request, response = st.tabs(["Request", "Response"])
-
             sa = SearchAssessment(search_assessment)
 
             with request:
@@ -389,10 +387,9 @@ with view:
 
     if st.button("Send", key="view-assessment-button"):
         if arn is None or len(arn) == 0:
-            st.error("Please enter in the Assessment Reference Number!")
+            st.error("Please enter in the **Assessment Reference Number**!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
-
             va = ViewAssessment(arn)
 
             with request:
