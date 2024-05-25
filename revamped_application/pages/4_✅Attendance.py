@@ -18,12 +18,13 @@ with st.sidebar:
 st.header("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
-st.info("**This API requires your *requests* to be encrypted!**\n\n", icon="ℹ️")
+st.info("**Retrieve Course Session Attendance API returns *encrypted responses*!**\n\n"
+        "**Upload Course Session Attendance API requires your *requests* to be encrypted!**", icon="ℹ️")
 
 view, upload = st.tabs(["Course Session Attendance", "Upload Course Session Attendance"])
 
 with view:
-    st.header("Course Session Attendance")
+    st.header("Retrieve Course Session Attendance")
     st.markdown("You can use this API to view the attendance of the trainees who are enrolled into your course for "
                 "a particular course session.")
 
