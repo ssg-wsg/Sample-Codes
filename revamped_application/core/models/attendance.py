@@ -27,34 +27,35 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         self._corppassId: str = None
 
     def __repr__(self):
-        return self.payload(as_json_str=True)
+        return self.payload(verify=False, as_json_str=True)
 
     def __str__(self):
         return self.__repr__()
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
+        warnings = []
 
         if self._sessionId is None or len(self._sessionId) == 0:
-            errors.append("No session ID specified!")
+            errors.append("No Session ID specified!")
 
         if self._trainee_id is None or len(self._trainee_id) == 0:
-            errors.append("No trainee ID specified!")
+            errors.append("No Trainee ID specified!")
 
         if self._trainee_name is None or len(self._trainee_name) == 0:
-            errors.append("No trainee name specified!")
+            errors.append("No Trainee Name specified!")
 
         if self._trainee_id_type not in ID_TYPE_MAPPING:
-            errors.append("Unknown trainee ID type!")
+            errors.append("Unknown Trainee ID type!")
 
         if self._contactNumber_countryCode is None:
-            errors.append("No country code specified!")
+            errors.append("No Country Code specified!")
 
         if self._surveyLanguage_code is None or len(self._surveyLanguage_code) == 0:
-            errors.append("No survey language code specified!")
+            errors.append("Unknown Survey Language code specified!")
 
         if self._referenceNumber is None or len(self._referenceNumber) == 0:
-            errors.append("No reference number specified!")
+            errors.append("No Attendance Reference Number specified!")
 
         if self._corppassId is None or len(self._corppassId) == 0:
             errors.append("No CorpPass ID specified!")
@@ -64,18 +65,15 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         # optional param verification
         if self._trainee_email is not None and len(self._trainee_email) == 0:
-            errors.append("No trainee email specified!")
+            warnings.append("No Trainee Email specified!")
 
-
-
-        if len(errors) > 0:
-            return errors
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
