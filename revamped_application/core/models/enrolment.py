@@ -36,6 +36,8 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._trainee_enrolmentDate: Optional[datetime.date] = None
         self._trainee_sponsorshipType: Literal["EMPLOYER", "INDIVIDUAL"] = None
         self._trainingPartner_code: str = None
+        self._trainingPartner_uen: Optional[str] = None
+
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -43,88 +45,113 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
+        warnings = []
 
         if self._course_referenceNumber is None or len(self._course_referenceNumber) == 0:
-            errors.append("No valid course reference number specified!")
+            errors.append("No valid Course Reference Number specified!")
 
         if self._trainee_id is None or len(self._trainee_id) == 0:
-            errors.append("No trainee ID specified!")
+            errors.append("No Trainee ID specified!")
 
-        if self._trainee_fees_collectionStatus is None or self._trainee_fees_collectionStatus not in COLLECTION_STATUS:
-            errors.append("No valid fees collection status specified!")
+        if self._trainee_fees_discountAmount is not None and (self._trainee_fees_collectionStatus is None
+                                                              or self._trainee_fees_collectionStatus not
+                                                              in COLLECTION_STATUS):
+            errors.append("No valid Fees Collection Status specified!")
 
         if self._trainee_idType_type is None or self._trainee_idType_type not in ID_TYPE:
             errors.append("No valid ID type specified!")
 
         if self._trainee_dateOfBirth is None:
-            errors.append("No valid date of birth specified!")
+            errors.append("No valid Trainee Date Of Birth specified!")
 
         if self._trainee_emailAddress is None or len(self._trainee_emailAddress) == 0:
-            errors.append("No valid email address specified!")
+            errors.append("No valid Trainee Email Address specified!")
 
         if self._trainee_sponsorshipType is None or self._trainee_sponsorshipType not in SPONSORSHIP_TYPE:
-            errors.append("No valid sponsorship type specified!")
+            errors.append("No valid Sponsorship Type specified!")
 
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
-            errors.append("No valid training partner code specified!")
+            errors.append("No valid Training Partner Code specified!")
 
-        # validate the pseudo-numerical values
+        if self._trainingPartner_uen is not None and not verify_uen(self._trainingPartner_uen):
+            errors.append("Overridden Training Partner UEN provided is invalid!")
+
         if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) > 0 and \
                 not verify_uen(self._trainee_employer_uen):
             errors.append("Employer UEN is not valid")
+
+        # optional parameter validation
+        # validate the pseudo-numerical values
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            warnings.append("Course Run ID is empty even though it is marked as specified!")
+
+        if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) == 0:
+            warnings.append("Employer UEN is empty even though it is marked as specified!")
+
+        if self._trainee_employer_contact_fullName is not None and len(self._trainee_employer_contact_fullName) == 0:
+            warnings.append("Employer Full Name is empty even though it is marked as specified!")
+
+        if self._trainee_employer_contact_emailAddress is not None \
+                and len(self._trainee_employer_contact_emailAddress) == 0:
+            warnings.append("Employer Email Address is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_areaCode is not None and \
                 len(self._trainee_employer_contact_contactNumber_areaCode) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_areaCode)
             except ValueError:
-                errors.append("Employer Area Code is not a number!")
+                warnings.append("Employer Area Code is not a number!")
+        elif self._trainee_employer_contact_contactNumber_areaCode is not None and \
+                len(self._trainee_employer_contact_contactNumber_areaCode) == 0:
+            warnings.append("Employer Contact Number Area Code is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_countryCode is not None and \
                 len(self._trainee_employer_contact_contactNumber_countryCode) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_countryCode)
             except ValueError:
-                errors.append("Employer Country Code is not a number!")
+                warnings.append("Employer Country Code is not a number!")
+        elif self._trainee_employer_contact_contactNumber_countryCode is not None and \
+                len(self._trainee_employer_contact_contactNumber_countryCode) == 0:
+            warnings.append("Employer Country Code is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
                 len(self._trainee_employer_contact_contactNumber_phoneNumber) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_phoneNumber)
             except ValueError:
-                errors.append("Employer Phone Number is not a number!")
+                warnings.append("Employer Phone Number is not a number!")
+        elif self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
+                len(self._trainee_employer_contact_contactNumber_phoneNumber) == 0:
+            warnings.append("Employer Phone Number is empty even though it is marked as specified!")
 
         if self._trainee_contactNumber_areaCode is not None and \
                 len(self._trainee_contactNumber_areaCode) != 0:
             try:
                 int(self._trainee_contactNumber_areaCode)
             except ValueError:
-                errors.append("Trainee Area Code is not a number!")
+                warnings.append("Trainee Area Code is not a number!")
+        elif self._trainee_contactNumber_areaCode is not None and len(self._trainee_contactNumber_areaCode) == 0:
+            warnings.append("Trainee Area Code is empty though it is marked as specified!")
 
         if self._trainee_contactNumber_countryCode is not None and \
                 len(self._trainee_contactNumber_countryCode) != 0:
             try:
                 int(self._trainee_contactNumber_countryCode)
             except ValueError:
-                errors.append("Trainee Country Code is not a number!")
+                warnings.append("Trainee Country Code is not a number!")
+        elif self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) == 0:
+            warnings.append("Trainee Country Code is empty though it is marked as specified!")
 
-        if self._trainee_contactNumber_phoneNumber is not None and \
-                len(self._trainee_contactNumber_phoneNumber) != 0:
-            try:
-                int(self._trainee_contactNumber_phoneNumber)
-            except ValueError:
-                errors.append("Employer Phone Number is not a number!")
-
-        if len(errors) > 0:
-            return errors
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -171,7 +198,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
                     "sponsorshipType": self._trainee_sponsorshipType
                 },
                 "trainingPartner": {
-                    "uen": st.session_state["uen"],
+                    "uen": st.session_state["uen"] if self._trainingPartner_uen is None else self._trainingPartner_uen,
                     "code": self._trainingPartner_code
                 }
             }
@@ -183,6 +210,9 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
             return json.dumps(pl)
 
         return pl
+
+    def has_overridden_uen(self) -> bool:
+        return self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0
 
     def set_course_run_id(self, run_id: str) -> None:
         if not isinstance(run_id, str):
@@ -312,61 +342,94 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         self._trainingPartner_code = code
 
+    def set_training_partner_uen(self, uen: str) -> None:
+        if not isinstance(uen, str):
+            raise TypeError("Invalid Partner UEN must be a String!")
+
+        self._trainingPartner_uen = uen
+
 
 class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     """Class that encapsulates all information needed to update an enrolment record"""
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
+        warnings = []
 
-        # validate the pseudo-numerical values
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            warnings.append("Course Run ID is empty even though it was marked as specified!")
+
+        if self._trainee_employer_contact_fullName is not None and len(self._trainee_employer_contact_fullName) == 0:
+            warnings.append("Employer Full Name is empty even though it was marked as specified!")
+
+        if self._trainee_employer_contact_emailAddress is not None and \
+                len(self._trainee_employer_contact_emailAddress) == 0:
+            warnings.append("Employer Email Address is empty even though it was marked as specified!")
+
         if self._trainee_employer_contact_contactNumber_areaCode is not None and \
                 len(self._trainee_employer_contact_contactNumber_areaCode) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_areaCode)
             except ValueError:
-                errors.append("Employer Area Code is not a number!")
+                warnings.append("Employer Area Code is not a number!")
+        elif self._trainee_employer_contact_contactNumber_areaCode is not None and \
+                len(self._trainee_employer_contact_contactNumber_areaCode) == 0:
+            warnings.append("Employer Area Code is empty even though it was marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_countryCode is not None and \
                 len(self._trainee_employer_contact_contactNumber_countryCode) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_countryCode)
             except ValueError:
-                errors.append("Employer Country Code is not a number!")
+                warnings.append("Employer Country Code is not a number!")
+        elif self._trainee_employer_contact_contactNumber_countryCode is not None and \
+                len(self._trainee_employer_contact_contactNumber_countryCode) == 0:
+            warnings.append("Employer Country Code is empty even though it was marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
                 len(self._trainee_employer_contact_contactNumber_phoneNumber) != 0:
             try:
                 int(self._trainee_employer_contact_contactNumber_phoneNumber)
             except ValueError:
-                errors.append("Employer Phone Number is not a number!")
+                warnings.append("Employer Phone Number is not a number!")
+        elif self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
+                len(self._trainee_employer_contact_contactNumber_phoneNumber) == 0:
+            warnings.append("Employer Phone Number is empty even though it was marked as specified!")
+
+        if self._trainee_emailAddress is not None and len(self._trainee_emailAddress) == 0:
+            warnings.append("Trainee Email Address is empty even though it was marked as specified!")
 
         if self._trainee_contactNumber_areaCode is not None and len(self._trainee_contactNumber_areaCode) != 0:
             try:
                 int(self._trainee_contactNumber_areaCode)
             except ValueError:
-                errors.append("Trainee Area Code is not a number!")
+                warnings.append("Trainee Area Code is not a number!")
+        elif self._trainee_contactNumber_areaCode is not None and len(self._trainee_contactNumber_areaCode) == 0:
+            warnings.append("Trainee Area Code is empty even though it was marked as specified!")
 
         if self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) != 0:
             try:
                 int(self._trainee_contactNumber_countryCode)
             except ValueError:
-                errors.append("Trainee Country Code is not a number!")
+                warnings.append("Trainee Country Code is not a number!")
+        elif self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) == 0:
+            warnings.append("Trainee Country Code is empty though it was marked as specified!")
 
         if self._trainee_contactNumber_phoneNumber is not None and len(self._trainee_contactNumber_phoneNumber) != 0:
             try:
                 int(self._trainee_contactNumber_phoneNumber)
             except ValueError:
-                errors.append("Trainee Phone Number is not a number!")
+                warnings.append("Trainee Phone Number is not a number!")
+        elif self._trainee_contactNumber_phoneNumber is not None and len(self._trainee_contactNumber_phoneNumber) == 0:
+            warnings.append("Trainee Phone Number is empty though it was marked as specified!")
 
-        if len(errors) > 0:
-            return errors
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -455,7 +518,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         self._trainee_employer_uen: Optional[str] = None
         self._trainee_enrolmentDate: Optional[datetime.date] = None
         self._trainee_sponsorshipType: Optional[Literal["EMPLOYER", "INDIVIDUAL"]] = None
-        self._trainingPartner_uen: Optional[str] = st.session_state["uen"]
+        self._trainingPartner_uen: Optional[str] = None
         self._trainingPartner_code: Optional[str] = None
         self._parameters_page: int = None
         self._parameters_page_size: int = None
@@ -466,36 +529,38 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
-    def validate(self) -> None | list[str]:
+    def validate(self) -> tuple[list[str], list[str]]:
         errors = []
-
-        if self._trainingPartner_uen is None or len(self._trainingPartner_uen) == 0 or \
-                not verify_uen(self._trainingPartner_uen):
-            errors.append("No valid Training Partner UEN specified!")
-
-        if self._parameters_page is None:
-            errors.append("No valid page specified!")
-
-        if self._parameters_page_size is None:
-            errors.append("No valid page size specified!")
-
-        # optionals verification
-        if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) > 0 \
-                and not verify_uen(self._trainee_employer_uen):
-            errors.append("No valid Training Employer UEN specified!")
+        warnings = []
 
         if self._lastUpdateDateFrom is not None and self._lastUpdateDateTo is not None and \
                 self._lastUpdateDateFrom > self._lastUpdateDateTo:
-            errors.append("Last Update Date From should not be after Date To!")
+            warnings.append("Last Update Date From should not be after Date To!")
 
-        if len(errors) > 0:
-            return errors
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            warnings.append("Course Run ID is empty even though it is marked as specified!")
+
+        if self._course_referenceNumber is not None and len(self._course_referenceNumber) == 0:
+            warnings.append("Course Reference Number is empty even though it is marked as specified!")
+
+        if self._trainee_id is not None and len(self._trainee_id) == 0:
+            warnings.append("Trainee ID is empty even though it is marked as specified!")
+
+        if self._trainingPartner_uen is None or len(self._trainingPartner_uen) == 0 or \
+                not verify_uen(self._trainingPartner_uen):
+            warnings.append("No valid Training Partner UEN specified!")
+
+        if self._trainee_employer_uen is None or len(self._trainee_employer_uen) == 0 or \
+                not verify_uen(self._trainee_employer_uen):
+            warnings.append("No valid Training Employer UEN specified!")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         if verify:
-            validation = self.validate()
+            err, _ = self.validate()
 
-            if validation is not None and len(validation) > 0:
+            if len(err) > 0:
                 raise AttributeError("There are some required fields that are missing! Use payload() to find the "
                                      "missing fields!")
 
@@ -551,7 +616,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         return pl
 
-    def has_training_partner_uen(self) -> bool:
+    def has_overridden_uen(self) -> bool:
         return self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0
 
     def set_lastUpdateDateTo(self, lastUpdateDateTo: datetime.date) -> None:

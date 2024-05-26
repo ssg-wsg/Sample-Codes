@@ -26,22 +26,26 @@ st.header("Enrolment API")
 st.markdown("Integration with the Enrolment APIs enable enrolment records to be updated on the Training Partners "
             "Gateway. It facilitates enrolment of a trainee to a course run and allows the updating, cancellation, "
             "searching and viewing of enrolment records!")
+st.info("**This API requires your *requests* to be encrypted and will return *encrypted responses*!**", icon="ℹ️")
 st.info("To scroll through the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or you "
-        "can use the arrow keys to navigate between the tabs!")
+        "can use the arrow keys to navigate between the tabs!", icon="ℹ️")
 
 create, update, cancel, search, view, update_fee = st.tabs([
     "Create Enrolment", "Update Enrolment", "Cancel Enrolment", "Search Enrolment", "View Enrolment",
     "Update Enrolment Fee Collection"
 ])
 
+
 with create:
     st.header("Create Enrolment")
     st.markdown("Create enrolment records, as well as updating, cancelling and searching of existing enrolment "
                 "records!")
-    st.warning("**Create Enrolment requires your UEN to proceed. Make sure that you have loaded it up "
-               "properly under the Home page before proceeding!**")
 
     create_enrolment = CreateEnrolmentInfo()
+
+    if st.session_state["uen"] is None:
+        st.warning("**Create Enrolment requires your UEN to proceed. Make sure that you have loaded it up "
+                   "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
     if st.checkbox("Specify Course Run ID?", key="specify-enrolment-course-run-id"):
@@ -66,20 +70,23 @@ with create:
                                                     key="enrolment-trainee-id"))
 
     st.markdown("#### Payment Info")
-    if st.checkbox("Specify Fees Discount?", key="specify-enrolment-trainee-fees-discount-amount"):
-        create_enrolment.set_trainee_fees_discountAmount(st.number_input(label="Trainee Fees Discount",
-                                                                         value=0.00,
-                                                                         step=0.01,
-                                                                         min_value=0.00,
-                                                                         help="Amount of discount the training "
-                                                                              "partner is deducting from course fees",
-                                                                         key="enrolment-trainee-fees-discount-amount"))
-    create_enrolment.set_trainee_fees_collectionStatus(st.selectbox(label="Trainee Fees Collection Status",
-                                                                    options=COLLECTION_STATUS,
-                                                                    help="Status of the trainee's or employer's "
-                                                                         "payment of the course fees to the "
-                                                                         "training partner",
-                                                                    key="enrolment-trainee-fees-collection-status"))
+    if st.checkbox("Specify Fees Discount?", key="specify-enrolment-trainee-fees-discount"):
+        if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
+            create_enrolment.set_trainee_fees_discountAmount(st.number_input(label="Trainee Fees Discount",
+                                                                             value=0.00,
+                                                                             step=0.01,
+                                                                             min_value=0.00,
+                                                                             help="Amount of discount the training "
+                                                                                  "partner is deducting from course "
+                                                                                  "fees",
+                                                                             key="enrolment-trainee-fees-discount-"
+                                                                                 "amount"))
+        create_enrolment.set_trainee_fees_collectionStatus(st.selectbox(label="Trainee Fees Collection Status",
+                                                                        options=COLLECTION_STATUS,
+                                                                        help="Status of the trainee's or employer's "
+                                                                             "payment of the course fees to the "
+                                                                             "training partner",
+                                                                        key="enrolment-trainee-fees-collection-status"))
 
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
@@ -88,8 +95,8 @@ with create:
                             help="Employer organisation's UEN",
                             key="enrolment-employer-uen")
 
-        if not verify_uen(uen):
-            st.warning("**Employer UEN** is not a valid UEN!")
+        if len(uen) > 0 and not verify_uen(uen):
+            st.warning("**Employer UEN** is not a valid UEN!", icon="⚠️")
 
         create_enrolment.set_employer_uen(uen)
 
@@ -149,15 +156,15 @@ with create:
 
     col1, col2, col3 = st.columns(3)
 
-    if col1.checkbox("Specify Trainee Phone Number Country Code",
+    if col1.checkbox("Specify Trainee Phone Number Area Code",
                      key="specify-enrolment-trainee-phone-number-area-code"):
-        create_enrolment.set_trainee_contactNumber_areaCode(col1.text_input(label="Trainee Phone Number Area Code",
+        create_enrolment.set_trainee_contactNumber_areaCode(col1.text_input(label="Trainee Area Code",
                                                                             max_chars=10,
                                                                             help="Area code of the phone number",
                                                                             key="enrolment-trainee-phone-number-area-"
                                                                                 "code"))
 
-    create_enrolment.set_trainee_contactNumber_countryCode(col2.text_input(label="Trainee Contact Number Country",
+    create_enrolment.set_trainee_contactNumber_countryCode(col2.text_input(label="Trainee Country Code",
                                                                            max_chars=5,
                                                                            help="Country code of the phone number",
                                                                            key="enrolment-trainee-phone-number-"
@@ -179,6 +186,16 @@ with create:
                                                               key="enrolment-trainee-sponsorship-type"))
 
     st.subheader("Training Partner Info")
+    if st.checkbox("Specify Training Partner UEN?", key="specify-enrolment-training-partner-uen",
+                   help="If specified, the input UEN will override the UEN specified under the Home page!"):
+        uen = st.text_input(label="Training Partner UEN",
+                            key="enrolment-training-partner-uen",
+                            max_chars=12)
+
+        if len(uen) > 0 and not verify_uen(uen):
+            st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
+        create_enrolment.set_training_partner_uen(uen)
+
     create_enrolment.set_trainingPartner_code(st.text_input(label="Training Partner Code",
                                                             max_chars=15,
                                                             help="Code for the training partner conducting the course "
@@ -193,13 +210,19 @@ with create:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="create-button"):
-        if not st.session_state["uen"]:
-            st.error("Make sure to fill in your UEN before proceeding!")
+        if not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
+            st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
+                     " before proceeding!", icon="🚨")
         else:
-            errors = create_enrolment.validate()
-            if errors is not None:
+            errors, warnings = create_enrolment.validate()
+            if len(warnings) > 0:
+                st.warning(
+                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+                )
+
+            if len(errors) > 0:
                 st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
@@ -300,7 +323,6 @@ with update:
                                                                 key="update-enrolment-trainee-email-address"))
 
     col1, col2, col3 = st.columns(3)
-
     if col1.checkbox("Specify Trainee Phone Number Area Code",
                      key="specify-update-enrolment-trainee-phone-number-area-code"):
         update_enrolment.set_trainee_contactNumber_areaCode(col1.text_input(label="Trainee Phone Number Area Code",
@@ -334,15 +356,17 @@ with update:
 
     if st.button("Send", key="update-button"):
         if len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your enrolment reference number before proceeding!")
-
-        if not st.session_state["uen"]:
-            st.error("Make sure to fill in your UEN before proceeding!")
+            st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
         else:
-            errors = update_enrolment.validate()
-            if errors is not None:
+            errors, warnings = update_enrolment.validate()
+            if len(warnings) > 0:
+                st.warning(
+                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+                )
+
+            if len(errors) > 0:
                 st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
@@ -377,7 +401,7 @@ with cancel:
 
     if st.button("Send", key="cancel-button"):
         if len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your enrolment reference number before proceeding!")
+            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
@@ -395,8 +419,10 @@ with search:
     st.header("Search Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching "
                 "of existing enrolment records")
-    st.warning("**Search Enrolment may require your UEN to proceed. Make sure that you have loaded it up "
-               "properly under the Home page before proceeding!**")
+
+    if st.session_state["uen"] is None:
+        st.warning("**Search Enrolment may require your UEN to proceed. Make sure that you have loaded it up "
+                   "properly under the Home page before proceeding!**", icon="⚠️")
 
     search_enrolment = SearchEnrolmentInfo()
 
@@ -488,8 +514,8 @@ with search:
                             max_chars=50,
                             help="Employer organisation's UEN number")
 
-        if not verify_uen(uen):
-            st.warning("**Employer UEN** is not a valid UEN!")
+        if len(uen) > 0 and not verify_uen(uen):
+            st.warning("**Employer UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.set_employer_uen(uen)
 
@@ -505,17 +531,18 @@ with search:
                                                                   help="Trainee's sponsorship type",
                                                                   key="search-enrolment-sponsorship-type"))
 
-    if st.checkbox("Specify Training Partner UEN?", key="specify-search-enrolment-training-partner-uen"):
+    if st.checkbox("Specify Training Partner UEN?", key="specify-search-enrolment-training-partner-uen",
+                   help="If specified, this will override the UEN number provided under the Home page!"):
         uen = st.text_input(
-                label="Training Partner UEN",
-                max_chars=12,
-                help="UEN of the training partner organisation conducting the course for "
-                     "which the trainee is enrolled. Must match UEN passed in the header.\n\n"
-                     "If unspecified, the default loaded training partner UEN will be used.",
-                key="search-enrolment-training-partner-uen")
+            label="Training Partner UEN",
+            max_chars=12,
+            help="UEN of the training partner organisation conducting the course for "
+                 "which the trainee is enrolled. Must match UEN passed in the header.\n\n"
+                 "If unspecified, the default loaded training partner UEN will be used.",
+            key="search-enrolment-training-partner-uen")
 
-        if not verify_uen(uen):
-            st.warning("**Training Partner UEN** is not a valid UEN!")
+        if len(uen) > 0 and not verify_uen(uen):
+            st.warning("**Training Partner UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.set_trainingPartner_uen(uen)
 
@@ -527,18 +554,19 @@ with search:
                                                                      "course for which the trainee is enrolled"))
 
     st.subheader("Query Parameters Info")
-    search_enrolment.set_page(st.number_input(label="Page",
-                                              min_value=0,
-                                              value=0,
-                                              key="search-enrolment-page-number",
-                                              help="Page number of page displayed, starting from 0"))
+    if st.checkbox("Specify Query Parameters?", key="specify-query-parameters"):
+        search_enrolment.set_page(st.number_input(label="Page",
+                                                  min_value=0,
+                                                  value=0,
+                                                  key="search-enrolment-page-number",
+                                                  help="Page number of page displayed, starting from 0"))
 
-    search_enrolment.set_page_size(st.number_input(label="Page Size",
-                                                   min_value=1,
-                                                   max_value=100,
-                                                   value=20,
-                                                   key="search-enrolment-page-size",
-                                                   help="The number of items to be displayed on one page."))
+        search_enrolment.set_page_size(st.number_input(label="Page Size",
+                                                       min_value=1,
+                                                       max_value=100,
+                                                       value=20,
+                                                       key="search-enrolment-page-size",
+                                                       help="The number of items to be displayed on one page."))
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -549,14 +577,20 @@ with search:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="search-button"):
-        if not st.session_state["uen"] and not search_enrolment.has_training_partner_uen():
+        if st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
-                     " before proceeding!")
+                     " before proceeding!", icon="🚨")
         else:
-            errors = search_enrolment.validate()
-            if errors is not None:
+            errors, warnings = search_enrolment.validate()
+
+            if len(warnings) > 0:
+                st.warning(
+                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
+                )
+
+            if len(errors) > 0:
                 st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
+                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
                 )
             else:
                 request, response = st.tabs(["Request", "Response"])
@@ -586,16 +620,19 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="view-button"):
-        request, response = st.tabs(["Request", "Response"])
-        ve = ViewEnrolment(ref_num)
+        if len(ref_num) == 0:
+            st.error("Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
+        else:
+            request, response = st.tabs(["Request", "Response"])
+            ve = ViewEnrolment(ref_num)
 
-        with request:
-            st.subheader("Request")
-            st.code(repr(ve), language="text")
+            with request:
+                st.subheader("Request")
+                st.code(repr(ve), language="text")
 
-        with response:
-            st.subheader("Response")
-            handle_error(lambda: ve.execute())
+            with response:
+                st.subheader("Response")
+                handle_error(lambda: ve.execute())
 
 
 with update_fee:
@@ -627,7 +664,7 @@ with update_fee:
 
     if st.button("Send", key="update-fee-button"):
         if len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your enrolment reference number before proceeding!")
+            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
