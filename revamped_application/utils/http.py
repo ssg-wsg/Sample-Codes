@@ -11,6 +11,7 @@ from .string_utils import StringBuilder
 
 BASE_PROD_URL = "https://public-api.ssg-wsg.sg"
 ALTERNATIVE_PROD_URL = "https://api.ssg-wsg.sg"
+UAT_URL = "https://uat-api.ssg-wsg.sg"
 
 # initialise the session variables here
 init()

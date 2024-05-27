@@ -4,14 +4,15 @@ import streamlit_nested_layout
 
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
-from core.system.cleaner import clean_temp
+from utils.http import BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL
+from core.system.cleaner import start_schedule
 from tempfile import NamedTemporaryFile
 
 # initialise all variables
 init()
 
-# initialise cron process
-clean_temp()
+# each new connection to the app cleans up the temp folder
+start_schedule()
 
 st.set_page_config(page_title="Home", page_icon="🏠")
 
@@ -31,6 +32,15 @@ st.markdown("Before you continue, make sure to fill up the following configurati
             "Failure to enter in any one of these variables may prevent you from fully exploring all features "
             "of the app!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
             "sidebar!")
+
+st.subheader("API Endpoint")
+st.markdown("Select the endpoint you wish to connect to!")
+st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
+                                       options=[BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL])
+
+st.subheader("UEN and Keys")
+st.markdown("Key in your UEN number, as well as your encryption keys, certificate key (`.pem`) and private key "
+            "(`.pem`) below!")
 
 with st.form(key="init_config"):
     uen = st.text_input("Enter in your UEN", help="UEN stands for **Unique Entity Number**. It is used by the SSG API "

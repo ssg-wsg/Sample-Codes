@@ -30,6 +30,9 @@ def init() -> None:
     if "file_history" not in st.session_state:
         st.session_state["file_history"] = None
 
+    if "url" not in st.session_state:
+        st.session_state["url"] = None
+
 
 def check_status() -> bool:
     """
@@ -63,13 +66,20 @@ def display_status() -> None:
 def display_config() -> None:
     """Displays all the loaded configuration variables"""
 
-    st.markdown("**UEN:** ")
+    st.header("API Endpoint")
+    st.code(st.session_state["url"] if st.session_state["url"] else "-", language="text")
+
+    st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
-    st.markdown("**Encryption Key:** ")
+
+    st.header("Keys")
+    st.subheader("Encryption Key:")
     st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
-    st.markdown("**Certificate Key:** ")
+
+    st.subheader("Certificate Key:")
     st.code("Loaded at: " + st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
-    st.markdown("**Private Key:** ")
+
+    st.subheader("Private Key:")
     st.code("Loaded at: " + st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
 
 
