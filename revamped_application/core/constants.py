@@ -60,3 +60,13 @@ SPONSORSHIP_TYPE = ["EMPLOYER", "INDIVIDUAL"]
 ENROLMENT_SORT_FIELD = ["updatedOn", "createdOn"]
 ENROLMENT_STATUS = ["Confirmed", "Rejected"]
 ENROLMENT_COURSE_STATUS = ["Confirmed", "Cancelled"]
+
+# ===== SF Credit Pay ===== #
+CANCEL_CLAIMS_CODE = {
+    "51": "I do not wish to use my credit",
+    "52": "I wish to resubmit a new claim",
+    "53": "The course has been cancelled",
+    "54": "The course has been postponed",
+    "55": "I was not enrolled for the course"
+}
+PERMITTED_UPLOAD_FILE_TYPE = ["pdf", "doc", "docx", "tif", "jpg", "jpeg", "png", "xls", "xlsm", "xlsx"]

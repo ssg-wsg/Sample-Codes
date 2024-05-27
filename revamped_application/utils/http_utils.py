@@ -2,7 +2,6 @@ import json
 
 import requests
 import streamlit as st
-import pprint
 
 from utils.streamlit_utils import init, http_code_handler
 from typing import Self, Any, Callable
@@ -215,7 +214,7 @@ class HTTPRequestBuilder:
         return builder.get()
 
 
-def handle_error(throwable: Callable[[], requests.Response]) -> None:
+def handle_error(throwable: Callable[[], requests.Response], return_json: bool = False) -> None | dict:
     """
     Handles the potentially throwing function and uses Streamlit to display or
     handle the error.
@@ -223,6 +222,7 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
     :param throwable: Function to be called.
                       This function accepts no inputs and may potentially raise an error.
                       This function should also return the response object from the request.
+    :param return_json: Indicate whether to return the response object from the request.
     """
 
     try:
@@ -230,7 +230,11 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
             response = throwable()
             http_code_handler(response.status_code)
             try:
-                st.json(response.json())
+                json_response = response.json()
+                st.json(json_response)
+
+                if return_json:
+                    return json_response
             except json.decoder.JSONDecodeError:
                 st.code(response.text, language="text")
     except ConnectionError:

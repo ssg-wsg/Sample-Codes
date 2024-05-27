@@ -26,9 +26,6 @@ def init() -> None:
     if "key_pem" not in st.session_state:
         st.session_state["key_pem"] = None
 
-    if "file_history" not in st.session_state:
-        st.session_state["file_history"] = None
-
 
 def check_status() -> bool:
     """
