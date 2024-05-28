@@ -23,8 +23,8 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("SkillsFuture Credit Pay")
-st.markdown("The SkillsFuture Credit Pay serves to integrate the SkillsFuture Credit claim submission and course "
+st.header("SkillsFuture Credit Pay API")
+st.markdown("The SkillsFuture Credit Pay API serves to integrate the SkillsFuture Credit claim submission and course "
             "payment with course registration. It allows users to indicate the amount of credits to offset from "
             "the course fee payment during course registration. Please note that individuals must give their "
             "consent for the use of their SkillsFuture Credit information.")
