@@ -9,7 +9,8 @@ from core.courses.add_course_run import AddCourseRun
 from core.courses.view_course_sessions import ViewCourseSessions
 from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
     RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo, MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS
-from utils.http import handle_error
+from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS, NUM2MONTH
+from utils.http_utils import handle_error
 from utils.streamlit_utils import init, display_config, validation_error_handler
 
 init()

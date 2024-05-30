@@ -3,11 +3,11 @@ import requests
 from typing import Literal
 
 from core.models.course_runs import AddRunInfo
-from core.abc.abstract_course import ABCCourse
-from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from core.abc.abstract import AbstractRequest
+from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
 
 
-class AddCourseRun(ABCCourse):
+class AddCourseRun(AbstractRequest):
     """
     Class used for adding a course run
     """

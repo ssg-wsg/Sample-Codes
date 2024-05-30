@@ -1,6 +1,4 @@
 import json
-import logging
-import ssl
 
 import requests
 import streamlit as st
@@ -11,7 +9,7 @@ from .string_utils import StringBuilder
 
 BASE_PROD_URL = "https://public-api.ssg-wsg.sg"
 ALTERNATIVE_PROD_URL = "https://api.ssg-wsg.sg"
-UAT_URL = "https://uat-api.ssg-wsg.sg"
+UAT_URL = "https://uat.ssg-wsg.sg"
 
 # initialise the session variables here
 init()
@@ -45,10 +43,10 @@ class HTTPRequestBuilder:
             raise ValueError("Endpoint must be a string")
 
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
-            st.error("Endpoint URL must start with http:// or https://", icon="🚨")
+            st.error("Endpoint URL must start with http:// or https://")
 
         if endpoint.endswith("/"):
-            st.warning("Endpoint URL ends with /, it will be removed", icon="⚠️")
+            st.warning("Endpoint URL ends with /, it will be removed")
             self.endpoint = endpoint[:-1]
         else:
             self.endpoint = endpoint
@@ -230,26 +228,26 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
                       This function should also return the response object from the request.
     """
 
+
+
     try:
         response = throwable()
         http_code_handler(response.status_code)
-        st.json(response.json())
-    except json.decoder.JSONDecodeError:
-        # can ignore the not defined error, since JSON decode errors mean that there is a response,
-        # but the body is not JSON serialisable, so we have to default to reading the text data from the
-        # response
-        st.code(response.text, language="text")
+        try:
+            st.json(response.json())
+        except json.decoder.JSONDecodeError:
+            st.code(response.text, language="text")
     except ConnectionError:
         # the endpoint url is likely malformed here
         st.error("Check the inputs that you have used for the API request and check that "
                  "they are valid!\n\nIt is likely that you have included a value that "
                  "causes the API request to query from a URL that does not exist or is "
-                 "invalid!", icon="🚨")
+                 "invalid!")
     except requests.exceptions.SSLError:
         # there are some issues with the SSL keys
         st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n"
                  "If your key files are not in `pem` format, ensure that you convert your "
-                 "key files into `pem` format!", icon="🚨")
+                 "key files into `pem` format!")
     except Exception as ex:
         # float it back to the user to handle
         st.exception(ex)

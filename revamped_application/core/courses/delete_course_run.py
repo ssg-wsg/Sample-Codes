@@ -3,14 +3,14 @@ Contains all classes and functions relevant for the deletion of a course run.
 """
 import requests
 
-from core.abc.abstract_course import ABCCourse
+from core.abc.abstract import AbstractRequest
 from core.models.course_runs import DeleteRunInfo
-from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
 
 from typing import Literal
 
 
-class DeleteCourseRun(ABCCourse):
+class DeleteCourseRun(AbstractRequest):
     """
     Class used for deleting a course run
     """
@@ -45,6 +45,8 @@ class DeleteCourseRun(ABCCourse):
 
         self.req = HTTPRequestBuilder() \
             .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_header("accept", "application/json") \
+            .with_header("Content-Type", "application/json") \
             .with_direct_argument(f"/courses/courseRuns/edit/{runId}")
 
         match include_expired:

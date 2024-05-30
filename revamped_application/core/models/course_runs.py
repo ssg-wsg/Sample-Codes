@@ -6,7 +6,8 @@ import streamlit as st
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-from core.abc.abstract_course import ABCCourseInfo
+from core.abc.abstract import AbstractRequestInfo
+from utils.json_utils import remove_null_fields
 
 MODE_OF_TRAINING_MAPPING: dict = {
     "1": "Classroom",
@@ -39,7 +40,7 @@ SALUTATIONS: dict[int, str] = {
 
 
 # ===== Session Info ===== #
-class RunSessionEditInfo(ABCCourseInfo):
+class RunSessionEditInfo(AbstractRequestInfo):
     """Encapsulates all information regarding a course run's sessions"""
 
     def __init__(self):
@@ -130,6 +131,8 @@ class RunSessionEditInfo(ABCCourseInfo):
                 "primaryVenue": self._venue_primaryVenue,
             }
         }
+
+        pl = remove_null_fields(pl)
 
         if as_json_str:
             return json.dumps(pl)
@@ -331,7 +334,7 @@ class RunSessionAddInfo(RunSessionEditInfo):
 
 
 # ===== Trainer Info ===== #
-class RunTrainerEditInfo(ABCCourseInfo):
+class RunTrainerEditInfo(AbstractRequestInfo):
     """Encapsulates all information regarding a trainer in a course run"""
 
     def __init__(self):
@@ -431,6 +434,8 @@ class RunTrainerEditInfo(ABCCourseInfo):
                 "linkedSsecEQAs": self._linkedSsecEQAs
             }
         }
+
+        pl = remove_null_fields(pl)
 
         if as_json_str:
             return json.dumps(pl)
@@ -635,7 +640,7 @@ class RunTrainerAddInfo(RunTrainerEditInfo):
 
 
 # ===== Run Info ===== #
-class EditRunInfo(ABCCourseInfo):
+class EditRunInfo(AbstractRequestInfo):
     """Encapsulates all information regarding the editing of a course run"""
 
     def __init__(self):
@@ -838,6 +843,8 @@ class EditRunInfo(ABCCourseInfo):
                 "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
             }
         }
+
+        pl = remove_null_fields(pl)
 
         if as_json_str:
             return json.dumps(pl)
