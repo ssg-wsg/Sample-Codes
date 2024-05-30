@@ -9,7 +9,7 @@ from .string_utils import StringBuilder
 
 BASE_PROD_URL = "https://public-api.ssg-wsg.sg"
 ALTERNATIVE_PROD_URL = "https://api.ssg-wsg.sg"
-UAT_URL = "https://uat.ssg-wsg.sg"
+UAT_URL = "https://uat-api.ssg-wsg.sg"
 
 # initialise the session variables here
 init()
@@ -43,10 +43,10 @@ class HTTPRequestBuilder:
             raise ValueError("Endpoint must be a string")
 
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
-            st.error("Endpoint URL must start with http:// or https://")
+            st.error("Endpoint URL must start with http:// or https://", icon="🚨")
 
         if endpoint.endswith("/"):
-            st.warning("Endpoint URL ends with /, it will be removed")
+            st.warning("Endpoint URL ends with /, it will be removed", icon="⚠️")
             self.endpoint = endpoint[:-1]
         else:
             self.endpoint = endpoint
@@ -228,8 +228,6 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
                       This function should also return the response object from the request.
     """
 
-
-
     try:
         response = throwable()
         http_code_handler(response.status_code)
@@ -242,12 +240,12 @@ def handle_error(throwable: Callable[[], requests.Response]) -> None:
         st.error("Check the inputs that you have used for the API request and check that "
                  "they are valid!\n\nIt is likely that you have included a value that "
                  "causes the API request to query from a URL that does not exist or is "
-                 "invalid!")
+                 "invalid!", icon="🚨")
     except requests.exceptions.SSLError:
         # there are some issues with the SSL keys
         st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n"
                  "If your key files are not in `pem` format, ensure that you convert your "
-                 "key files into `pem` format!")
+                 "key files into `pem` format!", icon="🚨")
     except Exception as ex:
         # float it back to the user to handle
         st.exception(ex)

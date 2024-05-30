@@ -4,7 +4,7 @@ import streamlit_nested_layout
 
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
-from utils.http_utils import (BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL)
+from utils.http_utils import BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL
 from core.system.cleaner import start_schedule
 from tempfile import NamedTemporaryFile
 

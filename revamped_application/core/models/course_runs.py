@@ -325,7 +325,9 @@ class RunSessionAddInfo(RunSessionEditInfo):
     def payload(self, verify: bool = True, as_json_str: bool = False):
         pl = super().payload(verify=verify, as_json_str=False)
         del pl["action"]
-        del pl["sessionId"]
+
+        if "sessionId" in pl:
+            del pl["sessionId"]
 
         if as_json_str:
             return json.dumps(pl)

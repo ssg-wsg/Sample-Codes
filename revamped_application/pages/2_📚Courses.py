@@ -8,8 +8,8 @@ from core.courses.edit_course_run import EditCourseRun
 from core.courses.add_course_run import AddCourseRun
 from core.courses.view_course_sessions import ViewCourseSessions
 from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
-    RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo, MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS
-from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS, NUM2MONTH
+    RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
+from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
 from utils.http_utils import handle_error
 from utils.streamlit_utils import init, display_config, validation_error_handler
 
@@ -470,8 +470,8 @@ with add:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE[x]}",
+                                                                   options=ID_TYPE_MAPPING.keys(),
+                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
                                                                    help="Trainer ID Type Code",
                                                                    key=f"add-trainer-id-code-{i}-{run}"))
 
@@ -1026,8 +1026,8 @@ with edit_delete:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE[x]}",
+                                                                   options=ID_TYPE_MAPPING.keys(),
+                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
                                                                    help="Trainer ID Type Code",
                                                                    key=f"edit-trainer-trainer-id-code-{i}"))
 
