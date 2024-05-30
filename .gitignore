@@ -1,0 +1,8 @@
+# ignore all python cache files
+*.pyc
+
+# ignore IDEA config files
+.idea
+
+# ignore .secrets
+revamped_application/.secrets
