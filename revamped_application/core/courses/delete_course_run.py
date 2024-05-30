@@ -28,6 +28,11 @@ class DeleteCourseRun(AbstractRequest):
 
         return self.req.repr(DeleteCourseRun._TYPE)
 
+    def __str__(self):
+        """String representation of this DeleteCourseRun instance"""
+
+        return self.__repr__()
+
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
                  delete_runinfo: DeleteRunInfo) -> None:
         """

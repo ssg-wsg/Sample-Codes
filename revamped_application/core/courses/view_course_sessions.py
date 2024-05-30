@@ -27,6 +27,11 @@ class ViewCourseSessions(AbstractRequest):
 
         return self.req.repr(ViewCourseSessions._TYPE)
 
+    def __str__(self) -> str:
+        """String representation of this ViewCourseRun instance"""
+
+        return self.__repr__()
+
     def _prepare(self, runId: str, crn: str, session_month: Optional[int], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """

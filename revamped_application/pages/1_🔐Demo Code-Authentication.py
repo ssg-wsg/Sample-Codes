@@ -526,9 +526,11 @@ with cert_auth:
                     st.success(f"Response code: {req.status_code}")
                     st.json(req.json())
             except:
-                st.error("Please check to make sure that the endpoint URL or the path to certificates is valid!")
+                st.error("Please check to make sure that the endpoint URL or the path to certificates is valid!",
+                         icon="🚨")
         else:
-            st.error("Please check to ensure that you fill in all fields before submitting the API request!")
+            st.error("Please check to ensure that you fill in all fields before submitting the API request!",
+                     icon="🚨")
 
 with open_auth:
     st.title("Open Authentication")
@@ -581,6 +583,6 @@ with open_auth:
                 st.success(f"Response code: {response.status_code}")
                 st.code(response.json())
             except:
-                print("An error has occurred. Please check data input")
+                st.error("An error has occurred. Please check data input!", icon="🚨")
         else:
-            st.error("Please check to ensure that you fill in all fields before submitting the API request!")
+            st.error("Please check to ensure that you fill in all fields before submitting the API request!", icon="🚨")

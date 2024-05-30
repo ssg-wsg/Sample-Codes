@@ -2,7 +2,7 @@ import requests
 
 from typing import Literal
 
-from core.models.course_runs import RunInfo
+from core.models.course_runs import EditRunInfo
 from core.abc.abstract import AbstractRequest
 from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
 
@@ -15,16 +15,23 @@ class EditCourseRun(AbstractRequest):
     _TYPE: Literal["POST"] = "POST"
 
     def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: RunInfo):
+                 runinfo: EditRunInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, include_expired, runinfo)
 
     def __repr__(self):
+        """Representation of this EditCourseRun instance"""
+
         return self.req.repr(EditCourseRun._TYPE)
 
+    def __str__(self):
+        """String representation of this EditCourseRun instance"""
+
+        return self.__repr__()
+
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: RunInfo) -> None:
+                 runinfo: EditRunInfo) -> None:
         """
         Scaffolds the request body and prepares it for execution
 

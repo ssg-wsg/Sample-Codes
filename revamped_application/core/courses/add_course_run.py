@@ -20,9 +20,13 @@ class AddCourseRun(AbstractRequest):
         self._prepare(include_expired, runinfo)
 
     def __repr__(self):
+        """Representation of this AddCourseRun instance"""
+
         return self.req.repr(AddCourseRun._TYPE)
 
     def __str__(self):
+        """String representation of this AddCourseRun instance"""
+
         return self.__repr__()
 
     def _prepare(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo) -> None:
