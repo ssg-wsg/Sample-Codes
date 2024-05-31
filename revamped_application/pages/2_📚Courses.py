@@ -9,9 +9,9 @@ from core.courses.add_course_run import AddCourseRun
 from core.courses.view_course_sessions import ViewCourseSessions
 from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
     RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
-from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
-from utils.http_utils import handle_error
-from utils.streamlit_utils import init, display_config, validation_error_handler
+from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
+from utils.http_utils import handle_error, handle_request
+from utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
 
 init()
 
@@ -28,7 +28,7 @@ st.markdown("The Courses API allows you to search, filter and compare different 
             "courses, featured courses, course brochures, and more! You can also manage your webhook "
             "events and subscriptions via this API!")
 
-info_container = st.info(
+st.info(
     "**Add Course Runs and Edit/Delete Course Runs requires your *requests* to be encrypted!**\n\n"
     "**View Course Runs and View Course Sessions do not require any encryption!**",
     icon="ℹ️"
@@ -59,16 +59,16 @@ with view:
     if st.button("Send", key="view-button"):
         if len(runs) == 0:
             st.error("Key in your course run ID to proceed!", icon="🚨")
+        elif does_not_have_keys():
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                handle_request(vc)
 
             with response:
-                st.subheader("Response")
                 handle_error(lambda: vc.execute())
 
 with add:
@@ -304,11 +304,12 @@ with add:
                                                                    help="Start time of course session"
                                                                         "(**HH:mm:ss/HH:mm format only**)",
                                                                    disabled=True,
-                                                                   value=datetime(hour=0,
-                                                                                  minute=0,
-                                                                                  year=runsession.get_start_date_year(),
-                                                                                  month=runsession.get_start_time_month(),
-                                                                                  day=runsession.get_start_time_day())
+                                                                   value=datetime(
+                                                                       hour=0,
+                                                                       minute=0,
+                                                                       year=runsession.get_start_date_year(),
+                                                                       month=runsession.get_start_time_month(),
+                                                                       day=runsession.get_start_time_day())
                                                                    .time()))
 
                         with col2:
@@ -478,8 +479,8 @@ with add:
                     with col2:
                         runtrainer.set_trainer_idNumber(st.text_input(label="Trainer ID Number",
                                                                       key=f"add-trainer-id-number-{i}-{run}",
-                                                                      help="This refers to the NRIC/FIN/Passport number "
-                                                                           "of the trainer.",
+                                                                      help="This refers to the NRIC/FIN/Passport "
+                                                                           "number of the trainer.",
                                                                       max_chars=50))
 
                     st.markdown("###### Trainer Roles\n"
@@ -606,6 +607,8 @@ with add:
     if st.button("Send", key="add-button"):
         if not st.session_state["uen"]:
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = add_runinfo.validate()
 
@@ -614,11 +617,9 @@ with add:
                 ac = AddCourseRun(include_expired, add_runinfo)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ac), language="text")
+                    handle_request(ac)
 
                 with response:
-                    st.subheader("Response")
                     handle_error(lambda: ac.execute())
 
 with edit_delete:
@@ -1163,6 +1164,8 @@ with edit_delete:
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         elif not runs:
             st.error("Make sure to fill in your Course Run ID before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = runinfo.validate()
 
@@ -1176,11 +1179,9 @@ with edit_delete:
                     ec = DeleteCourseRun(runs, include_expired, runinfo)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ec), language="text")
+                    handle_request(ec)
 
                 with response:
-                    st.subheader("Response")
                     handle_error(lambda: ec.execute())
 
 with sessions:
@@ -1211,8 +1212,8 @@ with sessions:
     if st.checkbox("Specify Month and Year to retrieve?", key="specify-view-sessions-month-year"):
         month, year = st.columns(2)
         month_value = month.selectbox(label="Select Month value",
-                                      options=ViewCourseSessions.NUM2MONTH.keys(),
-                                      format_func=lambda x: ViewCourseSessions.NUM2MONTH[x],
+                                      options=NUM2MONTH.keys(),
+                                      format_func=lambda x: NUM2MONTH[x],
                                       help="The month of the sessions to retrieve",
                                       key="view-sessions-month")
         year_value = year.number_input(label="Select Year value",
@@ -1230,12 +1231,10 @@ with sessions:
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
-            vc = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
+            vcs = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                handle_request(vcs)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: vc.execute())
+                handle_error(lambda: vcs.execute())

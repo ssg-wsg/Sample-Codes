@@ -4,8 +4,9 @@ import streamlit_nested_layout
 
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
-from utils.http_utils import BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL
 from core.system.cleaner import start_schedule
+from core.constants import Endpoints
+
 from tempfile import NamedTemporaryFile
 
 # initialise all variables
@@ -36,7 +37,8 @@ st.markdown("Before you continue, make sure to fill up the following configurati
 st.subheader("API Endpoint")
 st.markdown("Select the endpoint you wish to connect to!")
 st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
-                                       options=[BASE_PROD_URL, ALTERNATIVE_PROD_URL, UAT_URL])
+                                       options=Endpoints,
+                                       format_func=lambda endpoint: endpoint.value)
 
 st.subheader("UEN and Keys")
 st.markdown("Key in your UEN number, as well as your encryption keys, certificate key (`.pem`) and private key "
@@ -62,7 +64,7 @@ with st.form(key="init_config"):
                 st.session_state["cert_pem"] = st.session_state["cert_pem"].name
 
                 st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
-                st.session_state["key_pem"].write(cert_pem.read())
+                st.session_state["key_pem"].write(key_pem.read())
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
 
                 st.session_state["uen"] = uen.upper()  # UENs only have upper case characters

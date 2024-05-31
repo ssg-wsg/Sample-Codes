@@ -3,8 +3,8 @@ import streamlit as st
 from core.attendance.course_session_attendance import CourseSessionAttendance
 from core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
 from core.models.attendance import UploadAttendanceInfo
-from core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS
-from utils.http_utils import handle_error
+from core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, Endpoints
+from utils.http_utils import handle_error, handle_request
 from utils.streamlit_utils import init, display_config
 
 init()
@@ -61,12 +61,10 @@ with view:
             vc = CourseSessionAttendance(runs, crn, session_id)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                handle_request(vc)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: vc.execute())
+                handle_error(lambda: vc.execute(), require_decryption=True)
 
 with upload:
     st.header("Upload Course Session Attendance")
@@ -106,7 +104,7 @@ with upload:
     uploadAttendance.set_trainee_id_type(col1.selectbox(label="Enter Trainee ID Type",
                                                         help="Trainee ID type code",
                                                         options=ID_TYPE_MAPPING.keys(),
-                                                        format_func=lambda x: ID_TYPE_MAPPING[x],
+                                                        format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
                                                         key="trainee-id-type-upload-attendance"))
 
     uploadAttendance.set_trainee_id(col2.text_input(label="Enter Trainee ID",
@@ -191,9 +189,7 @@ with upload:
                 uca = UploadCourseSessionAttendance(runs, uploadAttendance)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(uca), language="text")
+                    handle_request(uca, require_encryption=True)
 
                 with response:
-                    st.subheader("Response")
                     handle_error(lambda: uca.execute())

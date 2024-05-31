@@ -1,9 +1,9 @@
-import datetime
 import requests
 import streamlit as st
 
-from utils.http_utils import HTTPRequestBuilder, BASE_PROD_URL
+from utils.http_utils import HTTPRequestBuilder
 from core.abc.abstract import AbstractRequest
+from core.constants import Endpoints, HttpMethod, NUM2MONTH
 
 from typing import Literal, Optional
 
@@ -13,21 +13,7 @@ class ViewCourseSessions(AbstractRequest):
     Class used for viewing course sessions.
     """
 
-    _TYPE: Literal["GET"] = "GET"
-    NUM2MONTH: dict[int, str] = {
-        1: "Jan",
-        2: "Feb",
-        3: "Mar",
-        4: "Apr",
-        5: "May",
-        6: "Jun",
-        7: "Jul",
-        8: "Aug",
-        9: "Sep",
-        10: "Oct",
-        11: "Nov",
-        12: "Dec"
-    }
+    _TYPE: HttpMethod = HttpMethod.GET
 
     def __init__(self, runId: str, crn: str, session_month: Optional[str], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]):
@@ -57,9 +43,16 @@ class ViewCourseSessions(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
+        match st.session_state["url"]:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.public_prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(BASE_PROD_URL) \
-            .with_direct_argument(f"/courses/runs/{runId}/sessions") \
+            .with_endpoint(url, direct_argument=f"/courses/runs/{runId}/sessions") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \

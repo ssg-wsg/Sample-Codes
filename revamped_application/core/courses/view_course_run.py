@@ -1,7 +1,9 @@
 import requests
+import streamlit as st
 
-from utils.http_utils import HTTPRequestBuilder, BASE_PROD_URL
+from utils.http_utils import HTTPRequestBuilder
 from core.abc.abstract import AbstractRequest
+from core.constants import Endpoints, HttpMethod
 
 from typing import Literal
 
@@ -11,7 +13,7 @@ class ViewCourseRun(AbstractRequest):
     Class used for viewing course runs.
     """
 
-    _TYPE: Literal["GET"] = "GET"
+    _TYPE: HttpMethod = HttpMethod.GET
 
     def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]):
         super().__init__()
@@ -36,11 +38,20 @@ class ViewCourseRun(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
+        print(st.session_state["url"])
+
+        match st.session_state["url"]:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.public_prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(BASE_PROD_URL) \
+            .with_endpoint(url, direct_argument=f"/courses/courseRuns/id/{runId}") \
             .with_header("accept", "application/json") \
-            .with_header("Content-Type", "application/json") \
-            .with_direct_argument(f"/courses/courseRuns/id/{runId}")
+            .with_header("Content-Type", "application/json")
 
         match include_expired:
             case "Yes":
