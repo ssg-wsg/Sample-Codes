@@ -12,10 +12,13 @@ init()
 st.set_page_config(page_title="Attendance", page_icon="✅")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Attendance API")
+
+st.image("assets/sf.png", width=200)
+st.title("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
 st.info("**Retrieve Course Session Attendance API returns *encrypted responses*!**\n\n"

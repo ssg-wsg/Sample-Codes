@@ -474,14 +474,18 @@ if (err) {
 });
 '''
 
+st.image("assets/sf.png", width=200)
+st.title("Demo Code")
+
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
 open_auth, cert_auth = st.tabs(["Open Authentication", "Certificate Authentication"])
 
 with cert_auth:
-    st.title("Certificate Authentication")
+    st.subheader("Certificate Authentication")
     st.markdown("Certificate Authentication employs a BYOK (bring-your-own-keys) approach to ensuring that your "
                 "API Requests are secure, by requiring you to use your own symmetric keys (certificate and "
                 "private key) for authentication!")
@@ -533,7 +537,7 @@ with cert_auth:
                      icon="🚨")
 
 with open_auth:
-    st.title("Open Authentication")
+    st.subheader("Open Authentication")
     st.markdown("Open Authentication uses OAuth 2.0 to authenticate your client to SSG APIs, "
                 "without the need to create your own symmetric keys (certificate and keys) as with "
                 "Certificate Authentication!")

@@ -18,10 +18,13 @@ init()
 st.set_page_config(page_title="Courses", page_icon="📚")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Courses API")
+
+st.image("assets/sf.png", width=200)
+st.title("Courses API")
 st.markdown("The Courses API allows you to search, filter and compare different SkillsFuture Credit "
             "eligible courses that have been published on the MySkillsFuture portal! Through this "
             "API you can access details regarding course categories, related courses, popular "

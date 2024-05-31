@@ -66,19 +66,20 @@ def display_config() -> None:
     """Displays all the loaded configuration variables"""
 
     st.header("API Endpoint")
-    st.code(st.session_state["url"].value if st.session_state["url"] else "-", language="text")
+    st.code(f"{st.session_state["url"].value}: "
+            f"{st.session_state["url"].urls[0] if len(st.session_state["url"].urls) == 1
+                else ", ".join(st.session_state["url"].urls)}" if st.session_state["url"] else "-", language="text")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
-    st.header("Keys")
-    st.subheader("Encryption Key:")
+    st.header("Encryption Key:")
     st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
 
-    st.subheader("Certificate Key:")
+    st.header("Certificate Key:")
     st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
 
-    st.subheader("Private Key:")
+    st.header("Private Key:")
     st.code(st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
 
 
@@ -116,7 +117,7 @@ def http_code_handler(code: Union[int, str]) -> None:
         return
 
 
-def validation_error_handler(errors: list[str], warnings: list[str])\
+def validation_error_handler(errors: list[str], warnings: list[str]) \
         -> bool:
     """
     Handles the errors and warnings returned by the validation function and returns a boolean value

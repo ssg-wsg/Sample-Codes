@@ -18,6 +18,7 @@ start_schedule()
 st.set_page_config(page_title="Home", page_icon="🏠")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
