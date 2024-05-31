@@ -24,8 +24,8 @@ with st.sidebar:
 
 
 st.image("assets/sf.png", width=200)
-st.title("SSG API Demo")
-st.markdown("Welcome to the SSG API Demo App!\n\n"
+st.title("SSG API Sample Application")
+st.markdown("Welcome to the SSG API Sample Application!\n\n"
             "Select any one of the pages on the left sidebar to view sample codes for each of the different crucial "
             "components of the SSG API suite!")
 
