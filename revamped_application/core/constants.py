@@ -1,4 +1,57 @@
-"""Contains all constants and mappings that are used throughout multiple elements in the app"""
+"""
+Contains all constants and mappings that are used throughout multiple elements in the app
+
+Enums code is inspired by https://stackoverflow.com/questions/12680080/python-enums-with-attributes
+"""
+
+from enum import Enum
+
+
+# ===== BASE CONSTANTS ===== #
+class HttpMethod(Enum):
+    """Enum representing the permitted types of HTTP requests that can be made."""
+
+    GET = "GET"
+    POST = "POST"
+
+
+class Endpoints(Enum):
+    """
+    Enum representing the endpoints that users can connect to.
+
+    Attributes
+    ----------
+    value: The string representing the value of the enum
+    urls: Tuple of 1 or more string that corresponds to the URLs of the endpoints
+    """
+
+    UAT = "UAT", ("https://uat-api.ssg-wsg.sg", )
+    PRODUCTION = "Production", ("https://public-api.ssg-wsg.sg", "https://api.ssg-wsg.sg")
+    MOCK = "Mock", ("https://mock-api.ssg-wsg.sg", )
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of this enum.
+
+        First line creates a new instance of this enum constant.
+        Second line and third line sets the value and description of the enum constant respectively.
+        Last line returns this enum constant.
+        """
+
+        o = object.__new__(cls)
+        o._value_ = args[0]
+        o.urls = args[1]
+        return o
+
+    @staticmethod
+    def public_prod():
+        return Endpoints.PRODUCTION.urls[0]
+
+    @staticmethod
+    def prod():
+        # alt prod url
+        return Endpoints.PRODUCTION.urls[1]
+
 
 # ===== COURSES CONSTANTS ===== #
 MODE_OF_TRAINING_MAPPING: dict = {
@@ -14,8 +67,8 @@ MODE_OF_TRAINING_MAPPING: dict = {
 }
 
 ID_TYPE_MAPPING: dict[str, str] = {
-    "SB": "Singapore Blue",
-    "SP": "Singapore Pink",
+    "SB": "Singapore Blue Identification Card",
+    "SP": "Singapore Pink Identification Card",
     "SO": "Fin/Work Permit",
     "FP": "Foreign Passport",
     "OT": "Others"
