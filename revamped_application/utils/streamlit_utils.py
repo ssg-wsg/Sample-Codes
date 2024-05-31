@@ -4,7 +4,7 @@ File containing utility functions and values to initialise Streamlit session var
 
 import streamlit as st
 
-from typing import Union, Optional
+from typing import Union
 from utils.string_utils import StringBuilder
 
 
@@ -26,9 +26,6 @@ def init() -> None:
 
     if "key_pem" not in st.session_state:
         st.session_state["key_pem"] = None
-
-    if "file_history" not in st.session_state:
-        st.session_state["file_history"] = None
 
     if "url" not in st.session_state:
         st.session_state["url"] = None
@@ -62,12 +59,14 @@ def display_status() -> None:
         st.success("All configuration variables are present and loaded!")
 
 
+# this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
+# of this decorator and replace it with the new syntax
 @st.experimental_dialog("Configs", width="large")
 def display_config() -> None:
     """Displays all the loaded configuration variables"""
 
     st.header("API Endpoint")
-    st.code(st.session_state["url"] if st.session_state["url"] else "-", language="text")
+    st.code(st.session_state["url"].value if st.session_state["url"] else "-", language="text")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
@@ -77,10 +76,10 @@ def display_config() -> None:
     st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
 
     st.subheader("Certificate Key:")
-    st.code("Loaded at: " + st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
+    st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
 
     st.subheader("Private Key:")
-    st.code("Loaded at: " + st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
+    st.code(st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
 
 
 def http_code_handler(code: Union[int, str]) -> None:
@@ -146,3 +145,8 @@ def validation_error_handler(errors: list[str], warnings: list[str])\
 
     return len(errors) == 0
 
+
+def does_not_have_keys() -> bool:
+    """Returns true if both private key and cert keys are present"""
+
+    return st.session_state["key_pem"] is None or st.session_state["cert_pem"] is None
