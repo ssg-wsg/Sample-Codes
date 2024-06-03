@@ -1,7 +1,10 @@
+"""
+This file contains the CourseSessionAttendance class, which is used for sending requests to the
+View Course Session Attendance API.
+"""
+
 import requests
 import streamlit as st
-
-from typing import Literal
 
 from core.abc.abstract import AbstractRequest
 from core.constants import Endpoints, HttpMethod

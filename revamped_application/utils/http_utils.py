@@ -1,6 +1,9 @@
+"""
+This file contains useful classes and methods used for creating and handling HTTP requests.
+"""
+
 import binascii
 import json
-import logging
 import textwrap
 
 import requests
@@ -13,10 +16,6 @@ from core.cipher.encrypt_decrypt import Cryptography
 from typing import Self, Any, Callable
 from .string_utils import StringBuilder
 
-
-BASE_PROD_URL = "https://public-api.ssg-wsg.sg"
-ALTERNATIVE_PROD_URL = "https://api.ssg-wsg.sg"
-UAT_URL = "https://uat-api.ssg-wsg.sg"
 
 # initialise the session variables here
 init()
@@ -36,27 +35,24 @@ class HTTPRequestBuilder:
     def __init__(self):
         """
         Initialises the request builder object.
-
-        Note that the endpoint is automatically set to the URL specified on the Home page.
         """
 
         self.endpoint = None
         self.header = {"accept": "application/json"}
         self.params = {}
         self.body = {}
-        self.direct_argument = ""
 
     def __str__(self):
         """
         String representation of the HTTPRequestBuilder returns the JSON string representing the payload/body
-        of the request
+        of the request.
         """
 
         return json.dumps(self.body, indent=HTTPRequestBuilder._INDENT_LEVEL)
 
     def with_endpoint(self, endpoint: str, direct_argument: str = "") -> Self:
         """
-        Overrides the endpoint URL set under the Home page.
+        Specifies the API endpoint to send requests to.
 
         :param endpoint: Endpoint URL corresponding to the HTTP/S API endpoint. It must be
                          prepended with the HTTP protocol and must not end with '/'. If you
@@ -109,7 +105,7 @@ class HTTPRequestBuilder:
         Adds a key-value query to the request.
 
         :param key: String key
-        :param value: String value
+        :param value: String value. This value should be JSON-serializable.
         :return: This Builder instance
         """
 
@@ -143,7 +139,7 @@ class HTTPRequestBuilder:
         Sets the API version of the request.
 
         WARNING: You are highly discouraged to use this function to specify the API version within the request.
-        Doing so may open you up to errors if the API version you indicated has been deprecated/decommissioned and
+        Doing so may open you up to errors if the API version you indicated has been deprecated/decommissioned, and
         you failed to update this parameter regularly. Leaving the API version field blank will ensure that you will
         always be using the most updated version of the API!
 
@@ -163,7 +159,7 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
-        return requests.get(self.endpoint + self.direct_argument,
+        return requests.get(self.endpoint,
                             params=self.params,
                             headers=self.header,
                             cert=(st.session_state["key_pem"], st.session_state["cert_pem"]))
@@ -175,7 +171,7 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
-        return requests.post(self.endpoint + self.direct_argument,
+        return requests.post(self.endpoint,
                              params=self.params,
                              headers=self.header,
                              data=self.body,
@@ -186,8 +182,8 @@ class HTTPRequestBuilder:
         Sends an encrypted POST request to the endpoint using the relevant certs stored in the session state.
         Note that we use json=... here to ensure the encrypted payload is automatically form-encoded.
 
-        Make sure that you set return_bytes=False over here to decode the payload into a String; the json field
-        does not allow you to pass in bytes objects.
+        Make sure that you set return_bytes=False for Cryptography.encrypt() to decode the payload into a String;
+        the json field does not allow you to pass in bytes objects.
 
         cert can either be a single value representing the file path to a file that contains the private key and
         certificate, or a 2-tuple (cert, key) representing the file path to a certificate and private key file
@@ -196,7 +192,7 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
-        return requests.post(self.endpoint + self.direct_argument,
+        return requests.post(self.endpoint,
                              params=self.params,
                              headers=self.header,
                              json=Cryptography.encrypt(json.dumps(self.body), return_bytes=False),
@@ -231,7 +227,7 @@ class HTTPRequestBuilder:
         # wrap the url as it might become too long
         # code idea taken from https://discuss.streamlit.io/t/st-code-on-multiple-lines/50511/8
         curr_str = "\n".join(textwrap.wrap(builder.get(), width=HTTPRequestBuilder.WRAP_LEVEL))
-        builder = builder.setLength(length=0) \
+        builder = builder.clear() \
                          .append(curr_str)
 
         builder = (builder.newline()
@@ -248,7 +244,7 @@ class HTTPRequestBuilder:
                        .newline())
 
         # the dictionary needs to be loaded up as a JSON object first before we can dump it out as a pretty
-        # JSON string
+        # JSON string, hence the convoluted operation below to load and then dump the JSON string
         builder = (builder.newline()
                    .append("Body")
                    .newline()
@@ -265,7 +261,8 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
     Handles the request to be sent to the endpoint and shows the encrypted payload if required.
 
     :param rec_obj: Request object to be sent to the endpoint
-    :param require_encryption: Boolean to indicate if the request should be encrypted or not
+    :param require_encryption: Boolean to indicate if the request should be encrypted or not. If the request should
+                               be encrypted, then a section to display the encrypted text is displayed.
     """
 
     if require_encryption:
@@ -286,12 +283,13 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
 
 def handle_error(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
     """
-    Handles the potentially throwing function and uses Streamlit to display or handle the error.
+    Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
     :param throwable: Function to be called.
                       This function accepts no inputs and may potentially raise an error.
                       This function should also return the response object from the request.
-    :param require_decryption: Boolean indicating whether decryption is required for the returned payload
+    :param require_decryption: Boolean indicating whether decryption is required for the returned payload. If the
+                               response should be decrypted, then a section will display the decrypted response.
     """
 
     try:

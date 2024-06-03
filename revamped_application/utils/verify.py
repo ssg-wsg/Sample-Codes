@@ -1,12 +1,18 @@
 """
-Contains verification functions for fields used in the demo app
+This file contains verification functions for fields in the Sample Application.
 """
 
 import re
 
 
 def verify_uen(uen: str) -> bool:
-    """Verifies if the UEN provided is preliminarily valid"""
+    """
+    Verifies if the UEN provided is preliminarily valid. This does not check if a UEN is actually valid, i.e.
+    attached to a valid entity in Singapore.
+
+    :param uen: UEN to verify
+    :return: True if the UEN is valid, False otherwise
+    """
 
     if len(uen) != 9 and len(uen) != 10:
         return False
