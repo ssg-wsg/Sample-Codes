@@ -5,8 +5,8 @@ This file contains utility functions and values to initialise Streamlit session 
 import streamlit as st
 
 from typing import Union
-from core.system.logger import Logger
-from utils.string_utils import StringBuilder
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.string_utils import StringBuilder
 
 
 LOGGER = Logger(__name__)

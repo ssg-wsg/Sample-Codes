@@ -5,9 +5,9 @@ import streamlit as st
 
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-from core.abc.abstract import AbstractRequestInfo
-from core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
-from utils.json_utils import remove_null_fields
+from revamped_application.core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
+from revamped_application.utils.json_utils import remove_null_fields
 
 
 # ===== Session Info ===== #

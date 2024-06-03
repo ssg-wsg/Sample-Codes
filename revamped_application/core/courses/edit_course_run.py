@@ -3,10 +3,10 @@ import streamlit as st
 
 from typing import Literal
 
-from core.models.course_runs import EditRunInfo
-from core.abc.abstract import AbstractRequest
-from core.constants import Endpoints, HttpMethod
-from utils.http_utils import HTTPRequestBuilder
+from revamped_application.core.models.course_runs import EditRunInfo
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import Endpoints, HttpMethod
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class EditCourseRun(AbstractRequest):

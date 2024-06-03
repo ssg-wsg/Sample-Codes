@@ -1,9 +1,9 @@
 import requests
 import streamlit as st
 
-from utils.http_utils import HTTPRequestBuilder
-from core.abc.abstract import AbstractRequest
-from core.constants import Endpoints, HttpMethod, NUM2MONTH
+from revamped_application.utils.http_utils import HTTPRequestBuilder
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import Endpoints, HttpMethod, NUM2MONTH
 
 from typing import Literal, Optional
 

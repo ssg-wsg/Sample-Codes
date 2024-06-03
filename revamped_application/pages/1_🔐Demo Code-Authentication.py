@@ -3,8 +3,8 @@ import tempfile
 import streamlit as st
 import requests
 
-from utils.streamlit_utils import display_config
-from core.system.logger import Logger
+from revamped_application.utils.streamlit_utils import display_config
+from revamped_application.core.system.logger import Logger
 
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient

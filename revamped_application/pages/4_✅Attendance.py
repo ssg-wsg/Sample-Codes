@@ -1,12 +1,12 @@
 import streamlit as st
 
-from core.attendance.course_session_attendance import CourseSessionAttendance
-from core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
-from core.models.attendance import UploadAttendanceInfo
-from core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, Endpoints
-from core.system.logger import Logger
-from utils.http_utils import handle_error, handle_request
-from utils.streamlit_utils import init, display_config, validation_error_handler
+from revamped_application.core.attendance.course_session_attendance import CourseSessionAttendance
+from revamped_application.core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
+from revamped_application.core.models.attendance import UploadAttendanceInfo
+from revamped_application.core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, Endpoints
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.http_utils import handle_error, handle_request
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
 
 
 # initialise necessary variables

@@ -1,9 +1,9 @@
 import requests
 import streamlit as st
 
-from utils.http_utils import HTTPRequestBuilder
-from core.abc.abstract import AbstractRequest
-from core.constants import Endpoints, HttpMethod
+from revamped_application.utils.http_utils import HTTPRequestBuilder
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import Endpoints, HttpMethod
 
 from typing import Literal
 
@@ -42,8 +42,10 @@ class ViewCourseRun(AbstractRequest):
             case Endpoints.PRODUCTION:
                 url = Endpoints.public_prod()
             case Endpoints.UAT | Endpoints.MOCK:
+                print("i matched lol")
                 url = st.session_state["url"].urls[0]
             case _:
+                print(f">>> {st.session_state["url"]}")
                 raise ValueError("Invalid URL Type!")
 
         self.req = HTTPRequestBuilder() \

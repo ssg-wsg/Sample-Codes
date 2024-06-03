@@ -9,12 +9,12 @@ import textwrap
 import requests
 import streamlit as st
 
-from utils.streamlit_utils import init, http_code_handler
-from core.abc.abstract import AbstractRequest
-from core.constants import HttpMethod
-from core.cipher.encrypt_decrypt import Cryptography
+from revamped_application.utils.streamlit_utils import init, http_code_handler
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod
+from revamped_application.core.cipher.encrypt_decrypt import Cryptography
 from typing import Self, Any, Callable
-from .string_utils import StringBuilder
+from revamped_application.utils.string_utils import StringBuilder
 
 
 # initialise the session variables here

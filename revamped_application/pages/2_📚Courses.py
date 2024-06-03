@@ -2,17 +2,17 @@ import streamlit as st
 
 from datetime import datetime
 
-from core.courses.delete_course_run import DeleteCourseRun
-from core.courses.view_course_run import ViewCourseRun
-from core.courses.edit_course_run import EditCourseRun
-from core.courses.add_course_run import AddCourseRun
-from core.courses.view_course_sessions import ViewCourseSessions
-from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
+from revamped_application.core.courses.delete_course_run import DeleteCourseRun
+from revamped_application.core.courses.view_course_run import ViewCourseRun
+from revamped_application.core.courses.edit_course_run import EditCourseRun
+from revamped_application.core.courses.add_course_run import AddCourseRun
+from revamped_application.core.courses.view_course_sessions import ViewCourseSessions
+from revamped_application.core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
     RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
-from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
-from core.system.logger import Logger
-from utils.http_utils import handle_error, handle_request
-from utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
+from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.http_utils import handle_error, handle_request
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
 
 # initialise necessary variables
 init()

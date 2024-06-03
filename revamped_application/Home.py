@@ -1,3 +1,12 @@
+import os
+import sys
+
+# append current file path to PATH so that it is discoverable for absolute imports; this must be done
+# before the other files from the same project are imported
+# taken from https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+FILE_LOC = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(FILE_LOC))
+
 import base64
 import streamlit as st
 import streamlit_nested_layout
@@ -9,6 +18,7 @@ from core.system.logger import Logger
 from core.constants import Endpoints
 
 from tempfile import NamedTemporaryFile
+
 
 # initialise all variables and logger
 init()

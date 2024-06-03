@@ -3,9 +3,9 @@ import streamlit as st
 
 from typing import Optional
 
-from core.constants import ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, ATTENDANCE_CODE_MAPPINGS
-from utils.json_utils import remove_null_fields
-from core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, ATTENDANCE_CODE_MAPPINGS
+from revamped_application.utils.json_utils import remove_null_fields
+from revamped_application.core.abc.abstract import AbstractRequestInfo
 
 
 class UploadAttendanceInfo(AbstractRequestInfo):
