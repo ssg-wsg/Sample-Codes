@@ -210,7 +210,6 @@ class HTTPRequestBuilder:
         builder = (StringBuilder(req_type.value)
                    .append(" ")
                    .append(self.endpoint)
-                   .append(self.direct_argument)
                    .append("?" if len(self.params) > 0 else ""))
 
         for i, (k, v) in enumerate(self.params.items()):
