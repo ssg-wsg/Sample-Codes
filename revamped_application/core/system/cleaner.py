@@ -1,3 +1,8 @@
+"""
+This file contains all the necessary clean-up functions needed by the application to remove all temporary files
+that contains the key files and other credentials needed for the application to run.
+"""
+
 import os
 import tempfile
 import logging
@@ -6,6 +11,8 @@ import apscheduler.schedulers
 from apscheduler.schedulers.background import BackgroundScheduler
 
 SCHEDULER = BackgroundScheduler()
+
+# this ID is used to uniquely identify the cleanup process on the system
 UNIQUE_JOB_ID = "ssg"
 
 
@@ -23,8 +30,10 @@ def start_schedule():
         try:
             SCHEDULER.start()
         except apscheduler.schedulers.SchedulerAlreadyRunningError as e:
+            # ignore the error where the schedule is already running
             pass
     else:
+        # do not add more jobs to the schedule if a matching cron job is found
         return
 
 
@@ -33,7 +42,7 @@ def _clean_temp():
 
     temp_dir = tempfile.gettempdir()
     for filename in os.listdir(temp_dir):
-        if filename.endswith("tmp"):
+        if filename.endswith(".pem"):
             try:
                 os.remove(os.path.join(temp_dir, filename))
                 logging.log(logging.INFO, f"Removed temporary file: {filename}")
