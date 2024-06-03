@@ -65,14 +65,16 @@ with st.form(key="init_config"):
             try:
                 LOGGER.info("Verifying configurations...")
                 # save the byte stream into a temp file to give it a path for passing it to requests
-                st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
+                st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["cert_pem"].write(cert_pem.read())
                 st.session_state["cert_pem"] = st.session_state["cert_pem"].name
+                st.session_state["cert_pem"].close()
                 LOGGER.info("Certificate loaded!")
 
-                st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
+                st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["key_pem"].write(key_pem.read())
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
+                st.session_state["key_pem"].close()
                 LOGGER.info("Private key loaded!")
 
                 st.session_state["uen"] = uen.upper()  # UENs only have upper case characters

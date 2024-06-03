@@ -16,7 +16,7 @@ from utils.streamlit_utils import init, display_config, validation_error_handler
 
 # initialise necessary variables
 init()
-LOGGER = Logger(__name__)
+LOGGER = Logger("Courses API")
 
 st.set_page_config(page_title="Courses", page_icon="📚")
 

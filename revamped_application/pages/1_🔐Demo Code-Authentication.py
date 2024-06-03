@@ -11,9 +11,9 @@ from oauthlib.oauth2 import BackendApplicationClient
 
 st.set_page_config(page_title="Demo Code", page_icon="🔐")
 
-LOGGER = Logger(__name__)
+LOGGER = Logger("Demo Code")
 
-CERT_AUTH_PYTHON = '''
+CERT_AUTH_PYTHON = """
 import requests
 
 try:
@@ -23,9 +23,9 @@ try:
     print("Response body: ", response.json())
 except:
     print("Please check to make sure that the endpoint URL or the path to certificates is valid!")
-'''
+"""
 
-CERT_AUTH_JAVA = '''
+CERT_AUTH_JAVA = """
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -140,9 +140,9 @@ public class SSGWSGSampleCodeCertJava {
     }
 
 }
-'''
+"""
 
-CERT_AUTH_NODE = '''
+CERT_AUTH_NODE = """
 var https = require('https'),                  // Module for https
     fs =    require('fs');                     // Required to read certs and keys
 
@@ -169,9 +169,9 @@ var https = require('https'),                  // Module for https
     }
 
 https.request(options, makeAPICall).end();
-'''
+"""
 
-OPEN_AUTH_PYTHON = '''
+OPEN_AUTH_PYTHON = """
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 
@@ -193,9 +193,9 @@ try:
     print(response.json())
 except:
     print("An error has occurred. Please check data input")
-'''
+"""
 
-OPEN_AUTH_JAVA = '''
+OPEN_AUTH_JAVA = """
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Arrays;
@@ -362,9 +362,9 @@ public class SSGWSGSampleCodeJava {
     }
 
 }
-'''
+"""
 
-OPEN_AUTH_NODE = '''
+OPEN_AUTH_NODE = """
 console.log('################################################################');
 console.log('Simple Program in JavaScript to call OAuth 2 Token for Get API');
 console.log('################################################################');
@@ -476,7 +476,7 @@ if (err) {
     }
 }
 });
-'''
+"""
 
 st.image("assets/sf.png", width=200)
 st.title("Demo Code")
