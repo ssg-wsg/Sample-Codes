@@ -5,12 +5,14 @@ import streamlit_nested_layout
 from utils.streamlit_utils import init, display_config
 from utils.verify import verify_uen
 from core.system.cleaner import start_schedule
+from core.system.logger import Logger
 from core.constants import Endpoints
 
 from tempfile import NamedTemporaryFile
 
-# initialise all variables
+# initialise all variables and logger
 init()
+LOGGER = Logger(__name__)
 
 # each new connection to the app cleans up the temp folder
 start_schedule()
@@ -55,23 +57,34 @@ with st.form(key="init_config"):
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False)
 
     if st.form_submit_button("Load"):
+        LOGGER.info("Loading configurations...")
         if not verify_uen(uen):
+            LOGGER.error("Invalid UEN was entered at [Home.py > UEN and Keys > \"Load\" button]")
             st.error("Error! Invalid **UEN** provided!", icon="🚨")
         elif all([uen, enc_key, cert_pem, key_pem]):
             try:
+                LOGGER.info("Verifying configurations...")
                 # save the byte stream into a temp file to give it a path for passing it to requests
                 st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
                 st.session_state["cert_pem"].write(cert_pem.read())
                 st.session_state["cert_pem"] = st.session_state["cert_pem"].name
+                LOGGER.info("Certificate loaded!")
 
                 st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False)
                 st.session_state["key_pem"].write(key_pem.read())
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
+                LOGGER.info("Private key loaded!")
 
                 st.session_state["uen"] = uen.upper()  # UENs only have upper case characters
+                LOGGER.info("UEN loaded!")
+
                 st.session_state["encryption_key"] = enc_key
+                LOGGER.info("Encryption Key loaded!")
+
                 st.success("Configurations loaded!")
             except base64.binascii.Error:
+                LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
                 st.error("Certificate or private key is invalid!", icon="🔐")
         else:
+            LOGGER.error("Missing configurations detected at [Home.py > UEN and Keys > \"Load\" button]")
             st.error("Please fill up the above configuration details needed for the demo app!", icon="🚨")

@@ -10,10 +10,13 @@ from core.courses.view_course_sessions import ViewCourseSessions
 from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
     RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
 from core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
+from core.system.logger import Logger
 from utils.http_utils import handle_error, handle_request
 from utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
 
+# initialise necessary variables
 init()
+LOGGER = Logger(__name__)
 
 st.set_page_config(page_title="Courses", page_icon="📚")
 
@@ -60,18 +63,23 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-button"):
+        LOGGER.info("Attempting to send request to View Course Run API...")
         if len(runs) == 0:
+            LOGGER.error("Missing Course Run ID!")
             st.error("Key in your course run ID to proceed!", icon="🚨")
         elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
 
             with request:
+                LOGGER.info("Showing preview of request...")
                 handle_request(vc)
 
             with response:
+                LOGGER.info("Executing request...")
                 handle_error(lambda: vc.execute())
 
 with add:
@@ -608,9 +616,12 @@ with add:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="add-button"):
+        LOGGER.info("Attempting to send request to Add Course Run API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = add_runinfo.validate()
@@ -620,9 +631,11 @@ with add:
                 ac = AddCourseRun(include_expired, add_runinfo)
 
                 with request:
+                    LOGGER.info("Showing preview of request...")
                     handle_request(ac)
 
                 with response:
+                    LOGGER.info("Executing request...")
                     handle_error(lambda: ac.execute())
 
 with edit_delete:
@@ -1163,11 +1176,15 @@ with edit_delete:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="edit-button"):
+        LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         elif not runs:
+            LOGGER.error("Missing Course Run ID, request aborted!")
             st.error("Make sure to fill in your Course Run ID before proceeding!", icon="🚨")
         elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = runinfo.validate()
@@ -1182,9 +1199,11 @@ with edit_delete:
                     ec = DeleteCourseRun(runs, include_expired, runinfo)
 
                 with request:
+                    LOGGER.info("Showing preview of request...")
                     handle_request(ec)
 
                 with response:
+                    LOGGER.info("Executing request...")
                     handle_error(lambda: ec.execute())
 
 with sessions:
@@ -1230,14 +1249,18 @@ with sessions:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-session-button"):
+        LOGGER.info("Attempting to send request to View Course Sessions API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vcs = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
 
             with request:
+                LOGGER.info("Showing preview of request...")
                 handle_request(vcs)
 
             with response:
+                LOGGER.info("Executing request...")
                 handle_error(lambda: vcs.execute())

@@ -4,10 +4,14 @@ import streamlit as st
 import requests
 
 from utils.streamlit_utils import display_config
+from core.system.logger import Logger
+
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 
 st.set_page_config(page_title="Demo Code", page_icon="🔐")
+
+LOGGER = Logger(__name__)
 
 CERT_AUTH_PYTHON = '''
 import requests
@@ -520,19 +524,28 @@ with cert_auth:
     secret_key = st.file_uploader("Secret Key", accept_multiple_files=False, type=["pem"], key="key")
 
     if st.button("Request!", key="cert_button"):
+        LOGGER.info("Certificate Authentication requested...")
         if all([test_url, cert_key, secret_key]):
             try:
                 with tempfile.NamedTemporaryFile() as certfile, tempfile.NamedTemporaryFile() as keyfile:
                     certfile.write(cert_auth)
-                    keyfile.write(secret_key)
+                    LOGGER.info("Loaded Certificate...")
 
+                    keyfile.write(secret_key)
+                    LOGGER.info("Loaded Private Key...")
+
+                    LOGGER.info(f"Sending GET request to {test_url}...")
                     req = requests.get(test_url, cert=(certfile.name, keyfile.name))
                     st.success(f"Response code: {req.status_code}")
+
+                    LOGGER.info(f"Response received: {req.text}")
                     st.json(req.json())
-            except:
+            except Exception as ex:
+                LOGGER.error(f"Unable to send request, error: {ex}")
                 st.error("Please check to make sure that the endpoint URL or the path to certificates is valid!",
                          icon="🚨")
         else:
+            LOGGER.error("Missing certificate or private key file!")
             st.error("Please check to ensure that you fill in all fields before submitting the API request!",
                      icon="🚨")
 
@@ -573,20 +586,31 @@ with open_auth:
     client_secret = st.text_input("Input Secret Key: ")
 
     if st.button("Request!", key="open_button"):
+        LOGGER.info("Open Authentication requested...")
         if all([request_url, client_id, client_secret]):
             try:
+                LOGGER.info("Creating backend application...")
                 client = BackendApplicationClient(client_id=client_id)
+
+                LOGGER.info("Creating OAuth2.0 Session...")
                 oauth = OAuth2Session(client=client)
+
+                LOGGER.info("Fetching token...")
                 token = oauth.fetch_token(
                     token_url='https://public-api.ssg-wsg.sg/dp-oauth/oauth/token',
                     client_id=client_id,
                     client_secret=client_secret
                 )
 
+                LOGGER.info("Sending GET request with OAuth token...")
                 response = oauth.get(request_url)
                 st.success(f"Response code: {response.status_code}")
+
+                LOGGER.info(f"Response received: {response.text}")
                 st.code(response.json())
             except:
+                LOGGER.error(f"Unable to send request, error: {ex}")
                 st.error("An error has occurred. Please check data input!", icon="🚨")
         else:
+            LOGGER.error("Missing certificate or private key file!")
             st.error("Please check to ensure that you fill in all fields before submitting the API request!", icon="🚨")

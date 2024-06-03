@@ -4,10 +4,14 @@ from core.attendance.course_session_attendance import CourseSessionAttendance
 from core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
 from core.models.attendance import UploadAttendanceInfo
 from core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, Endpoints
+from core.system.logger import Logger
 from utils.http_utils import handle_error, handle_request
-from utils.streamlit_utils import init, display_config
+from utils.streamlit_utils import init, display_config, validation_error_handler
 
+
+# initialise necessary variables
 init()
+LOGGER = Logger(__name__)
 
 st.set_page_config(page_title="Attendance", page_icon="✅")
 
@@ -53,20 +57,26 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view_course_session_attendance_button"):
+        LOGGER.info("Attempting to send request to View Course Session Attendance API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif len(crn) == 0:
+            LOGGER.error("Missing Course Reference Number, request aborted!")
             st.error("Make sure to specify your **Course Reference Number** before proceeding!", icon="🚨")
         elif len(session_id) == 0:
+            LOGGER.error("Missing Session ID, request aborted!")
             st.error("Make sure to specify your **Session ID** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = CourseSessionAttendance(runs, crn, session_id)
 
             with request:
+                LOGGER.info("Showing preview of request...")
                 handle_request(vc)
 
             with response:
+                LOGGER.info("Executing request...")
                 handle_error(lambda: vc.execute(), require_decryption=True)
 
 with upload:
@@ -173,21 +183,15 @@ with upload:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="upload_course_session_attendance_button"):
+        LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
+
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         else:
             errors, warnings = uploadAttendance.validate()
 
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(errors), icon="⚠️"
-                )
-
-            if len(errors) > 0:
-                st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-                )
-            else:
+            if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
                 uca = UploadCourseSessionAttendance(runs, uploadAttendance)
 

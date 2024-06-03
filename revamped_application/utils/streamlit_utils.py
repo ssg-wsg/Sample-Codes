@@ -5,7 +5,11 @@ File containing utility functions and values to initialise Streamlit session var
 import streamlit as st
 
 from typing import Union
+from core.system.logger import Logger
 from utils.string_utils import StringBuilder
+
+
+LOGGER = Logger(__name__)
 
 
 def init() -> None:
@@ -129,6 +133,7 @@ def validation_error_handler(errors: list[str], warnings: list[str]) \
     """
 
     if len(warnings) > 0:
+        LOGGER.warning("Some fields have warnings, request resumed!")
         warning_builder = StringBuilder("Some Warnings are raised with your inputs:").newline()
 
         for warning in warnings:
@@ -137,6 +142,7 @@ def validation_error_handler(errors: list[str], warnings: list[str]) \
         st.warning(warning_builder.get(), icon="⚠️")
 
     if len(errors) > 0:
+        LOGGER.error("Some fields are missing, request aborted!")
         error_builder = StringBuilder("Some Errors are detected with your inputs:").newline().newline()
 
         for error in errors:

@@ -38,8 +38,6 @@ class ViewCourseRun(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
-        print(st.session_state["url"])
-
         match st.session_state["url"]:
             case Endpoints.PRODUCTION:
                 url = Endpoints.public_prod()
