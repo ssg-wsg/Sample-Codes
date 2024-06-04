@@ -36,7 +36,11 @@ class CourseSessionAttendance(AbstractRequest):
         :param session_id: Course Session ID
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.public_prod()
             case Endpoints.UAT | Endpoints.MOCK:

@@ -29,7 +29,11 @@ class ViewAssessment(AbstractRequest):
         :param referenceNumber: Reference number of the course session
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.prod()
             case Endpoints.UAT | Endpoints.MOCK:

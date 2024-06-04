@@ -31,7 +31,11 @@ class UpdateVoidAssessment(AbstractRequest):
                                 create a new assessment record
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.prod()
             case Endpoints.UAT | Endpoints.MOCK:
@@ -40,8 +44,8 @@ class UpdateVoidAssessment(AbstractRequest):
                 raise ValueError("Invalid URL Type!")
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(url, direct_argument=f"/tpg/assessments/details/"
-                                                f"{assessment_info.get_assessment_reference_number()}") \
+            .with_endpoint(url, direct_argument=("/tpg/assessments/details/"
+                                                 f"{assessment_info.get_assessment_reference_number()}")) \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_body(assessment_info.payload())
@@ -53,4 +57,4 @@ class UpdateVoidAssessment(AbstractRequest):
         :return: requests.Response object
         """
 
-        return self.req.post()
+        return self.req.post_encrypted()

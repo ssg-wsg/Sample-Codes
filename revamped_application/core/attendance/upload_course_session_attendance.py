@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 
 from revamped_application.core.abc.abstract import AbstractRequest
 from revamped_application.core.constants import Endpoints, HttpMethod
@@ -23,8 +24,20 @@ class UploadCourseSessionAttendance(AbstractRequest):
         return self.__repr__()
 
     def _prepare(self, runId: int, attendanceInfo: UploadAttendanceInfo) -> None:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.public_prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(Endpoints.prod(), direct_argument=f"/courses/runs/{runId}/sessions/attendance") \
+            .with_endpoint(url, direct_argument=f"/courses/runs/{runId}/sessions/attendance") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_body(attendanceInfo.payload())

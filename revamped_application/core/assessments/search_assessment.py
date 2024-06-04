@@ -31,7 +31,11 @@ class SearchAssessment(AbstractRequest):
                             find/search for an assessment record
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.prod()
             case Endpoints.UAT | Endpoints.MOCK:
@@ -52,4 +56,4 @@ class SearchAssessment(AbstractRequest):
         :return: requests.Response object
         """
 
-        return self.req.post()
+        return self.req.post_encrypted()
