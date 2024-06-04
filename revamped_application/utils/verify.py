@@ -26,3 +26,27 @@ def verify_uen(uen: str) -> bool:
         found_match = match1 or match2
 
         return True if found_match else False
+
+
+def verify_aes_encryption_key(key: str) -> bool:
+    """
+    Verifies if the AES-256 key is valid, in a sense that the key is indeed 256 bit / 32 bytes long.
+
+    Taken from: https://stackoverflow.com/questions/6793575/estimating-the-size-of-binary-data-encoded-as-a-
+                b64-string-in-python
+
+    :param key: AES-256 key to verify
+    :return: True if the AES-256 key is valid length-wise, False otherwise
+    """
+
+    count = 0
+
+    if key[-2] == "=":
+        count -= 1
+
+    if key[-1] == "=":
+        count -= 1
+
+    count += int((len(key) * 3) / 4)
+
+    return count == 32

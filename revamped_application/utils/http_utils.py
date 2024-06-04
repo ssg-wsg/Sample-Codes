@@ -280,7 +280,7 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
         st.code(repr(rec_obj), language="text")
 
 
-def handle_error(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
+def handle_response(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
     """
     Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
@@ -298,11 +298,18 @@ def handle_error(throwable: Callable[[], requests.Response], require_decryption:
 
         http_code_handler(response.status_code)
 
+        if response.status_code >= 400:
+            # is an error, no need to decrypt
+            st.header("Error Message")
+            st.code(response.text)
+            return
+
         if require_decryption:
             st.subheader("Encrypted Response")
             st.code(response.text)
 
             st.subheader("Decrypted Response")
+            print(response.json())
             data = Cryptography.decrypt(response.text).decode()
             json_data = json.loads(data)
             st.json(json_data)

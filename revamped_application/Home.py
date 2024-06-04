@@ -12,7 +12,7 @@ import streamlit as st
 import streamlit_nested_layout
 
 from utils.streamlit_utils import init, display_config
-from utils.verify import verify_uen
+from utils.verify import verify_uen, verify_aes_encryption_key
 from core.system.cleaner import start_schedule
 from core.system.logger import Logger
 from core.constants import Endpoints
@@ -69,8 +69,10 @@ with st.form(key="init_config"):
     if st.form_submit_button("Load"):
         LOGGER.info("Loading configurations...")
         if not verify_uen(uen):
-            LOGGER.error("Invalid UEN was entered at [Home.py > UEN and Keys > \"Load\" button]")
+            LOGGER.error("Invalid UEN provided!")
             st.error("Error! Invalid **UEN** provided!", icon="🚨")
+        elif not verify_aes_encryption_key(enc_key):
+            LOGGER.error("Invalid AES-256 encryption key provided!")
         elif all([uen, enc_key, cert_pem, key_pem]):
             try:
                 LOGGER.info("Verifying configurations...")
