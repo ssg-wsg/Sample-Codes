@@ -70,10 +70,17 @@ with st.form(key="init_config"):
         LOGGER.info("Loading configurations...")
         if not verify_uen(uen):
             LOGGER.error("Invalid UEN provided!")
-            st.error("Error! Invalid **UEN** provided!", icon="🚨")
+            st.error("Invalid **UEN** provided!", icon="🚨")
         elif not verify_aes_encryption_key(enc_key):
             LOGGER.error("Invalid AES-256 encryption key provided!")
-        elif all([uen, enc_key, cert_pem, key_pem]):
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+        elif cert_pem is None:
+            LOGGER.error("No valid Certificate key provided!")
+            st.error("**Certificate Key** is not provided!", icon="🚨")
+        elif key_pem is None:
+            LOGGER.error("No valid Private Key provided!")
+            st.error("**Private Key** is not provided!", icon="🚨")
+        else:
             try:
                 LOGGER.info("Verifying configurations...")
                 # save the byte stream into a temp file to give it a path for passing it to requests
@@ -93,10 +100,8 @@ with st.form(key="init_config"):
                 st.session_state["encryption_key"] = enc_key
                 LOGGER.info("Encryption Key loaded!")
 
-                st.success("Configurations loaded!")
+                st.success("**Configurations loaded successfully!**\n\nClick on the \"Configs\" button on the Sidebar "
+                           "to view the configurations you have loaded up!", icon="✅")
             except base64.binascii.Error:
                 LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
                 st.error("Certificate or private key is invalid!", icon="🔐")
-        else:
-            LOGGER.error("Missing configurations detected at [Home.py > UEN and Keys > \"Load\" button]")
-            st.error("Please fill up the above configuration details needed for the demo app!", icon="🚨")

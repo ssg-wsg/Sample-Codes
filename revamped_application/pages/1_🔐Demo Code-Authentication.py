@@ -555,7 +555,7 @@ with cert_auth:
 
                     LOGGER.info(f"Sending GET request to {test_url}...")
                     req = requests.get(test_url, cert=(certfile.name, keyfile.name))
-                    st.success(f"Response code: {req.status_code}")
+                    st.success(f"Response code: {req.status_code}", icon="✅")
 
                     LOGGER.info(f"Response received: {req.text}")
                     st.json(req.json())
@@ -623,7 +623,7 @@ with open_auth:
 
                 LOGGER.info("Sending GET request with OAuth token...")
                 response = oauth.get(request_url)
-                st.success(f"Response code: {response.status_code}")
+                st.success(f"Response code: {response.status_code}", icon="✅")
 
                 LOGGER.info(f"Response received: {response.text}")
                 st.code(response.json())
