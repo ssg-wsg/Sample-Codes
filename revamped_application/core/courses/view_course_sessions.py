@@ -7,7 +7,7 @@ import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import Endpoints, HttpMethod, NUM2MONTH
+from revamped_application.core.constants import HttpMethod
 
 from typing import Literal, Optional
 
@@ -36,7 +36,7 @@ class ViewCourseSessions(AbstractRequest):
     def _prepare(self, runId: str, crn: str, session_month: Optional[int], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
-        Creates an HTTP get request for getting all course sessions
+        Creates an HTTP GET request for retrieving course sessions.
 
         :param runId: Run ID
         :param crn: CRN
@@ -45,20 +45,8 @@ class ViewCourseSessions(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
-        # importing enums from another module causes problems when checking for equality
-        # so we must recreate the endpoint enum object to test for equality
-        to_test = Endpoints(st.session_state["url"].value)
-
-        match to_test:
-            case Endpoints.PRODUCTION:
-                url = Endpoints.public_prod()
-            case Endpoints.UAT | Endpoints.MOCK:
-                url = st.session_state["url"].urls[0]
-            case _:
-                raise ValueError("Invalid URL Type!")
-
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(url, direct_argument=f"/courses/runs/{runId}/sessions") \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/runs/{runId}/sessions") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \
@@ -78,7 +66,7 @@ class ViewCourseSessions(AbstractRequest):
 
     def execute(self) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """

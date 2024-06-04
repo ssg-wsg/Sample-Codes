@@ -51,7 +51,7 @@ st.subheader("API Endpoint")
 st.markdown("Select the endpoint you wish to connect to!")
 st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
                                        options=Endpoints,
-                                       format_func=lambda endpoint: endpoint.value)
+                                       format_func=lambda endpoint: endpoint.name)
 
 st.subheader("UEN and Keys")
 st.markdown("Key in your UEN number, as well as your encryption keys, certificate key (`.pem`) and private key "

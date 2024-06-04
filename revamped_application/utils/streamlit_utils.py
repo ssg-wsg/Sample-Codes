@@ -57,9 +57,7 @@ def display_config() -> None:
     """Displays all the loaded configuration variables."""
 
     st.header("API Endpoint")
-    st.code(f"{st.session_state["url"].value}: "
-            f"{st.session_state["url"].urls[0] if len(st.session_state["url"].urls) == 1
-                else ", ".join(st.session_state["url"].urls)}" if st.session_state["url"] else "-", language="text")
+    st.code(f"{st.session_state["url"].name}: {st.session_state["url"].value}", language="text")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
