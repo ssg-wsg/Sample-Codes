@@ -1,9 +1,26 @@
+"""
+This page displays the demo code used for authenticating with the SSG APIs.
+
+There are 2 methods for authenticating with the SSG APIs:
+1. Open Authentication
+    - This method uses OAuth2.0 to authenticate with the SSG API
+2. Certificate Authentication
+    - This method uses SSL Certificates and Private Keys to authenticate with the SSG API
+    - Do note that the current implementation of the request sending process necessarily saves the certificate and
+      key files on the proxy system used to send the requests on your behalf. This might pose a security risk, as
+      anyone with access to the machine can view and extract the certificates and private keys.
+
+The demo code is provided to enable users to get up and running with the most fundamental aspects of the SSG API:
+Authentication. The demo code is also provided in 3 main languages: Java, Python and NodeJS.
+
+You may wish to verify if the code is actually functional and revise the sample code as you see fit.
+"""
+
 import tempfile
-
-import streamlit as st
 import requests
+import streamlit as st
 
-from revamped_application.utils.streamlit_utils import display_config
+from revamped_application.utils.streamlit_utils import init, display_config
 from revamped_application.core.system.logger import Logger
 
 from requests_oauthlib import OAuth2Session
@@ -11,6 +28,8 @@ from oauthlib.oauth2 import BackendApplicationClient
 
 st.set_page_config(page_title="Demo Code", page_icon="🔐")
 
+# initialise necessary variables
+init()
 LOGGER = Logger("Demo Code")
 
 CERT_AUTH_PYTHON = """

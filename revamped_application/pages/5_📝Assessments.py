@@ -1,3 +1,21 @@
+"""
+This page is used to enable access to the Assessments API.
+
+There are 4 main processes:
+1. Create Assessment
+    - This tab allows you to create an assessment record for a trainee enrolled in your course
+2. Update/Void Assessment
+    - This tab allows you to update or void a particular assessment record for a trainee
+3. Find Assessment
+    - This tab allows you to find assessment records that match the criteria that you have specified
+4. Find Assessment
+    - This tab allows you to view an assessment record by referencing the Assessment Reference Number
+      associated with the assessment record
+
+It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
+functions to clean up the request body and send requests that contains only non-null fields.
+"""
+
 import streamlit as st
 
 from revamped_application.core.assessments.create_assessment import CreateAssessment
@@ -8,14 +26,18 @@ from revamped_application.core.constants import GRADES, RESULTS, ID_TYPE, ASSESS
     SORT_ORDER
 from revamped_application.core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo, \
     SearchAssessmentInfo
-from revamped_application.utils.http_utils import handle_error
-from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.http_utils import handle_response, handle_request
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
 
+# initialise necessary variables
 init()
+LOGGER = Logger("Assessments API")
 
 st.set_page_config(page_title="Assessments", page_icon="📝")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
@@ -124,28 +146,21 @@ with create:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="edit-button"):
+        LOGGER.info("Attempting to send request to Create Assessment API...")
         errors, warnings = create_assessment_info.validate()
 
-        if len(warnings) > 0:
-            st.warning(
-                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-            )
-
-        if len(errors) > 0:
-            st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-            )
-        else:
+        if validation_error_handler(errors, warnings):
             request, response = st.tabs(["Request", "Response"])
             ec = CreateAssessment(create_assessment_info)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(ec), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(ec, require_encryption=True)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: ec.execute())
+                LOGGER.info("Executing request...")
+                handle_response(lambda: ec.execute(), require_decryption=True)
+
 
 with update_void:
     st.header("Update/Void Assessment")
@@ -221,28 +236,21 @@ with update_void:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-void-button"):
+        LOGGER.info("Attempting to send request to Update/Void Assessment API...")
         errors, warnings = update_void_assessment.validate()
 
-        if len(warnings) > 0:
-            st.warning(
-                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-            )
-
-        if len(errors) > 0:
-            st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-            )
-        else:
+        if validation_error_handler(errors, warnings):
             request, response = st.tabs(["Request", "Response"])
             uva = UpdateVoidAssessment(update_void_assessment)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(uva), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(uva, require_encryption=True)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: uva.execute())
+                LOGGER.info("Executing request...")
+                handle_response(lambda: uva.execute(), require_decryption=True)
+
 
 with find:
     st.header("Find Assessments")
@@ -349,28 +357,21 @@ with find:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="search-button"):
+        LOGGER.info("Attempting to send request to Search Assessment API...")
         errors, warnings = search_assessment.validate()
 
-        if len(warnings) > 0:
-            st.warning(
-                "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-            )
-
-        if len(errors) > 0:
-            st.error(
-                "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-            )
-        else:
+        if validation_error_handler(errors, warnings):
             request, response = st.tabs(["Request", "Response"])
             sa = SearchAssessment(search_assessment)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(sa), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(sa, require_encryption=True)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: sa.execute())
+                LOGGER.info("Executing request...")
+                handle_response(lambda: sa.execute(), require_decryption=True)
+
 
 with view:
     st.header("View Assessment")
@@ -386,16 +387,19 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="view-assessment-button"):
+        LOGGER.info("Attempting to send request to View Assessment API...")
+
         if arn is None or len(arn) == 0:
+            LOGGER.error("No Assessment Reference Number provide! Request aborted...")
             st.error("Please enter in the **Assessment Reference Number**!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             va = ViewAssessment(arn)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(va), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(va)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: va.execute())
+                LOGGER.info("Executing request...")
+                handle_response(lambda: va.execute(), require_decryption=True)

@@ -1,17 +1,38 @@
+"""
+This page is used to enable access to the Attendance API. The Attendance API is a subset of the Courses API, and
+can be found in the same page as the other Courses-related APIs.
+
+There are 2 main processes:
+1. (View) Course Session Attendance
+    - This tab allows you to key in your Course Run ID, Assessment Reference Number and Session ID to retrieve
+      the course session attendance of a particular course run and session.
+2. Upload Course Session Attendance
+    - This tab allows you to upload information regarding the attendance of a trainee for a particular course run
+      and course session to record their attendance.
+
+It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
+functions to clean up the request body and send requests that contains only non-null fields.
+"""
+
 import streamlit as st
 
 from revamped_application.core.attendance.course_session_attendance import CourseSessionAttendance
 from revamped_application.core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
+from revamped_application.core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS
 from revamped_application.core.models.attendance import UploadAttendanceInfo
+from revamped_application.core.system.logger import Logger
 
-from revamped_application.utils.http_utils import handle_error
-from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.utils.http_utils import handle_response, handle_request
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
 
+# initialise necessary variables
 init()
+LOGGER = Logger("Attendance API")
 
 st.set_page_config(page_title="Attendance", page_icon="✅")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
@@ -29,9 +50,6 @@ with view:
     st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                "properly under the Home page before proceeding!**")
 
-    include_expired = st.selectbox(label="Include expired courses?",
-                                   options=["Select a value", "Yes", "No"],
-                                   key="view-attendance")
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
@@ -46,26 +64,31 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view_course_session_attendance_button"):
+        LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
+
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!")
         elif len(runs) == 0:
+            LOGGER.error("Missing Course Run ID, request aborted!")
             st.error("Make sure to specify your Course Run ID before proceeding!")
         elif len(crn) == 0:
+            LOGGER.error("Missing Course Reference Number, request aborted!")
             st.error("Make sure to specify your Course Reference Number before proceeding!")
         elif len(session_id) == 0:
+            LOGGER.error("Missing Session ID, request aborted!")
             st.error("Make sure to specify your Session ID before proceeding!")
         else:
             request, response = st.tabs(["Request", "Response"])
-
-            vc = CourseSessionAttendance(runs, crn, session_id, include_expired)
+            vc = CourseSessionAttendance(runs, crn, session_id)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(vc)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: vc.execute())
+                LOGGER.info("Executing request...")
+                handle_response(lambda: vc.execute())
 
 with upload:
     st.header("Upload Course Session Attendance")
@@ -82,7 +105,7 @@ with upload:
                          key="course-run-id-upload-attendance")
     uploadAttendance.set_referenceNumber(st.text_input(label="Key in the Course Reference Number",
                                                        key="crn-upload-attendance-sessions"))
-    uploadAttendance.set_corppassId(st.text_input(label="Key in your Corppass Number",
+    uploadAttendance.set_corppassId(st.text_input(label="Key in your CorpPass Number",
                                                   key="corppass-upload-attendance-sessions"))
     uploadAttendance.set_sessionId(st.text_input(label="Enter Session ID",
                                                  help="The course session ID to be retrieved; encode this parameter "
@@ -93,7 +116,7 @@ with upload:
     st.subheader("Attendance Information")
     uploadAttendance.set_statusCode(st.selectbox(label="Enter the Attendance Status Code",
                                                  options=["1", "2", "3", "4"],
-                                                 format_func=lambda x: UploadAttendanceInfo.ATTENDANCE_CODE_MAPPINGS[x],
+                                                 format_func=lambda x: ATTENDANCE_CODE_MAPPINGS[x],
                                                  key="attendance-status-code-upload-attendance"))
 
     st.subheader("Trainee Information")
@@ -113,8 +136,8 @@ with upload:
                                                          max_chars=320,
                                                          key="trainee-email-upload-attendance"))
     uploadAttendance.set_trainee_id_type(st.selectbox(label="Enter Trainee ID Type",
-                                                      options=UploadAttendanceInfo.ID_TYPE_MAPPINGS.keys(),
-                                                      format_func=lambda x: UploadAttendanceInfo.ID_TYPE_MAPPINGS[x],
+                                                      options=ID_TYPE_MAPPING.keys(),
+                                                      format_func=lambda x: ID_TYPE_MAPPING[x],
                                                       key="trainee-id-type-upload-attendance"))
     uploadAttendance.set_contactNumber_mobile(st.text_input(label="Enter Mobile Number of Trainee",
                                                             max_chars=15,
@@ -140,8 +163,8 @@ with upload:
 
     uploadAttendance.set_surveyLanguage_code(st.selectbox(
         label="Enter Survey Language",
-        options=UploadAttendanceInfo.SURVEY_LANGUAGE_MAPPINGS.keys(),
-        format_func=lambda x: UploadAttendanceInfo.SURVEY_LANGUAGE_MAPPINGS[x],
+        options=SURVEY_LANGUAGE_MAPPINGS.keys(),
+        format_func=lambda x: SURVEY_LANGUAGE_MAPPINGS[x],
         key="language-upload-attendance"))
 
     st.divider()
@@ -152,26 +175,24 @@ with upload:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="upload_course_session_attendance_button"):
+        LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!")
         elif not runs:
+            LOGGER.error("Missing Course Run ID, request aborted!")
             st.error("Make sure to fill in your Course Run ID before proceeding!")
         else:
-            errors = uploadAttendance.validate()
+            errors, warnings = uploadAttendance.validate()
 
-            if errors is not None:
-                st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors)
-                )
-            else:
+            if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
-
                 uca = UploadCourseSessionAttendance(runs, uploadAttendance)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(uca), language="text")
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(uca)
 
                 with response:
-                    st.subheader("Response")
-                    handle_error(lambda: uca.execute())
+                    LOGGER.info("Executing request...")
+                    handle_response(lambda: uca.execute())
