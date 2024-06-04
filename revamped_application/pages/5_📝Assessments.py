@@ -28,7 +28,8 @@ from revamped_application.core.models.assessments import CreateAssessmentInfo, U
     SearchAssessmentInfo
 from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
-from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, \
+    does_not_have_keys
 
 # initialise necessary variables
 init()
@@ -62,6 +63,8 @@ with create:
                    help="If specified, this will override the UEN provided under the Home page!"):
         create_assessment_info.set_trainingPartner_uen(st.text_input(label="Training Partner UEN",
                                                                      key="create-assessment-tp-uen",
+                                                                     value=("" if st.session_state["uen"] is None
+                                                                            else st.session_state["uen"]),
                                                                      max_chars=12))
 
     st.subheader("Course Info")
@@ -147,19 +150,24 @@ with create:
 
     if st.button("Send", key="edit-button"):
         LOGGER.info("Attempting to send request to Create Assessment API...")
-        errors, warnings = create_assessment_info.validate()
+        if does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+        else:
+            errors, warnings = create_assessment_info.validate()
 
-        if validation_error_handler(errors, warnings):
-            request, response = st.tabs(["Request", "Response"])
-            ec = CreateAssessment(create_assessment_info)
+            if validation_error_handler(errors, warnings):
+                request, response = st.tabs(["Request", "Response"])
+                ec = CreateAssessment(create_assessment_info)
 
-            with request:
-                LOGGER.info("Showing preview of request...")
-                handle_request(ec, require_encryption=True)
+                with request:
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(ec, require_encryption=True)
 
-            with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: ec.execute(), require_decryption=True)
+                with response:
+                    LOGGER.info("Executing request...")
+                    handle_response(lambda: ec.execute(), require_decryption=True)
 
 
 with update_void:
@@ -237,19 +245,24 @@ with update_void:
 
     if st.button("Send", key="update-void-button"):
         LOGGER.info("Attempting to send request to Update/Void Assessment API...")
-        errors, warnings = update_void_assessment.validate()
+        if does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+        else:
+            errors, warnings = update_void_assessment.validate()
 
-        if validation_error_handler(errors, warnings):
-            request, response = st.tabs(["Request", "Response"])
-            uva = UpdateVoidAssessment(update_void_assessment)
+            if validation_error_handler(errors, warnings):
+                request, response = st.tabs(["Request", "Response"])
+                uva = UpdateVoidAssessment(update_void_assessment)
 
-            with request:
-                LOGGER.info("Showing preview of request...")
-                handle_request(uva, require_encryption=True)
+                with request:
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(uva, require_encryption=True)
 
-            with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: uva.execute(), require_decryption=True)
+                with response:
+                    LOGGER.info("Executing request...")
+                    handle_response(lambda: uva.execute(), require_decryption=True)
 
 
 with find:
@@ -333,10 +346,12 @@ with find:
                                                       key="search-skill-code-input"))
 
     st.subheader("Training Partner Parameters")
-    if st.checkbox("Specify Training Partner UEN?", key="search-training-partner-uen",
+    if st.checkbox("Override Training Partner UEN?", key="search-training-partner-uen",
                    help="If this is enabled, it will **override the default UEN provided** in the Home page!"):
         search_assessment.set_trainingPartner_uen(st.text_input(label="Enter the Training Partner UEN",
                                                                 max_chars=12,
+                                                                value=("" if st.session_state["uen"] is None
+                                                                       else st.session_state["uen"]),
                                                                 help="UEN of the training partner organisation "
                                                                      "conducting the course for which the assessment "
                                                                      "result is being submitted"))
@@ -358,19 +373,24 @@ with find:
 
     if st.button("Send", key="search-button"):
         LOGGER.info("Attempting to send request to Search Assessment API...")
-        errors, warnings = search_assessment.validate()
+        if does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+        else:
+            errors, warnings = search_assessment.validate()
 
-        if validation_error_handler(errors, warnings):
-            request, response = st.tabs(["Request", "Response"])
-            sa = SearchAssessment(search_assessment)
+            if validation_error_handler(errors, warnings):
+                request, response = st.tabs(["Request", "Response"])
+                sa = SearchAssessment(search_assessment)
 
-            with request:
-                LOGGER.info("Showing preview of request...")
-                handle_request(sa, require_encryption=True)
+                with request:
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(sa, require_encryption=True)
 
-            with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: sa.execute(), require_decryption=True)
+                with response:
+                    LOGGER.info("Executing request...")
+                    handle_response(lambda: sa.execute(), require_decryption=True)
 
 
 with view:
@@ -392,6 +412,10 @@ with view:
         if arn is None or len(arn) == 0:
             LOGGER.error("No Assessment Reference Number provide! Request aborted...")
             st.error("Please enter in the **Assessment Reference Number**!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             va = ViewAssessment(arn)

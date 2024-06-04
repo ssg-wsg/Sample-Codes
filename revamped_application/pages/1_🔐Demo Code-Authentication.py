@@ -547,14 +547,16 @@ with cert_auth:
         if all([test_url, cert_key, secret_key]):
             try:
                 with tempfile.NamedTemporaryFile() as certfile, tempfile.NamedTemporaryFile() as keyfile:
-                    certfile.write(cert_auth)
+                    certfile.write(cert_key.read())
                     LOGGER.info("Loaded Certificate...")
 
-                    keyfile.write(secret_key)
+                    keyfile.write(secret_key.read())
                     LOGGER.info("Loaded Private Key...")
 
                     LOGGER.info(f"Sending GET request to {test_url}...")
                     req = requests.get(test_url, cert=(certfile.name, keyfile.name))
+
+                    st.subheader("Response")
                     st.success(f"Response code: {req.status_code}", icon="✅")
 
                     LOGGER.info(f"Response received: {req.text}")
@@ -621,15 +623,17 @@ with open_auth:
                     client_secret=client_secret
                 )
 
+                st.subheader("Response")
                 LOGGER.info("Sending GET request with OAuth token...")
                 response = oauth.get(request_url)
                 st.success(f"Response code: {response.status_code}", icon="✅")
 
                 LOGGER.info(f"Response received: {response.text}")
                 st.code(response.json())
-            except:
+            except Exception as ex:
                 LOGGER.error(f"Unable to send request, error: {ex}")
-                st.error("An error has occurred. Please check data input!", icon="🚨")
+                st.error(f"An error has occurred. Please check your data input to make sure there are no mistakes!"
+                         f"\n\nError: {ex}", icon="🚨")
         else:
             LOGGER.error("Missing certificate or private key file!")
             st.error("Please check to ensure that you fill in all fields before submitting the API request!", icon="🚨")

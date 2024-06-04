@@ -86,10 +86,11 @@ with view:
         LOGGER.info("Attempting to send request to View Course Run API...")
         if len(runs) == 0:
             LOGGER.error("Missing Course Run ID!")
-            st.error("Key in your course run ID to proceed!", icon="🚨")
+            st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
         elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
-            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
@@ -1276,6 +1277,10 @@ with sessions:
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vcs = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)

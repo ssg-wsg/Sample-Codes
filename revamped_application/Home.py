@@ -63,8 +63,8 @@ with st.form(key="init_config"):
     enc_key = st.text_area("Enter in your encryption key", help="Refer to this [guide](https://developer.ssg-wsg.gov"
                                                                 ".sg/webapp/guides/6gvz7gEnwU2dSIKPrTcXnq#authenticat"
                                                                 "ion-types) for more info.")
-    cert_pem = st.file_uploader("Upload your Certificate Key", type=["pem"], accept_multiple_files=False)
-    key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False)
+    cert_pem = st.file_uploader("Upload your Certificate Key", type=["pem"], accept_multiple_files=False, key="cert")
+    key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False, key="key")
 
     if st.form_submit_button("Load"):
         LOGGER.info("Loading configurations...")
@@ -100,7 +100,7 @@ with st.form(key="init_config"):
                 st.session_state["encryption_key"] = enc_key
                 LOGGER.info("Encryption Key loaded!")
 
-                st.success("**Configurations loaded successfully!**\n\nClick on the \"Configs\" button on the Sidebar "
+                st.success("**Configurations loaded successfully!**\n\nClick on the **`Configs`** button on the Sidebar "
                            "to view the configurations you have loaded up!", icon="✅")
             except base64.binascii.Error:
                 LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")

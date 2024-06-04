@@ -23,7 +23,8 @@ from revamped_application.core.models.attendance import UploadAttendanceInfo
 from revamped_application.core.system.logger import Logger
 
 from revamped_application.utils.http_utils import handle_response, handle_request
-from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, \
+    does_not_have_keys
 
 # initialise necessary variables
 init()
@@ -39,7 +40,7 @@ with st.sidebar:
 st.header("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
-st.info("**This API requires your requests and data to be encrypted!**")
+st.info("**This API requires your requests and data to be encrypted!**", icon="ℹ️")
 
 view, upload = st.tabs(["Course Session Attendance", "Upload Course Session Attendance"])
 
@@ -48,7 +49,7 @@ with view:
     st.markdown("You can use this API to view the attendance of the trainees who are enrolled into your course for "
                 "a particular course session.")
     st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
-               "properly under the Home page before proceeding!**")
+               "properly under the Home page before proceeding!**", icon="⚠️")
 
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
@@ -68,16 +69,20 @@ with view:
 
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your UEN before proceeding!")
+            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif len(runs) == 0:
             LOGGER.error("Missing Course Run ID, request aborted!")
-            st.error("Make sure to specify your Course Run ID before proceeding!")
+            st.error("Make sure to specify your **Course Run ID** before proceeding!", icon="🚨")
         elif len(crn) == 0:
             LOGGER.error("Missing Course Reference Number, request aborted!")
-            st.error("Make sure to specify your Course Reference Number before proceeding!")
+            st.error("Make sure to specify your **Course Reference Number** before proceeding!", icon="🚨")
         elif len(session_id) == 0:
             LOGGER.error("Missing Session ID, request aborted!")
-            st.error("Make sure to specify your Session ID before proceeding!")
+            st.error("Make sure to specify your **Session ID** before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = CourseSessionAttendance(runs, crn, session_id)
@@ -95,7 +100,7 @@ with upload:
     st.markdown("You can use this API to update the attendance of the trainees who are enrolled into your course for "
                 "a particular course session.")
     st.warning("**Upload Course Session Attendance API requires your UEN to proceed. Make sure that you have "
-               "loaded it up properly under the Home page before proceeding!**")
+               "loaded it up properly under the Home page before proceeding!**", icon="⚠️")
 
     uploadAttendance = UploadAttendanceInfo()
 
@@ -178,10 +183,14 @@ with upload:
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your UEN before proceeding!")
+            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:
             LOGGER.error("Missing Course Run ID, request aborted!")
-            st.error("Make sure to fill in your Course Run ID before proceeding!")
+            st.error("Make sure to fill in your **Course Run ID** before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             errors, warnings = uploadAttendance.validate()
 
