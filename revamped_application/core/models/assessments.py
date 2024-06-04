@@ -1,14 +1,18 @@
+"""
+Contains classes that help encapsulate data for sending requests to the Assessments APIs.
+"""
+
 import json
 import streamlit as st
 
 import datetime
 from typing import Optional, Literal
 
-from core.abc.abstract import AbstractRequestInfo
-from core.constants import GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS, \
-    SORT_FIELD, SORT_ORDER
-from utils.verify import verify_uen
-from utils.json_utils import remove_null_fields
+from revamped_application.core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import (GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS,
+                                                 SORT_FIELD, SORT_ORDER)
+from revamped_application.utils.verify import verify_uen
+from revamped_application.utils.json_utils import remove_null_fields
 
 
 class CreateAssessmentInfo(AbstractRequestInfo):

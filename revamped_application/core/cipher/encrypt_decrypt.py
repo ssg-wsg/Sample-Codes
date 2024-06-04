@@ -30,8 +30,8 @@ class Cryptography:
         :return: Ciphertext
         """
 
-        if ("encryption_key" not in st.session_state or st.session_state["encryption_key"] is None
-                or len(st.session_state["encryption_key"]) == 0) and not key:
+        if ("encryption_key" not in st.session_state or st.session_state["encryption_key"] is None or
+                len(st.session_state["encryption_key"]) == 0) and not key:
             # if there are no keys loaded, do not continue
             raise AttributeError("No encryption key loaded!")
 
@@ -65,8 +65,8 @@ class Cryptography:
         :return: Plaintext Message
         """
 
-        if ("encryption_key" not in st.session_state or st.session_state["encryption_key"] is None
-                or len(st.session_state["encryption_key"]) == 0) and not key:
+        if ("encryption_key" not in st.session_state or st.session_state["encryption_key"] is None or
+                len(st.session_state["encryption_key"]) == 0) and not key:
             # if there are no keys loaded, do not continue
             return None
 
