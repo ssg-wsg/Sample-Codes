@@ -2,32 +2,39 @@ import streamlit as st
 
 from datetime import datetime
 
-from core.courses.delete_course_run import DeleteCourseRun
-from core.courses.view_course_run import ViewCourseRun
-from core.courses.edit_course_run import EditCourseRun
-from core.courses.add_course_run import AddCourseRun
-from core.courses.view_course_sessions import ViewCourseSessions
-from core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
-    RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo, MODE_OF_TRAINING_MAPPING, ID_TYPE, SALUTATIONS
-from utils.http import handle_error
-from utils.streamlit_utils import init, display_config, validation_error_handler
+from revamped_application.core.courses.delete_course_run import DeleteCourseRun
+from revamped_application.core.courses.view_course_run import ViewCourseRun
+from revamped_application.core.courses.edit_course_run import EditCourseRun
+from revamped_application.core.courses.add_course_run import AddCourseRun
+from revamped_application.core.courses.view_course_sessions import ViewCourseSessions
+from revamped_application.core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
+    RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
+from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.http_utils import handle_error, handle_request
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
 
+# initialise necessary variables
 init()
+LOGGER = Logger("Courses API")
 
 st.set_page_config(page_title="Courses", page_icon="📚")
 
 with st.sidebar:
+    st.header("View Configs")
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Courses API")
+
+st.image("assets/sf.png", width=200)
+st.title("Courses API")
 st.markdown("The Courses API allows you to search, filter and compare different SkillsFuture Credit "
             "eligible courses that have been published on the MySkillsFuture portal! Through this "
             "API you can access details regarding course categories, related courses, popular "
             "courses, featured courses, course brochures, and more! You can also manage your webhook "
             "events and subscriptions via this API!")
 
-info_container = st.info(
+st.info(
     "**Add Course Runs and Edit/Delete Course Runs requires your *requests* to be encrypted!**\n\n"
     "**View Course Runs and View Course Sessions do not require any encryption!**",
     icon="ℹ️"
@@ -56,18 +63,23 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-button"):
+        LOGGER.info("Attempting to send request to View Course Run API...")
         if len(runs) == 0:
+            LOGGER.error("Missing Course Run ID!")
             st.error("Key in your course run ID to proceed!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(vc)
 
             with response:
-                st.subheader("Response")
+                LOGGER.info("Executing request...")
                 handle_error(lambda: vc.execute())
 
 with add:
@@ -303,11 +315,12 @@ with add:
                                                                    help="Start time of course session"
                                                                         "(**HH:mm:ss/HH:mm format only**)",
                                                                    disabled=True,
-                                                                   value=datetime(hour=0,
-                                                                                  minute=0,
-                                                                                  year=runsession.get_start_date_year(),
-                                                                                  month=runsession.get_start_time_month(),
-                                                                                  day=runsession.get_start_time_day())
+                                                                   value=datetime(
+                                                                       hour=0,
+                                                                       minute=0,
+                                                                       year=runsession.get_start_date_year(),
+                                                                       month=runsession.get_start_time_month(),
+                                                                       day=runsession.get_start_time_day())
                                                                    .time()))
 
                         with col2:
@@ -469,16 +482,16 @@ with add:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE[x]}",
+                                                                   options=ID_TYPE_MAPPING.keys(),
+                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
                                                                    help="Trainer ID Type Code",
                                                                    key=f"add-trainer-id-code-{i}-{run}"))
 
                     with col2:
                         runtrainer.set_trainer_idNumber(st.text_input(label="Trainer ID Number",
                                                                       key=f"add-trainer-id-number-{i}-{run}",
-                                                                      help="This refers to the NRIC/FIN/Passport number "
-                                                                           "of the trainer.",
+                                                                      help="This refers to the NRIC/FIN/Passport "
+                                                                           "number of the trainer.",
                                                                       max_chars=50))
 
                     st.markdown("###### Trainer Roles\n"
@@ -603,8 +616,13 @@ with add:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="add-button"):
+        LOGGER.info("Attempting to send request to Add Course Run API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = add_runinfo.validate()
 
@@ -613,11 +631,11 @@ with add:
                 ac = AddCourseRun(include_expired, add_runinfo)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ac), language="text")
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(ac)
 
                 with response:
-                    st.subheader("Response")
+                    LOGGER.info("Executing request...")
                     handle_error(lambda: ac.execute())
 
 with edit_delete:
@@ -1025,8 +1043,8 @@ with edit_delete:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE[x]}",
+                                                                   options=ID_TYPE_MAPPING.keys(),
+                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
                                                                    help="Trainer ID Type Code",
                                                                    key=f"edit-trainer-trainer-id-code-{i}"))
 
@@ -1158,10 +1176,16 @@ with edit_delete:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="edit-button"):
+        LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         elif not runs:
+            LOGGER.error("Missing Course Run ID, request aborted!")
             st.error("Make sure to fill in your Course Run ID before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
         else:
             errors, warnings = runinfo.validate()
 
@@ -1175,11 +1199,11 @@ with edit_delete:
                     ec = DeleteCourseRun(runs, include_expired, runinfo)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ec), language="text")
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(ec)
 
                 with response:
-                    st.subheader("Response")
+                    LOGGER.info("Executing request...")
                     handle_error(lambda: ec.execute())
 
 with sessions:
@@ -1210,8 +1234,8 @@ with sessions:
     if st.checkbox("Specify Month and Year to retrieve?", key="specify-view-sessions-month-year"):
         month, year = st.columns(2)
         month_value = month.selectbox(label="Select Month value",
-                                      options=ViewCourseSessions.NUM2MONTH.keys(),
-                                      format_func=lambda x: ViewCourseSessions.NUM2MONTH[x],
+                                      options=NUM2MONTH.keys(),
+                                      format_func=lambda x: NUM2MONTH[x],
                                       help="The month of the sessions to retrieve",
                                       key="view-sessions-month")
         year_value = year.number_input(label="Select Year value",
@@ -1225,16 +1249,18 @@ with sessions:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-session-button"):
+        LOGGER.info("Attempting to send request to View Course Sessions API...")
         if not st.session_state["uen"]:
+            LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
-            vc = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
+            vcs = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(vc), language="text")
+                LOGGER.info("Showing preview of request...")
+                handle_request(vcs)
 
             with response:
-                st.subheader("Response")
-                handle_error(lambda: vc.execute())
+                LOGGER.info("Executing request...")
+                handle_error(lambda: vcs.execute())

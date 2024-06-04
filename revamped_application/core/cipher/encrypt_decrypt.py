@@ -21,19 +21,19 @@ class Cryptography:
     @staticmethod
     def encrypt(plaintext: bytes | str, return_bytes: bool = True, key: str = None) -> bytes | str | None:
         """
-        Encrypts a message and returns the ciphertext.
+        Encrypts a message using AES-256/CBC/PKCS7 and returns the ciphertext.
 
         :param plaintext: Plaintext Message to be encrypted. If a string is passed as the argument, it will be
                           encoded into a bytes object.
         :param return_bytes: If True, the ciphertext will be returned as a bytes object.
         :param key: Key to override key stored in session state
-        :return:  Ciphertext or None if there are no key files loaded
+        :return: Ciphertext
         """
 
         if ("encryption_key" not in st.session_state or st.session_state["encryption_key"] is None
                 or len(st.session_state["encryption_key"]) == 0) and not key:
             # if there are no keys loaded, do not continue
-            return None
+            raise AttributeError("No encryption key loaded!")
 
         if isinstance(plaintext, str):
             plaintext = plaintext.encode()

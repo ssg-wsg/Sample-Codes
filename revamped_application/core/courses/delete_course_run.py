@@ -2,20 +2,22 @@
 Contains all classes and functions relevant for the deletion of a course run.
 """
 import requests
+import streamlit as st
 
-from core.abc.abstract_course import ABCCourse
-from core.models.course_runs import DeleteRunInfo
-from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.models.course_runs import DeleteRunInfo
+from revamped_application.core.constants import Endpoints, HttpMethod
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 from typing import Literal
 
 
-class DeleteCourseRun(ABCCourse):
+class DeleteCourseRun(AbstractRequest):
     """
     Class used for deleting a course run
     """
 
-    _TYPE: Literal["POST"] = "POST"
+    _TYPE: HttpMethod = HttpMethod.POST
 
     def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
                  delete_runinfo: DeleteRunInfo):
@@ -43,9 +45,18 @@ class DeleteCourseRun(ABCCourse):
         :param delete_runinfo: Response body encapsulation
         """
 
+        match st.session_state["url"]:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
-            .with_direct_argument(f"/courses/courseRuns/edit/{runId}")
+            .with_endpoint(url, direct_argument=f"/courses/courseRuns/edit/{runId}") \
+            .with_header("accept", "application/json") \
+            .with_header("Content-Type", "application/json")
 
         match include_expired:
             case "Yes":

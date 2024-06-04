@@ -1,18 +1,20 @@
 import requests
+import streamlit as st
 
 from typing import Literal
 
-from core.models.course_runs import AddRunInfo
-from core.abc.abstract_course import ABCCourse
-from utils.http import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.models.course_runs import AddRunInfo
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import Endpoints, HttpMethod
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
-class AddCourseRun(ABCCourse):
+class AddCourseRun(AbstractRequest):
     """
     Class used for adding a course run
     """
 
-    _TYPE: Literal["POST"] = "POST"
+    _TYPE: HttpMethod = HttpMethod.POST
 
     def __init__(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo):
         super().__init__()
@@ -37,11 +39,18 @@ class AddCourseRun(ABCCourse):
         :param runinfo: Response body encapsulation
         """
 
+        match st.session_state["url"]:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(url, direct_argument="/courses/courseRuns/publish") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
-            .with_direct_argument(f"/courses/courseRuns/publish")
 
         match include_expired:
             case "Yes":
