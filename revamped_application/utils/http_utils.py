@@ -5,8 +5,6 @@ This file contains useful classes and methods used for creating and handling HTT
 import binascii
 import json
 import textwrap
-from http.client import HTTPException
-
 import requests
 import streamlit as st
 
