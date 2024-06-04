@@ -50,19 +50,6 @@ def check_status() -> bool:
     ])
 
 
-def display_status() -> None:
-    """
-    Conducts a status check and displays an error if there are any missing configuration variables.
-
-    :return: None
-    """
-
-    if not check_status():
-        st.error("There are some configuration variables missing!", icon="🚨")
-    else:
-        st.success("All configuration variables are present and loaded!")
-
-
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
 # of this decorator and replace it with the new syntax
 @st.experimental_dialog("Configs", width="large")
