@@ -1,15 +1,15 @@
 import streamlit as st
 
-from core.assessments.create_assessment import CreateAssessment
-from core.assessments.update_void_assessment import UpdateVoidAssessment
-from core.assessments.view_assessment import ViewAssessment
-from core.assessments.search_assessment import SearchAssessment
-from core.constants import GRADES, RESULTS, ID_TYPE, ASSESSMENT_UPDATE_VOID_ACTIONS, SORT_FIELD, \
+from revamped_application.core.assessments.create_assessment import CreateAssessment
+from revamped_application.core.assessments.update_void_assessment import UpdateVoidAssessment
+from revamped_application.core.assessments.view_assessment import ViewAssessment
+from revamped_application.core.assessments.search_assessment import SearchAssessment
+from revamped_application.core.constants import GRADES, RESULTS, ID_TYPE, ASSESSMENT_UPDATE_VOID_ACTIONS, SORT_FIELD, \
     SORT_ORDER
-from core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo, \
+from revamped_application.core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo, \
     SearchAssessmentInfo
-from utils.http_utils import handle_error
-from utils.streamlit_utils import init, display_config
+from revamped_application.utils.http_utils import handle_error
+from revamped_application.utils.streamlit_utils import init, display_config
 
 init()
 

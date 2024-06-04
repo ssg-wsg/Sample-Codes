@@ -8,3 +8,6 @@ primaryColor = "#BA4040"
 
 [browser]
 gatherUsageStats = false
+
+[logger]
+level = "info"

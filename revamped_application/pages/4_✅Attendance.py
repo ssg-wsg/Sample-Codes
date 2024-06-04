@@ -1,11 +1,11 @@
 import streamlit as st
 
-from core.attendance.course_session_attendance import CourseSessionAttendance
-from core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
-from core.models.attendance import UploadAttendanceInfo
+from revamped_application.core.attendance.course_session_attendance import CourseSessionAttendance
+from revamped_application.core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
+from revamped_application.core.models.attendance import UploadAttendanceInfo
 
-from utils.http_utils import handle_error
-from utils.streamlit_utils import init, display_config
+from revamped_application.utils.http_utils import handle_error
+from revamped_application.utils.streamlit_utils import init, display_config
 
 init()
 

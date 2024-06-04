@@ -1,15 +1,15 @@
 import requests
+import streamlit as st
 
-from typing import Literal
-
-from core.abc.abstract import AbstractRequest
-from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod, Endpoints
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class ViewAssessment(AbstractRequest):
     """Class used for viewing the attendance of a course session"""
 
-    _TYPE: Literal["POST"] = "GET"
+    _TYPE: HttpMethod = HttpMethod.GET
 
     def __init__(self, referenceNumber: str):
         super().__init__()
@@ -20,7 +20,7 @@ class ViewAssessment(AbstractRequest):
         return self.req.repr(ViewAssessment._TYPE)
 
     def __str__(self):
-        return self.__repr__()
+        return str(self.req)
 
     def _prepare(self, referenceNumber: str) -> None:
         """
@@ -29,11 +29,18 @@ class ViewAssessment(AbstractRequest):
         :param referenceNumber: Reference number of the course session
         """
 
+        match st.session_state["url"]:
+            case Endpoints.PRODUCTION:
+                url = Endpoints.prod()
+            case Endpoints.UAT | Endpoints.MOCK:
+                url = st.session_state["url"].urls[0]
+            case _:
+                raise ValueError("Invalid URL Type!")
+
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(url, direct_argument=f"/tpg/assessments/details/{referenceNumber}") \
             .with_header("accept", "application/json") \
-            .with_header("Content-Type", "application/json") \
-            .with_direct_argument(f"/tpg/assessments/details/{referenceNumber}")
+            .with_header("Content-Type", "application/json")
 
     def execute(self) -> requests.Response:
         """

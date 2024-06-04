@@ -5,38 +5,9 @@ import streamlit as st
 
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-
-from core.abc.abstract import AbstractRequestInfo
-from utils.json_utils import remove_null_fields
-
-MODE_OF_TRAINING_MAPPING: dict = {
-    "1": "Classroom",
-    "2": "Asynchronous eLearning",
-    "3": "In-house",
-    "4": "On-the-Job",
-    "5": "Practical / Practicum",
-    "6": "Supervised Field",
-    "7": "Traineeship",
-    "8": "Assessment",
-    "9": "Synchronous Learning"
-}
-
-ID_TYPE: dict[str, str] = {
-    "SB": "Singapore Blue",
-    "SP": "Singapore Pink",
-    "SO": "Fin/Work Permit",
-    "FP": "Foreign Passport",
-    "OT": "Others"
-}
-
-SALUTATIONS: dict[int, str] = {
-    1: "Mr",
-    2: "Ms",
-    3: "Mdm",
-    4: "Mrs",
-    5: "Dr",
-    6: "Prof"
-}
+from revamped_application.core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
+from revamped_application.utils.json_utils import remove_null_fields
 
 
 # ===== Session Info ===== #
@@ -198,6 +169,7 @@ class RunSessionEditInfo(AbstractRequestInfo):
             "1", "2", "3", "4", "5", "6", "7", "8", "9"
         ]:
             raise ValueError("Invalid mode of training")
+
         self._modeOfTraining = modeOfTraining
 
     def set_venue_block(self, venue_block: str) -> None:
@@ -325,7 +297,9 @@ class RunSessionAddInfo(RunSessionEditInfo):
     def payload(self, verify: bool = True, as_json_str: bool = False):
         pl = super().payload(verify=verify, as_json_str=False)
         del pl["action"]
-        del pl["sessionId"]
+
+        if "sessionId" in pl:
+            del pl["sessionId"]
 
         if as_json_str:
             return json.dumps(pl)
@@ -347,10 +321,10 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._idNumber: str = None
         self._idType_code: Literal["SB", "SP", "SO", "FP", "OT"] = None
         self._idType_description: Literal["Singapore Pink Identification Card",
-                                         "Singapore Blue Identification Card",
-                                         "FIN/Work Permit",
-                                         "Foreign Passport",
-                                         "Others"] = None
+                                          "Singapore Blue Identification Card",
+                                          "FIN/Work Permit",
+                                          "Foreign Passport",
+                                          "Others"] = None
         self._roles: list[dict] = []
         self._inTrainingProviderProfile: Optional[bool] = None
         self._domainAreaOfPractice: Optional[str] = None
@@ -497,11 +471,11 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._idNumber = idNumber
 
     def set_trainer_idType(self, idType: Literal["SB", "SP", "SO", "FP", "OT"]) -> None:
-        if not isinstance(idType, str) or idType not in ID_TYPE.keys():
+        if not isinstance(idType, str) or idType not in ID_TYPE_MAPPING.keys():
             raise ValueError("Invalid trainer idType")
 
         self._idType_code = idType
-        self._idType_description = ID_TYPE[idType]
+        self._idType_description = ID_TYPE_MAPPING[idType]
 
     def set_trainer_roles(self, roles: list[dict]) -> None:
         if not isinstance(roles, list):
@@ -1073,6 +1047,8 @@ class DeleteRunInfo(EditRunInfo):
             }
         }
 
+        pl = remove_null_fields(pl)
+
         if as_json_str:
             return json.dumps(pl)
 
@@ -1126,7 +1102,7 @@ class AddRunIndividualInfo(EditRunInfo):
         if self._venue_room is None or len(self._venue_room) == 0:
             errors.append("No venue room is specified!")
 
-        if self._modeOfTraining is None or len(self._modeOfTraining) == 0:
+        if self._modeOfTraining is None:
             errors.append("No mode of training is specified!")
 
         if self._courseAdminEmail is None or len(self._courseAdminEmail) == 0:
@@ -1232,6 +1208,8 @@ class AddRunIndividualInfo(EditRunInfo):
             "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
         }
 
+        pl = remove_null_fields(pl)
+
         if as_json_str:
             return json.dumps(pl)
 
@@ -1280,6 +1258,8 @@ class AddRunInfo(EditRunInfo):
             },
             "runs": [x.payload(verify=False) for x in self._runs]
         }
+
+        pl = remove_null_fields(pl)
 
         if as_json_str:
             return json.dumps(pl)

@@ -1,15 +1,20 @@
 """
-File containing utility functions and values to initialise Streamlit session variables
+This file contains utility functions and values to initialise Streamlit session variables.
 """
 
 import streamlit as st
-from typing import Union, Optional
-from utils.string_utils import StringBuilder
+
+from typing import Union
+from revamped_application.core.system.logger import Logger
+from revamped_application.utils.string_utils import StringBuilder
+
+
+LOGGER = Logger(__name__)
 
 
 def init() -> None:
     """
-    Initialises all the necessary Stremalit variables to record configurations
+    Initialises all the necessary Stremalit variables to record configurations.
 
     :return: None
     """
@@ -26,16 +31,13 @@ def init() -> None:
     if "key_pem" not in st.session_state:
         st.session_state["key_pem"] = None
 
-    if "file_history" not in st.session_state:
-        st.session_state["file_history"] = None
-
     if "url" not in st.session_state:
         st.session_state["url"] = None
 
 
 def check_status() -> bool:
     """
-    A simple callback function that checks if there are any uninitialised variables in the session state
+    A simple callback function that checks if there are any uninitialised variables in the session state.
 
     :return: True if all configuration variables are present, else False
     """
@@ -50,7 +52,7 @@ def check_status() -> bool:
 
 def display_status() -> None:
     """
-    Conducts a status check and displays an error if there are any missing configuration variables
+    Conducts a status check and displays an error if there are any missing configuration variables.
 
     :return: None
     """
@@ -61,30 +63,33 @@ def display_status() -> None:
         st.success("All configuration variables are present and loaded!")
 
 
+# this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
+# of this decorator and replace it with the new syntax
 @st.experimental_dialog("Configs", width="large")
 def display_config() -> None:
-    """Displays all the loaded configuration variables"""
+    """Displays all the loaded configuration variables."""
 
     st.header("API Endpoint")
-    st.code(st.session_state["url"] if st.session_state["url"] else "-", language="text")
+    st.code(f"{st.session_state["url"].value}: "
+            f"{st.session_state["url"].urls[0] if len(st.session_state["url"].urls) == 1
+                else ", ".join(st.session_state["url"].urls)}" if st.session_state["url"] else "-", language="text")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
-    st.header("Keys")
-    st.subheader("Encryption Key:")
+    st.header("Encryption Key:")
     st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
 
-    st.subheader("Certificate Key:")
-    st.code("Loaded at: " + st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
+    st.header("Certificate Key:")
+    st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
 
-    st.subheader("Private Key:")
-    st.code("Loaded at: " + st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
+    st.header("Private Key:")
+    st.code(st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
 
 
 def http_code_handler(code: Union[int, str]) -> None:
     """
-    Displays the correct informational box depending on the HTTP response code given
+    Displays the correct informational box depending on the HTTP response code given.
 
     :param code: HTTP response code, String or integer are permitted. If String is provided, it will be coerced
                  into an Integer
@@ -116,11 +121,11 @@ def http_code_handler(code: Union[int, str]) -> None:
         return
 
 
-def validation_error_handler(errors: list[str], warnings: list[str])\
+def validation_error_handler(errors: list[str], warnings: list[str]) \
         -> bool:
     """
     Handles the errors and warnings returned by the validation function and returns a boolean value
-    that indicates if there are any errors or otherwise
+    that indicates if there are any errors or otherwise.
 
     :param errors: list of errors
     :param warnings: list of warnings
@@ -128,6 +133,7 @@ def validation_error_handler(errors: list[str], warnings: list[str])\
     """
 
     if len(warnings) > 0:
+        LOGGER.warning("Some fields have warnings, request resumed!")
         warning_builder = StringBuilder("Some Warnings are raised with your inputs:").newline()
 
         for warning in warnings:
@@ -136,6 +142,7 @@ def validation_error_handler(errors: list[str], warnings: list[str])\
         st.warning(warning_builder.get(), icon="⚠️")
 
     if len(errors) > 0:
+        LOGGER.error("Some fields are missing, request aborted!")
         error_builder = StringBuilder("Some Errors are detected with your inputs:").newline().newline()
 
         for error in errors:
@@ -144,3 +151,9 @@ def validation_error_handler(errors: list[str], warnings: list[str])\
         st.error(error_builder.get(), icon="🚨")
 
     return len(errors) == 0
+
+
+def does_not_have_keys() -> bool:
+    """Returns true if both private key and cert keys are present."""
+
+    return st.session_state["key_pem"] is None or st.session_state["cert_pem"] is None
