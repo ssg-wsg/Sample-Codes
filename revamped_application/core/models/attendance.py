@@ -1,3 +1,7 @@
+"""
+Contains classes that help encapsulate data for sending requests to the Attendance APIs.
+"""
+
 import json
 import streamlit as st
 

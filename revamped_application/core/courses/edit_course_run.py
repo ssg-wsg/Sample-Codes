@@ -1,3 +1,7 @@
+"""
+Contains class used for editing a course run.
+"""
+
 import requests
 import streamlit as st
 
@@ -10,9 +14,7 @@ from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class EditCourseRun(AbstractRequest):
-    """
-    Class used for editing a course run
-    """
+    """Class used for editing a course run."""
 
     _TYPE: HttpMethod = HttpMethod.POST
 
@@ -42,7 +44,11 @@ class EditCourseRun(AbstractRequest):
         :param runinfo: Response body encapsulation
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.prod()
             case Endpoints.UAT | Endpoints.MOCK:

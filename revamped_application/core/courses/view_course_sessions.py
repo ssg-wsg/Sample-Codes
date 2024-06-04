@@ -1,3 +1,7 @@
+"""
+Contains class used for viewing course sessions.
+"""
+
 import requests
 import streamlit as st
 
@@ -9,9 +13,7 @@ from typing import Literal, Optional
 
 
 class ViewCourseSessions(AbstractRequest):
-    """
-    Class used for viewing course sessions.
-    """
+    """Class used for viewing course sessions."""
 
     _TYPE: HttpMethod = HttpMethod.GET
 
@@ -43,7 +45,11 @@ class ViewCourseSessions(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
-        match st.session_state["url"]:
+        # importing enums from another module causes problems when checking for equality
+        # so we must recreate the endpoint enum object to test for equality
+        to_test = Endpoints(st.session_state["url"].value)
+
+        match to_test:
             case Endpoints.PRODUCTION:
                 url = Endpoints.public_prod()
             case Endpoints.UAT | Endpoints.MOCK:

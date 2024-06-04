@@ -35,4 +35,5 @@ the different APIs.
 ## `system`
 
 This folder contains system functionalities that the application leverage on to perform housekeeping on the files
-created while this application is run.
+created while this application is run. It also contain functionalities that help to log actions taken within the
+Sample Application.

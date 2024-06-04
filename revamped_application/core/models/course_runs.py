@@ -1,3 +1,7 @@
+"""
+Contains classes that help encapsulate data for sending requests to the Course Runs / Sessions APIs.
+"""
+
 import base64
 import datetime
 import json
