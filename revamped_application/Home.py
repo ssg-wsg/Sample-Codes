@@ -7,17 +7,18 @@ import sys
 FILE_LOC = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(FILE_LOC))
 
-import base64
-import streamlit as st
-import streamlit_nested_layout
+# ignore E402 rule for this part only
+import base64  # noqa: E402
+import streamlit as st  # noqa: E402
+import streamlit_nested_layout  # noqa: E402
 
-from utils.streamlit_utils import init, display_config
-from utils.verify import verify_uen, verify_aes_encryption_key
-from core.system.cleaner import start_schedule
-from core.system.logger import Logger
-from core.constants import Endpoints
+from tempfile import NamedTemporaryFile  # noqa: E402
 
-from tempfile import NamedTemporaryFile
+from utils.streamlit_utils import init, display_config  # noqa: E402
+from utils.verify import verify_uen, verify_aes_encryption_key  # noqa: E402
+from core.system.cleaner import start_schedule  # noqa: E402
+from core.system.logger import Logger  # noqa: E402
+from core.constants import Endpoints  # noqa: E402
 
 
 # initialise all variables and logger
@@ -100,8 +101,8 @@ with st.form(key="init_config"):
                 st.session_state["encryption_key"] = enc_key
                 LOGGER.info("Encryption Key loaded!")
 
-                st.success("**Configurations loaded successfully!**\n\nClick on the **`Configs`** button on the Sidebar "
-                           "to view the configurations you have loaded up!", icon="✅")
+                st.success("**Configurations loaded successfully!**\n\nClick on the **`Configs`** button on the "
+                           "Sidebar to view the configurations you have loaded up!", icon="✅")
             except base64.binascii.Error:
                 LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
                 st.error("Certificate or private key is invalid!", icon="🔐")
