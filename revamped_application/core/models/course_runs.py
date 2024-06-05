@@ -41,6 +41,28 @@ class RunSessionEditInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, RunSessionEditInfo):
+            return False
+
+        return (
+            self._sessionId == other._sessionId
+            and self._startDate == other._startDate
+            and self._endDate == other._endDate
+            and self._startTime == other._startTime
+            and self._endTime == other._endTime
+            and self._modeOfTraining == other._modeOfTraining
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._venue_primaryVenue == other._venue_primaryVenue
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -344,6 +366,37 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, RunTrainerEditInfo):
+            return False
+
+        return (
+            self._trainerType_code == other._trainerType_code
+            and self._trainerType_description == other._trainerType_description
+            and self._indexNumber == other._indexNumber
+            and self._id == other._id
+            and self._name == other._name
+            and self._email == other._email
+            and self._idNumber == other._idNumber
+            and self._idType_code == other._idType_code
+            and self._idType_description == other._idType_description
+            and (
+                len(self._roles) == len(other._roles)
+                and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
+            )
+            and self._inTrainingProviderProfile == other._inTrainingProviderProfile
+            and self._domainAreaOfPractice == other._domainAreaOfPractice
+            and self._experience == other._experience
+            and self._linkedInURL == other._linkedInURL
+            and self._salutationId == other._salutationId
+            and self._photo_name == other._photo_name
+            and self._photo_content == other._photo_content
+            and (
+                len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
+                and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -656,6 +709,47 @@ class EditRunInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, EditRunInfo):
+            return False
+
+        return (
+            self._crid == other._crid
+            and self._sequenceNumber == other._sequenceNumber
+            and self._registrationDates_opening == other._registrationDates_opening
+            and self._registrationDates_closing == other._registrationDates_closing
+            and self._courseDates_start == other._courseDates_start
+            and self._courseDates_end == other._courseDates_end
+            and self._scheduleInfoType_code == other._scheduleInfoType_code
+            and self._scheduleInfoType_description == other._scheduleInfoType_description
+            and self._scheduleInfo == other._scheduleInfo
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._intakeSize == other._intakeSize
+            and self._threshold == other._threshold
+            and self._registeredUserCount == other._registeredUserCount
+            and self._modeOfTraining == other._modeOfTraining
+            and self._courseAdminEmail == other._courseAdminEmail
+            and self._courseVacancy_code == other._courseVacancy_code
+            and self._courseVacancy_description == other._courseVacancy_description
+            and self._file_Name == other._file_Name
+            and self._file_content == other._file_content
+            and (
+                len(self._sessions) == len(other._sessions)
+                and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
+            )
+            and (
+                len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
+                and all(map(lambda x: x[0] == x[1], zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1058,6 +1152,93 @@ class DeleteRunInfo(EditRunInfo):
 
         return pl
 
+    def set_sequence_number(self, sequence_number: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfo(self, scheduleInfo: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_block(self, venue_block: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_street(self, venue_street: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_floor(self, venue_floor: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_unit(self, venue_unit: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_building(self, venue_building: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_postalCode(self, venue_postalCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_room(self, venue_room: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_intakeSize(self, intakeSize: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_threshold(self, threshold: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registeredUserCount(self, registeredUserCount: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_modeOfTraining(self, modeOfTraining: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_Name(self, file_Name: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_content(self, file_content: UploadedFile) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class AddRunIndividualInfo(EditRunInfo):
     def __init__(self):
@@ -1219,6 +1400,9 @@ class AddRunIndividualInfo(EditRunInfo):
 
         return pl
 
+    def set_crid(self, crn: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class AddRunInfo(EditRunInfo):
     """Encapsulates all information regarding the addition of a course run"""
@@ -1226,6 +1410,16 @@ class AddRunInfo(EditRunInfo):
     def __init__(self):
         super().__init__()
         self._runs: list[AddRunIndividualInfo] = []
+
+    def __eq__(self, other):
+        if not isinstance(other, AddRunInfo):
+            return False
+
+        return (
+            self._crid == other._crid
+            and len(self._runs) == len(other._runs)
+            and all(map(lambda x: x[0] == x[1], zip(self._runs, other._runs)))
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1275,3 +1469,90 @@ class AddRunInfo(EditRunInfo):
             raise TypeError("Invalid individual run info")
 
         self._runs.append(run)
+
+    def set_sequence_number(self, sequence_number: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfo(self, scheduleInfo: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_block(self, venue_block: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_street(self, venue_street: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_floor(self, venue_floor: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_unit(self, venue_unit: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_building(self, venue_building: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_postalCode(self, venue_postalCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_room(self, venue_room: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_intakeSize(self, intakeSize: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_threshold(self, threshold: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registeredUserCount(self, registeredUserCount: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_modeOfTraining(self, modeOfTraining: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_Name(self, file_Name: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_content(self, file_content: UploadedFile) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")

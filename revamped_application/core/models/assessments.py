@@ -39,6 +39,26 @@ class CreateAssessmentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, CreateAssessmentInfo):
+            return False
+
+        return (
+            self._grade == other._grade
+            and self._score == other._score
+            and self._course_runId == other._course_runId
+            and self._course_referenceNumber == other._course_referenceNumber
+            and self._result == other._result
+            and self._trainee_id == other._trainee_id
+            and self._trainee_idType == other._trainee_idType
+            and self._trainee_fullName == other._trainee_fullName
+            and self._skillCode == other._skillCode
+            and self._assessmentDate == other._assessmentDate
+            and self._trainingPartner_code == other._trainingPartner_code
+            and self._trainingPartner_uen == other._trainingPartner_uen
+            and self._conferringInstitute_code == other._conferringInstitute_code
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -213,6 +233,16 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         self._action: Literal["update", "void"] = None
         self._assessmentReferenceNumber: str = None
 
+    def __eq__(self, other):
+        if not isinstance(other, UpdateVoidAssessmentInfo):
+            return False
+
+        return (
+            super().__eq__(other)
+            and self._action == other._action
+            and self._assessmentReferenceNumber == other._assessmentReferenceNumber
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -301,6 +331,26 @@ class SearchAssessmentInfo(AbstractRequestInfo):
         self._assessment_skillCode: Optional[str] = None
         self._trainingPartner_uen: Optional[str] = None
         self._trainingPartner_code: Optional[str] = None
+
+    def __eq__(self, other):
+        if not isinstance(other, SearchAssessmentInfo):
+            return False
+
+        return (
+            self._lastUpdateDateTo == other._lastUpdateDateTo
+            and self._lastUpdateDateFrom == other._lastUpdateDateFrom
+            and self._sortBy_field == other._sortBy_field
+            and self._sortBy_order == other._sortBy_order
+            and self._parameters_page == other._parameters_page
+            and self._parameters_pageSize == other._parameters_pageSize
+            and self._assessment_courseRunId == other._assessment_courseRunId
+            and self._assessment_referenceNumber == other._assessment_referenceNumber
+            and self._assessment_traineeId == other._assessment_traineeId
+            and self._assessment_enrolement_referenceNumber == other._assessment_enrolement_referenceNumber
+            and self._assessment_skillCode == other._assessment_skillCode
+            and self._trainingPartner_uen == other._trainingPartner_uen
+            and self._trainingPartner_code == other._trainingPartner_code
+        )
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
