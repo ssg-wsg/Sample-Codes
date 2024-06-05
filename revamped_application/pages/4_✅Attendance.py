@@ -37,7 +37,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Attendance API")
+st.title("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
 st.info("**This API requires your requests and data to be encrypted!**", icon="ℹ️")

@@ -42,7 +42,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Assessments")
+st.title("Assessments API")
 st.markdown("The Assessments API allows you to create, update, void, find and view assessments that are "
             "assigned to your trainees in your courses!")
 st.info("**These APIs requires your *requests* to be encrypted and returns *encrypted responses*!**", icon="ℹ️")
