@@ -38,7 +38,8 @@ class CourseSessionAttendance(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/runs/{runId}/sessions/attendance") \
+            .with_endpoint(st.session_state["url"].value,
+                           direct_argument=f"/courses/runs/{runId}/sessions/attendance") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \

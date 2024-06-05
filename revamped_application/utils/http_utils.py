@@ -118,7 +118,7 @@ class HTTPRequestBuilder:
 
         try:
             json.dumps(value)
-        except:
+        except Exception:
             raise ValueError("Parameter Value must be JSON-serializable!")
 
         self.params[key] = value

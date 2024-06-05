@@ -44,7 +44,7 @@ class StringBuilder:
         self._buffer = io.StringIO()
         return self
 
-    def append(self, obj: Any, fail: Literal["raise", "ignore"]="ignore") -> Self:
+    def append(self, obj: Any, fail: Literal["raise", "ignore"] = "ignore") -> Self:
         """
         Appends an object to the end of the buffer. If the object is not a String, then it will be coerced into
         a String object and passed into the StringBuilder.

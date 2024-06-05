@@ -34,7 +34,8 @@ class ViewAssessment(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(st.session_state["url"].value, direct_argument=f"/tpg/assessments/details/{referenceNumber}") \
+            .with_endpoint(st.session_state["url"].value,
+                           direct_argument=f"/tpg/assessments/details/{referenceNumber}") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json")
 
