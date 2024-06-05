@@ -46,21 +46,21 @@ class RunSessionEditInfo(AbstractRequestInfo):
             return False
 
         return (
-            self._sessionId == other._sessionId
-            and self._startDate == other._startDate
-            and self._endDate == other._endDate
-            and self._startTime == other._startTime
-            and self._endTime == other._endTime
-            and self._modeOfTraining == other._modeOfTraining
-            and self._venue_block == other._venue_block
-            and self._venue_street == other._venue_street
-            and self._venue_floor == other._venue_floor
-            and self._venue_unit == other._venue_unit
-            and self._venue_building == other._venue_building
-            and self._venue_postalCode == other._venue_postalCode
-            and self._venue_room == other._venue_room
-            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
-            and self._venue_primaryVenue == other._venue_primaryVenue
+                self._sessionId == other._sessionId
+                and self._startDate == other._startDate
+                and self._endDate == other._endDate
+                and self._startTime == other._startTime
+                and self._endTime == other._endTime
+                and self._modeOfTraining == other._modeOfTraining
+                and self._venue_block == other._venue_block
+                and self._venue_street == other._venue_street
+                and self._venue_floor == other._venue_floor
+                and self._venue_unit == other._venue_unit
+                and self._venue_building == other._venue_building
+                and self._venue_postalCode == other._venue_postalCode
+                and self._venue_room == other._venue_room
+                and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+                and self._venue_primaryVenue == other._venue_primaryVenue
         )
 
     def validate(self) -> tuple[list[str], list[str]]:
@@ -271,6 +271,28 @@ class RunSessionAddInfo(RunSessionEditInfo):
     def __init__(self) -> None:
         super().__init__()
 
+    def __eq__(self, other):
+        if not isinstance(other, RunSessionAddInfo):
+            return False
+
+        return (
+                self._sessionId == other._sessionId
+                and self._startDate == other._startDate
+                and self._endDate == other._endDate
+                and self._startTime == other._startTime
+                and self._endTime == other._endTime
+                and self._modeOfTraining == other._modeOfTraining
+                and self._venue_block == other._venue_block
+                and self._venue_street == other._venue_street
+                and self._venue_floor == other._venue_floor
+                and self._venue_unit == other._venue_unit
+                and self._venue_building == other._venue_building
+                and self._venue_postalCode == other._venue_postalCode
+                and self._venue_room == other._venue_room
+                and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+                and self._venue_primaryVenue == other._venue_primaryVenue
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -347,10 +369,10 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._idNumber: str = None
         self._idType_code: Literal["SB", "SP", "SO", "FP", "OT"] = None
         self._idType_description: Literal["Singapore Pink Identification Card",
-                                          "Singapore Blue Identification Card",
-                                          "FIN/Work Permit",
-                                          "Foreign Passport",
-                                          "Others"] = None
+        "Singapore Blue Identification Card",
+        "FIN/Work Permit",
+        "Foreign Passport",
+        "Others"] = None
         self._roles: list[dict] = []
         self._inTrainingProviderProfile: Optional[bool] = None
         self._domainAreaOfPractice: Optional[str] = None
@@ -372,30 +394,30 @@ class RunTrainerEditInfo(AbstractRequestInfo):
             return False
 
         return (
-            self._trainerType_code == other._trainerType_code
-            and self._trainerType_description == other._trainerType_description
-            and self._indexNumber == other._indexNumber
-            and self._id == other._id
-            and self._name == other._name
-            and self._email == other._email
-            and self._idNumber == other._idNumber
-            and self._idType_code == other._idType_code
-            and self._idType_description == other._idType_description
-            and (
-                len(self._roles) == len(other._roles)
-                and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
-            )
-            and self._inTrainingProviderProfile == other._inTrainingProviderProfile
-            and self._domainAreaOfPractice == other._domainAreaOfPractice
-            and self._experience == other._experience
-            and self._linkedInURL == other._linkedInURL
-            and self._salutationId == other._salutationId
-            and self._photo_name == other._photo_name
-            and self._photo_content == other._photo_content
-            and (
-                len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
-                and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
-            )
+                self._trainerType_code == other._trainerType_code
+                and self._trainerType_description == other._trainerType_description
+                and self._indexNumber == other._indexNumber
+                and self._id == other._id
+                and self._name == other._name
+                and self._email == other._email
+                and self._idNumber == other._idNumber
+                and self._idType_code == other._idType_code
+                and self._idType_description == other._idType_description
+                and (
+                        len(self._roles) == len(other._roles)
+                        and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
+                )
+                and self._inTrainingProviderProfile == other._inTrainingProviderProfile
+                and self._domainAreaOfPractice == other._domainAreaOfPractice
+                and self._experience == other._experience
+                and self._linkedInURL == other._linkedInURL
+                and self._salutationId == other._salutationId
+                and self._photo_name == other._photo_name
+                and self._photo_content == other._photo_content
+                and (
+                        len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
+                        and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
+                )
         )
 
     def validate(self) -> tuple[list[str], list[str]]:
@@ -606,6 +628,38 @@ class RunTrainerAddInfo(RunTrainerEditInfo):
     def __init__(self) -> None:
         super().__init__()
 
+    def __eq__(self, other):
+        if not isinstance(other, RunTrainerAddInfo):
+            return False
+
+        return (
+                self._trainerType_code == other._trainerType_code
+                and self._trainerType_description == other._trainerType_description
+                and self._indexNumber == other._indexNumber
+                and self._id == other._id
+                and self._name == other._name
+                and self._email == other._email
+                and self._idNumber == other._idNumber
+                and self._idType_code == other._idType_code
+                and self._idType_description == other._idType_description
+                and (
+                        len(self._roles) == len(other._roles)
+                        and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
+                )
+                and self._inTrainingProviderProfile == other._inTrainingProviderProfile
+                and self._domainAreaOfPractice == other._domainAreaOfPractice
+                and self._experience == other._experience
+                and self._linkedInURL == other._linkedInURL
+                and self._salutationId == other._salutationId
+                and self._photo_name == other._photo_name
+                and self._photo_content == other._photo_content
+                and (
+                        len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
+                        and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
+                )
+        )
+
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -715,40 +769,41 @@ class EditRunInfo(AbstractRequestInfo):
             return False
 
         return (
-            self._crid == other._crid
-            and self._sequenceNumber == other._sequenceNumber
-            and self._registrationDates_opening == other._registrationDates_opening
-            and self._registrationDates_closing == other._registrationDates_closing
-            and self._courseDates_start == other._courseDates_start
-            and self._courseDates_end == other._courseDates_end
-            and self._scheduleInfoType_code == other._scheduleInfoType_code
-            and self._scheduleInfoType_description == other._scheduleInfoType_description
-            and self._scheduleInfo == other._scheduleInfo
-            and self._venue_block == other._venue_block
-            and self._venue_street == other._venue_street
-            and self._venue_floor == other._venue_floor
-            and self._venue_unit == other._venue_unit
-            and self._venue_building == other._venue_building
-            and self._venue_postalCode == other._venue_postalCode
-            and self._venue_room == other._venue_room
-            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
-            and self._intakeSize == other._intakeSize
-            and self._threshold == other._threshold
-            and self._registeredUserCount == other._registeredUserCount
-            and self._modeOfTraining == other._modeOfTraining
-            and self._courseAdminEmail == other._courseAdminEmail
-            and self._courseVacancy_code == other._courseVacancy_code
-            and self._courseVacancy_description == other._courseVacancy_description
-            and self._file_Name == other._file_Name
-            and self._file_content == other._file_content
-            and (
-                len(self._sessions) == len(other._sessions)
-                and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
-            )
-            and (
-                len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
-                and all(map(lambda x: x[0] == x[1], zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
-            )
+                self._crid == other._crid
+                and self._sequenceNumber == other._sequenceNumber
+                and self._registrationDates_opening == other._registrationDates_opening
+                and self._registrationDates_closing == other._registrationDates_closing
+                and self._courseDates_start == other._courseDates_start
+                and self._courseDates_end == other._courseDates_end
+                and self._scheduleInfoType_code == other._scheduleInfoType_code
+                and self._scheduleInfoType_description == other._scheduleInfoType_description
+                and self._scheduleInfo == other._scheduleInfo
+                and self._venue_block == other._venue_block
+                and self._venue_street == other._venue_street
+                and self._venue_floor == other._venue_floor
+                and self._venue_unit == other._venue_unit
+                and self._venue_building == other._venue_building
+                and self._venue_postalCode == other._venue_postalCode
+                and self._venue_room == other._venue_room
+                and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+                and self._intakeSize == other._intakeSize
+                and self._threshold == other._threshold
+                and self._registeredUserCount == other._registeredUserCount
+                and self._modeOfTraining == other._modeOfTraining
+                and self._courseAdminEmail == other._courseAdminEmail
+                and self._courseVacancy_code == other._courseVacancy_code
+                and self._courseVacancy_description == other._courseVacancy_description
+                and self._file_Name == other._file_Name
+                and self._file_content == other._file_content
+                and (
+                        len(self._sessions) == len(other._sessions)
+                        and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
+                )
+                and (
+                        len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
+                        and all(
+                    map(lambda x: x[0] == x[1], zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
+                )
         )
 
     def validate(self) -> tuple[list[str], list[str]]:
@@ -1116,6 +1171,12 @@ class DeleteRunInfo(EditRunInfo):
     def __init__(self) -> None:
         super().__init__()
 
+    def __eq__(self, other):
+        if not isinstance(other, DeleteRunInfo):
+            return False
+
+        return self._crid == other._crid
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -1243,6 +1304,47 @@ class DeleteRunInfo(EditRunInfo):
 class AddRunIndividualInfo(EditRunInfo):
     def __init__(self):
         super().__init__()
+
+    def __eq__(self, other):
+        if not isinstance(other, AddRunIndividualInfo):
+            return False
+
+        return (
+                self._sequenceNumber == other._sequenceNumber
+                and self._registrationDates_opening == other._registrationDates_opening
+                and self._registrationDates_closing == other._registrationDates_closing
+                and self._courseDates_start == other._courseDates_start
+                and self._courseDates_end == other._courseDates_end
+                and self._scheduleInfoType_code == other._scheduleInfoType_code
+                and self._scheduleInfoType_description == other._scheduleInfoType_description
+                and self._scheduleInfo == other._scheduleInfo
+                and self._venue_block == other._venue_block
+                and self._venue_street == other._venue_street
+                and self._venue_floor == other._venue_floor
+                and self._venue_unit == other._venue_unit
+                and self._venue_building == other._venue_building
+                and self._venue_postalCode == other._venue_postalCode
+                and self._venue_room == other._venue_room
+                and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+                and self._intakeSize == other._intakeSize
+                and self._threshold == other._threshold
+                and self._registeredUserCount == other._registeredUserCount
+                and self._modeOfTraining == other._modeOfTraining
+                and self._courseAdminEmail == other._courseAdminEmail
+                and self._courseVacancy_code == other._courseVacancy_code
+                and self._courseVacancy_description == other._courseVacancy_description
+                and self._file_Name == other._file_Name
+                and self._file_content == other._file_content
+                and (
+                        len(self._sessions) == len(other._sessions)
+                        and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
+                )
+                and (
+                        len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
+                        and all(map(lambda x: x[0] == x[1],
+                                    zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
+                )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1416,9 +1518,9 @@ class AddRunInfo(EditRunInfo):
             return False
 
         return (
-            self._crid == other._crid
-            and len(self._runs) == len(other._runs)
-            and all(map(lambda x: x[0] == x[1], zip(self._runs, other._runs)))
+                self._crid == other._crid
+                and len(self._runs) == len(other._runs)
+                and all(map(lambda x: x[0] == x[1], zip(self._runs, other._runs)))
         )
 
     def validate(self) -> tuple[list[str], list[str]]:

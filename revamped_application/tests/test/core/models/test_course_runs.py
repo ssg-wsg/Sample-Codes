@@ -342,10 +342,10 @@ class TestCourseRunsModels(unittest.TestCase):
 
     def __set_up_run_trainer_add(self):
         # set up first instance
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE = RunTrainerEditInfo()
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE = RunTrainerAddInfo()
 
         # set up second instance
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO = RunTrainerEditInfo()
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO = RunTrainerAddInfo()
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_type_code(TestCourseRunsModels.TRAINER_TYPE_ONE)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_type_description(
             TestCourseRunsModels.TRAINER_TYPE_DESCRIPTION_ONE)
@@ -368,7 +368,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.add_linkedSsecEQA(TestCourseRunsModels.LINKED_SSEC_EQAS_ONE[0])
 
         # set up third instance
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE = RunTrainerEditInfo()
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE = RunTrainerAddInfo()
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_type_code(TestCourseRunsModels.TRAINER_TYPE_TWO)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_type_description(
             TestCourseRunsModels.TRAINER_TYPE_DESCRIPTION_TWO)
@@ -612,6 +612,8 @@ class TestCourseRunsModels(unittest.TestCase):
         self.__set_up_individual_run_info_add()
         self.__set_up_run_info_add()
 
+    # ===== Testing equality ===== #
+
     def test_RunSessionEditInfo_equality(self):
         # test if the attributes are equal
         self.assertEqual(vars(TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE),
@@ -812,3 +814,243 @@ class TestCourseRunsModels(unittest.TestCase):
             TestCourseRunsModels.ADD_RUN_INFO_THREE == TestCourseRunsModels.ADD_RUN_INFO_THREE,
             msg="Equality method for AddRunInfo is faulty"
         )
+
+    def test_RunSessionEditInfo_inequality(self):
+        for info in [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO,
+                     TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+            
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_RunSessionAddInfo_inequality(self):
+        for info in [TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO,
+                     TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_RunTrainerEditInfo_inequality(self):
+        for info in [TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO,
+                     TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_RunTrainerAddInfo_inequality(self):
+        for info in [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO,
+                     TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_EditRunInfo_inequality(self):
+        for info in [TestCourseRunsModels.EDIT_RUN_INFO_ONE, TestCourseRunsModels.EDIT_RUN_INFO_TWO,
+                     TestCourseRunsModels.EDIT_RUN_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_DeleteRunInfo_inequality(self):
+        for info in [TestCourseRunsModels.DELETE_RUN_INFO_ONE, TestCourseRunsModels.DELETE_RUN_INFO_TWO]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_AddRunIndividualInfo_inequality(self):
+        for info in [TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO,
+                     TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_RUN_INFO_THREE)
+
+    def test_AddRunInfo_inequality(self):
+        for info in [TestCourseRunsModels.ADD_RUN_INFO_ONE, TestCourseRunsModels.ADD_RUN_INFO_TWO,
+                     TestCourseRunsModels.ADD_RUN_INFO_THREE]:
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.DELETE_RUN_INFO_TWO)
+
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE)
+
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
+            self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
