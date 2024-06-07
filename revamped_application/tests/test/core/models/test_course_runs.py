@@ -4,12 +4,11 @@ Tests for the Course Runs related model classes.
 Code to use vars() inspired by
 https://stackoverflow.com/questions/45984018/python-unit-test-to-check-if-objects-are-same-at-different-location
 """
+
 import base64
 import datetime
 import os
 import unittest
-
-import streamlit as st
 
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec

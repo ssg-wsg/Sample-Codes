@@ -102,7 +102,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
                                      "missing fields!")
 
         pl = {
-            "uen": st.session_state["uen"],
+            "uen": st.session_state["uen"] if "uen" in st.session_state else None,
             "course": {
                 "sessionID": self._sessionId,
                 "attendance": {
