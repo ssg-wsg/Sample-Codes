@@ -74,7 +74,6 @@ class HTTPRequestBuilder:
         if not isinstance(direct_argument, str):
             raise ValueError("Direct argument must be a string!")
 
-        print(endpoint)
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
             raise ValueError("Endpoint URL must start with http:// or https://!")
 
@@ -319,7 +318,6 @@ def handle_response(throwable: Callable[[], requests.Response], require_decrypti
             st.code(response.text)
 
             st.subheader("Decrypted Response")
-            print(response.json())
             data = Cryptography.decrypt(response.text).decode()
             json_data = json.loads(data)
             st.json(json_data)
