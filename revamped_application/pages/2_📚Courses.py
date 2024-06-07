@@ -341,8 +341,8 @@ with add:
                                                                        hour=0,
                                                                        minute=0,
                                                                        year=runsession.get_start_date_year(),
-                                                                       month=runsession.get_start_time_month(),
-                                                                       day=runsession.get_start_time_day())
+                                                                       month=runsession.get_start_date_month(),
+                                                                       day=runsession.get_start_date_day())
                                                                    .time()))
 
                         with col2:
@@ -360,8 +360,8 @@ with add:
                                                                  value=datetime(hour=23,
                                                                                 minute=59,
                                                                                 year=runsession.get_start_date_year(),
-                                                                                month=runsession.get_start_time_month(),
-                                                                                day=runsession.get_start_time_day())
+                                                                                month=runsession.get_start_date_month(),
+                                                                                day=runsession.get_start_date_day())
                                                                  .time()))
 
                         st.info(f"End date of course session is automatically set to "

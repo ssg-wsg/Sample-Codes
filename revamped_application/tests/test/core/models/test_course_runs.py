@@ -4,10 +4,12 @@ Tests for the Course Runs related model classes.
 Code to use vars() inspired by
 https://stackoverflow.com/questions/45984018/python-unit-test-to-check-if-objects-are-same-at-different-location
 """
-
+import base64
 import datetime
 import os
 import unittest
+
+import streamlit as st
 
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
@@ -1469,12 +1471,58 @@ class TestCourseRunsModels(unittest.TestCase):
 
     # RunSessionAddInfo tests
     def test_RunSessionAddInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) == 0)
+        self.assertTrue(len(e3) == 0)
 
     def test_RunSessionAddInfo_payload(self):
-        # todo
-        pass
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE.payload()
+
+        p2 = {
+            "startDate": "20240101",
+            "endDate": "20240229",
+            "startTime": "08:30",
+            "endTime": "18:00",
+            "modeOfTraining": "2",
+            "venue": {
+                "block": "112A",
+                "street": "Street ABC",
+                "floor": "15",
+                "unit": "001",
+                "building": "Building ABC",
+                "postalCode": "123455",
+                "room": "24",
+                "wheelChairAccess": True,
+                "primaryVenue": True
+            }
+        }
+
+        p3 = {
+            "startDate": "20240201",
+            "endDate": "20240331",
+            "startTime": "09:30",
+            "endTime": "20:00",
+            "modeOfTraining": "8",
+            "venue": {
+                "block": "112B",
+                "street": "Other Street ABC",
+                "floor": "51",
+                "unit": "100",
+                "building": "Other Building ABC",
+                "postalCode": "554321",
+                "room": "84",
+                "wheelChairAccess": False,
+                "primaryVenue": False
+            }
+        }
+
+        self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO.payload(), p2)
+        self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE.payload(), p3)
 
     def test_RunSessionAddInfo_get_start_date(self):
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE.get_start_date(),
@@ -1829,12 +1877,124 @@ class TestCourseRunsModels(unittest.TestCase):
     
     # RunTrainerEditInfo tests
     def test_RunTrainerEditInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) == 0)
+        self.assertTrue(len(e3) == 0)
 
     def test_RunTrainerEditInfo_payload(self):
-        # todo
-        pass
+        try:
+            with (open(os.path.join(RESOURCES_PATH, "core", "models", "abc.jpg"), "rb") as f1,
+                  open(os.path.join(RESOURCES_PATH, "core", "models", "def.jpg"), "rb") as f2):
+                img1 = base64.b64encode(f1.read()).decode("utf-8")
+                img2 = base64.b64encode(f2.read()).decode("utf-8")
+        except Exception as ex:
+            self.fail(f"Unable to load resources: {ex}")
+
+        # since the photo is large, we need to up the size of the diff to view the differences if any
+        self.maxDiff = 99999999
+
+        p2 = {
+            "trainer": {
+                "trainerType": {
+                    "code": "1",
+                    "description": "Existing"
+                },
+                "indexNumber": 1,
+                "id": "TRAINER_ONE",
+                "name": "JOHN DOE",
+                "email": "john@email.com",
+                "idNumber": "S1234567X",
+                "idType": {
+                    "code": "SB",
+                    "description": "Singapore Blue Identification Card"
+                },
+                "roles": [
+                    {
+                        "id": 1,
+                        "description": "Trainer"
+                    }
+                ],
+                "inTrainingProviderProfile": True,
+                "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in Computer "
+                                        "Application",
+                "experience": "Testing ABC",
+                "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                "salutationId": 1,
+                "photo": {
+                    "name": "abc.jpg",
+                    "content": img1
+                },
+                "linkedSsecEQAs": [
+                    {
+                        "description": "EQA test 4",
+                        "ssecEQA": {
+                            "code": "12"
+                        }
+                    }
+                ]
+            }
+        }
+
+        p3 = {
+            "trainer": {
+                "trainerType": {
+                    "code": "2",
+                    "description": "New"
+                },
+                "indexNumber": 2,
+                "id": "TRAINER_TWO",
+                "name": "JANE DOE",
+                "email": "jane@email.com",
+                "idNumber": "T0123456X",
+                "idType": {
+                    "code": "FP",
+                    "description": "Foreign Passport"
+                },
+                "roles": [
+                    {
+                        "id": 1,
+                        "description": "Trainer"
+                    },
+                    {
+                        "id": 2,
+                        "description": "Assessor"
+                    }
+                ],
+                "inTrainingProviderProfile": False,
+                "domainAreaOfPractice": "Change Management in Computer Application and Diploma in Computer Application",
+                "experience": "Changing ABC",
+                "linkedInURL": "https://sg.linkedin.com/company/linkedin/def",
+                "salutationId": 2,
+                "photo": {
+                    "name": "def.jpg",
+                    "content": img2
+                },
+                "linkedSsecEQAs": [
+                    {
+                        "description": "EQA test 7",
+                        "ssecEQA": {
+                            "code": "22"
+                        }
+                    },
+                    {
+                        "description": "EQA test 11",
+                        "ssecEQA": {
+                            "code": "65"
+                        }
+                    }
+                ]
+            }
+        }
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.payload()
+
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.payload(), p2)
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.payload(), p3)
 
     def test_RunTrainerEditInfo_is_existing_trainer(self):
         with self.assertRaises(ValueError):
@@ -2258,12 +2418,124 @@ class TestCourseRunsModels(unittest.TestCase):
 
     # RunTrainerAddInfo tests
     def test_RunTrainerAddInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) == 0)
+        self.assertTrue(len(e3) == 0)
 
     def test_RunTrainerAddInfo_payload(self):
-        # todo
-        pass
+        try:
+            with (open(os.path.join(RESOURCES_PATH, "core", "models", "abc.jpg"), "rb") as f1,
+                  open(os.path.join(RESOURCES_PATH, "core", "models", "def.jpg"), "rb") as f2):
+                img1 = base64.b64encode(f1.read()).decode("utf-8")
+                img2 = base64.b64encode(f2.read()).decode("utf-8")
+        except Exception as ex:
+            self.fail(f"Unable to load resources: {ex}")
+
+        # since the photo is large, we need to up the size of the diff to view the differences if any
+        self.maxDiff = 99999999
+
+        p2 = {
+            "trainer": {
+                "trainerType": {
+                    "code": "1",
+                    "description": "Existing"
+                },
+                "indexNumber": 1,
+                "id": "TRAINER_ONE",
+                "name": "JOHN DOE",
+                "email": "john@email.com",
+                "idNumber": "S1234567X",
+                "idType": {
+                    "code": "SB",
+                    "description": "Singapore Blue Identification Card"
+                },
+                "roles": [
+                    {
+                        "id": 1,
+                        "description": "Trainer"
+                    }
+                ],
+                "inTrainingProviderProfile": True,
+                "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in Computer "
+                                        "Application",
+                "experience": "Testing ABC",
+                "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                "salutationId": 1,
+                "photo": {
+                    "name": "abc.jpg",
+                    "content": img1
+                },
+                "linkedSsecEQAs": [
+                    {
+                        "description": "EQA test 4",
+                        "ssecEQA": {
+                            "code": "12"
+                        }
+                    }
+                ]
+            }
+        }
+
+        p3 = {
+            "trainer": {
+                "trainerType": {
+                    "code": "2",
+                    "description": "New"
+                },
+                "indexNumber": 2,
+                "id": "TRAINER_TWO",
+                "name": "JANE DOE",
+                "email": "jane@email.com",
+                "idNumber": "T0123456X",
+                "idType": {
+                    "code": "FP",
+                    "description": "Foreign Passport"
+                },
+                "roles": [
+                    {
+                        "id": 1,
+                        "description": "Trainer"
+                    },
+                    {
+                        "id": 2,
+                        "description": "Assessor"
+                    }
+                ],
+                "inTrainingProviderProfile": False,
+                "domainAreaOfPractice": "Change Management in Computer Application and Diploma in Computer Application",
+                "experience": "Changing ABC",
+                "linkedInURL": "https://sg.linkedin.com/company/linkedin/def",
+                "salutationId": 2,
+                "photo": {
+                    "name": "def.jpg",
+                    "content": img2
+                },
+                "linkedSsecEQAs": [
+                    {
+                        "description": "EQA test 7",
+                        "ssecEQA": {
+                            "code": "22"
+                        }
+                    },
+                    {
+                        "description": "EQA test 11",
+                        "ssecEQA": {
+                            "code": "65"
+                        }
+                    }
+                ]
+            }
+        }
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.payload()
+
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.payload(), p2)
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.payload(), p3)
 
     def test_RunTrainerAddInfo_is_existing_trainer(self):
         with self.assertRaises(ValueError):
@@ -2687,12 +2959,206 @@ class TestCourseRunsModels(unittest.TestCase):
 
     # EditRunInfo tests
     def test_EditRunInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.EDIT_RUN_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.EDIT_RUN_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.EDIT_RUN_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) > 0)  # this instance contains some trainers with missing fields
+        self.assertTrue(len(e3) == 0)
 
     def test_EditRunInfo_payload(self):
-        # todo
-        pass
+        try:
+            with (open(os.path.join(RESOURCES_PATH, "core", "models", "abc.jpg"), "rb") as f1,
+                  open(os.path.join(RESOURCES_PATH, "core", "models", "def.jpg"), "rb") as f2):
+                img1 = base64.b64encode(f1.read()).decode("utf-8")
+                img2 = base64.b64encode(f2.read()).decode("utf-8")
+        except Exception as ex:
+            self.fail(f"Unable to load resources: {ex}")
+
+        # since the photo is large, we need to up the size of the diff to view the differences if any
+        self.maxDiff = 99999999
+
+        p3 = {
+            "course": {
+                "courseReferenceNumber": "XX-10000000K-02-TEST 199"  # uen cannot be tested without starting streamlit
+            },
+            "run": {
+                "action": "update",
+                "sequenceNumber": 2,
+                "registrationDates": {
+                    "opening": 20240201,
+                    "closing": 20240204
+                },
+                "courseDates": {
+                    "start": 20240201,
+                    "end": 20240331
+                },
+                "scheduleInfoType": {
+                    "code": "01",
+                    "description": "Description"
+                },
+                "scheduleInfo": "Sat / 5 Sats / 9am - 6pm",
+                "venue": {
+                    "block": "112B",
+                    "street": "Other Street ABC",
+                    "floor": "51",
+                    "unit": "100",
+                    "building": "Other Building ABC",
+                    "postalCode": "554321",
+                    "room": "84",
+                    "wheelChairAccess": False
+                },
+                "intakeSize": 50,
+                "threshold": 100,
+                "registeredUserCount": 20,
+                "modeOfTraining": "8",
+                "courseAdminEmail": "jane@email.com",
+                "courseVacancy": {
+                    "code": "F",
+                    "description": "Full"
+                },
+                "file": {
+                    "Name": "def.jpg",
+                    "content": img2
+                },
+                "sessions": [
+                    {
+                        "action": "update",
+                        "sessionId": "XX-10000000K-01-TEST 166",
+                        "startDate": "20240101",
+                        "endDate": "20240229",
+                        "startTime": "08:30",
+                        "endTime": "18:00",
+                        "modeOfTraining": "2",
+                        "venue": {
+                            "block": "112A",
+                            "street": "Street ABC",
+                            "floor": "15",
+                            "unit": "001",
+                            "building": "Building ABC",
+                            "postalCode": "123455",
+                            "room": "24",
+                            "wheelChairAccess": True,
+                            "primaryVenue": True
+                        }
+                    },
+                    {
+                        "action": "update",
+                        "sessionId": "XX-10000000K-01-TEST 166",
+                        "startDate": "20240101",
+                        "endDate": "20240229",
+                        "startTime": "08:30",
+                        "endTime": "18:00",
+                        "modeOfTraining": "2",
+                        "venue": {
+                            "block": "112A",
+                            "street": "Street ABC",
+                            "floor": "15",
+                            "unit": "001",
+                            "building": "Building ABC",
+                            "postalCode": "123455",
+                            "room": "24",
+                            "wheelChairAccess": True,
+                            "primaryVenue": True
+                        }
+                    }
+                ],
+                "linkCourseRunTrainer": [
+                    {
+                        "trainer": {
+                            "trainerType": {
+                                "code": "1",
+                                "description": "Existing"
+                            },
+                            "indexNumber": 1,
+                            "id": "TRAINER_ONE",
+                            "name": "JOHN DOE",
+                            "email": "john@email.com",
+                            "idNumber": "S1234567X",
+                            "idType": {
+                                "code": "SB",
+                                "description": "Singapore Blue Identification Card"
+                            },
+                            "roles": [
+                                {
+                                    "id": 1,
+                                    "description": "Trainer"
+                                }
+                            ],
+                            "inTrainingProviderProfile": True,
+                            "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in "
+                                                    "Computer Application",
+                            "experience": "Testing ABC",
+                            "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                            "salutationId": 1,
+                            "photo": {
+                                "name": "abc.jpg",
+                                "content": img1
+                            },
+                            "linkedSsecEQAs": [
+                                {
+                                    "description": "EQA test 4",
+                                    "ssecEQA": {
+                                        "code": "12"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "trainer": {
+                            "trainerType": {
+                                "code": "1",
+                                "description": "Existing"
+                            },
+                            "indexNumber": 1,
+                            "id": "TRAINER_ONE",
+                            "name": "JOHN DOE",
+                            "email": "john@email.com",
+                            "idNumber": "S1234567X",
+                            "idType": {
+                                "code": "SB",
+                                "description": "Singapore Blue Identification Card"
+                            },
+                            "roles": [
+                                {
+                                    "id": 1,
+                                    "description": "Trainer"
+                                }
+                            ],
+                            "inTrainingProviderProfile": True,
+                            "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in "
+                                                    "Computer Application",
+                            "experience": "Testing ABC",
+                            "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                            "salutationId": 1,
+                            "photo": {
+                                "name": "abc.jpg",
+                                "content": img1
+                            },
+                            "linkedSsecEQAs": [
+                                {
+                                    "description": "EQA test 4",
+                                    "ssecEQA": {
+                                        "code": "12"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.EDIT_RUN_INFO_ONE.payload()
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.EDIT_RUN_INFO_TWO.payload()
+
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE.payload(), p3)
+
 
     def test_EditRunInfo_set_crid(self):
         with self.assertRaises(ValueError):
@@ -3300,12 +3766,27 @@ class TestCourseRunsModels(unittest.TestCase):
 
     # DeleteRunInfo tests
     def test_DeleteRunInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.DELETE_RUN_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.DELETE_RUN_INFO_TWO.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) == 0)
 
     def test_DeleteRunInfo_payload(self):
-        # todo
-        pass
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.DELETE_RUN_INFO_ONE.payload()
+
+        pl = {
+            "course": {
+                "courseReferenceNumber": "XX-10000000K-01-TEST 166",
+                # courseReferenceNumber is ignored since session state cannot be tested when streamlit is not running
+                "run": {
+                    "action": "delete"
+                }
+            }
+        }
+
+        self.assertEqual(TestCourseRunsModels.DELETE_RUN_INFO_TWO.payload(), pl)
 
     def test_DeleteRunInfo_set_crid(self):
         with self.assertRaises(ValueError):
@@ -3525,12 +4006,199 @@ class TestCourseRunsModels(unittest.TestCase):
 
     # AddRunIndividualInfo tests
     def test_AddRunIndividualInfo_validate(self):
-        # todo
-        pass
+        e1, _ = TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) > 0)  # some trainer details are missing and this would fail
+        self.assertTrue(len(e3) == 0)
 
     def test_AddRunIndividualInfo_payload(self):
-        # todo
-        pass
+        try:
+            with (open(os.path.join(RESOURCES_PATH, "core", "models", "abc.jpg"), "rb") as f1,
+                  open(os.path.join(RESOURCES_PATH, "core", "models", "def.jpg"), "rb") as f2):
+                img1 = base64.b64encode(f1.read()).decode("utf-8")
+                img2 = base64.b64encode(f2.read()).decode("utf-8")
+        except Exception as ex:
+            self.fail(f"Failed to load resources: {ex}")
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.payload()
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.payload()
+
+        # since the photo is large, we need to up the size of the diff to view the differences if any
+        self.maxDiff = 99999999
+
+        pl = {
+            "sequenceNumber": 2,
+            "registrationDates": {
+                "opening": 20240201,
+                "closing": 20240204
+            },
+            "courseDates": {
+                "start": 20240201,
+                "end": 20240331
+            },
+            "scheduleInfoType": {
+                "code": "01",
+                "description": "Description"
+            },
+            "scheduleInfo": "Sat / 5 Sats / 9am - 6pm",
+            "venue": {
+                "block": "112B",
+                "street": "Other Street ABC",
+                "floor": "51",
+                "unit": "100",
+                "building": "Other Building ABC",
+                "postalCode": "554321",
+                "room": "84",
+                "wheelChairAccess": False
+            },
+            "intakeSize": 50,
+            "threshold": 100,
+            "registeredUserCount": 20,
+            "modeOfTraining": "8",
+            "courseAdminEmail": "jane@email.com",
+            "courseVacancy": {
+                "code": "F",
+                "description": "Full"
+            },
+            "file": {
+                "Name": "def.jpg",
+                "content": img2
+            },
+            "sessions": [
+                {
+                    "action": "update",
+                    "sessionId": "XX-10000000K-01-TEST 166",
+                    "startDate": "20240101",
+                    "endDate": "20240229",
+                    "startTime": "08:30",
+                    "endTime": "18:00",
+                    "modeOfTraining": "2",
+                    "venue": {
+                        "block": "112A",
+                        "street": "Street ABC",
+                        "floor": "15",
+                        "unit": "001",
+                        "building": "Building ABC",
+                        "postalCode": "123455",
+                        "room": "24",
+                        "wheelChairAccess": True,
+                        "primaryVenue": True
+                    }
+                },
+                {
+                    "action": "update",
+                    "sessionId": "XX-10000000K-01-TEST 166",
+                    "startDate": "20240101",
+                    "endDate": "20240229",
+                    "startTime": "08:30",
+                    "endTime": "18:00",
+                    "modeOfTraining": "2",
+                    "venue": {
+                        "block": "112A",
+                        "street": "Street ABC",
+                        "floor": "15",
+                        "unit": "001",
+                        "building": "Building ABC",
+                        "postalCode": "123455",
+                        "room": "24",
+                        "wheelChairAccess": True,
+                        "primaryVenue": True
+                    }
+                }
+            ],
+            "linkCourseRunTrainer": [
+                {
+                    "trainer": {
+                        "trainerType": {
+                            "code": "1",
+                            "description": "Existing"
+                        },
+                        "indexNumber": 1,
+                        "id": "TRAINER_ONE",
+                        "name": "JOHN DOE",
+                        "email": "john@email.com",
+                        "idNumber": "S1234567X",
+                        "idType": {
+                            "code": "SB",
+                            "description": "Singapore Blue Identification Card"
+                        },
+                        "roles": [
+                            {
+                                "id": 1,
+                                "description": "Trainer"
+                            }
+                        ],
+                        "inTrainingProviderProfile": True,
+                        "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in "
+                                                "Computer Application",
+                        "experience": "Testing ABC",
+                        "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                        "salutationId": 1,
+                        "photo": {
+                            "name": "abc.jpg",
+                            "content": img1
+                        },
+                        "linkedSsecEQAs": [
+                            {
+                                "description": "EQA test 4",
+                                "ssecEQA": {
+                                    "code": "12"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "trainer": {
+                        "trainerType": {
+                            "code": "1",
+                            "description": "Existing"
+                        },
+                        "indexNumber": 1,
+                        "id": "TRAINER_ONE",
+                        "name": "JOHN DOE",
+                        "email": "john@email.com",
+                        "idNumber": "S1234567X",
+                        "idType": {
+                            "code": "SB",
+                            "description": "Singapore Blue Identification Card"
+                        },
+                        "roles": [
+                            {
+                                "id": 1,
+                                "description": "Trainer"
+                            }
+                        ],
+                        "inTrainingProviderProfile": True,
+                        "domainAreaOfPractice": "Testing Management in Computer Application and Diploma in "
+                                                "Computer Application",
+                        "experience": "Testing ABC",
+                        "linkedInURL": "https://sg.linkedin.com/company/linkedin/abc",
+                        "salutationId": 1,
+                        "photo": {
+                            "name": "abc.jpg",
+                            "content": img1
+                        },
+                        "linkedSsecEQAs": [
+                            {
+                                "description": "EQA test 4",
+                                "ssecEQA": {
+                                    "code": "12"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.payload(), pl)
 
     def test_AddRunIndividualInfo_set_crid(self):
         with self.assertRaises(NotImplementedError):
@@ -4138,13 +4806,215 @@ class TestCourseRunsModels(unittest.TestCase):
                          [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE])
 
     # AddRunInfo test
-    def test_AddRunInfo_payload(self):
-        # todo
-        pass
-
     def test_AddRunInfo_validate(self):
-        # todo
-        pass
+        # we need to set the trainer status properly for the third run info, which ends up impacting
+        # the second run info
+        TestCourseRunsModels.ADD_RUN_INFO_THREE._runs = [TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE]
+
+        e1, _ = TestCourseRunsModels.ADD_RUN_INFO_ONE.validate()
+        e2, _ = TestCourseRunsModels.ADD_RUN_INFO_TWO.validate()
+        e3, _ = TestCourseRunsModels.ADD_RUN_INFO_THREE.validate()
+
+        self.assertTrue(len(e1) > 0)
+        self.assertTrue(len(e2) > 0)
+        self.assertTrue(len(e3) == 0)
+
+    def test_AddRunInfo_payload(self):
+        try:
+            with (open(os.path.join(RESOURCES_PATH, "core", "models", "abc.jpg"), "rb") as f1,
+                  open(os.path.join(RESOURCES_PATH, "core", "models", "def.jpg"), "rb") as f2):
+                img1 = base64.b64encode(f1.read()).decode("utf-8")
+                img2 = base64.b64encode(f2.read()).decode("utf-8")
+        except Exception as ex:
+            self.fail(f"Failed to load resource: {ex}")
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.ADD_RUN_INFO_ONE.payload()
+
+        with self.assertRaises(AttributeError):
+            TestCourseRunsModels.ADD_RUN_INFO_TWO.payload()
+
+        # we need to set the trainer status properly for the third run info, which ends up impacting
+        # the second run info
+        TestCourseRunsModels.ADD_RUN_INFO_THREE._runs = [TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE]
+
+        # since images are tested, we need to increase the size of the diffs
+        self.maxDiff = 99999999
+
+        p3 = {
+            "course": {
+                "courseReferenceNumber": "XX-10000000K-02-TEST 199"
+            },
+            "runs": [
+                {
+                    'sequenceNumber': 2,
+                    'registrationDates': {
+                        'opening': 20240201,
+                        'closing': 20240204
+                    },
+                    'courseDates': {
+                        'start': 20240201,
+                        'end': 20240331
+                    },
+                    'scheduleInfoType': {
+                        'code': '01',
+                        'description': 'Description'
+                    },
+                    'scheduleInfo': 'Sat / 5 Sats / 9am - 6pm',
+                    'venue': {
+                        'block': '112B',
+                        'street': 'Other Street ABC',
+                        'floor': '51', 'unit': '100',
+                        'building': 'Other Building ABC',
+                        'postalCode': '554321',
+                        'room': '84',
+                        'wheelChairAccess': False
+                    },
+                    'intakeSize': 50,
+                    'threshold': 100,
+                    'registeredUserCount': 20,
+                    'modeOfTraining': '8',
+                    'courseAdminEmail': 'jane@email.com',
+                    'courseVacancy': {
+                        'code': 'F',
+                        'description': 'Full'
+                    },
+                    "file": {
+                        "Name": "def.jpg",
+                        "content": img2
+                    },
+                    "sessions": [
+                        {
+                            'action': 'update',
+                            'sessionId': 'XX-10000000K-01-TEST 166',
+                            'startDate': '20240101',
+                            'endDate': '20240229',
+                            'startTime': '08:30',
+                            'endTime': '18:00',
+                            'modeOfTraining': '2',
+                            'venue': {
+                                'block': '112A',
+                                'street': 'Street ABC',
+                                'floor': '15',
+                                'unit': '001',
+                                'building': 'Building ABC',
+                                'postalCode': '123455',
+                                'room': '24',
+                                'wheelChairAccess': True,
+                                'primaryVenue': True
+                            }
+                        },
+                        {
+                            'action': 'update',
+                            'sessionId': 'XX-10000000K-01-TEST 166',
+                            'startDate': '20240101',
+                            'endDate': '20240229',
+                            'startTime': '08:30',
+                            'endTime': '18:00',
+                            'modeOfTraining': '2',
+                            'venue': {
+                                'block': '112A',
+                                'street': 'Street ABC',
+                                'floor': '15',
+                                'unit': '001',
+                                'building': 'Building ABC',
+                                'postalCode': '123455',
+                                'room': '24',
+                                'wheelChairAccess': True,
+                                'primaryVenue': True
+                            }
+                        }
+                    ],
+                    "linkCourseRunTrainer": [
+                        {
+                            "trainer": {
+                                'trainerType': {
+                                    'code': '1',
+                                    'description': 'Existing'
+                                },
+                                'indexNumber': 1,
+                                'id': 'TRAINER_ONE',
+                                'name': 'JOHN DOE',
+                                'email': 'john@email.com',
+                                'idNumber': 'S1234567X',
+                                'idType': {
+                                    'code': 'SB',
+                                    'description': 'Singapore Blue Identification Card'
+                                },
+                                'roles': [
+                                    {
+                                        'id': 1,
+                                        'description': 'Trainer'
+                                    }
+                                ],
+                                'inTrainingProviderProfile': True,
+                                'domainAreaOfPractice': 'Testing Management in Computer Application and Diploma in '
+                                                        'Computer Application',
+                                'experience': 'Testing ABC',
+                                'linkedInURL': 'https://sg.linkedin.com/company/linkedin/abc',
+                                'salutationId': 1,
+                                "photo": {
+                                    "name": "abc.jpg",
+                                    "content": img1
+                                },
+                                'linkedSsecEQAs': [
+                                    {
+                                        'description': 'EQA test 4',
+                                        'ssecEQA': {
+                                            'code': '12'
+                                        }
+                                    }
+                                ]
+                            },
+                        },
+                        {
+                            "trainer": {
+                                'trainerType':
+                                    {
+                                        'code': '1',
+                                        'description': 'Existing'
+                                    },
+                                'indexNumber': 1,
+                                'id': 'TRAINER_ONE',
+                                'name': 'JOHN DOE',
+                                'email': 'john@email.com',
+                                'idNumber': 'S1234567X',
+                                'idType': {
+                                    'code': 'SB',
+                                    'description': 'Singapore Blue Identification Card'
+                                },
+                                'roles': [
+                                    {
+                                        'id': 1,
+                                        'description': 'Trainer'
+                                    }
+                                ],
+                                'inTrainingProviderProfile': True,
+                                'domainAreaOfPractice': 'Testing Management in Computer Application and Diploma in '
+                                                        'Computer Application',
+                                'experience': 'Testing ABC',
+                                'linkedInURL': 'https://sg.linkedin.com/company/linkedin/abc',
+                                'salutationId': 1,
+                                "photo": {
+                                    "name": "abc.jpg",
+                                    "content": img1
+                                },
+                                'linkedSsecEQAs': [
+                                    {
+                                        'description': 'EQA test 4',
+                                        'ssecEQA': {
+                                            'code': '12'
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+        self.assertEqual(TestCourseRunsModels.ADD_RUN_INFO_THREE.payload(), p3)
 
     def test_AddRunInfo_set_crid(self):
         with self.assertRaises(ValueError):
