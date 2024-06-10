@@ -71,21 +71,27 @@ class HTTPRequestBuilder:
         if not isinstance(endpoint, str):
             raise ValueError("Endpoint must be a string!")
 
+        if endpoint is not None and len(endpoint) == 0:
+            raise ValueError("Endpoint cannot be empty!")
+
         if not isinstance(direct_argument, str):
             raise ValueError("Direct argument must be a string!")
 
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
             raise ValueError("Endpoint URL must start with http:// or https://!")
 
-        if endpoint.endswith("/"):
-            self.endpoint = endpoint[:-1]
+        if direct_argument is not None and len(direct_argument) > 0:
+            # appends the direct argument to the endpoint if it is not empty
+            # and strips the end of the url endpoint if it has a trailing '/'
+            self.endpoint = (f"{endpoint}{direct_argument}"
+                             if endpoint.endswith("/")
+                             else f"{endpoint}/{direct_argument}")
         else:
             self.endpoint = endpoint
 
-        if direct_argument.endswith("/"):
-            direct_argument = direct_argument[:-1]
+        if self.endpoint.endswith("/"):
+            self.endpoint = self.endpoint[:-1]
 
-        self.endpoint = self.endpoint + direct_argument
         return self
 
     def with_header(self, key: str, value: str) -> Self:
@@ -99,6 +105,9 @@ class HTTPRequestBuilder:
 
         if not isinstance(key, str) or not isinstance(value, str):
             raise ValueError("Header values must be strings!")
+
+        if len(key) == 0:
+            raise ValueError("Header key cannot be empty!")
 
         self.header[key] = value
         return self
@@ -114,6 +123,9 @@ class HTTPRequestBuilder:
 
         if not isinstance(key, str):
             raise ValueError("Parameter Key values must be strings")
+
+        if len(key) == 0:
+            raise ValueError("Parameter Key cannot be empty!")
 
         try:
             json.dumps(value)
@@ -150,7 +162,7 @@ class HTTPRequestBuilder:
         :return: This Builder instance
         """
 
-        if not isinstance(version, str):
+        if not isinstance(version, str) or len(version) == 0:
             raise ValueError("API version must be a string")
 
         return self.with_header("x-api-version", version)
@@ -161,6 +173,9 @@ class HTTPRequestBuilder:
 
         :return: requests.Response object
         """
+
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
 
         return requests.get(self.endpoint,
                             params=self.params,
@@ -173,6 +188,9 @@ class HTTPRequestBuilder:
 
         :return: requests.Response object
         """
+
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
 
         return requests.post(self.endpoint,
                              params=self.params,
@@ -194,6 +212,9 @@ class HTTPRequestBuilder:
 
         :return: requests.Response object
         """
+
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
 
         return requests.post(self.endpoint,
                              params=self.params,
