@@ -5,6 +5,7 @@ Adapted from: https://stackoverflow.com/questions/1732438/how-do-i-run-all-pytho
 """
 
 import os
+import sys
 import unittest
 
 from revamped_application.definitions import ROOT
@@ -24,5 +25,14 @@ suite = loader.discover(TEST_DIR)
 
 # run the test suite containing all the discovered test files
 LOGGER.info("Running tests...")
-runner = unittest.TextTestRunner()
-runner.run(suite)
+runner = unittest.TextTestRunner(stream=sys.stdout)
+result = runner.run(suite)
+
+if len(result.errors) > 0:
+    LOGGER.error(f"Tests failed with {len(result.errors)} errors.")
+
+if len(result.failures) > 0:
+    LOGGER.error(f"Tests failed with {len(result.failures)} failures.")
+
+if len(result.errors) == 0 and len(result.failures) == 0:
+    LOGGER.info("All tests passed.")

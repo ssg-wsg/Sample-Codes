@@ -105,7 +105,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
             err, _ = self.validate()
 
             if len(err) > 0:
-                raise AttributeError("There are some required fields that are missing! Use payload() to find the "
+                raise AttributeError("There are some required fields that are missing! Use validate() to find the "
                                      "missing fields!")
 
         pl = {
@@ -176,11 +176,11 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
         self._result = result
 
-    def set_trainee_id(self, idType: str) -> None:
-        if not isinstance(idType, str):
+    def set_traineeId(self, id: str) -> None:
+        if not isinstance(id, str):
             raise ValueError(f"Invalid Trainee ID provided")
 
-        self._trainee_id = idType
+        self._trainee_id = id
 
     def set_trainee_id_type(self, idType: Literal["NRIC", "FIN", "OTHERS"]) -> None:
         if idType not in ID_TYPE:
@@ -240,23 +240,24 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         return (
             super().__eq__(other)
             and self._action == other._action
-            and self._assessmentReferenceNumber == other._assessmentReferenceNumber
         )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
 
-        if self._assessmentReferenceNumber is None or len(self._assessmentReferenceNumber) == 0:
-            errors.append("Invalid Assessment Reference Number provided!")
-
         if self._action is None or self._action not in ASSESSMENT_UPDATE_VOID_ACTIONS:
             errors.append("No Action provided!")
 
-        if self._result is not None and self._result not in RESULTS:
-            errors.append("Result must be of values: [Pass, Fail, Exempt]")
-
         # optionals check
+        if self._grade is not None and self._grade not in GRADES:
+            warnings.append("Invalid Grade provided!")
+
+        # action, score and assessment date is automatically specified if the user mark it as specified
+
+        if self._result is not None and self._result not in RESULTS:
+            warnings.append("Result must be of values: [Pass, Fail, Exempt]")
+
         if self._trainee_fullName is not None and len(self._trainee_fullName) == 0:
             warnings.append("Trainee Full Name is empty even though Trainee Full Name is marked as specified!")
 
@@ -270,7 +271,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             err, _ = self.validate()
 
             if len(err) > 0:
-                raise AttributeError("There are some required fields that are missing! Use payload() to find the "
+                raise AttributeError("There are some required fields that are missing! Use validate() to find the "
                                      "missing fields!")
 
         pl = {
@@ -295,15 +296,6 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
 
         return pl
 
-    def get_assessment_reference_number(self) -> str:
-        return self._assessmentReferenceNumber
-
-    def set_assessment_referenceNumber(self, assessment_reference_number: str) -> None:
-        if not isinstance(assessment_reference_number, str):
-            raise ValueError(f"Invalid Assessment Reference Number provided")
-
-        self._assessmentReferenceNumber = assessment_reference_number
-
     def is_update(self) -> bool:
         return self._action == "update"
 
@@ -312,6 +304,30 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             raise ValueError(f"Invalid Action provided")
 
         self._action = action
+
+    def get_referenceNumber(self) -> str:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_conferringInstitute_code(self, conferringInstitute_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_code(self, trainingPartner_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_uen(self, uen: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_id_type(self, idType: Literal["NRIC", "FIN", "OTHERS"]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_traineeId(self, id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_referenceNumber(self, course_reference_number: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_runId(self, course_run_id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
 
 
 class SearchAssessmentInfo(AbstractRequestInfo):
@@ -501,7 +517,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
 
         self._assessment_referenceNumber = courseReferenceNumber
 
-    def set_trainee_id(self, traineeId: str) -> None:
+    def set_traineeId(self, traineeId: str) -> None:
         if not isinstance(traineeId, str):
             raise ValueError(f"Invalid Trainee ID provided")
 

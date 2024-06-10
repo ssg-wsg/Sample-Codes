@@ -1055,8 +1055,8 @@ class TestCourseRunsModels(unittest.TestCase):
             self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_ONE)
             self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_TWO)
             self.assertNotEqual(info, TestCourseRunsModels.EDIT_RUN_INFO_THREE)
-    
-    # RunSessionEditInfo tests 
+
+    # RunSessionEditInfo tests
     def test_RunSessionEditInfo_validate(self):
         e1, _ = TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE.validate()
         e2, _ = TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO.validate()
@@ -1070,7 +1070,7 @@ class TestCourseRunsModels(unittest.TestCase):
         p1 = {
             "action": "update"
         }
-        
+
         p2 = {
             "action": "update",
             "sessionId": "XX-10000000K-01-TEST 166",
@@ -1091,7 +1091,7 @@ class TestCourseRunsModels(unittest.TestCase):
                 "primaryVenue": True
             }
         }
-        
+
         p3 = {
             "action": "update",
             "sessionId": "XX-10000000K-02-TEST 199",
@@ -1873,7 +1873,7 @@ class TestCourseRunsModels(unittest.TestCase):
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE._venue_primaryVenue, True)
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO._venue_primaryVenue, False)
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE._venue_primaryVenue, None)
-    
+
     # RunTrainerEditInfo tests
     def test_RunTrainerEditInfo_validate(self):
         e1, _ = TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.validate()
@@ -2619,7 +2619,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_id("Trainer ID 3")
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._id, "Trainer ID 1")
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._id,  "Trainer ID 2")
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._id, "Trainer ID 2")
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._id, "Trainer ID 3")
 
     def test_RunTrainerAddInfo_set_trainer_name(self):
@@ -3158,7 +3158,6 @@ class TestCourseRunsModels(unittest.TestCase):
 
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE.payload(), p3)
 
-
     def test_EditRunInfo_set_crid(self):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_crid(1)
@@ -3336,7 +3335,7 @@ class TestCourseRunsModels(unittest.TestCase):
 
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._scheduleInfo, "Schedule Info 1")
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._scheduleInfo, "Schedule Info 2")
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._scheduleInfo,"Schedule Info 3")
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._scheduleInfo, "Schedule Info 3")
 
     def test_EditRunInfo_set_venue_block(self):
         with self.assertRaises(ValueError):
@@ -3715,9 +3714,12 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.add_session(TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.add_session(TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE)
 
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._sessions, [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE])
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._sessions, [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO])
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._sessions, [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._sessions,
+                         [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._sessions,
+                         [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._sessions,
+                         [TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE])
 
     def test_EditRunInfo_set_link_course_run_trainer(self):
         with self.assertRaises(ValueError):
@@ -3757,11 +3759,15 @@ class TestCourseRunsModels(unittest.TestCase):
 
         TestCourseRunsModels.EDIT_RUN_INFO_ONE.add_linkCourseRunTrainer(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.add_linkCourseRunTrainer(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO)
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.add_linkCourseRunTrainer(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
+        TestCourseRunsModels.EDIT_RUN_INFO_THREE.add_linkCourseRunTrainer(
+            TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE)
 
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._linkCourseRunTrainer, [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE])
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._linkCourseRunTrainer, [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO])
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._linkCourseRunTrainer, [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._linkCourseRunTrainer,
+                         [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._linkCourseRunTrainer,
+                         [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._linkCourseRunTrainer,
+                         [TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE])
 
     # DeleteRunInfo tests
     def test_DeleteRunInfo_validate(self):
@@ -4347,8 +4353,10 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_scheduleInfoType_description("Description 2")
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_scheduleInfoType_description("Description 3")
 
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._scheduleInfoType_description, "Description 1")
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._scheduleInfoType_description, "Description 2")
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._scheduleInfoType_description,
+                         "Description 1")
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._scheduleInfoType_description,
+                         "Description 2")
         self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._scheduleInfoType_description,
                          "Description 3")
 
@@ -4978,34 +4986,38 @@ class TestCourseRunsModels(unittest.TestCase):
                                 'name': 'JOHN DOE',
                                 'email': 'john@email.com',
                                 'idNumber': 'S1234567X',
-                                'idType': {
-                                    'code': 'SB',
-                                    'description': 'Singapore Blue Identification Card'
-                                },
-                                'roles': [
+                                'idType':
                                     {
-                                        'id': 1,
-                                        'description': 'Trainer'
-                                    }
-                                ],
+                                        'code': 'SB',
+                                        'description': 'Singapore Blue Identification Card'
+                                    },
+                                'roles':
+                                    [
+                                        {
+                                            'id': 1,
+                                            'description': 'Trainer'
+                                        }
+                                    ],
                                 'inTrainingProviderProfile': True,
                                 'domainAreaOfPractice': 'Testing Management in Computer Application and Diploma in '
                                                         'Computer Application',
                                 'experience': 'Testing ABC',
                                 'linkedInURL': 'https://sg.linkedin.com/company/linkedin/abc',
                                 'salutationId': 1,
-                                "photo": {
-                                    "name": "abc.jpg",
-                                    "content": img1
-                                },
-                                'linkedSsecEQAs': [
+                                "photo":
                                     {
-                                        'description': 'EQA test 4',
-                                        'ssecEQA': {
-                                            'code': '12'
+                                        "name": "abc.jpg",
+                                        "content": img1
+                                    },
+                                'linkedSsecEQAs':
+                                    [
+                                        {
+                                            'description': 'EQA test 4',
+                                            'ssecEQA': {
+                                                'code': '12'
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
                             }
                         }
                     ]

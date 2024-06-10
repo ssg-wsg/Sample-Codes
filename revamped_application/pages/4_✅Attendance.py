@@ -37,6 +37,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
+st.image("assets/sf.png", width=200)
 st.title("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")

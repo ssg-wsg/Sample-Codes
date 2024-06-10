@@ -42,6 +42,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
+st.image("assets/sf.png", width=200)
 st.title("Assessments API")
 st.markdown("The Assessments API allows you to create, update, void, find and view assessments that are "
             "assigned to your trainees in your courses!")
@@ -84,11 +85,11 @@ with create:
                                                               options=ID_TYPE,
                                                               help="This describes the type of ID provided",
                                                               key="create-assessment-trainee-id-type"))
-    create_assessment_info.set_trainee_id(col2.text_input(label="Enter the Trainee ID Number",
-                                                          max_chars=20,
-                                                          help="This is the individual's government-issued "
+    create_assessment_info.set_traineeId(col2.text_input(label="Enter the Trainee ID Number",
+                                                         max_chars=20,
+                                                         help="This is the individual's government-issued "
                                                                "ID number",
-                                                          key="create-assessment-trainee-id"))
+                                                         key="create-assessment-trainee-id"))
     create_assessment_info.set_trainee_fullName(st.text_input(label="Enter the Trainee Full Name",
                                                               max_chars=200,
                                                               help="This is the individual's full name",
@@ -169,7 +170,6 @@ with create:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ec.execute(), require_decryption=True)
 
-
 with update_void:
     st.header("Update/Void Assessment")
     st.markdown("You can use this API to update or void an assessment record for trainees enrolled in your courses.")
@@ -183,11 +183,11 @@ with update_void:
                                                    key="update-void-assessment-action"))
 
     st.subheader("Course Info")
-    update_void_assessment.set_assessment_referenceNumber(st.text_input(label="Enter the Assessment Reference Number",
-                                                                        max_chars=100,
-                                                                        help="Assessment reference number in the "
-                                                                             "Training Partners Gateway",
-                                                                        key="update-void-assessment-reference-number"))
+    assessment_ref_num = st.text_input(label="Enter the Assessment Reference Number",
+                                       max_chars=100,
+                                       help="Assessment reference number in the "
+                                            "Training Partners Gateway",
+                                       key="update-void-assessment-reference-number")
 
     if update_void_assessment.is_update():
         st.subheader("Trainee Info")
@@ -254,7 +254,7 @@ with update_void:
 
             if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
-                uva = UpdateVoidAssessment(update_void_assessment)
+                uva = UpdateVoidAssessment(assessment_ref_num, update_void_assessment)
 
                 with request:
                     LOGGER.info("Showing preview of request...")
@@ -263,7 +263,6 @@ with update_void:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: uva.execute(), require_decryption=True)
-
 
 with find:
     st.header("Find Assessments")
@@ -325,10 +324,10 @@ with find:
                                                                   key="search-course-reference-number-input"))
 
     if st.checkbox("Specify Trainee ID?", key="search-trainee-id"):
-        search_assessment.set_trainee_id(st.text_input(label="Select Trainee ID Number",
-                                                       max_chars=20,
-                                                       help="Government-issued ID number",
-                                                       key="search-trainee-id-input"))
+        search_assessment.set_traineeId(st.text_input(label="Select Trainee ID Number",
+                                                      max_chars=20,
+                                                      help="Government-issued ID number",
+                                                      key="search-trainee-id-input"))
 
     if st.checkbox("Specify Enrolment Reference Number?", key="search-enrolment-reference-number"):
         search_assessment.set_enrolment_referenceNumber(st.text_input(label="Select Enrolment Reference Number",
@@ -391,7 +390,6 @@ with find:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: sa.execute(), require_decryption=True)
-
 
 with view:
     st.header("View Assessment")
