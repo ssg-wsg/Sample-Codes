@@ -92,7 +92,7 @@ class TestHttpUtils(unittest.TestCase):
                  "value\n\nBody\n-------\n{\n    \"data\": \"value\"\n}\n")
         get1 = "GET None\n\nHeaders\n-------\naccept: application/json\n\nBody\n-------\n{}\n"
         get2 = ("GET https://www.google.com?param=value\n\nHeaders\n-------\naccept: application/json\nheader: "
-                 "value\n\nBody\n-------\n{\n    \"data\": \"value\"\n}\n")
+                "value\n\nBody\n-------\n{\n    \"data\": \"value\"\n}\n")
 
         self.assertEqual(HTTPRequestBuilder().repr(HttpMethod.POST), post1)
         self.assertEqual(HTTPRequestBuilder()
