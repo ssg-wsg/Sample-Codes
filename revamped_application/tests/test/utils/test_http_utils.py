@@ -16,11 +16,17 @@ class TestHttpUtils(unittest.TestCase):
                                                       direct_argument="direct_argument/")
         builder4 = HTTPRequestBuilder().with_endpoint("http://localhost:8080/",
                                                       direct_argument="direct_argument/arg1/arg2/arg3")
+        builder5 = HTTPRequestBuilder().with_endpoint("http://localhost:8080/",
+                                                      direct_argument="/direct_argument/arg1/arg2/arg3")
+        builder6 = HTTPRequestBuilder().with_endpoint("http://localhost:8080/",
+                                                      direct_argument="//////direct_argument/arg1/arg2/arg3//////")
 
         self.assertEqual(builder1.endpoint, "http://localhost:8080")
         self.assertEqual(builder2.endpoint, "http://localhost:8080/direct_argument")
         self.assertEqual(builder3.endpoint, "http://localhost:8080/direct_argument")
         self.assertEqual(builder4.endpoint, "http://localhost:8080/direct_argument/arg1/arg2/arg3")
+        self.assertEqual(builder5.endpoint, "http://localhost:8080/direct_argument/arg1/arg2/arg3")
+        self.assertEqual(builder6.endpoint, "http://localhost:8080/direct_argument/arg1/arg2/arg3")
 
     def test_with_header(self):
         with self.assertRaises(ValueError):

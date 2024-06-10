@@ -80,16 +80,20 @@ class HTTPRequestBuilder:
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
             raise ValueError("Endpoint URL must start with http:// or https://!")
 
-        if direct_argument is not None and len(direct_argument) > 0:
-            # appends the direct argument to the endpoint if it is not empty
-            # and strips the end of the url endpoint if it has a trailing '/'
-            self.endpoint = (f"{endpoint}{direct_argument}"
-                             if endpoint.endswith("/")
-                             else f"{endpoint}/{direct_argument}")
-        else:
-            self.endpoint = endpoint
+        self.endpoint = endpoint
 
-        if self.endpoint.endswith("/"):
+        if direct_argument is not None and len(direct_argument) > 0:
+            # remove the "/" at the start of the direct argument if it exists
+            while direct_argument.startswith("/"):
+                direct_argument = direct_argument[1:]
+
+            # appends the direct argument to the endpoint if it is not empty and strips the end of the url
+            # endpoint if it has a trailing '/'
+            self.endpoint = (f"{self.endpoint}{direct_argument}"
+                             if self.endpoint.endswith("/")
+                             else f"{self.endpoint}/{direct_argument}")
+
+        while self.endpoint.endswith("/"):
             self.endpoint = self.endpoint[:-1]
 
         return self
