@@ -17,16 +17,16 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
     def __init__(self):
         self._sessionId: str = None
-        self._status_code: str = None
+        self._status_code: Attendance = None
         self._trainee_id: str = None
         self._trainee_name: str = None
         self._trainee_email: Optional[str] = None
-        self._trainee_id_type: str = None
+        self._trainee_id_type: IdType = None
         self._contactNumber_mobile: str = None
         self._contactNumber_areacode: Optional[int] = None
         self._contactNumber_countryCode: int = None
         self._numberOfHours: Optional[float] = None
-        self._surveyLanguage_code: str = None
+        self._surveyLanguage_code: SurveyLanguage = None
         self._referenceNumber: str = None
         self._corppassId: str = None
 
