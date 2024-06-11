@@ -7,7 +7,7 @@ import streamlit as st
 
 from typing import Optional
 
-from revamped_application.core.constants import ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS, ATTENDANCE_CODE_MAPPINGS
+from revamped_application.core.constants import SurveyLanguage, Attendance, IdType
 from revamped_application.utils.json_utils import remove_null_fields
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 
@@ -68,9 +68,6 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         if self._trainee_name is None or len(self._trainee_name) == 0:
             errors.append("No Trainee Name specified!")
-
-        if self._trainee_id_type not in ID_TYPE_MAPPING:
-            errors.append("Unknown Trainee ID type!")
 
         if self._contactNumber_countryCode is None:
             errors.append("No Country Code specified!")
@@ -146,11 +143,14 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         self._sessionId = sessionId
 
-    def set_statusCode(self, status_code: str) -> None:
-        if not isinstance(status_code, str) or status_code not in ATTENDANCE_CODE_MAPPINGS:
-            raise ValueError("Invalid status code")
+    def set_statusCode(self, status_code: Attendance) -> None:
+        if not isinstance(status_code, Attendance):
+            try:
+                status_code = Attendance(status_code)
+            except Exception:
+                raise ValueError("Invalid status code")
 
-        self._status_code = status_code
+        self._status_code = status_code.value[0]
 
     def set_trainee_id(self, trainee_id: str) -> None:
         if not isinstance(trainee_id, str):
@@ -170,11 +170,14 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         self._trainee_email = trainee_email
 
-    def set_trainee_id_type(self, trainee_id_type: str) -> None:
-        if not isinstance(trainee_id_type, str) or trainee_id_type not in ID_TYPE_MAPPING:
-            raise ValueError("Invalid trainee ID type")
+    def set_trainee_id_type(self, trainee_id_type: IdType) -> None:
+        if not isinstance(trainee_id_type, IdType):
+            try:
+                trainee_id_type = IdType(trainee_id_type)
+            except Exception:
+                raise ValueError("Invalid trainee ID type")
 
-        self._trainee_id_type = trainee_id_type
+        self._trainee_id_type = trainee_id_type.value[0]
 
     def set_contactNumber_mobile(self, contactNumber_mobile: str) -> None:
         if not isinstance(contactNumber_mobile, str):
@@ -200,11 +203,14 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
         self._numberOfHours = numberOfHours
 
-    def set_surveyLanguage_code(self, surveyLanguage_code: str) -> None:
-        if not isinstance(surveyLanguage_code, str) or surveyLanguage_code not in SURVEY_LANGUAGE_MAPPINGS:
-            raise ValueError("Invalid survey language code")
+    def set_surveyLanguage_code(self, surveyLanguage_code: SurveyLanguage) -> None:
+        if not isinstance(surveyLanguage_code, SurveyLanguage):
+            try:
+                surveyLanguage_code = SurveyLanguage(surveyLanguage_code)
+            except Exception:
+                raise ValueError("Invalid survey language code")
 
-        self._surveyLanguage_code = surveyLanguage_code
+        self._surveyLanguage_code = surveyLanguage_code.value[0]
 
     def set_referenceNumber(self, referenceNumber: str) -> None:
         if not isinstance(referenceNumber, str):

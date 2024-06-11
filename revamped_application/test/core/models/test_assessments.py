@@ -5,6 +5,7 @@ Contains test cases for CreateAssAssessmentInfo, UpdateVoidAssessmentInfo, and S
 import unittest
 from datetime import date
 
+from revamped_application.core.constants import IdTypeSummary, SortOrder, SortField
 from revamped_application.core.models.assessments import (CreateAssessmentInfo, SearchAssessmentInfo,
                                                           UpdateVoidAssessmentInfo)
 
@@ -44,10 +45,10 @@ class TestCreateAssessmentInfo(unittest.TestCase):
     LAST_UPDATE_TO_TWO = date(2023, 2, 12)
     LAST_UPDATE_FROM_ONE = date(2023, 1, 1)
     LAST_UPDATE_FROM_TWO = date(2023, 2, 1)
-    SORT_BY_ONE = "updatedOn"
-    SORT_BY_TWO = "assessmentDate"
-    SORT_ORDER_ONE = "asc"
-    SORT_ORDER_TWO = "desc"
+    SORT_BY_ONE = SortField.UPDATED_ON
+    SORT_BY_TWO = SortField.ASSESSMENT_DATE
+    SORT_ORDER_ONE = SortOrder.ASCENDING
+    SORT_ORDER_TWO = SortOrder.DESCENDING
     PAGE_ONE = 1
     PAGE_TWO = 2
     PAGE_SIZE_ONE = 10
@@ -155,8 +156,8 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._lastUpdateDateTo = TestCreateAssessmentInfo.LAST_UPDATE_TO_ONE
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._lastUpdateDateFrom = (
             TestCreateAssessmentInfo.LAST_UPDATE_FROM_ONE)
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_field = TestCreateAssessmentInfo.SORT_BY_ONE
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_order = TestCreateAssessmentInfo.SORT_ORDER_ONE
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_field = TestCreateAssessmentInfo.SORT_BY_ONE.value
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_order = TestCreateAssessmentInfo.SORT_ORDER_ONE.value[0]
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._parameters_page = TestCreateAssessmentInfo.PAGE_ONE
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._parameters_pageSize = TestCreateAssessmentInfo.PAGE_SIZE_ONE
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._assessment_courseRunId = (
@@ -177,8 +178,8 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._lastUpdateDateTo = TestCreateAssessmentInfo.LAST_UPDATE_TO_TWO
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._lastUpdateDateFrom = (
             TestCreateAssessmentInfo.LAST_UPDATE_FROM_TWO)
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_field = TestCreateAssessmentInfo.SORT_BY_TWO
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_order = TestCreateAssessmentInfo.SORT_ORDER_TWO
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_field = TestCreateAssessmentInfo.SORT_BY_TWO.value
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_order = TestCreateAssessmentInfo.SORT_ORDER_TWO.value[0]
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._parameters_page = TestCreateAssessmentInfo.PAGE_TWO
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._parameters_pageSize = TestCreateAssessmentInfo.PAGE_SIZE_TWO
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._assessment_courseRunId = (
@@ -508,9 +509,9 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCreateAssessmentInfo.CREATE_ASSESSMENT_THREE.set_trainee_id_type(1.0)
 
-        TestCreateAssessmentInfo.CREATE_ASSESSMENT_ONE.set_trainee_id_type("FIN")
-        TestCreateAssessmentInfo.CREATE_ASSESSMENT_TWO.set_trainee_id_type("OTHERS")
-        TestCreateAssessmentInfo.CREATE_ASSESSMENT_THREE.set_trainee_id_type("NRIC")
+        TestCreateAssessmentInfo.CREATE_ASSESSMENT_ONE.set_trainee_id_type(IdTypeSummary.FIN)
+        TestCreateAssessmentInfo.CREATE_ASSESSMENT_TWO.set_trainee_id_type(IdTypeSummary.OTHERS)
+        TestCreateAssessmentInfo.CREATE_ASSESSMENT_THREE.set_trainee_id_type(IdTypeSummary.NRIC)
 
         self.assertEqual(TestCreateAssessmentInfo.CREATE_ASSESSMENT_ONE._trainee_idType, "FIN")
         self.assertEqual(TestCreateAssessmentInfo.CREATE_ASSESSMENT_TWO._trainee_idType, "OTHERS")
@@ -984,9 +985,9 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_field(1.0)
 
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE.set_sortBy_field("updatedOn")
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO.set_sortBy_field("createdOn")
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_field("assessmentDate")
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE.set_sortBy_field(SortField.UPDATED_ON)
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO.set_sortBy_field(SortField.CREATED_ON)
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_field(SortField.ASSESSMENT_DATE)
 
         self.assertEqual(TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE._sortBy_field, "updatedOn")
         self.assertEqual(TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_field, "createdOn")
@@ -1002,9 +1003,9 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_order(1.0)
 
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE.set_sortBy_order("asc")
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO.set_sortBy_order("desc")
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_order("asc")
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE.set_sortBy_order(SortOrder.ASCENDING)
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO.set_sortBy_order(SortOrder.DESCENDING)
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE.set_sortBy_order(SortOrder.ASCENDING)
 
         self.assertEqual(TestCreateAssessmentInfo.SEARCH_ASSESSMENT_ONE._sortBy_order, "asc")
         self.assertEqual(TestCreateAssessmentInfo.SEARCH_ASSESSMENT_TWO._sortBy_order, "desc")

@@ -7,7 +7,7 @@ import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import HttpMethod
+from revamped_application.core.constants import HttpMethod, Month
 
 from typing import Literal, Optional
 
@@ -17,7 +17,7 @@ class ViewCourseSessions(AbstractRequest):
 
     _TYPE: HttpMethod = HttpMethod.GET
 
-    def __init__(self, runId: str, crn: str, session_month: Optional[str], session_year: Optional[int],
+    def __init__(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]):
         super().__init__()
         self.req: HTTPRequestBuilder = None
@@ -33,7 +33,7 @@ class ViewCourseSessions(AbstractRequest):
 
         return self.__repr__()
 
-    def _prepare(self, runId: str, crn: str, session_month: Optional[int], session_year: Optional[int],
+    def _prepare(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
         Creates an HTTP GET request for retrieving course sessions.
@@ -53,10 +53,10 @@ class ViewCourseSessions(AbstractRequest):
             .with_param("courseReferenceNumber", crn)
 
         if session_month is not None and session_year is not None:
-            if session_month < 10:
-                self.req = self.req.with_param("sessionMonth", f"0{session_month}{session_year}")
+            if session_month.value[0] < 10:
+                self.req = self.req.with_param("sessionMonth", f"0{session_month.value[0]}{session_year}")
             else:
-                self.req = self.req.with_param("sessionMonth", f"{session_month}{session_year}")
+                self.req = self.req.with_param("sessionMonth", f"{session_month.value[0]}{session_year}")
 
         match include_expired:
             case "Yes":

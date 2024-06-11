@@ -28,8 +28,7 @@ from revamped_application.core.courses.view_course_sessions import ViewCourseSes
 from revamped_application.core.models.course_runs import (EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo,
                                                           DeleteRunInfo, AddRunInfo, RunSessionAddInfo,
                                                           RunTrainerAddInfo, AddRunIndividualInfo)
-from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, \
-    Vacancy
+from revamped_application.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutations
 from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import (init, display_config,
@@ -266,8 +265,8 @@ with add:
             indiv_run.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                       key=f"add-mode-of-training-{run}",
                                                       help="Mode of training code",
-                                                      options=MODE_OF_TRAINING_MAPPING.keys(),
-                                                      format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"))
+                                                      options=ModeOfTraining,
+                                                      format_func=lambda x: str(x)))
             indiv_run.set_courseAdminEmail(st.text_input(
                 label="Course Admin Email",
                 key=f"add-course-admin-email-{run}",
@@ -279,7 +278,7 @@ with add:
             indiv_run.set_courseVacancy(st.selectbox(label="Course Vacancy",
                                                      key=f"add-course-vacancy-{run}",
                                                      options=Vacancy,
-                                                     format_func=lambda x: f"{x.value[0]}: {x.value[1]}",
+                                                     format_func=lambda x: str(x),
                                                      help="Course run vacancy status"))
 
             st.markdown("#### File Details")
@@ -322,9 +321,9 @@ with add:
                     st.markdown(f"##### Session {i + 1}")
                     runsession.set_modeOfTraining(st.selectbox(
                         label="Mode of Training",
-                        options=MODE_OF_TRAINING_MAPPING.keys(),
+                        options=ModeOfTraining,
                         help="Mode of training code",
-                        format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
+                        format_func=lambda x: str(x),
                         key=f"add-session-mode-of-training_{i}-{run}"))
 
                     col1, col2 = st.columns(2)
@@ -509,8 +508,8 @@ with add:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE_MAPPING.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
+                                                                   options=IdType,
+                                                                   format_func=lambda x: str(x),
                                                                    help="Trainer ID Type Code",
                                                                    key=f"add-trainer-id-code-{i}-{run}"))
 
@@ -578,8 +577,8 @@ with add:
                     if st.checkbox("Specify Salutation ID?", key=f"specify-add-trainer-salutation-{i}-{run}"):
                         runtrainer.set_salutationId(st.selectbox(
                             label="Salutations of the Trainer",
-                            options=SALUTATIONS.keys(),
-                            format_func=lambda x: SALUTATIONS[x],
+                            options=Salutations,
+                            format_func=lambda x: str(x),
                             help="This field is used to enter the Salutation of the trainer (required for new "
                                  "trainer). For existing trainer, leave this field empty.",
                             key=f"add-trainer-salutation-id-code-{i}-{run}",
@@ -647,7 +646,7 @@ with add:
         LOGGER.info("Attempting to send request to Add Course Run API...")
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
@@ -724,9 +723,9 @@ with edit_delete:
         if st.checkbox("Specify Mode of Training?", key="specify-edit-mode-of-training"):
             runinfo.set_modeOfTraining(st.selectbox(label="Mode of Training",
                                                     key="edit-mode-of-training",
-                                                    options=MODE_OF_TRAINING_MAPPING.keys(),
+                                                    options=ModeOfTraining,
                                                     help="Mode of training code",
-                                                    format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"))
+                                                    format_func=lambda x: str(x)))
 
         if st.checkbox("Specify Course Admin Email?", key="specify-edit-course-admin-email"):
             runinfo.set_courseAdminEmail(st.text_input(label="Course Admin Email",
@@ -739,16 +738,10 @@ with edit_delete:
 
         st.markdown("#### Course Vacancy Details")
         if st.checkbox("Specify Course Vacancy?", key="specify-edit-vacancy-code"):
-            runinfo.set_courseVacancy_code(st.text_input(label="Vacancy Code",
-                                                         key="edit-vacancy-code",
-                                                         help="Course run vacancy code",
-                                                         max_chars=1))
-
-            if st.checkbox("Specify Course Vacancy Description?", key="specify-edit-vacancy-description"):
-                runinfo.set_courseVacancy_description(st.text_input(label="Vacancy Description",
-                                                                    key="edit-vacancy-description",
-                                                                    help="Course run vacancy description",
-                                                                    max_chars=128))
+            runinfo.set_courseVacancy(st.selectbox(label="Vacancy Code",
+                                                   key="edit-vacancy",
+                                                   options=Vacancy,
+                                                   help="Course run vacancy"))
 
         st.markdown("#### Registration Dates")
         if st.checkbox("Specify Registration Dates?", key="specify-edit-registrationDates"):
@@ -792,7 +785,7 @@ with edit_delete:
             if st.checkbox("Specify Schedule Info Type Description?",
                            key="specify-edit-schedule-info-type-description"):
                 runinfo.set_scheduleInfoType_description(
-                    st.text_area(label="Schedule Description",
+                    st.text_area(label="Schedule Info Type Description",
                                  key="edit-schedule-info-type-description",
                                  help="Course run schedule info description",
                                  max_chars=32))
@@ -917,9 +910,9 @@ with edit_delete:
                     if st.checkbox("Specify Mode of Training?", key=f"specify-mode-of_training-{i}"):
                         runsession.set_modeOfTraining(st.selectbox(
                             label="Mode of Training",
-                            options=MODE_OF_TRAINING_MAPPING.keys(),
+                            options=ModeOfTraining,
                             help="Mode of training code",
-                            format_func=(lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}"),
+                            format_func=lambda x: str(x),
                             key=f"edit-mode-of-training-{i}"))
 
                     col1, col2 = st.columns(2)
@@ -1071,8 +1064,8 @@ with edit_delete:
 
                     with col1:
                         runtrainer.set_trainer_idType(st.selectbox(label="Trainer ID Code",
-                                                                   options=ID_TYPE_MAPPING.keys(),
-                                                                   format_func=lambda x: f"{x}: {ID_TYPE_MAPPING[x]}",
+                                                                   options=IdType,
+                                                                   format_func=lambda x: str(x),
                                                                    help="Trainer ID Type Code",
                                                                    key=f"edit-trainer-trainer-id-code-{i}"))
 
@@ -1140,8 +1133,8 @@ with edit_delete:
                                                                       "Salutation of the trainer (required for "
                                                                       "new trainer). For existing trainer, "
                                                                       "leave this field empty.",
-                                                                 options=SALUTATIONS.keys(),
-                                                                 format_func=lambda x: SALUTATIONS[x]))
+                                                                 options=Salutations,
+                                                                 format_func=lambda x: str(x)))
 
                     st.markdown("###### Photo")
                     if st.checkbox("Specify Photo Name?", key=f"specify-edit-trainer-photo-name-{i}"):
@@ -1207,10 +1200,10 @@ with edit_delete:
         LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:
             LOGGER.error("Missing Course Run ID, request aborted!")
-            st.error("Make sure to fill in your Course Run ID before proceeding!", icon="🚨")
+            st.error("Make sure to fill in your **Course Run ID** before proceeding!", icon="🚨")
         elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
@@ -1262,8 +1255,8 @@ with sessions:
     if st.checkbox("Specify Month and Year to retrieve?", key="specify-view-sessions-month-year"):
         month, year = st.columns(2)
         month_value = month.selectbox(label="Select Month value",
-                                      options=NUM2MONTH.keys(),
-                                      format_func=lambda x: NUM2MONTH[x],
+                                      options=Month,
+                                      format_func=lambda x: str(x),
                                       help="The month of the sessions to retrieve",
                                       key="view-sessions-month")
         year_value = year.number_input(label="Select Year value",
@@ -1280,7 +1273,7 @@ with sessions:
         LOGGER.info("Attempting to send request to View Course Sessions API...")
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",

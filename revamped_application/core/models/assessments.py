@@ -9,8 +9,8 @@ import datetime
 from typing import Optional, Literal
 
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import (GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS,
-                                                 SORT_FIELD, SORT_ORDER)
+from revamped_application.core.constants import (Grade, IdTypeSummary, Results, AssessmentUpdateVoidActions,
+                                                 SortField, SortOrder)
 from revamped_application.utils.verify import verify_uen
 from revamped_application.utils.json_utils import remove_null_fields
 
@@ -19,13 +19,13 @@ class CreateAssessmentInfo(AbstractRequestInfo):
     """Encapsulates information about the creation of an assessment record"""
 
     def __init__(self):
-        self._grade: Optional[Literal["A", "B", "C", "D", "E", "F"]] = None
+        self._grade: Optional[Grade] = None
         self._score: Optional[int] = None
         self._course_runId: str = None
         self._course_referenceNumber: str = None
-        self._result: Literal["Pass", "Fail", "Exempt"] = None
+        self._result: Results = None
         self._trainee_id: str = None
-        self._trainee_idType: Literal["NRIC", "FIN", "OTHERS"] = None
+        self._trainee_idType: IdTypeSummary = None
         self._trainee_fullName: str = None
         self._skillCode: Optional[str] = None
         self._assessmentDate: datetime.date = None
@@ -69,14 +69,8 @@ class CreateAssessmentInfo(AbstractRequestInfo):
         if self._course_referenceNumber is None or len(self._course_referenceNumber) == 0:
             errors.append("No Course Reference Number is provided!")
 
-        if self._result is None or self._result not in RESULTS:
-            errors.append("Result must be of values: [Pass, Fail, Exempt]")
-
         if self._trainee_id is None or len(self._trainee_id) == 0:
             errors.append("No Trainee ID is provided!")
-
-        if self._trainee_idType is None or self._trainee_idType not in ID_TYPE:
-            errors.append("Invalid Trainee ID Type!")
 
         if self._trainee_fullName is None or len(self._trainee_fullName) == 0:
             errors.append("No Trainee Full Name is provided!")
@@ -146,11 +140,14 @@ class CreateAssessmentInfo(AbstractRequestInfo):
     def get_referenceNumber(self) -> str:
         return self._course_referenceNumber
 
-    def set_grade(self, grade: Literal["A", "B", "C", "D", "E", "F"]) -> None:
-        if grade not in GRADES:
-            raise ValueError(f"Invalid Grade provided")
+    def set_grade(self, grade: Grade) -> None:
+        if not isinstance(grade, Grade):
+            try:
+                grade = Grade(grade)
+            except Exception:
+                raise ValueError(f"Invalid Grade provided")
 
-        self._grade = grade
+        self._grade = grade.value
 
     def set_score(self, score: int) -> None:
         if not isinstance(score, int):
@@ -170,11 +167,14 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
         self._course_referenceNumber = course_reference_number
 
-    def set_result(self, result: Literal["Pass", "Fail", "Exempt"]) -> None:
-        if result not in RESULTS:
-            raise ValueError(f"Invalid Result provided")
+    def set_result(self, result: Results) -> None:
+        if not isinstance(result, Results):
+            try:
+                result = Results(result)
+            except Exception:
+                raise ValueError(f"Invalid Result provided!")
 
-        self._result = result
+        self._result = result.value
 
     def set_traineeId(self, id: str) -> None:
         if not isinstance(id, str):
@@ -182,11 +182,14 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
         self._trainee_id = id
 
-    def set_trainee_id_type(self, idType: Literal["NRIC", "FIN", "OTHERS"]) -> None:
-        if idType not in ID_TYPE:
-            raise ValueError(f"Invalid Trainee ID Type provided")
+    def set_trainee_id_type(self, idType: IdTypeSummary) -> None:
+        if not isinstance(idType, IdTypeSummary):
+            try:
+                idType = IdTypeSummary(idType)
+            except Exception:
+                raise ValueError(f"Invalid Trainee ID Type provided!")
 
-        self._trainee_idType = idType
+        self._trainee_idType = idType.value
 
     def set_trainee_fullName(self, fullName: str) -> None:
         if not isinstance(fullName, str):
@@ -230,7 +233,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
 
     def __init__(self):
         super().__init__()
-        self._action: Literal["update", "void"] = None
+        self._action: AssessmentUpdateVoidActions = None
         self._assessmentReferenceNumber: str = None
 
     def __eq__(self, other):
@@ -246,18 +249,10 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         errors = []
         warnings = []
 
-        if self._action is None or self._action not in ASSESSMENT_UPDATE_VOID_ACTIONS:
+        if self._action is None:
             errors.append("No Action provided!")
 
-        # optionals check
-        if self._grade is not None and self._grade not in GRADES:
-            warnings.append("Invalid Grade provided!")
-
         # action, score and assessment date is automatically specified if the user mark it as specified
-
-        if self._result is not None and self._result not in RESULTS:
-            warnings.append("Result must be of values: [Pass, Fail, Exempt]")
-
         if self._trainee_fullName is not None and len(self._trainee_fullName) == 0:
             warnings.append("Trainee Full Name is empty even though Trainee Full Name is marked as specified!")
 
@@ -300,10 +295,13 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         return self._action == "update"
 
     def set_action(self, action: Literal["update", "void"]) -> None:
-        if not isinstance(action, str) or action not in ASSESSMENT_UPDATE_VOID_ACTIONS:
-            raise ValueError(f"Invalid Action provided")
+        if not isinstance(action, AssessmentUpdateVoidActions):
+            try:
+                action = AssessmentUpdateVoidActions(action)
+            except Exception:
+                raise ValueError(f"Invalid Action provided")
 
-        self._action = action
+        self._action = action.value
 
     def get_referenceNumber(self) -> str:
         raise NotImplementedError("This method is not supported!")
@@ -317,7 +315,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
     def set_trainingPartner_uen(self, uen: str) -> None:
         raise NotImplementedError("This method is not supported!")
 
-    def set_trainee_id_type(self, idType: Literal["NRIC", "FIN", "OTHERS"]) -> None:
+    def set_trainee_id_type(self, idType: IdTypeSummary) -> None:
         raise NotImplementedError("This method is not supported!")
 
     def set_traineeId(self, id: str) -> None:
@@ -336,8 +334,8 @@ class SearchAssessmentInfo(AbstractRequestInfo):
     def __init__(self):
         self._lastUpdateDateTo: Optional[datetime.date] = None
         self._lastUpdateDateFrom: Optional[datetime.date] = None
-        self._sortBy_field: Optional[Literal["updatedOn", "createdOn", "assessmentDate"]] = None
-        self._sortBy_order: Optional[str] = None
+        self._sortBy_field: Optional[SortField] = None
+        self._sortBy_order: Optional[SortOrder] = None
         self._parameters_page: int = None
         self._parameters_pageSize: int = None
         self._assessment_courseRunId: Optional[str] = None
@@ -482,16 +480,22 @@ class SearchAssessmentInfo(AbstractRequestInfo):
         self._lastUpdateDateFrom = lastUpdateDateFrom
 
     def set_sortBy_field(self, sortBy_field: str) -> None:
-        if not isinstance(sortBy_field, str) or sortBy_field not in SORT_FIELD:
-            raise ValueError(f"Invalid Sort By Field provided")
+        if not isinstance(sortBy_field, SortField):
+            try:
+                sortBy_field = SortField(sortBy_field)
+            except Exception:
+                raise ValueError(f"Invalid Sort By Field provided")
 
-        self._sortBy_field = sortBy_field
+        self._sortBy_field = sortBy_field.value
 
     def set_sortBy_order(self, sortBy_order: str) -> None:
-        if not isinstance(sortBy_order, str) or sortBy_order not in SORT_ORDER:
-            raise ValueError(f"Invalid Sort By Order provided")
+        if not isinstance(sortBy_order, SortOrder):
+            try:
+                sortBy_order = SortOrder(sortBy_order)
+            except Exception:
+                raise ValueError(f"Invalid Sort By Order provided")
 
-        self._sortBy_order = sortBy_order
+        self._sortBy_order = sortBy_order.value[0]
 
     def set_page(self, page: int) -> None:
         if not isinstance(page, int):

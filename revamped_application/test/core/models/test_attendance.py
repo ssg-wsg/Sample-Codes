@@ -7,6 +7,7 @@ https://stackoverflow.com/questions/45984018/python-unit-test-to-check-if-object
 
 import unittest
 
+from revamped_application.core.constants import IdType
 from revamped_application.core.models.attendance import UploadAttendanceInfo
 
 
@@ -23,8 +24,8 @@ class TestAttendanceInfo(unittest.TestCase):
     TRAINEE_NAME_TWO = "Jane Doe"
     TRAINEE_EMAIL_ONE = "john@email.com"
     TRAINEE_EMAIL_TWO = "jane@email.com"
-    TRAINEE_ID_TYPE_ONE = "SB"
-    TRAINEE_ID_TYPE_TWO = "SP"
+    TRAINEE_ID_TYPE_ONE = IdType.SINGAPORE_BLUE
+    TRAINEE_ID_TYPE_TWO = IdType.SINGAPORE_PINK
     TRAINEE_CONTACT_NUMBER_MOBILE_ONE = "91234567"
     TRAINEE_CONTACT_NUMBER_MOBILE_TWO = "98765432"
     TRAINEE_CONTACT_NUMBER_AREACODE_ONE = 65
@@ -286,9 +287,9 @@ class TestAttendanceInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_trainee_id_type(1234567890)
 
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_trainee_id_type("SO")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_trainee_id_type("FP")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_trainee_id_type("OT")
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_trainee_id_type(IdType.FIN_WORK_PERMIT)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_trainee_id_type(IdType.FOREIGN_PASSPORT)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_trainee_id_type(IdType.OTHERS)
 
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_id_type, "SO")
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_id_type, "FP")

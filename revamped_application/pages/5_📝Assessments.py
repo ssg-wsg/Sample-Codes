@@ -22,8 +22,8 @@ from revamped_application.core.assessments.create_assessment import CreateAssess
 from revamped_application.core.assessments.update_void_assessment import UpdateVoidAssessment
 from revamped_application.core.assessments.view_assessment import ViewAssessment
 from revamped_application.core.assessments.search_assessment import SearchAssessment
-from revamped_application.core.constants import GRADES, RESULTS, ID_TYPE, ASSESSMENT_UPDATE_VOID_ACTIONS, SORT_FIELD, \
-    SORT_ORDER
+from revamped_application.core.constants import (Grade, Results, IdTypeSummary, AssessmentUpdateVoidActions,
+                                                 SortField, SortOrder)
 from revamped_application.core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessmentInfo, \
     SearchAssessmentInfo
 from revamped_application.core.system.logger import Logger
@@ -82,7 +82,8 @@ with create:
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
     create_assessment_info.set_trainee_id_type(col1.selectbox(label="Enter the Trainee ID Type",
-                                                              options=ID_TYPE,
+                                                              options=IdTypeSummary,
+                                                              format_func=lambda x: x.value,
                                                               help="This describes the type of ID provided",
                                                               key="create-assessment-trainee-id-type"))
     create_assessment_info.set_traineeId(col2.text_input(label="Enter the Trainee ID Number",
@@ -99,7 +100,8 @@ with create:
     col3, col4 = st.columns(2)
     if col3.checkbox("Specify Grade?", key="specify-create-grade"):
         create_assessment_info.set_grade(col3.selectbox(label="Select Grade",
-                                                        options=GRADES,
+                                                        options=Grade,
+                                                        format_func=lambda x: x.value,
                                                         help="A grade, entered as A-F",
                                                         key="create-assessment-grade"))
 
@@ -128,7 +130,8 @@ with create:
                                                                                  "default value!"))
 
     create_assessment_info.set_result(st.selectbox(label="Select Result",
-                                                   options=RESULTS,
+                                                   options=Results,
+                                                   format_func=lambda x: str(x),
                                                    help="The outcome of the assessment, specified as pass or fail",
                                                    key="create-assessment-result"))
     create_assessment_info.set_assessmentDate(st.date_input(label="Select Assessment Date",
@@ -176,8 +179,8 @@ with update_void:
 
     update_void_assessment = UpdateVoidAssessmentInfo()
     update_void_assessment.set_action(st.selectbox(label="Select Action to Perform",
-                                                   options=ASSESSMENT_UPDATE_VOID_ACTIONS,
-                                                   format_func=lambda x: x.upper(),
+                                                   options=AssessmentUpdateVoidActions,
+                                                   format_func=lambda x: str(x),
                                                    help="Select UPDATE to update an assessment record, and "
                                                         "VOID to void an assessment record",
                                                    key="update-void-assessment-action"))
@@ -201,7 +204,8 @@ with update_void:
         col1, col2, col3 = st.columns(3)
         if col1.checkbox("Update Grade?", key="update-void-grade"):
             update_void_assessment.set_grade(col1.selectbox(label="Select Grade",
-                                                            options=GRADES,
+                                                            options=Grade,
+                                                            format_func= lambda x: x.value,
                                                             help="The letter grade of the assessment, entered as A-F, "
                                                                  "if applicable",
                                                             key="update-void-assessment-grade"))
@@ -217,7 +221,8 @@ with update_void:
 
         if col3.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
             update_void_assessment.set_result(col3.selectbox(label="Select Result",
-                                                             options=RESULTS,
+                                                             options=Results,
+                                                             format_func=lambda x: str(x),
                                                              help="The outcome of the assessment, specified as pass, "
                                                                   "fail or exempt",
                                                              key="update-void-assessment-result"))
@@ -284,7 +289,8 @@ with find:
 
     if col1.checkbox("Specify Sort By Field?", key="search-sort-by-field"):
         search_assessment.set_sortBy_field(col1.selectbox(label="Select Sort By Field",
-                                                          options=SORT_FIELD,
+                                                          options=SortField,
+                                                          format_func=lambda x: str(x),
                                                           help="Field to sort by. Available fields:\n"
                                                                "- 'updatedOn'\n"
                                                                "- 'createdOn'\n"
@@ -293,9 +299,9 @@ with find:
 
     if col2.checkbox("Specify Sort Order?", key="search-sort-order"):
         search_assessment.set_sortBy_order(col2.selectbox(label="Select Sort Order",
-                                                          options=SORT_ORDER.keys(),
+                                                          options=SortOrder,
+                                                          format_func=lambda x: str(x),
                                                           help="Sort order",
-                                                          format_func=lambda x: f"{x}: {SORT_ORDER[x]}",
                                                           key="search-sort-by-order-input"))
 
     search_assessment.set_page(st.number_input(label="Page Number",

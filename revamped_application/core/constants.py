@@ -26,78 +26,165 @@ class Endpoints(Enum):
 class Vacancy(Enum):
     """Enum representing the different course vacancy codes."""
 
-    AVAILABLE: tuple[str, str] = ("A", "Available")
-    FULL: tuple[str, str] = ("F", "Full")
-    LIMITED_VACANCY: tuple[str, str] = ("L", "Limited Vacancy")
+    AVAILABLE = ("A", "Available")
+    FULL = ("F", "Full")
+    LIMITED_VACANCY = ("L", "Limited Vacancy")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
 
 
-# ===== COURSES CONSTANTS ===== #
-MODE_OF_TRAINING_MAPPING: dict = {
-    "1": "Classroom",
-    "2": "Asynchronous eLearning",
-    "3": "In-house",
-    "4": "On-the-Job",
-    "5": "Practical / Practicum",
-    "6": "Supervised Field",
-    "7": "Traineeship",
-    "8": "Assessment",
-    "9": "Synchronous Learning"
-}
+class ModeOfTraining(Enum):
+    """Enum representing the different modes of training."""
 
-ID_TYPE_MAPPING: dict[str, str] = {
-    "SB": "Singapore Blue Identification Card",
-    "SP": "Singapore Pink Identification Card",
-    "SO": "Fin/Work Permit",
-    "FP": "Foreign Passport",
-    "OT": "Others"
-}
+    CLASSROOM = ("1", "Classroom")
+    ASYNCHRONOUS_ELEARNING = ("2", "Asynchronous eLearning")
+    IN_HOUSE = ("3", "In-house")
+    ON_THE_JOB = ("4", "On-the-Job")
+    PRACTICAL_PRACTICUM = ("5", "Practical / Practicum")
+    SUPERVISED_FIELD = ("6", "Supervised Field")
+    TRAINEESHIP = ("7", "Traineeship")
+    ASSESSMENT = ("8", "Assessment")
+    SYNCHRONOUS_LEARNING = ("9", "Synchronous Learning")
 
-SALUTATIONS: dict[int, str] = {
-    1: "Mr",
-    2: "Ms",
-    3: "Mdm,",
-    4: "Mrs",
-    5: "Dr",
-    6: "Prof"
-}
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
 
-NUM2MONTH: dict[int, str] = {
-    1: "Jan",
-    2: "Feb",
-    3: "Mar",
-    4: "Apr",
-    5: "May",
-    6: "Jun",
-    7: "Jul",
-    8: "Aug",
-    9: "Sep",
-    10: "Oct",
-    11: "Nov",
-    12: "Dec"
-}
+
+class IdType(Enum):
+    """Enum representing the different subtypes of identification documents in use in Singapore."""
+
+    SINGAPORE_BLUE = ("SB", "Singapore Blue Identification Card")
+    SINGAPORE_PINK = ("SP", "Singapore Pink Identification Card")
+    FIN_WORK_PERMIT = ("SO", "Fin/Work Permit")
+    FOREIGN_PASSPORT = ("FP", "Foreign Passport")
+    OTHERS = ("OT", "Others")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
+
+
+class Salutations(Enum):
+    """Enum representing the different salutations."""
+
+    MR = (1, "Mr")
+    MS = (2, "Ms")
+    MDM = (3, "Mdm")
+    MRS = (4, "Mrs")
+    DR = (5, "Dr")
+    PROF = (6, "Prof")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
+
+
+class Month(Enum):
+    """Enum representing the months of the year."""
+
+    JAN = (1, "Jan")
+    FEB = (2, "Feb")
+    MAR = (3, "Mar")
+    APR = (4, "Apr")
+    MAY = (5, "May")
+    JUN = (6, "Jun")
+    JUL = (7, "Jul")
+    AUG = (8, "Aug")
+    SEP = (9, "Sep")
+    OCT = (10, "Oct")
+    NOV = (11, "Nov")
+    DEC = (12, "Dec")
+
+    def __str__(self):
+        return self.value[1]
+
 
 # ===== ASSESSMENT CONSTANTS ===== #
-GRADES = ["A", "B", "C", "D", "E", "F"]
-RESULTS = ["Pass", "Fail", "Exempt"]
-ID_TYPE = ["NRIC", "FIN", "OTHERS"]
-ASSESSMENT_UPDATE_VOID_ACTIONS = ["update", "void"]
+class Grade(Enum):
+    """Enum represents the overall grade of an assessment."""
+
+    A = "A"
+    B = "B"
+    C = "C"
+    D = "D"
+    E = "E"
+    F = "F"
+
+    def __str__(self):
+        return self.value
+
+
+class Results(Enum):
+    """Enum represents the overall result of an assessment."""
+    PASS = "Pass"
+    FAIL = "Fail"
+    EXEMPT = "Exempt"
+
+    def __str__(self):
+        return self.value
+
+
+class IdTypeSummary(Enum):
+    """Enum represents the different subtypes of identification documents in use in Singapore."""
+
+    NRIC = "NRIC"
+    FIN = "FIN"
+    OTHERS = "OTHERS"
+
+    def __str__(self):
+        return self.value
+
+
+class AssessmentUpdateVoidActions(Enum):
+    """Enum represents the different actions that can be taken on an assessment."""
+
+    UPDATE = "update"
+    VOID = "void"
+
+    def __str__(self):
+        return self.value
+
 
 # ===== ATTENDANCE CONSTANTS ===== #
-ATTENDANCE_CODE_MAPPINGS = {
-    "1": "Confirmed",
-    "2": "Unconfirmed",
-    "3": "Rejected",
-    "4": "TP Voided"
-}
-SORT_FIELD = ["updatedOn", "createdOn", "assessmentDate"]
-SORT_ORDER = {
-    "asc": "Ascending",
-    "desc": "Descending"
-}
+class Attendance(Enum):
+    """Enum represents the different attendance statuses for a trainee."""
 
-SURVEY_LANGUAGE_MAPPINGS = {
-    "EL": "English",
-    "MN": "Mandarin",
-    "MY": "Malay",
-    "TM": "Tamil"
-}
+    CONFIRMED = ("1", "Confirmed")
+    UNCONFIRMED = ("2", "Unconfirmed")
+    REJECTED = ("3", "Rejected")
+    TP_VOIDED = ("4", "TP Voided")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
+
+
+class SortField(Enum):
+    """Enum represents the different fields that can be sorted by."""
+
+    UPDATED_ON = "updatedOn"
+    CREATED_ON = "createdOn"
+    ASSESSMENT_DATE = "assessmentDate"
+
+    def __str__(self):
+        return self.value
+
+
+class SortOrder(Enum):
+    """Enum represents the different orders that the results can be sorted in."""
+
+    ASCENDING = ("asc", "Ascending")
+    DESCENDING = ("desc", "Descending")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
+
+
+class SurveyLanguage(Enum):
+    """Enum represents the different languages that a survey can be conducted in."""
+
+    ENGLISH = ("EL", "English")
+    MANDARIN = ("MN", "Mandarin")
+    MALAY = ("MY", "Malay")
+    TAMIL = ("TM", "Tamil")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
