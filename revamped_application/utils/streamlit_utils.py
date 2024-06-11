@@ -57,7 +57,12 @@ def display_config() -> None:
     """Displays all the loaded configuration variables."""
 
     st.header("API Endpoint")
-    st.code(f"{st.session_state["url"].name}: {st.session_state["url"].value}", language="text")
+    try:
+        st.code(f"{st.session_state["url"].name if "url" in st.session_state else "Unknown"}: "
+                f"{st.session_state["url"].value if "url" in st.session_state else "Unknown URL"}", language="text")
+    except AttributeError:
+        st.info("Your app has rerun, make sure to navigate back to the **Home** page to reselect the API endpoint!",
+                icon="ℹ️")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")

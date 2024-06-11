@@ -23,6 +23,14 @@ class Endpoints(Enum):
     MOCK = "https://mock-api.ssg-wsg.sg"
 
 
+class Vacancy(Enum):
+    """Enum representing the different course vacancy codes."""
+
+    AVAILABLE: tuple[str, str] = ("A", "Available")
+    FULL: tuple[str, str] = ("F", "Full")
+    LIMITED_VACANCY: tuple[str, str] = ("L", "Limited Vacancy")
+
+
 # ===== COURSES CONSTANTS ===== #
 MODE_OF_TRAINING_MAPPING: dict = {
     "1": "Classroom",

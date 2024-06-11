@@ -41,8 +41,16 @@ class Logger:
         Note that all handlers added to the internal logger instance are statically defined. Adding more than one
         file/stream handlers may result in duplicated logs.
 
+        Duplicate loggers are not created by checking the file name against the log manager's master list of
+        loggers. Adapted from https://stackoverflow.com/questions/53249304/how-to-list-all-existing-loggers-
+        using-python-logging-module.
+
         :param filename: The name of the file which causes the logging action to be taken
         """
+
+        if filename in logging.root.manager.loggerDict:
+            self.logger = logging.getLogger(filename)
+            return
 
         self.logger = logging.getLogger(filename)
         self.logger.setLevel(logging.INFO)

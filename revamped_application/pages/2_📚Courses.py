@@ -28,7 +28,8 @@ from revamped_application.core.courses.view_course_sessions import ViewCourseSes
 from revamped_application.core.models.course_runs import (EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo,
                                                           DeleteRunInfo, AddRunInfo, RunSessionAddInfo,
                                                           RunTrainerAddInfo, AddRunIndividualInfo)
-from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
+from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, \
+    Vacancy
 from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import (init, display_config,
@@ -126,6 +127,7 @@ with add:
                                        help="Reference number for the course of interest. "
                                             "Encode the course reference number as it may contains "
                                             "some special characters which could be blocked by the Gateway",
+                                       placeholder="XX-10000000K-01-TEST 166",
                                        key="add-crn"))
 
     st.subheader("Define Number of Runs to Add")
@@ -175,15 +177,20 @@ with add:
             st.markdown("#### Schedule Info Type")
             indiv_run.set_scheduleInfoType_code(st.text_input(label="Schedule Code",
                                                               key=f"add-schedule-code-{run}",
-                                                              help="Course run schedule info code"))
+                                                              help="Course run schedule info code",
+                                                              placeholder="01",
+                                                              max_chars=2))
             indiv_run.set_scheduleInfoType_description(st.text_area(label="Schedule Description",
                                                                     key=f"add-schedule-description-{run}",
                                                                     help="Course run schedule info description",
+                                                                    placeholder="Description",
                                                                     max_chars=32))
 
             indiv_run.set_scheduleInfo(st.text_input(label="Schedule Info",
                                                      key=f"add-schedule-info-{run}",
-                                                     help="Course run schedule info"))
+                                                     help="Course run schedule info",
+                                                     placeholder="Sat / 5 Sats / 9am - 6pm",
+                                                     max_chars=300))
 
             st.markdown("#### Venue Info")
             if st.checkbox("Specify Venue Block?", key=f"specify-add-venue-block-info-{run}"):
@@ -265,18 +272,15 @@ with add:
                 label="Course Admin Email",
                 key=f"add-course-admin-email-{run}",
                 help="Course admin email is under course run level that can receive the email from 'QR code "
-                     "Attendance Taking', 'Course Atendance with error' and 'Trainer information not updated'",
+                     "Attendance Taking', 'Course Attendance with error' and 'Trainer information not updated'",
                 max_chars=255))
 
             st.markdown("#### Course Vacancy Details")
-            indiv_run.set_courseVacancy_code(st.text_input(label="Vacancy Code",
-                                                           key=f"add-course-vacancy-code-{run}",
-                                                           help="Course run vacancy code",
-                                                           max_chars=1))
-            indiv_run.set_courseVacancy_description(st.text_input(label="Vacancy Description",
-                                                                  key=f"add-course-vacancy-description-{run}",
-                                                                  help="Course run vacancy description",
-                                                                  max_chars=128))
+            indiv_run.set_courseVacancy(st.selectbox(label="Course Vacancy",
+                                                     key=f"add-course-vacancy-{run}",
+                                                     options=Vacancy,
+                                                     format_func=lambda x: f"{x.value[0]}: {x.value[1]}",
+                                                     help="Course run vacancy status"))
 
             st.markdown("#### File Details")
             if st.checkbox("Specify File Name?", key=f"specify-add-file-Name-info-{run}"):

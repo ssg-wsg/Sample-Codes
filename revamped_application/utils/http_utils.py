@@ -5,6 +5,8 @@ This file contains useful classes and methods used for creating and handling HTT
 import binascii
 import json
 import textwrap
+
+import certifi
 import requests
 import streamlit as st
 
@@ -184,7 +186,8 @@ class HTTPRequestBuilder:
         return requests.get(self.endpoint,
                             params=self.params,
                             headers=self.header,
-                            cert=(st.session_state["key_pem"], st.session_state["cert_pem"]))
+                            verify=certifi.where(),
+                            cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def post(self) -> requests.Response:
         """
@@ -200,6 +203,7 @@ class HTTPRequestBuilder:
                              params=self.params,
                              headers=self.header,
                              data=self.body,
+                             verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def post_encrypted(self) -> requests.Response:
@@ -224,6 +228,7 @@ class HTTPRequestBuilder:
                              params=self.params,
                              headers=self.header,
                              json=Cryptography.encrypt(json.dumps(self.body), return_bytes=False),
+                             verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def repr(self, req_type: HttpMethod) -> str:
@@ -366,9 +371,7 @@ def handle_response(throwable: Callable[[], requests.Response], require_decrypti
     except SSLError as ex:
         # there are some issues with the SSL keys
         LOGGER.error(f"Unable to establish SSL connection with the server! Error: {ex}. Aborting request...")
-        st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n"
-                 "If your key files are not in `pem` format, ensure that you convert your "
-                 "key files into `pem` format!", icon="🚨")
+        st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n", icon="🚨")
     except ConnectionError as ex:
         # the endpoint url is likely malformed here
         LOGGER.error(f"There is an issue with the connection with the API endpoint! Error: {ex}. Aborting request...")

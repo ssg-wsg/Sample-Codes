@@ -15,7 +15,7 @@ import streamlit_nested_layout  # noqa: E402
 from tempfile import NamedTemporaryFile  # noqa: E402
 
 from utils.streamlit_utils import init, display_config  # noqa: E402
-from utils.verify import verify_uen, verify_aes_encryption_key  # noqa: E402
+from utils.verify import verify_uen, verify_aes_encryption_key, verify_cert_private_key  # noqa: E402
 from core.system.cleaner import start_schedule  # noqa: E402
 from core.system.logger import Logger  # noqa: E402
 from core.constants import Endpoints  # noqa: E402
@@ -44,8 +44,8 @@ st.markdown("Welcome to the SSG API Sample Application!\n\n"
 
 st.subheader("Configurations")
 st.markdown("Before you continue, make sure to fill up the following configuration details needed for the demo app! "
-            "Failure to enter in any one of these variables may prevent you from fully exploring all features "
-            "of the app!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
+            "Failure to enter in any one of these variables may **prevent you from fully exploring all features "
+            "of the app**!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
             "sidebar!")
 
 st.subheader("API Endpoint")
@@ -95,6 +95,13 @@ with st.form(key="init_config"):
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
                 LOGGER.info("Private key loaded!")
 
+                LOGGER.info("Verifying certificate and key...")
+                if not verify_cert_private_key(st.session_state["cert_pem"], st.session_state["key_pem"]):
+                    LOGGER.error("Certificate and private key are not valid!")
+                    raise AssertionError("Certificate and private key are not valid! Are you sure that you "
+                                         "have uploaded your certificates and private keys properly?")
+                LOGGER.info("Certificate and key verified!")
+
                 st.session_state["uen"] = uen.upper()  # UENs only have upper case characters
                 LOGGER.info("UEN loaded!")
 
@@ -105,4 +112,7 @@ with st.form(key="init_config"):
                            "Sidebar to view the configurations you have loaded up!", icon="✅")
             except base64.binascii.Error:
                 LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
-                st.error("Certificate or private key is invalid!", icon="🔐")
+                st.error("Certificate or private key is invalid!", icon="🚨")
+            except AssertionError as ex:
+                LOGGER.error(ex)
+                st.error(ex, icon="🚨")

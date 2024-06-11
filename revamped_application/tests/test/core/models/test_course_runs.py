@@ -13,6 +13,7 @@ import unittest
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 
+from revamped_application.core.constants import Vacancy
 from revamped_application.core.models.course_runs import (RunSessionEditInfo, RunSessionAddInfo, RunTrainerEditInfo,
                                                           RunTrainerAddInfo, EditRunInfo, DeleteRunInfo,
                                                           AddRunIndividualInfo, AddRunInfo)
@@ -72,10 +73,8 @@ class TestCourseRunsModels(unittest.TestCase):
     THRESHOLD_TWO = 100
     REGISTERED_USER_COUNT_ONE = 10
     REGISTERED_USER_COUNT_TWO = 20
-    COURSE_VACANCY_CODE_ONE = "A"
-    COURSE_VACANCY_CODE_TWO = "F"
-    COURSE_VACANCY_DESCRIPTION_ONE = "Available"
-    COURSE_VACANCY_DESCRIPTION_TWO = "Full"
+    COURSE_VACANCY_ONE = Vacancy.AVAILABLE
+    COURSE_VACANCY_TWO = Vacancy.FULL
     TRAINER_TYPE_ONE = "1"
     TRAINER_TYPE_TWO = "2"
     TRAINER_TYPE_DESCRIPTION_ONE = "Existing"
@@ -424,9 +423,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_registeredUserCount(TestCourseRunsModels.REGISTERED_USER_COUNT_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_modeOfTraining(TestCourseRunsModels.MODE_OF_TRAINING_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseAdminEmail(TestCourseRunsModels.EMAIL_ONE)
-        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_code(TestCourseRunsModels.COURSE_VACANCY_CODE_ONE)
-        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_description(
-            TestCourseRunsModels.COURSE_VACANCY_DESCRIPTION_ONE)
+        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy(TestCourseRunsModels.COURSE_VACANCY_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_file_Name(TestCourseRunsModels.FILE_NAME_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_file_content(TestCourseRunsModels.FILE_CONTENT_ONE)
         TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_sessions([
@@ -466,9 +463,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_registeredUserCount(TestCourseRunsModels.REGISTERED_USER_COUNT_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_modeOfTraining(TestCourseRunsModels.MODE_OF_TRAINING_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseAdminEmail(TestCourseRunsModels.EMAIL_TWO)
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_code(TestCourseRunsModels.COURSE_VACANCY_CODE_TWO)
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_description(
-            TestCourseRunsModels.COURSE_VACANCY_DESCRIPTION_TWO)
+        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy(TestCourseRunsModels.COURSE_VACANCY_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_file_Name(TestCourseRunsModels.FILE_NAME_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_file_content(TestCourseRunsModels.FILE_CONTENT_TWO)
         TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_sessions([
@@ -523,10 +518,7 @@ class TestCourseRunsModels(unittest.TestCase):
             TestCourseRunsModels.REGISTERED_USER_COUNT_ONE)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_modeOfTraining(TestCourseRunsModels.MODE_OF_TRAINING_ONE)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseAdminEmail(TestCourseRunsModels.EMAIL_ONE)
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_code(
-            TestCourseRunsModels.COURSE_VACANCY_CODE_ONE)
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_description(
-            TestCourseRunsModels.COURSE_VACANCY_DESCRIPTION_ONE)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy(TestCourseRunsModels.COURSE_VACANCY_ONE)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_file_Name(TestCourseRunsModels.FILE_NAME_ONE)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_file_content(TestCourseRunsModels.FILE_CONTENT_ONE)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_sessions([
@@ -569,10 +561,7 @@ class TestCourseRunsModels(unittest.TestCase):
             TestCourseRunsModels.REGISTERED_USER_COUNT_TWO)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_modeOfTraining(TestCourseRunsModels.MODE_OF_TRAINING_TWO)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseAdminEmail(TestCourseRunsModels.EMAIL_TWO)
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_code(
-            TestCourseRunsModels.COURSE_VACANCY_CODE_TWO)
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_description(
-            TestCourseRunsModels.COURSE_VACANCY_DESCRIPTION_TWO)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy(TestCourseRunsModels.COURSE_VACANCY_TWO)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_file_Name(TestCourseRunsModels.FILE_NAME_TWO)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_file_content(TestCourseRunsModels.FILE_CONTENT_TWO)
         TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_sessions([
@@ -3571,41 +3560,28 @@ class TestCourseRunsModels(unittest.TestCase):
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._courseAdminEmail, "Email 2")
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._courseAdminEmail, "Email 3")
 
-    def test_EditRunInfo_set_course_vacancy_code(self):
+    def test_EditRunInfo_set_course_vacancy(self):
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy_code(1)
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_code({"two"})
+            TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy(1)
 
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_code(3.3333333)
-
-        TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy_code("1")
-        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_code("2")
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_code("3")
-
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._courseVacancy_code, "1")
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._courseVacancy_code, "2")
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._courseVacancy_code, "3")
-
-    def test_EditRunInfo_set_course_vacancy_description(self):
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy_description(1)
+            TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy({"two"})
 
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_description({"two"})
+            TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy(3.3333333)
 
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_description(3.3333333)
+        TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy(Vacancy.FULL)
+        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy(Vacancy.AVAILABLE)
+        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy(Vacancy.LIMITED_VACANCY)
 
-        TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_courseVacancy_description("Description 1")
-        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_courseVacancy_description("Description 2")
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_courseVacancy_description("Description 3")
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._courseVacancy_code, Vacancy.FULL.value[0])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._courseVacancy_description, Vacancy.FULL.value[1])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._courseVacancy_code, Vacancy.AVAILABLE.value[0])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._courseVacancy_description, Vacancy.AVAILABLE.value[1])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._courseVacancy_code, Vacancy.LIMITED_VACANCY.value[0])
+        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._courseVacancy_description,
+                         Vacancy.LIMITED_VACANCY.value[1])
 
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._courseVacancy_description, "Description 1")
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._courseVacancy_description, "Description 2")
-        self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_THREE._courseVacancy_description, "Description 3")
 
     def test_EditRunInfo_set_file_name(self):
         with self.assertRaises(ValueError):
@@ -3953,19 +3929,12 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             TestCourseRunsModels.DELETE_RUN_INFO_TWO.set_courseAdminEmail({"two"})
 
-    def test_DeleteRunInfo_set_course_vacancy_code(self):
+    def test_DeleteRunInfo_set_course_vacancy(self):
         with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.DELETE_RUN_INFO_ONE.set_courseVacancy_code(1)
+            TestCourseRunsModels.DELETE_RUN_INFO_ONE.set_courseVacancy(Vacancy.LIMITED_VACANCY)
 
         with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.DELETE_RUN_INFO_TWO.set_courseVacancy_code({"two"})
-
-    def test_DeleteRunInfo_set_course_vacancy_description(self):
-        with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.DELETE_RUN_INFO_ONE.set_courseVacancy_description(1)
-
-        with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.DELETE_RUN_INFO_TWO.set_courseVacancy_description({"two"})
+            TestCourseRunsModels.DELETE_RUN_INFO_TWO.set_courseVacancy(Vacancy.FULL)
 
     def test_DeleteRunInfo_set_file_name(self):
         with self.assertRaises(NotImplementedError):
@@ -4612,41 +4581,32 @@ class TestCourseRunsModels(unittest.TestCase):
         self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._courseAdminEmail, "Email 2")
         self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._courseAdminEmail, "Email 3")
 
-    def test_AddRunIndividualInfo_set_course_vacancy_code(self):
+    def test_AddRunIndividualInfo_set_course_vacancy(self):
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy_code(1)
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_code({"two"})
+            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy(1)
 
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_code(3.3333333)
-
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy_code("1")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_code("2")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_code("3")
-
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._courseVacancy_code, "1")
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._courseVacancy_code, "2")
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._courseVacancy_code, "3")
-
-    def test_AddRunIndividualInfo_set_course_vacancy_description(self):
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy_description(1)
+            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy({"two"})
 
         with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_description({"two"})
+            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy(3.3333333)
 
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_description(3.3333333)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy(Vacancy.LIMITED_VACANCY)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy(Vacancy.FULL)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy(Vacancy.AVAILABLE)
 
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_courseVacancy_description("Description 1")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_courseVacancy_description("Description 2")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_courseVacancy_description("Description 3")
-
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._courseVacancy_description, "Description 1")
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._courseVacancy_description, "Description 2")
-        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._courseVacancy_description, "Description 3")
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._courseVacancy_code,
+                         Vacancy.LIMITED_VACANCY.value[0])
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._courseVacancy_code,
+                         Vacancy.FULL.value[0])
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._courseVacancy_code,
+                         Vacancy.AVAILABLE.value[0])
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._courseVacancy_description,
+                         Vacancy.LIMITED_VACANCY.value[1])
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._courseVacancy_description,
+                         Vacancy.FULL.value[1])
+        self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE._courseVacancy_description,
+                         Vacancy.AVAILABLE.value[1])
 
     def test_AddRunIndividualInfo_set_file_name(self):
         with self.assertRaises(ValueError):
@@ -5257,23 +5217,13 @@ class TestCourseRunsModels(unittest.TestCase):
 
     def test_AddRunInfo_set_course_vacancy_code(self):
         with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_ONE.set_courseVacancy_code(1)
+            TestCourseRunsModels.ADD_RUN_INFO_ONE.set_courseVacancy(Vacancy.LIMITED_VACANCY)
 
         with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_TWO.set_courseVacancy_code({"two"})
+            TestCourseRunsModels.ADD_RUN_INFO_TWO.set_courseVacancy(Vacancy.FULL)
 
         with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_THREE.set_courseVacancy_code("A")
-
-    def test_AddRunInfo_set_course_vacancy_description(self):
-        with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_ONE.set_courseVacancy_description(1)
-
-        with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_TWO.set_courseVacancy_description({"two"})
-
-        with self.assertRaises(NotImplementedError):
-            TestCourseRunsModels.ADD_RUN_INFO_THREE.set_courseVacancy_description("Available")
+            TestCourseRunsModels.ADD_RUN_INFO_THREE.set_courseVacancy(Vacancy.AVAILABLE)
 
     def test_AddRunInfo_set_file_name(self):
         with self.assertRaises(NotImplementedError):

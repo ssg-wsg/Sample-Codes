@@ -49,8 +49,10 @@ with view:
     st.header("Course Session Attendance")
     st.markdown("You can use this API to view the attendance of the trainees who are enrolled into your course for "
                 "a particular course session.")
-    st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
-               "properly under the Home page before proceeding!**", icon="⚠️")
+
+    if "uen" not in st.session_state or st.session_state["uen"] is None:
+        st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
+                   "properly under the Home page before proceeding!**", icon="⚠️")
 
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
@@ -100,8 +102,10 @@ with upload:
     st.header("Upload Course Session Attendance")
     st.markdown("You can use this API to update the attendance of the trainees who are enrolled into your course for "
                 "a particular course session.")
-    st.warning("**Upload Course Session Attendance API requires your UEN to proceed. Make sure that you have "
-               "loaded it up properly under the Home page before proceeding!**", icon="⚠️")
+
+    if "uen" not in st.session_state or st.session_state["uen"] is None:
+        st.warning("**Upload Course Session Attendance API requires your UEN to proceed. Make sure that you have "
+                   "loaded it up properly under the Home page before proceeding!**", icon="⚠️")
 
     uploadAttendance = UploadAttendanceInfo()
 

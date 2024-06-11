@@ -1,8 +1,10 @@
 """
 This file contains verification functions for fields in the Sample Application.
 """
-
+import os.path
 import re
+
+import OpenSSL.crypto
 
 
 def verify_uen(uen: str) -> bool:
@@ -75,3 +77,38 @@ def verify_aes_encryption_key(key: str) -> bool:
     count += int((len(key) * 3) / 4)
 
     return count == 32
+
+
+def verify_cert_private_key(cert_path: str, private_key_path: str):
+    """
+    Checks if a given pair of certificate and private key paths are valid.
+
+    Adapted from https://stackoverflow.com/questions/19922790/how-to-check-for-python-the-key-associated-with
+    -the-certificate-or-not
+
+    :param cert_path: Path to the certificate file
+    :param private_key_path: Path to the private key file
+    """
+
+    if not isinstance(cert_path, str) or not isinstance(private_key_path, str):
+        raise ValueError("Paths must be strings!")
+
+    try:
+        with (open(cert_path, "rb") as cert_file,
+              open(private_key_path, "rb") as private_key_file):
+            cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_file.read())
+            private_key = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key_file.read())
+
+        context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+        context.use_certificate(cert)
+        context.use_privatekey(private_key)
+
+        return True
+    except IOError:
+        # cert/key does not exist
+        return False
+    except OpenSSL.crypto.Error:
+        # if cert/key not in the valid format
+        return False
+    except Exception:
+        raise

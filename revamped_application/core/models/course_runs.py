@@ -11,7 +11,8 @@ import streamlit as st
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, MODE_OF_TRAINING_MAPPING
+from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, MODE_OF_TRAINING_MAPPING, \
+    Vacancy
 from revamped_application.utils.json_utils import remove_null_fields
 
 
@@ -1267,17 +1268,15 @@ class EditRunInfo(AbstractRequestInfo):
 
         self._courseAdminEmail = courseAdminEmail
 
-    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
-        if not isinstance(courseVacancy_code, str):
-            raise ValueError("Invalid course vacancy code")
+    def set_courseVacancy(self, vacancy: Vacancy):
+        if not isinstance(vacancy, Vacancy):
+            try:
+                vacancy = Vacancy(vacancy)
+            except Exception:
+                raise ValueError("Invalid course vacancy")
 
-        self._courseVacancy_code = courseVacancy_code
-
-    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
-        if not isinstance(courseVacancy_description, str):
-            raise ValueError("Invalid course vacancy description")
-
-        self._courseVacancy_description = courseVacancy_description
+        self._courseVacancy_code = vacancy.value[0]
+        self._courseVacancy_description = vacancy.value[1]
 
     def set_file_Name(self, file_Name: str) -> None:
         if not isinstance(file_Name, str):
@@ -1427,10 +1426,7 @@ class DeleteRunInfo(EditRunInfo):
     def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
         raise NotImplementedError("This method is not supported!")
 
-    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
+    def set_courseVacancy(self, vacancy: Vacancy):
         raise NotImplementedError("This method is not supported!")
 
     def set_file_Name(self, file_Name: str) -> None:
@@ -1788,10 +1784,7 @@ class AddRunInfo(EditRunInfo):
     def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
         raise NotImplementedError("This method is not supported!")
 
-    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
+    def set_courseVacancy(self, Vacancy: Vacancy):
         raise NotImplementedError("This method is not supported!")
 
     def set_file_Name(self, file_Name: str) -> None:
