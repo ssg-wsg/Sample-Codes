@@ -28,7 +28,7 @@ from revamped_application.core.courses.view_course_sessions import ViewCourseSes
 from revamped_application.core.models.course_runs import (EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo,
                                                           DeleteRunInfo, AddRunInfo, RunSessionAddInfo,
                                                           RunTrainerAddInfo, AddRunIndividualInfo)
-from revamped_application.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutations
+from revamped_application.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutations, Role
 from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import (init, display_config,
@@ -522,18 +522,12 @@ with add:
 
                     st.markdown("###### Trainer Roles\n"
                                 "Select one or more of the roles below!")
-                    if st.checkbox("Trainer", key=f"specify-add-trainer-role-trainer-{i}-{run}",
-                                   help="Trainer role of the linked trainer"):
-                        runtrainer.add_trainer_role({
-                            "id": 1,
-                            "name": "Trainer"
-                        })
-                    if st.checkbox("Assessor", key=f"specify-add-trainer-assessor-{i}-{run}",
-                                   help="Assessor role of the linked trainer"):
-                        runtrainer.add_trainer_role({
-                            "id": 2,
-                            "name": "Assessor"
-                        })
+                    runtrainer.set_trainer_roles(st.multiselect(
+                        label="Select roles for the linked trainer",
+                        options=Role,
+                        format_func=lambda x: str(x),
+                        key=f"specify-add-trainer-role-{i}"
+                    ))
 
                     st.markdown("###### Trainer Profile")
                     if st.checkbox("Specify In Training Provider Profile?",
@@ -1078,18 +1072,12 @@ with edit_delete:
 
                     st.markdown("###### Trainer Roles\n"
                                 "Select one or more of the roles below!")
-                    if st.checkbox("Trainer", key=f"specify-edit-trainer-trainer-role-{i}",
-                                   help="Trainer role of the linked trainer"):
-                        runtrainer.add_trainer_role({
-                            "id": 1,
-                            "name": "Trainer"
-                        })
-                    if st.checkbox("Assessor", key=f"specify-edit-trainer-assessor-roles-{i}",
-                                   help="Assessor role of the linked trainer"):
-                        runtrainer.add_trainer_role({
-                            "id": 2,
-                            "name": "Assessor"
-                        })
+                    runtrainer.set_trainer_roles(st.multiselect(
+                        label="Select roles for the linked trainer",
+                        options=Role,
+                        format_func=lambda x: str(x),
+                        key=f"specify-edit-trainer-role-{i}"
+                    ))
 
                     st.markdown("###### Trainer Profile")
                     if st.checkbox("Specify In Training Provider Profile?",

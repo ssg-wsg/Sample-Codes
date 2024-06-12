@@ -7,7 +7,7 @@ https://stackoverflow.com/questions/45984018/python-unit-test-to-check-if-object
 
 import unittest
 
-from revamped_application.core.constants import IdType
+from revamped_application.core.constants import IdType, Attendance, SurveyLanguage
 from revamped_application.core.models.attendance import UploadAttendanceInfo
 
 
@@ -16,8 +16,8 @@ class TestAttendanceInfo(unittest.TestCase):
 
     SESSION_ID_ONE = "123456"
     SESSION_ID_TWO = "654321"
-    STATUS_CODE_ONE = "1"
-    STATUS_CODE_TWO = "2"
+    STATUS_CODE_ONE = Attendance.CONFIRMED
+    STATUS_CODE_TWO = Attendance.UNCONFIRMED
     TRAINEE_ID_ONE = "T1234567A"
     TRAINEE_ID_TWO = "T7654321B"
     TRAINEE_NAME_ONE = "John Doe"
@@ -34,8 +34,8 @@ class TestAttendanceInfo(unittest.TestCase):
     TRAINEE_CONTACT_NUMBER_COUNTRYCODE_TWO = 66
     NUMBER_OF_HOURS_ONE = 1.5
     NUMBER_OF_HOURS_TWO = 2.5
-    SURVEY_LANGUAGE_CODE_ONE = "EL"
-    SURVEY_LANGUAGE_CODE_TWO = "MY"
+    SURVEY_LANGUAGE_CODE_ONE = SurveyLanguage.ENGLISH
+    SURVEY_LANGUAGE_CODE_TWO = SurveyLanguage.MALAY
     REFERENCE_NUMBER_ONE = "123456"
     REFERENCE_NUMBER_TWO = "654321"
     CORPPASS_ID_ONE = "C1234567A"
@@ -215,9 +215,9 @@ class TestAttendanceInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_statusCode(1234567890)
 
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_statusCode("4")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_statusCode("3")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_statusCode("1")
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_statusCode(Attendance.TP_VOIDED)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_statusCode(Attendance.REJECTED)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_statusCode(Attendance.CONFIRMED)
 
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._status_code, "4")
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._status_code, "3")
@@ -377,9 +377,9 @@ class TestAttendanceInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_surveyLanguage_code(64)
 
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_surveyLanguage_code("MN")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_surveyLanguage_code("TM")
-        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_surveyLanguage_code("MY")
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.set_surveyLanguage_code(SurveyLanguage.MANDARIN)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.set_surveyLanguage_code(SurveyLanguage.TAMIL)
+        TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.set_surveyLanguage_code(SurveyLanguage.MALAY)
 
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._surveyLanguage_code, "MN")
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._surveyLanguage_code, "TM")

@@ -34,6 +34,23 @@ class Vacancy(Enum):
         return f"{self.value[0]}: {self.value[1]}"
 
 
+# ===== COURSE CONSTANTS ===== #
+class Role(Enum):
+    """Enum to represent the 2 roles a trainer may have."""
+
+    TRAINER = {
+        "id": 1,
+        "description": "Trainer"
+    }
+    ASSESSOR = {
+        "id": 2,
+        "description": "Assessor"
+    }
+
+    def __str__(self):
+        return self.value["description"]
+
+
 class ModeOfTraining(Enum):
     """Enum representing the different modes of training."""
 

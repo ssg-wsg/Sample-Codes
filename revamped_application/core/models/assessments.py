@@ -479,7 +479,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
 
         self._lastUpdateDateFrom = lastUpdateDateFrom
 
-    def set_sortBy_field(self, sortBy_field: str) -> None:
+    def set_sortBy_field(self, sortBy_field: SortField) -> None:
         if not isinstance(sortBy_field, SortField):
             try:
                 sortBy_field = SortField(sortBy_field)
@@ -488,7 +488,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
 
         self._sortBy_field = sortBy_field.value
 
-    def set_sortBy_order(self, sortBy_order: str) -> None:
+    def set_sortBy_order(self, sortBy_order: SortOrder) -> None:
         if not isinstance(sortBy_order, SortOrder):
             try:
                 sortBy_order = SortOrder(sortBy_order)

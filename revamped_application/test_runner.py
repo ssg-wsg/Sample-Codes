@@ -44,7 +44,7 @@ if len(result.failures) > 0:
     LOGGER.error(f"Tests failed with {len(result.failures)} failures.")
 
 if len(result.errors) == 0 and len(result.failures) == 0:
-    LOGGER.info("All tests passed.")
+    LOGGER.info("All tests passed!")
 
 cov.stop()
 cov.save()

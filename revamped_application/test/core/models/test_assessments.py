@@ -179,7 +179,8 @@ class TestCreateAssessmentInfo(unittest.TestCase):
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._lastUpdateDateFrom = (
             TestCreateAssessmentInfo.LAST_UPDATE_FROM_TWO)
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_field = TestCreateAssessmentInfo.SORT_BY_TWO.value
-        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_order = TestCreateAssessmentInfo.SORT_ORDER_TWO.value[0]
+        TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._sortBy_order = (
+            TestCreateAssessmentInfo.SORT_ORDER_TWO.value[0])
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._parameters_page = TestCreateAssessmentInfo.PAGE_TWO
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._parameters_pageSize = TestCreateAssessmentInfo.PAGE_SIZE_TWO
         TestCreateAssessmentInfo.SEARCH_ASSESSMENT_THREE._assessment_courseRunId = (

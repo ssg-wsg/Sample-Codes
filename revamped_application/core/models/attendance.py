@@ -72,9 +72,6 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         if self._contactNumber_countryCode is None:
             errors.append("No Country Code specified!")
 
-        if self._surveyLanguage_code is None or len(self._surveyLanguage_code) == 0:
-            errors.append("Unknown Survey Language code specified!")
-
         if self._referenceNumber is None or len(self._referenceNumber) == 0:
             errors.append("No Attendance Reference Number specified!")
 

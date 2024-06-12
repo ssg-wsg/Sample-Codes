@@ -205,7 +205,7 @@ with update_void:
         if col1.checkbox("Update Grade?", key="update-void-grade"):
             update_void_assessment.set_grade(col1.selectbox(label="Select Grade",
                                                             options=Grade,
-                                                            format_func= lambda x: x.value,
+                                                            format_func=lambda x: x.value,
                                                             help="The letter grade of the assessment, entered as A-F, "
                                                                  "if applicable",
                                                             key="update-void-assessment-grade"))

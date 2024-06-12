@@ -5,28 +5,13 @@ Contains classes that help encapsulate data for sending requests to the Course R
 import base64
 import datetime
 import json
-import enum
 import streamlit as st
 
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations
+from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role
 from revamped_application.utils.json_utils import remove_null_fields
-
-
-# ===== Misc. classes ===== #
-class Role(enum.Enum):
-    """Enum to represent the 2 roles a trainer may have."""
-
-    TRAINER = {
-        "id": 1,
-        "description": "Trainer"
-    }
-    ASSESSOR = {
-        "id": 2,
-        "description": "Assessor"
-    }
 
 
 class LinkedSSECEQA(AbstractRequestInfo):
@@ -119,7 +104,7 @@ class LinkedSSECEQA(AbstractRequestInfo):
         'XX': 'Not reported'
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self._description: str = None
         self._ssecEQA: str = None
 
@@ -177,7 +162,7 @@ class RunSessionEditInfo(AbstractRequestInfo):
         self._endDate: Optional[datetime.date] = None
         self._startTime: Optional[datetime.time] = None
         self._endTime: Optional[datetime.time] = None
-        self._modeOfTraining: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]] = None
+        self._modeOfTraining: Optional[ModeOfTraining] = None
         self._venue_block: Optional[str] = None
         self._venue_street: Optional[str] = None
         self._venue_floor: str = None
@@ -533,7 +518,7 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._domainAreaOfPractice: Optional[str] = None
         self._experience: Optional[str] = None
         self._linkedInURL: Optional[str] = None
-        self._salutationId: Optional[Literal[1, 2, 3, 4, 5, 6]] = None
+        self._salutationId: Optional[Salutations] = None
         self._photo_name: Optional[str] = None
         self._photo_content: Optional[UploadedFile] = None
         self._linkedSsecEQAs: Optional[list[dict]] = []
@@ -714,17 +699,14 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._idType_code = idType.value[0]
         self._idType_description = idType.value[1]
 
-    def set_trainer_roles(self, roles: list[dict]) -> None:
+    def set_trainer_roles(self, roles: list[Role]) -> None:
         if not isinstance(roles, list):
             raise ValueError("Invalid trainer roles")
 
-        self._roles = roles
-
-    def add_trainer_role(self, role: dict) -> None:
-        if not isinstance(role, dict):
-            raise ValueError("Invalid trainer role")
-
-        self._roles.append(role)
+        try:
+            self._roles = [Role(role).value for role in roles]
+        except Exception:
+            raise ValueError("Invalid trainer roles")
 
     def set_inTrainingProviderProfile(self, inTrainingProviderProfile: Literal["Select a value", "Yes", "No"]) -> None:
         if not isinstance(inTrainingProviderProfile, str) or \
@@ -906,10 +888,10 @@ class EditRunInfo(AbstractRequestInfo):
         self._intakeSize: Optional[int] = None
         self._threshold: Optional[int] = None
         self._registeredUserCount: Optional[int] = None
-        self._modeOfTraining: Optional[str] = None
+        self._modeOfTraining: Optional[ModeOfTraining] = None
         self._courseAdminEmail: Optional[str] = None
-        self._courseVacancy_code: str = None
-        self._courseVacancy_description: Optional[str] = None
+        self._courseVacancy_code: Literal["A", "F", "L"] = None
+        self._courseVacancy_description: Optional[Literal["Available", "Full", "Limited Vacancy"]] = None
         self._file_Name: Optional[str] = None
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
