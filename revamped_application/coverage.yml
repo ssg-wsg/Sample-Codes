@@ -1,0 +1,10 @@
+ignore:
+  - "*/test/*"
+codecov:
+  precision: 2
+  round: down
+  status:
+    project:
+    patch:
+    changes:
+      threshold: 10
