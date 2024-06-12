@@ -13,7 +13,7 @@ Include a description on what you wish to see in the application!
 
 ### Possible Implementation
 
-What was the expected behaviour when you did the steps above?
+Do you have a suggestion on how we can implement this feature?
 
 ## Additional Context
 
