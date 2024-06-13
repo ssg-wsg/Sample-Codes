@@ -13,7 +13,7 @@ import unittest
 from streamlit.proto.Common_pb2 import FileURLs as FileURLsProto
 from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRec
 
-from revamped_application.core.constants import Vacancy
+from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role
 from revamped_application.core.models.course_runs import (RunSessionEditInfo, RunSessionAddInfo, RunTrainerEditInfo,
                                                           RunTrainerAddInfo, EditRunInfo, DeleteRunInfo,
                                                           AddRunIndividualInfo, AddRunInfo)
@@ -47,8 +47,8 @@ class TestCourseRunsModels(unittest.TestCase):
     SCHEDULE_INFO_TYPE_CODE = "01"
     SCHEDULE_INFO_TYPE_DESCRIPTION = "Description"
     SCHEDULE_INFO = "Sat / 5 Sats / 9am - 6pm"
-    MODE_OF_TRAINING_ONE = "2"
-    MODE_OF_TRAINING_TWO = "8"
+    MODE_OF_TRAINING_ONE = ModeOfTraining.ASYNCHRONOUS_ELEARNING
+    MODE_OF_TRAINING_TWO = ModeOfTraining.ASSESSMENT
     VENUE_BLOCK_ONE = "112A"
     VENUE_BLOCK_TWO = "112B"
     VENUE_STREET_ONE = "Street ABC"
@@ -89,16 +89,18 @@ class TestCourseRunsModels(unittest.TestCase):
     EMAIL_TWO = "jane@email.com"
     ID_NUMBER_ONE = "S1234567X"
     ID_NUMBER_TWO = "T0123456X"
-    ID_TYPE_CODE_ONE = "SB"
-    ID_TYPE_CODE_TWO = "FP"
+    ID_TYPE_CODE_ONE = IdType.SINGAPORE_BLUE
+    ID_TYPE_CODE_TWO = IdType.FOREIGN_PASSPORT
     ID_TYPE_DESCRIPTION_ONE = "Singapore Blue Identification Card"
     ID_TYPE_DESCRIPTION_TWO = "Foreign Passport"
+    ROLES_ONE_ENUM = [Role.TRAINER]
     ROLES_ONE = [
         {
             "id": 1,
             "description": "Trainer"
         }
     ]
+    ROLES_TWO_ENUM = [Role.TRAINER, Role.ASSESSOR]
     ROLES_TWO = [
         {
             "id": 1,
@@ -117,8 +119,8 @@ class TestCourseRunsModels(unittest.TestCase):
     EXPERIENCE_TWO = "Changing ABC"
     LINKEDIN_ONE = "https://sg.linkedin.com/company/linkedin/abc"
     LINKEDIN_TWO = "https://sg.linkedin.com/company/linkedin/def"
-    SALUTATION_ID_ONE = 1
-    SALUTATION_ID_TWO = 2
+    SALUTATION_ID_ONE = Salutations.MR
+    SALUTATION_ID_TWO = Salutations.MS
     FILE_NAME_ONE = "abc.jpg"
     FILE_NAME_TWO = "def.jpg"
 
@@ -304,7 +306,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_email(TestCourseRunsModels.EMAIL_ONE)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idNumber(TestCourseRunsModels.ID_NUMBER_ONE)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idType(TestCourseRunsModels.ID_TYPE_CODE_ONE)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_ONE)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_ONE_ENUM)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_inTrainingProviderProfile(
             TestCourseRunsModels.IN_TRAINING_PROVIDER_PROFILE_ONE)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_domainAreaOfPractice(
@@ -327,7 +329,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_email(TestCourseRunsModels.EMAIL_TWO)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_idNumber(TestCourseRunsModels.ID_NUMBER_TWO)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_idType(TestCourseRunsModels.ID_TYPE_CODE_TWO)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_inTrainingProviderProfile(
             TestCourseRunsModels.IN_TRAINING_PROVIDER_PROFILE_TWO)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_domainAreaOfPractice(
@@ -355,7 +357,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_email(TestCourseRunsModels.EMAIL_ONE)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idNumber(TestCourseRunsModels.ID_NUMBER_ONE)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idType(TestCourseRunsModels.ID_TYPE_CODE_ONE)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_ONE)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_ONE_ENUM)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_inTrainingProviderProfile(
             TestCourseRunsModels.IN_TRAINING_PROVIDER_PROFILE_ONE)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_domainAreaOfPractice(
@@ -378,7 +380,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_email(TestCourseRunsModels.EMAIL_TWO)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_idNumber(TestCourseRunsModels.ID_NUMBER_TWO)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_idType(TestCourseRunsModels.ID_TYPE_CODE_TWO)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_inTrainingProviderProfile(
             TestCourseRunsModels.IN_TRAINING_PROVIDER_PROFILE_TWO)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_domainAreaOfPractice(
@@ -1283,9 +1285,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE.set_modeOfTraining([8])
 
-        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE.set_modeOfTraining("9")
-        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO.set_modeOfTraining("5")
-        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE.set_modeOfTraining("7")
+        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE.set_modeOfTraining(ModeOfTraining.SYNCHRONOUS_LEARNING)
+        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO.set_modeOfTraining(ModeOfTraining.PRACTICAL_PRACTICUM)
+        TestCourseRunsModels.RUN_SESSION_EDIT_INFO_THREE.set_modeOfTraining(ModeOfTraining.TRAINEESHIP)
 
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_EDIT_INFO_ONE._modeOfTraining, "9")
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_EDIT_INFO_TWO._modeOfTraining, "5")
@@ -1689,9 +1691,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE.set_modeOfTraining([8])
 
-        TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE.set_modeOfTraining("9")
-        TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO.set_modeOfTraining("5")
-        TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE.set_modeOfTraining("7")
+        TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE.set_modeOfTraining(ModeOfTraining.SYNCHRONOUS_LEARNING)
+        TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO.set_modeOfTraining(ModeOfTraining.PRACTICAL_PRACTICUM)
+        TestCourseRunsModels.RUN_SESSION_ADD_INFO_THREE.set_modeOfTraining(ModeOfTraining.TRAINEESHIP)
 
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_ONE._modeOfTraining, "9")
         self.assertEqual(TestCourseRunsModels.RUN_SESSION_ADD_INFO_TWO._modeOfTraining, "5")
@@ -2134,9 +2136,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_idType(["FP"])
 
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_idType("OT")
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idType("SP")
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_idType("SB")
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_idType(IdType.OTHERS)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idType(IdType.SINGAPORE_PINK)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_idType(IdType.SINGAPORE_BLUE)
 
         # assert both the code and the description
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._idType_code, "OT")
@@ -2148,8 +2150,8 @@ class TestCourseRunsModels(unittest.TestCase):
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._idType_description,
                          "Singapore Blue Identification Card")
 
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_idType("SO")
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idType("FP")
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_idType(IdType.FIN_WORK_PERMIT)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_idType(IdType.FOREIGN_PASSPORT)
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._idType_code, "SO")
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._idType_code, "FP")
@@ -2166,36 +2168,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_roles("three")
 
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_ONE)
-
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._roles, TestCourseRunsModels.ROLES_TWO)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._roles, TestCourseRunsModels.ROLES_TWO)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._roles, TestCourseRunsModels.ROLES_ONE)
-
-    def test_RunTrainerEditInfo_add_trainer_role(self):
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.add_trainer_role(1)
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.add_trainer_role({"two"})
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.add_trainer_role("three")
-
-        # clear out RUN_TRAINER_EDIT_INFO_TWO"s and RUN_TRAINER_EDIT_INFO_THREE"s roles
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._roles = []
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._roles = []
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._roles, [])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._roles, [])
-
-        # add in the roles
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.add_trainer_role(TestCourseRunsModels.ROLES_TWO[0])
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.add_trainer_role(TestCourseRunsModels.ROLES_TWO[1])
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.add_trainer_role(TestCourseRunsModels.ROLES_TWO[0])
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.add_trainer_role(TestCourseRunsModels.ROLES_TWO[1])
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.add_trainer_role(TestCourseRunsModels.ROLES_ONE[0])
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_ONE_ENUM)
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._roles, TestCourseRunsModels.ROLES_TWO)
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._roles, TestCourseRunsModels.ROLES_TWO)
@@ -2286,13 +2261,13 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_salutationId(3.3333333)
 
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_salutationId(1)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_salutationId(3)
-        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_salutationId(5)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.set_salutationId(Salutations.MR)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.set_salutationId(Salutations.MDM)
+        TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.set_salutationId(Salutations.DR)
 
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._salutationId, 1)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._salutationId, 3)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._salutationId, 5)
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._salutationId, Salutations.MR.value[0])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._salutationId, Salutations.MDM.value[0])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._salutationId, Salutations.DR.value[0])
 
     def test_RunTrainerEditInfo_set_photo_name(self):
         with self.assertRaises(ValueError):
@@ -2675,9 +2650,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_idType(["FP"])
 
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_idType("OT")
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idType("SP")
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_idType("SB")
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_idType(IdType.OTHERS)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idType(IdType.SINGAPORE_PINK)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_idType(IdType.SINGAPORE_BLUE)
 
         # assert both the code and the description
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._idType_code, "OT")
@@ -2689,8 +2664,8 @@ class TestCourseRunsModels(unittest.TestCase):
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._idType_description,
                          "Singapore Blue Identification Card")
 
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_idType("SO")
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idType("FP")
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_idType(IdType.FIN_WORK_PERMIT)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_idType(IdType.FOREIGN_PASSPORT)
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._idType_code, "SO")
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._idType_code, "FP")
@@ -2707,36 +2682,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_roles("three")
 
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_TWO)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_ONE)
-
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._roles, TestCourseRunsModels.ROLES_TWO)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._roles, TestCourseRunsModels.ROLES_TWO)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._roles, TestCourseRunsModels.ROLES_ONE)
-
-    def test_RunTrainerAddInfo_add_trainer_role(self):
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.add_trainer_role(1)
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.add_trainer_role({"two"})
-
-        with self.assertRaises(ValueError):
-            TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.add_trainer_role("three")
-
-        # clear out RUN_TRAINER_ADD_INFO_TWO"s and RUN_TRAINER_ADD_INFO_THREE"s roles
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._roles = []
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._roles = []
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._roles, [])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._roles, [])
-
-        # add in the roles
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.add_trainer_role(TestCourseRunsModels.ROLES_TWO[0])
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.add_trainer_role(TestCourseRunsModels.ROLES_TWO[1])
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.add_trainer_role(TestCourseRunsModels.ROLES_TWO[0])
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.add_trainer_role(TestCourseRunsModels.ROLES_TWO[1])
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.add_trainer_role(TestCourseRunsModels.ROLES_ONE[0])
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_trainer_roles(TestCourseRunsModels.ROLES_TWO_ENUM)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_trainer_roles(TestCourseRunsModels.ROLES_ONE_ENUM)
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._roles, TestCourseRunsModels.ROLES_TWO)
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._roles, TestCourseRunsModels.ROLES_TWO)
@@ -2827,13 +2775,13 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_salutationId(3.3333333)
 
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_salutationId(1)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_salutationId(3)
-        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_salutationId(5)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE.set_salutationId(Salutations.MR)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.set_salutationId(Salutations.MDM)
+        TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.set_salutationId(Salutations.PROF)
 
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._salutationId, 1)
         self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._salutationId, 3)
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._salutationId, 5)
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._salutationId, 6)
 
     def test_RunTrainerAddInfo_set_photo_name(self):
         with self.assertRaises(ValueError):
@@ -3534,9 +3482,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_modeOfTraining({"one"})
 
-        TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_modeOfTraining("1")
-        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_modeOfTraining("2")
-        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_modeOfTraining("3")
+        TestCourseRunsModels.EDIT_RUN_INFO_ONE.set_modeOfTraining(ModeOfTraining.CLASSROOM)
+        TestCourseRunsModels.EDIT_RUN_INFO_TWO.set_modeOfTraining(ModeOfTraining.ASYNCHRONOUS_ELEARNING)
+        TestCourseRunsModels.EDIT_RUN_INFO_THREE.set_modeOfTraining(ModeOfTraining.IN_HOUSE)
 
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_ONE._modeOfTraining, "1")
         self.assertEqual(TestCourseRunsModels.EDIT_RUN_INFO_TWO._modeOfTraining, "2")
@@ -4554,9 +4502,9 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_modeOfTraining({"one"})
 
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_modeOfTraining("1")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_modeOfTraining("2")
-        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_modeOfTraining("3")
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE.set_modeOfTraining(ModeOfTraining.CLASSROOM)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.set_modeOfTraining(ModeOfTraining.ASYNCHRONOUS_ELEARNING)
+        TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE.set_modeOfTraining(ModeOfTraining.IN_HOUSE)
 
         self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_ONE._modeOfTraining, "1")
         self.assertEqual(TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO._modeOfTraining, "2")

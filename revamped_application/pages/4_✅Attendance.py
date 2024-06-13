@@ -18,7 +18,7 @@ import streamlit as st
 
 from revamped_application.core.attendance.course_session_attendance import CourseSessionAttendance
 from revamped_application.core.attendance.upload_course_session_attendance import UploadCourseSessionAttendance
-from revamped_application.core.constants import ATTENDANCE_CODE_MAPPINGS, ID_TYPE_MAPPING, SURVEY_LANGUAGE_MAPPINGS
+from revamped_application.core.constants import IdType, Attendance, SurveyLanguage
 from revamped_application.core.models.attendance import UploadAttendanceInfo
 from revamped_application.core.system.logger import Logger
 
@@ -125,8 +125,8 @@ with upload:
 
     st.subheader("Attendance Information")
     uploadAttendance.set_statusCode(st.selectbox(label="Enter the Attendance Status Code",
-                                                 options=["1", "2", "3", "4"],
-                                                 format_func=lambda x: ATTENDANCE_CODE_MAPPINGS[x],
+                                                 options=Attendance,
+                                                 format_func=lambda x: str(x),
                                                  key="attendance-status-code-upload-attendance"))
 
     st.subheader("Trainee Information")
@@ -146,8 +146,8 @@ with upload:
                                                          max_chars=320,
                                                          key="trainee-email-upload-attendance"))
     uploadAttendance.set_trainee_id_type(st.selectbox(label="Enter Trainee ID Type",
-                                                      options=ID_TYPE_MAPPING.keys(),
-                                                      format_func=lambda x: ID_TYPE_MAPPING[x],
+                                                      options=IdType,
+                                                      format_func=lambda x: str(x),
                                                       key="trainee-id-type-upload-attendance"))
     uploadAttendance.set_contactNumber_mobile(st.text_input(label="Enter Mobile Number of Trainee",
                                                             max_chars=15,
@@ -173,8 +173,8 @@ with upload:
 
     uploadAttendance.set_surveyLanguage_code(st.selectbox(
         label="Enter Survey Language",
-        options=SURVEY_LANGUAGE_MAPPINGS.keys(),
-        format_func=lambda x: SURVEY_LANGUAGE_MAPPINGS[x],
+        options=SurveyLanguage,
+        format_func=lambda x: str(x),
         key="language-upload-attendance"))
 
     st.divider()

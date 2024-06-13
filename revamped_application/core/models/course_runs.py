@@ -5,29 +5,13 @@ Contains classes that help encapsulate data for sending requests to the Course R
 import base64
 import datetime
 import json
-import enum
 import streamlit as st
 
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, MODE_OF_TRAINING_MAPPING, \
-    Vacancy
+from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role
 from revamped_application.utils.json_utils import remove_null_fields
-
-
-# ===== Misc. classes ===== #
-class Role(enum.Enum):
-    """Enum to represent the 2 roles a trainer may have."""
-
-    TRAINER = {
-        "id": 1,
-        "description": "Trainer"
-    }
-    ASSESSOR = {
-        "id": 2,
-        "description": "Assessor"
-    }
 
 
 class LinkedSSECEQA(AbstractRequestInfo):
@@ -120,7 +104,7 @@ class LinkedSSECEQA(AbstractRequestInfo):
         'XX': 'Not reported'
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self._description: str = None
         self._ssecEQA: str = None
 
@@ -178,7 +162,7 @@ class RunSessionEditInfo(AbstractRequestInfo):
         self._endDate: Optional[datetime.date] = None
         self._startTime: Optional[datetime.time] = None
         self._endTime: Optional[datetime.time] = None
-        self._modeOfTraining: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]] = None
+        self._modeOfTraining: Optional[ModeOfTraining] = None
         self._venue_block: Optional[str] = None
         self._venue_street: Optional[str] = None
         self._venue_floor: str = None
@@ -344,13 +328,15 @@ class RunSessionEditInfo(AbstractRequestInfo):
 
         self._endTime = endTime
 
-    def set_modeOfTraining(self, modeOfTraining: str) -> None:
-        if not isinstance(modeOfTraining, str) or modeOfTraining not in [
-            "1", "2", "3", "4", "5", "6", "7", "8", "9"
-        ]:
-            raise ValueError("Invalid mode of training")
+    def set_modeOfTraining(self, modeOfTraining: ModeOfTraining) -> None:
+        if not isinstance(modeOfTraining, ModeOfTraining):
+            try:
+                # needed to ensure that the enums are the same syntactically
+                modeOfTraining = ModeOfTraining(modeOfTraining)
+            except Exception:
+                raise ValueError("Invalid mode of training")
 
-        self._modeOfTraining = modeOfTraining
+        self._modeOfTraining = modeOfTraining.value[0]
 
     def set_venue_block(self, venue_block: str) -> None:
         if not isinstance(venue_block, str):
@@ -532,7 +518,7 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._domainAreaOfPractice: Optional[str] = None
         self._experience: Optional[str] = None
         self._linkedInURL: Optional[str] = None
-        self._salutationId: Optional[Literal[1, 2, 3, 4, 5, 6]] = None
+        self._salutationId: Optional[Salutations] = None
         self._photo_name: Optional[str] = None
         self._photo_content: Optional[UploadedFile] = None
         self._linkedSsecEQAs: Optional[list[dict]] = []
@@ -635,8 +621,8 @@ class RunTrainerEditInfo(AbstractRequestInfo):
                 "salutationId": self._salutationId,
                 "photo": {
                     "name": self._photo_name,
-                    "content": (base64.b64encode(self._photo_content.getvalue() if self._photo_content else b"")
-                                .decode("utf-8"))
+                    "content": (base64.b64encode(
+                        self._photo_content.getvalue()).decode("utf-8") if self._photo_content else None)
                 },
                 "linkedSsecEQAs": self._linkedSsecEQAs
             }
@@ -703,24 +689,24 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
         self._idNumber = idNumber
 
-    def set_trainer_idType(self, idType: Literal["SB", "SP", "SO", "FP", "OT"]) -> None:
-        if not isinstance(idType, str) or idType not in ID_TYPE_MAPPING.keys():
-            raise ValueError("Invalid trainer idType")
+    def set_trainer_idType(self, idType: IdType) -> None:
+        if not isinstance(idType, IdType):
+            try:
+                idType = IdType(idType)
+            except Exception:
+                raise ValueError("Invalid trainee ID type")
 
-        self._idType_code = idType
-        self._idType_description = ID_TYPE_MAPPING[idType]
+        self._idType_code = idType.value[0]
+        self._idType_description = idType.value[1]
 
-    def set_trainer_roles(self, roles: list[dict]) -> None:
+    def set_trainer_roles(self, roles: list[Role]) -> None:
         if not isinstance(roles, list):
             raise ValueError("Invalid trainer roles")
 
-        self._roles = roles
-
-    def add_trainer_role(self, role: dict) -> None:
-        if not isinstance(role, dict):
-            raise ValueError("Invalid trainer role")
-
-        self._roles.append(role)
+        try:
+            self._roles = [Role(role).value for role in roles]
+        except Exception:
+            raise ValueError("Invalid trainer roles")
 
     def set_inTrainingProviderProfile(self, inTrainingProviderProfile: Literal["Select a value", "Yes", "No"]) -> None:
         if not isinstance(inTrainingProviderProfile, str) or \
@@ -753,11 +739,11 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
         self._linkedInURL = linkedInURL
 
-    def set_salutationId(self, salutationId: int) -> None:
-        if not isinstance(salutationId, int) or salutationId not in SALUTATIONS:
-            raise ValueError("Invalid salutationId")
+    def set_salutationId(self, salutationId: Salutations) -> None:
+        if not isinstance(salutationId, Salutations):
+            raise ValueError("Invalid salutation")
 
-        self._salutationId = salutationId
+        self._salutationId = salutationId.value[0]
 
     def set_photo_name(self, photo_name: str) -> None:
         if not isinstance(photo_name, str):
@@ -902,10 +888,10 @@ class EditRunInfo(AbstractRequestInfo):
         self._intakeSize: Optional[int] = None
         self._threshold: Optional[int] = None
         self._registeredUserCount: Optional[int] = None
-        self._modeOfTraining: Optional[str] = None
+        self._modeOfTraining: Optional[ModeOfTraining] = None
         self._courseAdminEmail: Optional[str] = None
-        self._courseVacancy_code: str = None
-        self._courseVacancy_description: Optional[str] = None
+        self._courseVacancy_code: Literal["A", "F", "L"] = None
+        self._courseVacancy_description: Optional[Literal["Available", "Full", "Limited Vacancy"]] = None
         self._file_Name: Optional[str] = None
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
@@ -1115,8 +1101,8 @@ class EditRunInfo(AbstractRequestInfo):
                 },
                 "file": {
                     "Name": self._file_Name,
-                    "content": (base64.b64encode(self._file_content.getvalue() if self._file_content else b"")
-                                .decode("utf-8")),
+                    "content": (base64.b64encode(
+                        self._file_content.getvalue()).decode() if self._file_content else None),
                 },
                 "sessions": list(map(lambda x: x.payload(verify=False), self._sessions)),
                 "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
@@ -1256,11 +1242,15 @@ class EditRunInfo(AbstractRequestInfo):
 
         self._registeredUserCount = registeredUserCount
 
-    def set_modeOfTraining(self, modeOfTraining: str) -> None:
-        if not isinstance(modeOfTraining, str) or modeOfTraining not in MODE_OF_TRAINING_MAPPING:
-            raise ValueError("Invalid mode of training")
+    def set_modeOfTraining(self, modeOfTraining: ModeOfTraining) -> None:
+        if not isinstance(modeOfTraining, ModeOfTraining):
+            try:
+                # needed to ensure that the enums are the same syntactically
+                modeOfTraining = ModeOfTraining(modeOfTraining)
+            except Exception:
+                raise ValueError("Invalid mode of training")
 
-        self._modeOfTraining = modeOfTraining
+        self._modeOfTraining = modeOfTraining.value[0]
 
     def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
         if not isinstance(courseAdminEmail, str):
@@ -1637,8 +1627,8 @@ class AddRunIndividualInfo(EditRunInfo):
             },
             "file": {
                 "Name": self._file_Name,
-                "content": (base64.b64encode(self._file_content.getvalue() if self._file_content else b"")
-                            .decode("utf-8")),
+                "content": (base64.b64encode(
+                    self._file_content.getvalue()).decode() if self._file_content else None),
             },
             "sessions": list(map(lambda x: x.payload(verify=False), self._sessions)),
             "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
