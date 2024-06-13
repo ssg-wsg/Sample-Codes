@@ -11,7 +11,7 @@ from typing import Optional, Literal
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 from revamped_application.core.constants import (GRADES, ID_TYPE, RESULTS, ASSESSMENT_UPDATE_VOID_ACTIONS,
                                                  SORT_FIELD, SORT_ORDER)
-from revamped_application.utils.verify import verify_uen
+from revamped_application.utils.verify import Validators
 from revamped_application.utils.json_utils import remove_null_fields
 
 
@@ -87,7 +87,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
             errors.append("No Training Partner Code is provided!")
 
-        if self._trainingPartner_uen is not None and not verify_uen(self._trainingPartner_uen):
+        if self._trainingPartner_uen is not None and not Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Specified Training Partner UEN is invalid!")
 
         # optional parameter verification
@@ -389,7 +389,7 @@ class SearchAssessmentInfo(AbstractRequestInfo):
             errors.append("Page size is not specified!")
 
         if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and \
-                not verify_uen(self._trainingPartner_uen):
+                not Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Invalid Training Partner UEN specified!")
 
         # optionals check
