@@ -16,11 +16,15 @@ on to get started quickly!
 This application was built using Python 3.12, and it uses the following Python libraries:
 
 * `streamlit`: Main UI framework
-* `streamlit-tags`: Extension of UI framework for multi-text inputs
-* `pep8`: Checkstyle for Python
+* `pycodestyle`: Checkstyle for Python
 * `requests`: Library for sending HTTP requests; the backbone of this application
 * `cryptography`: For encryption and decryption of the requests and payloads
-* `schedule`: For scheduling cron jobs (clearing temp folders periodically)
+* `streamlit-nested-layout`: Patch for UI framework to allow deep nesting of elements
+* `requests-oauthlib`: OAuth Authentication with `requests`
+* `apscheduler`: Runs cron jobs required for maintenance and housekeeping
+* `certifi`: Provides updated information on Root Certificate Authority
+* `pyOpenSSL`: Provides SSL functionalities
+* `coverage`: Provides code coverage reports for unit tests
 
 There are 2 ways to install Python, along with the necessary libraries: Using `Python` directly, or through a package
 and environment manager such as `conda`.
@@ -72,7 +76,7 @@ Run the command:
 conda create -n [YOUR ENV NAME HERE] python=3.12
 ```
 
-Make sure to change `[YOUR ENV NAME HERE]` to any name that you desire (e.g. `ssg`, `api`, `demo`, `application`)!
+> ❗ Make sure to change `[YOUR ENV NAME HERE]` to any name that you desire (e.g. `ssg`, `api`, `demo`, `application`)!
 
 Running the command will create a new `conda` environment with `Python 3.12` installed!
 
@@ -85,6 +89,7 @@ conda activate [YOUR ENV NAME HERE]
 ```
 
 where `[YOUR ENV NAME HERE]` is the same environment name that you used in the previous steps.
+
 
 Then, run the following commands to install the required Python libraries into your `conda` environment.
 
@@ -113,7 +118,8 @@ address where this application is hosted on!
 
 ## Features
 
-There are 5 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs.
+There are 6 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
+as well as the SkillsFuture Credit API.
 
 The pages are all found within the [pages](pages) folder.
 
@@ -136,17 +142,17 @@ Using this API, you can:
 * View a Course Run
 * View Course Sessions
 
-### Enrolment
+### Enrollment
 
-This page contains APIs that are related to the enrolment of learners to your courses!
+This page contains APIs that are related to the enrollment of learners to your courses!
 
 Using this API, you can:
 
-* Create Enrolment
-* View Enrolment
-* Search Enrolment
-* Update Enrolment
-* Delete Enrolment
+* Create Enrollment
+* View Enrollment
+* Search Enrollment
+* Update Enrollment
+* Delete Enrollment
 
 ### Attendance
 
@@ -168,6 +174,19 @@ Using this API, you can:
 * Void Assessment
 * View Assessment
 * Search Assessment
+
+### SkillsFuture Credit Pay API
+
+This page contains APIs that are related to the use of SkillsFuture Credit Pay API to help manage the 
+use of SkillsFuture credits by learners enrolled into your course.
+
+Using this API, you can:
+
+* Encrypt Payment Request
+* Decrypt Payment Request Response
+* Upload Supporting Documents for Claims
+* View Claims Details
+* Cancel Claims
 
 ## Acknowledgements
 

@@ -1,18 +1,18 @@
 import streamlit as st
 
-from core.models.enrolment import CreateEnrolmentInfo, UpdateEnrolmentInfo, CancelEnrolmentInfo, \
+from revamped_application.core.models.enrolment import CreateEnrolmentInfo, UpdateEnrolmentInfo, CancelEnrolmentInfo, \
     UpdateEnrolmentFeeCollectionInfo, SearchEnrolmentInfo
-from core.enrolment.create_enrolment import CreateEnrolment
-from core.enrolment.view_enrolment import ViewEnrolment
-from core.enrolment.update_enrolment import UpdateEnrolment
-from core.enrolment.cancel_enrolment import CancelEnrolment
-from core.enrolment.search_enrolment import SearchEnrolment
-from core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFeeCollection
-from core.constants import ID_TYPE, COLLECTION_STATUS, SPONSORSHIP_TYPE, COLLECTION_STATUS_CANCELLED, \
-    ENROLMENT_SORT_FIELD, SORT_ORDER, ENROLMENT_STATUS
-from utils.http_utils import handle_error
-from utils.streamlit_utils import init, display_config
-from utils.verify import verify_uen
+from revamped_application.core.enrolment.create_enrolment import CreateEnrolment
+from revamped_application.core.enrolment.view_enrolment import ViewEnrolment
+from revamped_application.core.enrolment.update_enrolment import UpdateEnrolment
+from revamped_application.core.enrolment.cancel_enrolment import CancelEnrolment
+from revamped_application.core.enrolment.search_enrolment import SearchEnrolment
+from revamped_application.core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFeeCollection
+from revamped_application.core.constants import (IdTypeSummary, CollectionStatus, CancellableCollectionStatus,
+                                                 SponsorshipType, EnrolmentSortField, SortOrder, EnrolmentStatus)
+from revamped_application.utils.http_utils import handle_response
+from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.utils.verify import Validators
 
 init()
 
@@ -22,7 +22,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
-st.header("Enrolment API")
+st.title("Enrolment API")
 st.markdown("Integration with the Enrolment APIs enable enrolment records to be updated on the Training Partners "
             "Gateway. It facilitates enrolment of a trainee to a course run and allows the updating, cancellation, "
             "searching and viewing of enrolment records!")
@@ -62,7 +62,8 @@ with create:
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
     create_enrolment.set_trainee_idType(col1.selectbox(label="Trainee ID Type",
-                                                       options=ID_TYPE,
+                                                       options=IdTypeSummary,
+                                                       format_func=lambda x: x.value,
                                                        help="Trainee ID Type",
                                                        key="enrolment-id-type"))
     create_enrolment.set_trainee_id(col2.text_input(label="Trainee ID",
@@ -82,7 +83,8 @@ with create:
                                                                              key="enrolment-trainee-fees-discount-"
                                                                                  "amount"))
         create_enrolment.set_trainee_fees_collectionStatus(st.selectbox(label="Trainee Fees Collection Status",
-                                                                        options=COLLECTION_STATUS,
+                                                                        options=CollectionStatus,
+                                                                        format_func=lambda x: x.value,
                                                                         help="Status of the trainee's or employer's "
                                                                              "payment of the course fees to the "
                                                                              "training partner",
@@ -95,7 +97,7 @@ with create:
                             help="Employer organisation's UEN",
                             key="enrolment-employer-uen")
 
-        if len(uen) > 0 and not verify_uen(uen):
+        if len(uen) > 0 and not Validators.verify_uen(uen):
             st.warning("**Employer UEN** is not a valid UEN!", icon="⚠️")
 
         create_enrolment.set_employer_uen(uen)
@@ -182,7 +184,8 @@ with create:
                                                                  key="enrolment-trainee-date-of-enrolment"))
 
     create_enrolment.set_trainee_sponsorshipType(st.selectbox(label="Trainee Sponsorship Type",
-                                                              options=SPONSORSHIP_TYPE,
+                                                              options=SponsorshipType,
+                                                              format_func=lambda x: x.value,
                                                               key="enrolment-trainee-sponsorship-type"))
 
     st.subheader("Training Partner Info")
@@ -192,7 +195,7 @@ with create:
                             key="enrolment-training-partner-uen",
                             max_chars=12)
 
-        if len(uen) > 0 and not verify_uen(uen):
+        if len(uen) > 0 and not Validators.verify_uen(uen):
             st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
         create_enrolment.set_training_partner_uen(uen)
 
@@ -234,7 +237,7 @@ with create:
 
                 with response:
                     st.subheader("Response")
-                    handle_error(lambda: ce.execute())
+                    handle_response(lambda: ce.execute())
 
 
 with update:
@@ -268,7 +271,8 @@ with update:
 
     if st.checkbox("Specify Fee Collection Status?", key="specify-update-enrolment-trainee-fees-collection-status"):
         update_enrolment.set_trainee_fees_collectionStatus(st.selectbox(label="Trainee Fees Collection Status",
-                                                                        options=COLLECTION_STATUS_CANCELLED,
+                                                                        options=CancellableCollectionStatus,
+                                                                        format_func=lambda x: x.value,
                                                                         help="Status of the trainee's or employer's "
                                                                              "payment of the course fees to the "
                                                                              "training partner",
@@ -378,7 +382,7 @@ with update:
 
                 with response:
                     st.subheader("Response")
-                    handle_error(lambda: ue.execute())
+                    handle_response(lambda: ue.execute())
 
 
 with cancel:
@@ -412,7 +416,7 @@ with cancel:
 
             with response:
                 st.subheader("Response")
-                handle_error(lambda: cancel_en.execute())
+                handle_response(lambda: cancel_en.execute())
 
 
 with search:
@@ -453,7 +457,8 @@ with search:
     with col3:
         if st.checkbox("Specify Sort By Field?", key="specify-search-enrolment-sort-by-field"):
             search_enrolment.set_sortBy_field(st.selectbox(label="Sort By Field",
-                                                           options=ENROLMENT_SORT_FIELD,
+                                                           options=EnrolmentSortField,
+                                                           format_func=lambda x: x.value.upper(),
                                                            help="Field to sort by. Available fields -updatedOn, "
                                                                 "-createdOn. Will default to updatedOn if null",
                                                            key="search-enrolment-sort-by-field"))
@@ -461,7 +466,8 @@ with search:
     with col4:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.set_sortBy_order(st.selectbox(label="Sort By Order",
-                                                           options=SORT_ORDER,
+                                                           options=SortOrder,
+                                                           format_func=lambda x: x.value,
                                                            help="Sort order. Ascending - asc, Descending - desc. "
                                                                 "Will default to desc if null",
                                                            key="search-enrolment-sort-by-order"))
@@ -481,7 +487,8 @@ with search:
 
     if st.checkbox("Specify Enrolment Status?", key="specify-search-enrolment-status"):
         search_enrolment.set_course_status(st.selectbox(label="Enrolment Status",
-                                                        options=ENROLMENT_STATUS,
+                                                        options=EnrolmentStatus,
+                                                        format_func=lambda x: x.value,
                                                         key="search-enrolment-status",
                                                         help="Status of enrolment records to be searched"))
 
@@ -489,7 +496,7 @@ with search:
     with col5:
         if st.checkbox("Specify Trainee ID Type?", key="specify-search-enrolment-trainee-id-type"):
             search_enrolment.set_trainee_idType(st.selectbox(label="Trainee ID Type",
-                                                             options=ID_TYPE,
+                                                             options=IdTypeSummary,
                                                              key="search-enrolment-trainee-id-type",
                                                              help="Trainee's ID type"))
 
@@ -502,7 +509,8 @@ with search:
 
     if st.checkbox("Specify Fee Collection Status?", key="specify-search-enrolment-fee-collection-status"):
         search_enrolment.set_trainee_fee_collection_status(st.selectbox(label="Fee Collection Status",
-                                                                        options=COLLECTION_STATUS_CANCELLED,
+                                                                        options=CancellableCollectionStatus,
+                                                                        format_func=lambda x: x.value,
                                                                         key="search-enrolment-fee-collection-status",
                                                                         help="Status of the trainee's or employer's "
                                                                              "payment of the course fees "
@@ -514,7 +522,7 @@ with search:
                             max_chars=50,
                             help="Employer organisation's UEN number")
 
-        if len(uen) > 0 and not verify_uen(uen):
+        if len(uen) > 0 and not Validators.verify_uen(uen):
             st.warning("**Employer UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.set_employer_uen(uen)
@@ -527,7 +535,8 @@ with search:
 
     if st.checkbox("Specify Sponsorship Type?", key="specify-search-enrolment-sponsorship-type"):
         search_enrolment.set_trainee_sponsorshipType(st.selectbox(label="Sponsorship Type",
-                                                                  options=SPONSORSHIP_TYPE,
+                                                                  options=SponsorshipType,
+                                                                  format_func=lambda x: x.value,
                                                                   help="Trainee's sponsorship type",
                                                                   key="search-enrolment-sponsorship-type"))
 
@@ -541,7 +550,7 @@ with search:
                  "If unspecified, the default loaded training partner UEN will be used.",
             key="search-enrolment-training-partner-uen")
 
-        if len(uen) > 0 and not verify_uen(uen):
+        if len(uen) > 0 and not Validators.verify_uen(uen):
             st.warning("**Training Partner UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.set_trainingPartner_uen(uen)
@@ -602,7 +611,7 @@ with search:
 
                 with response:
                     st.subheader("Response")
-                    handle_error(lambda: se.execute())
+                    handle_response(lambda: se.execute())
 
 
 with view:
@@ -632,7 +641,7 @@ with view:
 
             with response:
                 st.subheader("Response")
-                handle_error(lambda: ve.execute())
+                handle_response(lambda: ve.execute())
 
 
 with update_fee:
@@ -649,7 +658,8 @@ with update_fee:
                    key="specify-update-enrolment-fee-collection-trainee-fees-collection-status"):
         update_enrolment_fee_collection.set_trainee_fees_collectionStatus(
             st.selectbox(label="Trainee Fees Collection Status",
-                         options=COLLECTION_STATUS_CANCELLED,
+                         options=CancellableCollectionStatus,
+                         format_func=lambda x: x.value,
                          help="Status of the trainee's or employer's payment of the course fees to the training "
                               "partner",
                          key="update-enrolment-fee-collection-trainee-fees-collection-status"))
@@ -675,4 +685,4 @@ with update_fee:
 
             with response:
                 st.subheader("Response")
-                handle_error(lambda: eufc.execute())
+                handle_response(lambda: eufc.execute())

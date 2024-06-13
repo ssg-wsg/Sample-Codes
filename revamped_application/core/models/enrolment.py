@@ -4,11 +4,12 @@ import streamlit as st
 
 from typing import Optional, Literal, Union
 
-from core.abc.abstract import AbstractRequestInfo
-from core.constants import COLLECTION_STATUS, ID_TYPE, SPONSORSHIP_TYPE, COLLECTION_STATUS_CANCELLED, \
-    ENROLMENT_SORT_FIELD, SORT_ORDER, COLLECTION_STATUS_CANCELLED, ENROLMENT_COURSE_STATUS
-from utils.json_utils import remove_null_fields
-from utils.verify import verify_uen
+from revamped_application.core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import (CollectionStatus, CancellableCollectionStatus, IdTypeSummary,
+                                                 SponsorshipType, EnrolmentSortField, SortOrder,
+                                                 EnrolmentCourseStatus)
+from revamped_application.utils.json_utils import remove_null_fields
+from revamped_application.utils.verify import Validators
 
 
 class CreateEnrolmentInfo(AbstractRequestInfo):
@@ -19,8 +20,8 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._course_referenceNumber: str = None
         self._trainee_id: str = None
         self._trainee_fees_discountAmount: Union[int, float] = None
-        self._trainee_fees_collectionStatus: Literal["Pending Payment", "Partial Payment", "Full Payment"] = None
-        self._trainee_idType_type: Literal["NRIC", "FIN", "Others"] = None
+        self._trainee_fees_collectionStatus: CollectionStatus = None
+        self._trainee_idType_type: IdTypeSummary = None
         self._trainee_employer_uen: Optional[str] = None
         self._trainee_employer_contact_fullName: Optional[str] = None
         self._trainee_employer_contact_emailAddress: Optional[str] = None
@@ -34,7 +35,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._trainee_contactNumber_countryCode: Optional[str] = None
         self._trainee_contactNumber_phoneNumber: Optional[str] = None
         self._trainee_enrolmentDate: Optional[datetime.date] = None
-        self._trainee_sponsorshipType: Literal["EMPLOYER", "INDIVIDUAL"] = None
+        self._trainee_sponsorshipType: SponsorshipType = None
         self._trainingPartner_code: str = None
         self._trainingPartner_uen: Optional[str] = None
 
@@ -55,13 +56,8 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if self._trainee_id is None or len(self._trainee_id) == 0:
             errors.append("No Trainee ID specified!")
 
-        if self._trainee_fees_discountAmount is not None and (self._trainee_fees_collectionStatus is None
-                                                              or self._trainee_fees_collectionStatus not
-                                                              in COLLECTION_STATUS):
+        if self._trainee_fees_discountAmount is not None and self._trainee_fees_collectionStatus is None:
             errors.append("No valid Fees Collection Status specified!")
-
-        if self._trainee_idType_type is None or self._trainee_idType_type not in ID_TYPE:
-            errors.append("No valid ID type specified!")
 
         if self._trainee_dateOfBirth is None:
             errors.append("No valid Trainee Date Of Birth specified!")
@@ -69,17 +65,14 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if self._trainee_emailAddress is None or len(self._trainee_emailAddress) == 0:
             errors.append("No valid Trainee Email Address specified!")
 
-        if self._trainee_sponsorshipType is None or self._trainee_sponsorshipType not in SPONSORSHIP_TYPE:
-            errors.append("No valid Sponsorship Type specified!")
-
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
             errors.append("No valid Training Partner Code specified!")
 
-        if self._trainingPartner_uen is not None and not verify_uen(self._trainingPartner_uen):
+        if self._trainingPartner_uen is not None and not Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Overridden Training Partner UEN provided is invalid!")
 
         if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) > 0 and \
-                not verify_uen(self._trainee_employer_uen):
+                not Validators.verify_uen(self._trainee_employer_uen):
             errors.append("Employer UEN is not valid")
 
         # optional parameter validation
@@ -239,18 +232,23 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         self._trainee_fees_discountAmount = discountAmount
 
-    def set_trainee_fees_collectionStatus(self, collectionStatus: Literal["Pending Payment", "Partial Payment",
-    "Full Payment"]):
-        if not isinstance(collectionStatus, str) or collectionStatus not in COLLECTION_STATUS:
-            raise ValueError("Invalid Collection Status provided!")
+    def set_trainee_fees_collectionStatus(self, collectionStatus: CollectionStatus):
+        if not isinstance(collectionStatus, CollectionStatus):
+            try:
+                collectionStatus = CollectionStatus(collectionStatus)
+            except:
+                raise ValueError("Invalid Collection Status provided!")
 
-        self._trainee_fees_collectionStatus = collectionStatus
+        self._trainee_fees_collectionStatus = collectionStatus.value
 
-    def set_trainee_idType(self, idType: Literal["NRIC", "FIN", "OTHERS"]) -> None:
-        if not isinstance(idType, str) or idType not in ID_TYPE:
-            raise ValueError("Invalid ID Type provided!")
+    def set_trainee_idType(self, idType: IdTypeSummary) -> None:
+        if not isinstance(idType, IdTypeSummary):
+            try:
+                idType = IdTypeSummary(idType)
+            except:
+                raise ValueError("Invalid ID Type provided!")
 
-        self._trainee_idType_type = idType
+        self._trainee_idType_type = idType.value
 
     def set_employer_uen(self, uen: str) -> None:
         if not isinstance(uen, str):
@@ -330,11 +328,14 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         self._trainee_enrolmentDate = enrolmentDate
 
-    def set_trainee_sponsorshipType(self, sponsorshipType: Literal["EMPLOYER", "INDIVIDUAL"]) -> None:
-        if not isinstance(sponsorshipType, str) or sponsorshipType not in SPONSORSHIP_TYPE:
-            raise ValueError("Invalid Sponsorship Type provided!")
+    def set_trainee_sponsorshipType(self, sponsorshipType: SponsorshipType) -> None:
+        if not isinstance(sponsorshipType, SponsorshipType):
+            try:
+                sponsorshipType = SponsorshipType(sponsorshipType)
+            except:
+                raise ValueError("Invalid Sponsorship Type provided!")
 
-        self._trainee_sponsorshipType = sponsorshipType
+        self._trainee_sponsorshipType = sponsorshipType.value
 
     def set_trainingPartner_code(self, code: str) -> None:
         if not isinstance(code, str):
@@ -475,12 +476,14 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
 
         return pl
 
-    def set_trainee_fees_collectionStatus(self, collectionStatus: Literal[
-            "Pending Payment", "Partial Payment", "Full Payment", "Cancelled"]):
-        if not isinstance(collectionStatus, str) or collectionStatus not in COLLECTION_STATUS_CANCELLED:
-            raise ValueError("Invalid Collection Status provided!")
+    def set_trainee_fees_collectionStatus(self, collectionStatus: CancellableCollectionStatus):
+        if not isinstance(collectionStatus, CancellableCollectionStatus):
+            try:
+                collectionStatus = CancellableCollectionStatus(collectionStatus)
+            except:
+                raise ValueError("Invalid Collection Status provided!")
 
-        self._trainee_fees_collectionStatus = collectionStatus
+        self._trainee_fees_collectionStatus = collectionStatus.value
 
 
 class CancelEnrolmentInfo(UpdateEnrolmentInfo):
@@ -547,11 +550,11 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             warnings.append("Trainee ID is empty even though it is marked as specified!")
 
         if self._trainingPartner_uen is None or len(self._trainingPartner_uen) == 0 or \
-                not verify_uen(self._trainingPartner_uen):
+                not Validators.verify_uen(self._trainingPartner_uen):
             warnings.append("No valid Training Partner UEN specified!")
 
         if self._trainee_employer_uen is None or len(self._trainee_employer_uen) == 0 or \
-                not verify_uen(self._trainee_employer_uen):
+                not Validators.verify_uen(self._trainee_employer_uen):
             warnings.append("No valid Training Employer UEN specified!")
 
         return errors, warnings
@@ -631,17 +634,23 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         self._lastUpdateDateFrom = lastUpdateDateFrom
 
-    def set_sortBy_field(self, sort_field: Literal["updatedOn", "createdOn"]) -> None:
-        if not isinstance(sort_field, str) or sort_field not in ENROLMENT_SORT_FIELD:
-            raise ValueError("No valid sort field specified!")
+    def set_sortBy_field(self, sort_field: EnrolmentSortField) -> None:
+        if not isinstance(sort_field, EnrolmentSortField):
+            try:
+                sort_field = EnrolmentSortField(sort_field)
+            except:
+                raise ValueError("No valid sort field specified!")
 
-        self._sortBy_field = sort_field
+        self._sortBy_field = sort_field.value
 
-    def set_sortBy_order(self, sort_order: Literal["asc", "desc"]) -> None:
-        if not isinstance(sort_order, str) or sort_order not in SORT_ORDER:
-            raise ValueError("No valid sort order specified!")
+    def set_sortBy_order(self, sort_order: SortOrder) -> None:
+        if not isinstance(sort_order, SortOrder):
+            try:
+                sort_order = SortOrder(sort_order)
+            except:
+                raise ValueError("No valid sort order specified!")
 
-        self._sortBy_order = sort_order
+        self._sortBy_order = sort_order.value
 
     def set_course_run_id(self, course_run_id: str) -> None:
         if not isinstance(course_run_id, str):
@@ -655,11 +664,14 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         self._course_referenceNumber = course_reference_number
 
-    def set_course_status(self, status: Literal["Confirmed", "Cancelled"]):
-        if not isinstance(status, str) or status not in ENROLMENT_COURSE_STATUS:
-            raise ValueError("No valid course status specified!")
+    def set_course_status(self, status: EnrolmentCourseStatus):
+        if not isinstance(status, EnrolmentCourseStatus):
+            try:
+                status = EnrolmentCourseStatus(status)
+            except:
+                raise ValueError("No valid course status specified!")
 
-        self._course_status = status
+        self._course_status = status.value
 
     def set_trainee_id(self, trainee_id: str) -> None:
         if not isinstance(trainee_id, str):
@@ -667,20 +679,23 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         self._trainee_id = trainee_id
 
-    def set_trainee_fee_collection_status(self, trainee_fee_collection_status: Literal[
-        "Pending Payment", "Partial Payment", "Full Payment", "Cancelled"
-    ]) -> None:
-        if not isinstance(trainee_fee_collection_status, str) or trainee_fee_collection_status not in \
-                trainee_fee_collection_status not in COLLECTION_STATUS_CANCELLED:
-            raise ValueError("No valid trainee fee collection status specified!")
+    def set_trainee_fee_collection_status(self, trainee_fee_collection_status: CancellableCollectionStatus) -> None:
+        if not isinstance(trainee_fee_collection_status, CancellableCollectionStatus):
+            try:
+                trainee_fee_collection_status = CancellableCollectionStatus(trainee_fee_collection_status)
+            except:
+                raise ValueError("No valid trainee fee collection status specified!")
 
-        self._trainee_fees_feeCollectionStatus = trainee_fee_collection_status
+        self._trainee_fees_feeCollectionStatus = trainee_fee_collection_status.value
 
-    def set_trainee_idType(self, idType: Literal["NRIC", "FIN", "Others"]):
-        if not isinstance(idType, str) or idType not in ID_TYPE:
-            raise ValueError("No valid ID type specified!")
+    def set_trainee_idType(self, idType: IdTypeSummary):
+        if not isinstance(idType, IdTypeSummary):
+            try:
+                idType = IdTypeSummary(idType)
+            except:
+                raise ValueError("No valid ID type specified!")
 
-        self._trainee_idType_type = idType
+        self._trainee_idType_type = idType.value
 
     def set_employer_uen(self, uen: str) -> None:
         if not isinstance(uen, str):
@@ -694,11 +709,14 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         self._trainee_enrolmentDate = enrolment_date
 
-    def set_trainee_sponsorshipType(self, sponsorship_type: Literal["EMPLOYER", "INDIVIDUAL"]) -> None:
-        if not isinstance(sponsorship_type, str) or sponsorship_type not in SPONSORSHIP_TYPE:
-            raise ValueError("No valid sponsorship type specified!")
+    def set_trainee_sponsorshipType(self, sponsorship_type: SponsorshipType) -> None:
+        if not isinstance(sponsorship_type, SponsorshipType):
+            try:
+                sponsorship_type = SponsorshipType(sponsorship_type)
+            except:
+                raise ValueError("No valid sponsorship type specified!")
 
-        self._trainee_sponsorshipType = sponsorship_type
+        self._trainee_sponsorshipType = sponsorship_type.value
 
     def set_trainingPartner_uen(self, uen: str) -> None:
         if not isinstance(uen, str):

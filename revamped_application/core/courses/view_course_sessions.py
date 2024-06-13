@@ -1,22 +1,23 @@
-import datetime
+"""
+Contains class used for viewing course sessions.
+"""
 
 import requests
 import streamlit as st
 
-from utils.http_utils import HTTPRequestBuilder, BASE_PROD_URL
-from core.abc.abstract import AbstractRequest
+from revamped_application.utils.http_utils import HTTPRequestBuilder
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod, Month
 
 from typing import Literal, Optional
 
 
 class ViewCourseSessions(AbstractRequest):
-    """
-    Class used for viewing course sessions.
-    """
+    """Class used for viewing course sessions."""
 
-    _TYPE: Literal["GET"] = "GET"
+    _TYPE: HttpMethod = HttpMethod.GET
 
-    def __init__(self, runId: str, crn: str, session_month: Optional[str], session_year: Optional[int],
+    def __init__(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]):
         super().__init__()
         self.req: HTTPRequestBuilder = None
@@ -27,10 +28,15 @@ class ViewCourseSessions(AbstractRequest):
 
         return self.req.repr(ViewCourseSessions._TYPE)
 
-    def _prepare(self, runId: str, crn: str, session_month: Optional[int], session_year: Optional[int],
+    def __str__(self) -> str:
+        """String representation of this ViewCourseRun instance"""
+
+        return self.__repr__()
+
+    def _prepare(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
-        Creates an HTTP get request for getting all course sessions
+        Creates an HTTP GET request for retrieving course sessions.
 
         :param runId: Run ID
         :param crn: CRN
@@ -40,18 +46,17 @@ class ViewCourseSessions(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(BASE_PROD_URL) \
-            .with_direct_argument(f"/courses/runs/{runId}/sessions") \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/runs/{runId}/sessions") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \
             .with_param("courseReferenceNumber", crn)
 
         if session_month is not None and session_year is not None:
-            if session_month < 10:
-                self.req = self.req.with_param("sessionMonth", f"0{session_month}{session_year}")
+            if session_month.value[0] < 10:
+                self.req = self.req.with_param("sessionMonth", f"0{session_month.value[0]}{session_year}")
             else:
-                self.req = self.req.with_param("sessionMonth", f"{session_month}{session_year}")
+                self.req = self.req.with_param("sessionMonth", f"{session_month.value[0]}{session_year}")
 
         match include_expired:
             case "Yes":
@@ -61,7 +66,7 @@ class ViewCourseSessions(AbstractRequest):
 
     def execute(self) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """

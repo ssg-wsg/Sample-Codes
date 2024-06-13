@@ -1,3 +1,7 @@
+"""
+This file contains different abstract base classes that form the basis for other request-related classes.
+"""
+
 import requests
 
 from abc import ABC, abstractmethod
