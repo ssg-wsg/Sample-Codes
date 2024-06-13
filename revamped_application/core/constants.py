@@ -16,41 +16,19 @@ class HttpMethod(Enum):
 
 
 class Endpoints(Enum):
-    """
-    Enum representing the endpoints that users can connect to.
+    """Enum representing the endpoints that users can connect to."""
 
-    Attributes
-    ----------
-    value: The string representing the value of the enum
-    urls: Tuple of 1 or more string that corresponds to the URLs of the endpoints
-    """
+    UAT = "https://uat-api.ssg-wsg.sg"
+    PRODUCTION = "https://api.ssg-wsg.sg"
+    MOCK = "https://mock-api.ssg-wsg.sg"
 
-    UAT = "UAT", ("https://uat-api.ssg-wsg.sg", )
-    PRODUCTION = "Production", ("https://public-api.ssg-wsg.sg", "https://api.ssg-wsg.sg")
-    MOCK = "Mock", ("https://mock-api.ssg-wsg.sg", )
 
-    def __new__(cls, *args, **kwargs):
-        """
-        Creates a new instance of this enum.
+class Vacancy(Enum):
+    """Enum representing the different course vacancy codes."""
 
-        First line creates a new instance of this enum constant.
-        Second line and third line sets the value and description of the enum constant respectively.
-        Last line returns this enum constant.
-        """
-
-        o = object.__new__(cls)
-        o._value_ = args[0]
-        o.urls = args[1]
-        return o
-
-    @staticmethod
-    def public_prod():
-        return Endpoints.PRODUCTION.urls[0]
-
-    @staticmethod
-    def prod():
-        # alt prod url
-        return Endpoints.PRODUCTION.urls[1]
+    AVAILABLE: tuple[str, str] = ("A", "Available")
+    FULL: tuple[str, str] = ("F", "Full")
+    LIMITED_VACANCY: tuple[str, str] = ("L", "Limited Vacancy")
 
 
 # ===== COURSES CONSTANTS ===== #
@@ -110,6 +88,11 @@ ATTENDANCE_CODE_MAPPINGS = {
     "2": "Unconfirmed",
     "3": "Rejected",
     "4": "TP Voided"
+}
+SORT_FIELD = ["updatedOn", "createdOn", "assessmentDate"]
+SORT_ORDER = {
+    "asc": "Ascending",
+    "desc": "Descending"
 }
 
 SURVEY_LANGUAGE_MAPPINGS = {

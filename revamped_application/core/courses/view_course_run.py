@@ -1,17 +1,19 @@
+"""
+Contains class used for viewing a course run.
+"""
+
 import requests
 import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import Endpoints, HttpMethod
+from revamped_application.core.constants import HttpMethod
 
 from typing import Literal
 
 
 class ViewCourseRun(AbstractRequest):
-    """
-    Class used for viewing course runs.
-    """
+    """Class used for viewing course runs."""
 
     _TYPE: HttpMethod = HttpMethod.GET
 
@@ -32,24 +34,14 @@ class ViewCourseRun(AbstractRequest):
 
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
-        Creates an HTTP get request for getting course runs by runId
+        Creates an HTTP GET request for retrieving course runs by runId.
 
         :param runId: Run ID
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
-        match st.session_state["url"]:
-            case Endpoints.PRODUCTION:
-                url = Endpoints.public_prod()
-            case Endpoints.UAT | Endpoints.MOCK:
-                print("i matched lol")
-                url = st.session_state["url"].urls[0]
-            case _:
-                print(f">>> {st.session_state["url"]}")
-                raise ValueError("Invalid URL Type!")
-
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(url, direct_argument=f"/courses/courseRuns/id/{runId}") \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/courseRuns/id/{runId}") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json")
 
@@ -61,7 +53,7 @@ class ViewCourseRun(AbstractRequest):
 
     def execute(self) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """

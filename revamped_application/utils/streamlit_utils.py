@@ -50,19 +50,6 @@ def check_status() -> bool:
     ])
 
 
-def display_status() -> None:
-    """
-    Conducts a status check and displays an error if there are any missing configuration variables.
-
-    :return: None
-    """
-
-    if not check_status():
-        st.error("There are some configuration variables missing!", icon="🚨")
-    else:
-        st.success("All configuration variables are present and loaded!")
-
-
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
 # of this decorator and replace it with the new syntax
 @st.experimental_dialog("Configs", width="large")
@@ -70,9 +57,12 @@ def display_config() -> None:
     """Displays all the loaded configuration variables."""
 
     st.header("API Endpoint")
-    st.code(f"{st.session_state["url"].value}: "
-            f"{st.session_state["url"].urls[0] if len(st.session_state["url"].urls) == 1
-                else ", ".join(st.session_state["url"].urls)}" if st.session_state["url"] else "-", language="text")
+    try:
+        st.code(f"{st.session_state["url"].name if "url" in st.session_state else "Unknown"}: "
+                f"{st.session_state["url"].value if "url" in st.session_state else "Unknown URL"}", language="text")
+    except AttributeError:
+        st.info("Your app has rerun, make sure to navigate back to the **Home** page to reselect the API endpoint!",
+                icon="ℹ️")
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")

@@ -23,7 +23,7 @@ This folder contains core functionality code for the Attendance APIs.
 
 This folder contains code functionality code for the Courses APIs.
 
-## `enrollment`
+## `enrolment`
 
 This folder contains core functionality code for the Enrollment APIs.
 
@@ -35,4 +35,5 @@ the different APIs.
 ## `system`
 
 This folder contains system functionalities that the application leverage on to perform housekeeping on the files
-created while this application is run.
+created while this application is run. It also contain functionalities that help to log actions taken within the
+Sample Application.

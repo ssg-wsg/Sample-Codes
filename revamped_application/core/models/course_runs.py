@@ -1,13 +1,171 @@
+"""
+Contains classes that help encapsulate data for sending requests to the Course Runs / Sessions APIs.
+"""
+
 import base64
 import datetime
 import json
+import enum
 import streamlit as st
 
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH
+from revamped_application.core.constants import ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, MODE_OF_TRAINING_MAPPING, \
+    Vacancy
 from revamped_application.utils.json_utils import remove_null_fields
+
+
+# ===== Misc. classes ===== #
+class Role(enum.Enum):
+    """Enum to represent the 2 roles a trainer may have."""
+
+    TRAINER = {
+        "id": 1,
+        "description": "Trainer"
+    }
+    ASSESSOR = {
+        "id": 2,
+        "description": "Assessor"
+    }
+
+
+class LinkedSSECEQA(AbstractRequestInfo):
+    """
+    Class to represent a Linked SSEC EQA entry.
+
+    Values taken from https://www.singstat.gov.sg/-/media/files/standards_and_classifications/educational_
+    classification/classification-of-lea-eqa-and-fos-ssec-2020.ashx.
+    """
+
+    VALID_SSECEQA_MAPPINGS = {
+        '0': 'NO FORMAL QUALIFICATION / PRE-PRIMARY / LOWER PRIMARY',
+        '01': 'Never attended school',
+        '02': 'Pre-Primary (i.e. Nursery, Kindergarten 1, Kindergarten 2)',
+        '03': 'Primary education without Primary School Leaving Examination (PSLE) / '
+        'Primary School Proficiency Examination (PSPE) certificate or equivalent',
+        '04': 'Certificate in BEST 1-3',
+        '1': 'PRIMARY',
+        '11': 'Primary School Leaving Examination (PSLE) / Primary School Proficiency '
+        'Examination (PSPE) certificate or equivalent',
+        '12': 'Certificate in BEST 4',
+        '13': 'At least 3 achievements for different Workplace Literacy or Numeracy '
+        '(WPLN) skills at Level 1 or 2',
+        '2': 'LOWER SECONDARY',
+        '21': "Secondary education without any subject pass at GCE 'O'/'N' Level or equivalent",
+        '22': 'Certificate in WISE 1-3',
+        '23': 'Basic vocational certificate (including ITE Basic Vocational Training)',
+        '24': 'At least 3 achievements for different Workplace Literacy or Numeracy '
+        '(WPLN) skills at Level 3 or 4',
+        '3': 'SECONDARY',
+        '31': "At least 1 subject pass at GCE 'N' Level",
+        '32': "At least 1 subject pass at GCE 'O' Level",
+        '33': 'National ITE Certificate (Intermediate) or equivalent (including National '
+        'Technical Certificate (NTC) Grade 3, Certificate of Vocational Training, '
+        'BCA Builder Certificate)',
+        '34': 'ITE Skills Certificate (ISC) or equivalent (including Certificate of '
+        'Competency, Certificate in Service Skills)',
+        '35': 'At least 3 achievements for different Workplace Literacy or Numeracy '
+        '(WPLN) skills at Level 5 and above',
+        '39': 'Other secondary education/certificates or equivalent',
+        '4': 'POST-SECONDARY (NON-TERTIARY): GENERAL AND VOCATIONAL',
+        '41': "At least 1 subject pass at GCE 'A'/'H2' Level or equivalent (general)",
+        '42': 'National ITE Certificate (Nitec) or equivalent (including Post Nitec '
+        'Certificate,Specialist Nitec, Certificate in Office Skills,'
+        'National Technical Certificate (NTC) Grade 2, National Certificate in Nursing,'
+        'BCA Advanced Builder Certificate)',
+        '43': 'Higher Nitec or equivalent (including Certificate in Business Skills,'
+        'Industrial Technician Certificate)',
+        '44': 'Master Nitec or equivalent (including NTC Grade 1)',
+        '45': 'WSQ Certificate or equivalent',
+        '46': 'WSQ Higher Certificate or equivalent',
+        '47': 'WSQ Advanced Certificate or equivalent',
+        '48': 'Other post-secondary (non-tertiary; general) qualifications or equivalent '
+        '(including International Baccalaureate / NUS High School Diploma)',
+        '49': 'Other post-secondary (non-tertiary; vocational) certificates/qualifications '
+        'or equivalent (including SIM certificate)',
+        '5': 'POLYTECHNIC DIPLOMA',
+        '51': 'Polytechnic diploma',
+        '52': 'Polytechnic post-diploma (including polytechnic advanced/specialist/'
+        'management/graduate diploma, diploma (conversion))',
+        '6': 'PROFESSIONAL QUALIFICATION AND OTHER DIPLOMA',
+        '61': 'ITE diploma',
+        '62': 'Other locally or externally developed diploma (including NIE diploma, '
+        'SIM diploma, LASALLE diploma, NAFA diploma)',
+        '63': 'Qualification awarded by professional bodies (including ACCA, CFA)',
+        '64': 'WSQ diploma',
+        '65': 'WSQ specialist diploma',
+        '69': 'Other post-diploma qualifications or equivalent',
+        '7': "BACHELOR'S OR EQUIVALENT",
+        '71': 'First degree or equivalent',
+        '72': 'Long first degree or equivalent',
+        '8': "POSTGRADUATE DIPLOMA/CERTIFICATE (EXCLUDING MASTER'S AND DOCTORATE)",
+        '81': 'Postgraduate diploma/certificate (including NIE postgraduate diploma)',
+        '82': 'WSQ graduate certificate',
+        '83': 'WSQ graduate diploma',
+        '9': "MASTER'S AND DOCTORATE OR EQUIVALENT",
+        '91': "Master's degree or equivalent",
+        '92': 'Doctoral degree or equivalent',
+        'N': 'MODULAR CERTIFICATION (NON-AWARD COURSES / NON-FULL QUALIFICATIONS)',
+        'N1': 'At least 1 WSQ Statement of Attainment or ITE modular certificate at '
+        'post-secondary level (non-tertiary) or equivalent',
+        'N2': 'At least 1 WSQ Statement of Attainment or other modular certificate at '
+        'diploma level or equivalent (including polytechnic post-diploma certificate)',
+        'N3': 'At least 1 WSQ Statement of Attainment or other modular certificate at degree '
+        'level or equivalent',
+        'N4': 'At least 1 WSQ Statement of Attainment or other modular certificate at '
+        'postgraduate level or equivalent',
+        'N9': 'Other statements of attainment, modular certificates or equivalent',
+        'X': 'NOT REPORTED',
+        'XX': 'Not reported'
+    }
+
+    def __init__(self, *args, **kwargs):
+        self._description: str = None
+        self._ssecEQA: str = None
+
+    def __repr__(self):
+        return self.payload(verify=False, as_json_str=True)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def validate(self) -> None | tuple[list[str], list[str]]:
+        errors, warnings = [], []
+
+        if self._ssecEQA is None or len(self._ssecEQA) == 0:
+            warnings.append("No SSEC EQA code specified!")
+
+        if self._description is None or len(self._description) == 0:
+            warnings.append("No SSEC EQA description specified!")
+
+        if self._ssecEQA not in LinkedSSECEQA.VALID_SSECEQA_MAPPINGS:
+            errors.append("Invalid SSEC EQA code specified!")
+
+        if self._description not in LinkedSSECEQA.VALID_SSECEQA_MAPPINGS.values():
+            warnings.append("Invalid SSEC EQA description specified!")
+
+        return errors, warnings
+
+    def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
+        if verify:
+            err, _ = self.validate()
+
+            if len(err) > 0:
+                raise AttributeError("There are some required fields that are missing! Use payload() to find the "
+                                     "missing fields!")
+
+        pl = {
+            "description": self._description,
+            "ssecEQA": {
+                "code": self._ssecEQA,
+            }
+        }
+
+        if as_json_str:
+            return json.dumps(pl)
+
+        return pl
 
 
 # ===== Session Info ===== #
@@ -36,6 +194,28 @@ class RunSessionEditInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, RunSessionEditInfo):
+            return False
+
+        return (
+            self._sessionId == other._sessionId
+            and self._startDate == other._startDate
+            and self._endDate == other._endDate
+            and self._startTime == other._startTime
+            and self._endTime == other._endTime
+            and self._modeOfTraining == other._modeOfTraining
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._venue_primaryVenue == other._venue_primaryVenue
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -111,25 +291,25 @@ class RunSessionEditInfo(AbstractRequestInfo):
         return pl
 
     def get_start_date(self) -> datetime.date:
-        return self._startDate
+        return self._startDate if self._startDate else None
 
     def get_start_date_year(self) -> int:
-        return self._startDate.year
+        return self._startDate.year if self._startDate else None
 
     def get_end_date_year(self) -> int:
-        return self._endDate.year
+        return self._endDate.year if self._endDate else None
 
-    def get_start_time_month(self) -> int:
-        return self._startDate.month
+    def get_start_date_month(self) -> int:
+        return self._startDate.month if self._startDate else None
 
-    def get_end_time_month(self) -> int:
-        return self._endDate.month
+    def get_end_date_month(self) -> int:
+        return self._endDate.month if self._endDate else None
 
-    def get_start_time_day(self) -> int:
-        return self._startDate.day
+    def get_start_date_day(self) -> int:
+        return self._startDate.day if self._startDate else None
 
-    def get_end_time_day(self) -> int:
-        return self._endDate.day
+    def get_end_date_day(self) -> int:
+        return self._endDate.day if self._endDate else None
 
     def is_asynchronous_or_on_the_job(self) -> bool:
         return self._modeOfTraining == "2" or self._modeOfTraining == "4"
@@ -245,6 +425,28 @@ class RunSessionAddInfo(RunSessionEditInfo):
     def __init__(self) -> None:
         super().__init__()
 
+    def __eq__(self, other):
+        if not isinstance(other, RunSessionAddInfo):
+            return False
+
+        return (
+            self._sessionId == other._sessionId
+            and self._startDate == other._startDate
+            and self._endDate == other._endDate
+            and self._startTime == other._startTime
+            and self._endTime == other._endTime
+            and self._modeOfTraining == other._modeOfTraining
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._venue_primaryVenue == other._venue_primaryVenue
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -255,7 +457,7 @@ class RunSessionAddInfo(RunSessionEditInfo):
         if self._endDate is None:
             errors.append("No end date is specified!")
 
-        if self._startDate > self._endDate:
+        if self._startDate is not None and self._endDate is not None and self._startDate > self._endDate:
             errors.append("Start date must be before end date")
 
         if self._startTime is None:
@@ -264,7 +466,7 @@ class RunSessionAddInfo(RunSessionEditInfo):
         if self._endTime is None:
             errors.append("No end time is specified!")
 
-        if self._startTime > self._endTime:
+        if self._startTime is not None and self._endTime is not None and self._startTime > self._endTime:
             errors.append("Starting time must be before ending time")
 
         if self._modeOfTraining is None or len(self._modeOfTraining) == 0:
@@ -340,6 +542,37 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, RunTrainerEditInfo):
+            return False
+
+        return (
+            self._trainerType_code == other._trainerType_code
+            and self._trainerType_description == other._trainerType_description
+            and self._indexNumber == other._indexNumber
+            and self._id == other._id
+            and self._name == other._name
+            and self._email == other._email
+            and self._idNumber == other._idNumber
+            and self._idType_code == other._idType_code
+            and self._idType_description == other._idType_description
+            and (
+                len(self._roles) == len(other._roles)
+                and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
+            )
+            and self._inTrainingProviderProfile == other._inTrainingProviderProfile
+            and self._domainAreaOfPractice == other._domainAreaOfPractice
+            and self._experience == other._experience
+            and self._linkedInURL == other._linkedInURL
+            and self._salutationId == other._salutationId
+            and self._photo_name == other._photo_name
+            and self._photo_content == other._photo_content
+            and (
+                len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
+                and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -521,7 +754,7 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._linkedInURL = linkedInURL
 
     def set_salutationId(self, salutationId: int) -> None:
-        if not isinstance(salutationId, int):
+        if not isinstance(salutationId, int) or salutationId not in SALUTATIONS:
             raise ValueError("Invalid salutationId")
 
         self._salutationId = salutationId
@@ -548,6 +781,37 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 class RunTrainerAddInfo(RunTrainerEditInfo):
     def __init__(self) -> None:
         super().__init__()
+
+    def __eq__(self, other):
+        if not isinstance(other, RunTrainerAddInfo):
+            return False
+
+        return (
+            self._trainerType_code == other._trainerType_code
+            and self._trainerType_description == other._trainerType_description
+            and self._indexNumber == other._indexNumber
+            and self._id == other._id
+            and self._name == other._name
+            and self._email == other._email
+            and self._idNumber == other._idNumber
+            and self._idType_code == other._idType_code
+            and self._idType_description == other._idType_description
+            and (
+                len(self._roles) == len(other._roles)
+                and all(map(lambda x: x[0] == x[1], zip(self._roles, other._roles)))
+            )
+            and self._inTrainingProviderProfile == other._inTrainingProviderProfile
+            and self._domainAreaOfPractice == other._domainAreaOfPractice
+            and self._experience == other._experience
+            and self._linkedInURL == other._linkedInURL
+            and self._salutationId == other._salutationId
+            and self._photo_name == other._photo_name
+            and self._photo_content == other._photo_content
+            and (
+                len(self._linkedSsecEQAs) == len(other._linkedSsecEQAs)
+                and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -645,13 +909,54 @@ class EditRunInfo(AbstractRequestInfo):
         self._file_Name: Optional[str] = None
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
-        self._linkCourseRunTrainer: Optional[list] = []
+        self._linkCourseRunTrainer: Optional[list[RunTrainerEditInfo]] = []
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, EditRunInfo):
+            return False
+
+        return (
+            self._crid == other._crid
+            and self._sequenceNumber == other._sequenceNumber
+            and self._registrationDates_opening == other._registrationDates_opening
+            and self._registrationDates_closing == other._registrationDates_closing
+            and self._courseDates_start == other._courseDates_start
+            and self._courseDates_end == other._courseDates_end
+            and self._scheduleInfoType_code == other._scheduleInfoType_code
+            and self._scheduleInfoType_description == other._scheduleInfoType_description
+            and self._scheduleInfo == other._scheduleInfo
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._intakeSize == other._intakeSize
+            and self._threshold == other._threshold
+            and self._registeredUserCount == other._registeredUserCount
+            and self._modeOfTraining == other._modeOfTraining
+            and self._courseAdminEmail == other._courseAdminEmail
+            and self._courseVacancy_code == other._courseVacancy_code
+            and self._courseVacancy_description == other._courseVacancy_description
+            and self._file_Name == other._file_Name
+            and self._file_content == other._file_content
+            and (
+                len(self._sessions) == len(other._sessions)
+                and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
+            )
+            and (
+                len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
+                and all(map(lambda x: x[0] == x[1], zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -766,7 +1071,7 @@ class EditRunInfo(AbstractRequestInfo):
             "course": {
                 "courseReferenceNumber": self._crid,
                 "trainingProvider": {
-                    "uen": st.session_state["uen"]
+                    "uen": st.session_state["uen"] if "uen" in st.session_state else None
                 }
             },
             "run": {
@@ -952,7 +1257,7 @@ class EditRunInfo(AbstractRequestInfo):
         self._registeredUserCount = registeredUserCount
 
     def set_modeOfTraining(self, modeOfTraining: str) -> None:
-        if not isinstance(modeOfTraining, str):
+        if not isinstance(modeOfTraining, str) or modeOfTraining not in MODE_OF_TRAINING_MAPPING:
             raise ValueError("Invalid mode of training")
 
         self._modeOfTraining = modeOfTraining
@@ -963,17 +1268,15 @@ class EditRunInfo(AbstractRequestInfo):
 
         self._courseAdminEmail = courseAdminEmail
 
-    def set_courseVacancy_code(self, courseVacancy_code: str) -> None:
-        if not isinstance(courseVacancy_code, str):
-            raise ValueError("Invalid course vacancy code")
+    def set_courseVacancy(self, vacancy: Vacancy):
+        if not isinstance(vacancy, Vacancy):
+            try:
+                vacancy = Vacancy(vacancy)
+            except Exception:
+                raise ValueError("Invalid course vacancy")
 
-        self._courseVacancy_code = courseVacancy_code
-
-    def set_courseVacancy_description(self, courseVacancy_description: str) -> None:
-        if not isinstance(courseVacancy_description, str):
-            raise ValueError("Invalid course vacancy description")
-
-        self._courseVacancy_description = courseVacancy_description
+        self._courseVacancy_code = vacancy.value[0]
+        self._courseVacancy_description = vacancy.value[1]
 
     def set_file_Name(self, file_Name: str) -> None:
         if not isinstance(file_Name, str):
@@ -1018,6 +1321,12 @@ class DeleteRunInfo(EditRunInfo):
     def __init__(self) -> None:
         super().__init__()
 
+    def __eq__(self, other):
+        if not isinstance(other, DeleteRunInfo):
+            return False
+
+        return self._crid == other._crid
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -1039,7 +1348,7 @@ class DeleteRunInfo(EditRunInfo):
             "course": {
                 "courseReferenceNumber": self._crid,
                 "trainingProvider": {
-                    "uen": st.session_state["uen"]
+                    "uen": st.session_state["uen"] if "uen" in st.session_state else None
                 },
                 "run": {
                     "action": "delete"
@@ -1054,10 +1363,135 @@ class DeleteRunInfo(EditRunInfo):
 
         return pl
 
+    def set_sequence_number(self, sequence_number: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfo(self, scheduleInfo: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_block(self, venue_block: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_street(self, venue_street: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_floor(self, venue_floor: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_unit(self, venue_unit: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_building(self, venue_building: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_postalCode(self, venue_postalCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_room(self, venue_room: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_intakeSize(self, intakeSize: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_threshold(self, threshold: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registeredUserCount(self, registeredUserCount: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_modeOfTraining(self, modeOfTraining: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy(self, vacancy: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_Name(self, file_Name: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_content(self, file_content: UploadedFile) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class AddRunIndividualInfo(EditRunInfo):
     def __init__(self):
         super().__init__()
+
+    def __eq__(self, other):
+        if not isinstance(other, AddRunIndividualInfo):
+            return False
+
+        return (
+            self._sequenceNumber == other._sequenceNumber
+            and self._registrationDates_opening == other._registrationDates_opening
+            and self._registrationDates_closing == other._registrationDates_closing
+            and self._courseDates_start == other._courseDates_start
+            and self._courseDates_end == other._courseDates_end
+            and self._scheduleInfoType_code == other._scheduleInfoType_code
+            and self._scheduleInfoType_description == other._scheduleInfoType_description
+            and self._scheduleInfo == other._scheduleInfo
+            and self._venue_block == other._venue_block
+            and self._venue_street == other._venue_street
+            and self._venue_floor == other._venue_floor
+            and self._venue_unit == other._venue_unit
+            and self._venue_building == other._venue_building
+            and self._venue_postalCode == other._venue_postalCode
+            and self._venue_room == other._venue_room
+            and self._venue_wheelChairAccess == other._venue_wheelChairAccess
+            and self._intakeSize == other._intakeSize
+            and self._threshold == other._threshold
+            and self._registeredUserCount == other._registeredUserCount
+            and self._modeOfTraining == other._modeOfTraining
+            and self._courseAdminEmail == other._courseAdminEmail
+            and self._courseVacancy_code == other._courseVacancy_code
+            and self._courseVacancy_description == other._courseVacancy_description
+            and self._file_Name == other._file_Name
+            and self._file_content == other._file_content
+            and (
+                len(self._sessions) == len(other._sessions)
+                and all(map(lambda x: x[0] == x[1], zip(self._sessions, other._sessions)))
+            )
+            and (
+                len(self._linkCourseRunTrainer) == len(other._linkCourseRunTrainer)
+                and all(map(lambda x: x[0] == x[1],
+                            zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
+            )
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1069,7 +1503,8 @@ class AddRunIndividualInfo(EditRunInfo):
         if self._registrationDates_closing is None:
             errors.append("No closing registration dates specified!")
 
-        if self._registrationDates_opening > self._registrationDates_closing:
+        if self._registrationDates_opening is not None and self._registrationDates_closing is not None and \
+                self._registrationDates_opening > self._registrationDates_closing:
             errors.append("Registration dates opening should not be after closing date")
 
         if self._courseDates_start is None:
@@ -1078,7 +1513,8 @@ class AddRunIndividualInfo(EditRunInfo):
         if self._courseDates_end is None:
             errors.append("No end course dates specified!")
 
-        if self._courseDates_start > self._courseDates_end:
+        if self._courseDates_start is not None and self._courseDates_end is not None and \
+                self._courseDates_start > self._courseDates_end:
             errors.append("Start course dates should not be after end course date")
 
         if self._scheduleInfoType_code is None or len(self._scheduleInfoType_code) == 0:
@@ -1215,6 +1651,9 @@ class AddRunIndividualInfo(EditRunInfo):
 
         return pl
 
+    def set_crid(self, crn: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class AddRunInfo(EditRunInfo):
     """Encapsulates all information regarding the addition of a course run"""
@@ -1222,6 +1661,16 @@ class AddRunInfo(EditRunInfo):
     def __init__(self):
         super().__init__()
         self._runs: list[AddRunIndividualInfo] = []
+
+    def __eq__(self, other):
+        if not isinstance(other, AddRunInfo):
+            return False
+
+        return (
+            self._crid == other._crid
+            and len(self._runs) == len(other._runs)
+            and all(map(lambda x: x[0] == x[1], zip(self._runs, other._runs)))
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1253,7 +1702,7 @@ class AddRunInfo(EditRunInfo):
             "course": {
                 "courseReferenceNumber": self._crid,
                 "trainingProvider": {
-                    "uen": st.session_state["uen"]
+                    "uen": st.session_state["uen"] if "uen" in st.session_state else None
                 }
             },
             "runs": [x.payload(verify=False) for x in self._runs]
@@ -1271,3 +1720,87 @@ class AddRunInfo(EditRunInfo):
             raise TypeError("Invalid individual run info")
 
         self._runs.append(run)
+
+    def set_sequence_number(self, sequence_number: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_scheduleInfo(self, scheduleInfo: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_block(self, venue_block: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_street(self, venue_street: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_floor(self, venue_floor: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_unit(self, venue_unit: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_building(self, venue_building: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_postalCode(self, venue_postalCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_room(self, venue_room: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_intakeSize(self, intakeSize: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_threshold(self, threshold: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_registeredUserCount(self, registeredUserCount: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_modeOfTraining(self, modeOfTraining: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_courseVacancy(self, Vacancy: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_Name(self, file_Name: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_file_content(self, file_content: UploadedFile) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")

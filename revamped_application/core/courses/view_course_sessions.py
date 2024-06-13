@@ -1,17 +1,19 @@
+"""
+Contains class used for viewing course sessions.
+"""
+
 import requests
 import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import Endpoints, HttpMethod, NUM2MONTH
+from revamped_application.core.constants import HttpMethod
 
 from typing import Literal, Optional
 
 
 class ViewCourseSessions(AbstractRequest):
-    """
-    Class used for viewing course sessions.
-    """
+    """Class used for viewing course sessions."""
 
     _TYPE: HttpMethod = HttpMethod.GET
 
@@ -34,7 +36,7 @@ class ViewCourseSessions(AbstractRequest):
     def _prepare(self, runId: str, crn: str, session_month: Optional[int], session_year: Optional[int],
                  include_expired: Literal["Select a value", "Yes", "No"]) -> None:
         """
-        Creates an HTTP get request for getting all course sessions
+        Creates an HTTP GET request for retrieving course sessions.
 
         :param runId: Run ID
         :param crn: CRN
@@ -43,16 +45,8 @@ class ViewCourseSessions(AbstractRequest):
         :param include_expired: Indicate whether to retrieve expired courses or not
         """
 
-        match st.session_state["url"]:
-            case Endpoints.PRODUCTION:
-                url = Endpoints.public_prod()
-            case Endpoints.UAT | Endpoints.MOCK:
-                url = st.session_state["url"].urls[0]
-            case _:
-                raise ValueError("Invalid URL Type!")
-
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(url, direct_argument=f"/courses/runs/{runId}/sessions") \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/runs/{runId}/sessions") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json") \
             .with_param("uen", st.session_state["uen"]) \
@@ -72,7 +66,7 @@ class ViewCourseSessions(AbstractRequest):
 
     def execute(self) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """

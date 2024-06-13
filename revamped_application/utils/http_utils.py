@@ -6,9 +6,13 @@ import binascii
 import json
 import textwrap
 
+import certifi
 import requests
 import streamlit as st
 
+from requests.exceptions import ConnectionError, HTTPError, SSLError, InvalidURL, InvalidHeader
+
+from revamped_application.core.system.logger import Logger
 from revamped_application.utils.streamlit_utils import init, http_code_handler
 from revamped_application.core.abc.abstract import AbstractRequest
 from revamped_application.core.constants import HttpMethod
@@ -17,8 +21,9 @@ from typing import Self, Any, Callable
 from revamped_application.utils.string_utils import StringBuilder
 
 
-# initialise the session variables here
+# initiaise the session variables here
 init()
+LOGGER = Logger("HTTP Request")
 
 
 class HTTPRequestBuilder:
@@ -68,21 +73,31 @@ class HTTPRequestBuilder:
         if not isinstance(endpoint, str):
             raise ValueError("Endpoint must be a string!")
 
+        if endpoint is not None and len(endpoint) == 0:
+            raise ValueError("Endpoint cannot be empty!")
+
         if not isinstance(direct_argument, str):
             raise ValueError("Direct argument must be a string!")
 
         if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
             raise ValueError("Endpoint URL must start with http:// or https://!")
 
-        if endpoint.endswith("/"):
-            self.endpoint = endpoint[:-1]
-        else:
-            self.endpoint = endpoint
+        self.endpoint = endpoint
 
-        if direct_argument.endswith("/"):
-            direct_argument = direct_argument[:-1]
+        if direct_argument is not None and len(direct_argument) > 0:
+            # remove the "/" at the start of the direct argument if it exists
+            while direct_argument.startswith("/"):
+                direct_argument = direct_argument[1:]
 
-        self.endpoint = self.endpoint + direct_argument
+            # appends the direct argument to the endpoint if it is not empty and strips the end of the url
+            # endpoint if it has a trailing '/'
+            self.endpoint = (f"{self.endpoint}{direct_argument}"
+                             if self.endpoint.endswith("/")
+                             else f"{self.endpoint}/{direct_argument}")
+
+        while self.endpoint.endswith("/"):
+            self.endpoint = self.endpoint[:-1]
+
         return self
 
     def with_header(self, key: str, value: str) -> Self:
@@ -96,6 +111,9 @@ class HTTPRequestBuilder:
 
         if not isinstance(key, str) or not isinstance(value, str):
             raise ValueError("Header values must be strings!")
+
+        if len(key) == 0:
+            raise ValueError("Header key cannot be empty!")
 
         self.header[key] = value
         return self
@@ -112,9 +130,12 @@ class HTTPRequestBuilder:
         if not isinstance(key, str):
             raise ValueError("Parameter Key values must be strings")
 
+        if len(key) == 0:
+            raise ValueError("Parameter Key cannot be empty!")
+
         try:
             json.dumps(value)
-        except:
+        except Exception:
             raise ValueError("Parameter Value must be JSON-serializable!")
 
         self.params[key] = value
@@ -147,7 +168,7 @@ class HTTPRequestBuilder:
         :return: This Builder instance
         """
 
-        if not isinstance(version, str):
+        if not isinstance(version, str) or len(version) == 0:
             raise ValueError("API version must be a string")
 
         return self.with_header("x-api-version", version)
@@ -159,10 +180,14 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
+
         return requests.get(self.endpoint,
                             params=self.params,
                             headers=self.header,
-                            cert=(st.session_state["key_pem"], st.session_state["cert_pem"]))
+                            verify=certifi.where(),
+                            cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def post(self) -> requests.Response:
         """
@@ -171,10 +196,14 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
+
         return requests.post(self.endpoint,
                              params=self.params,
                              headers=self.header,
                              data=self.body,
+                             verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def post_encrypted(self) -> requests.Response:
@@ -192,10 +221,14 @@ class HTTPRequestBuilder:
         :return: requests.Response object
         """
 
+        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
+            raise ValueError("No Key or Certificate files specified!")
+
         return requests.post(self.endpoint,
                              params=self.params,
                              headers=self.header,
                              json=Cryptography.encrypt(json.dumps(self.body), return_bytes=False),
+                             verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def repr(self, req_type: HttpMethod) -> str:
@@ -270,17 +303,19 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
 
         st.subheader("Encrypted Request Payload")
         try:
+            LOGGER.info("Encrypting Request Payload...")
             # decode the object and wrap it to display it properly
             ciphertext = Cryptography.encrypt(str(rec_obj)).decode()
             st.code("\n".join(textwrap.wrap(ciphertext, width=HTTPRequestBuilder.WRAP_LEVEL)), language="text")
         except binascii.Error:
+            LOGGER.error("Encryption failed! Aborting request...")
             st.error("Unable to perform Encryption! Check your AES key to make sure that it is valid!", icon="🚨")
     else:
         st.subheader("Request")
         st.code(repr(rec_obj), language="text")
 
 
-def handle_error(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
+def handle_response(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
     """
     Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
@@ -292,12 +327,22 @@ def handle_error(throwable: Callable[[], requests.Response], require_decryption:
     """
 
     try:
+        LOGGER.info("Executing request...")
         response = throwable()
         if not isinstance(throwable(), requests.Response):
+            LOGGER.error("Function does not return the expected requests.Response object! Aborting request...")
             raise AssertionError("The request function does not return a valid HTTP response!")
 
         http_code_handler(response.status_code)
 
+        if response.status_code >= 400:
+            # is an error, no need to decrypt
+            LOGGER.error(f"Request failed with HTTP request code {response.status_code}! Aborting request...")
+            st.header("Error Message")
+            st.code(response.text)
+            return
+
+        LOGGER.info("Decryption response...")
         if require_decryption:
             st.subheader("Encrypted Response")
             st.code(response.text)
@@ -311,18 +356,29 @@ def handle_error(throwable: Callable[[], requests.Response], require_decryption:
             try:
                 st.json(response.json())
             except json.decoder.JSONDecodeError:
+                LOGGER.warning("Message is not JSON-serializable! Defaulting to plain text instead...")
                 st.code(response.text, language="text")
-    except ConnectionError:
+    except HTTPError as ex:
+        LOGGER.error(f"Request failed with HTTP exception! Error: {ex}. Aborting request...")
+        st.error("Unable to make a HTTP request to the API endpoint! "
+                 "Check your inputs and make sure that there are no mistakes in your inputs!")
+    except InvalidURL as ex:
+        LOGGER.error(f"Request failed due to URL error. Error: {ex}. Aborting request...")
+        st.error("Check that the URL you provided is a valid URL!")
+    except InvalidHeader as ex:
+        LOGGER.error(f"Request failed due to HTTP header error. Error: {ex}. Aborting request...")
+        st.error("Check that the headers you provided is valid!")
+    except SSLError as ex:
+        # there are some issues with the SSL keys
+        LOGGER.error(f"Unable to establish SSL connection with the server! Error: {ex}. Aborting request...")
+        st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n", icon="🚨")
+    except ConnectionError as ex:
         # the endpoint url is likely malformed here
+        LOGGER.error(f"There is an issue with the connection with the API endpoint! Error: {ex}. Aborting request...")
         st.error("Check the inputs that you have used for the API request and check that "
                  "they are valid!\n\nIt is likely that you have included a value that "
                  "causes the API request to query from a URL that does not exist or is "
                  "invalid!", icon="🚨")
-    except requests.exceptions.SSLError:
-        # there are some issues with the SSL keys
-        st.error("Check your SSL certificate and keys and ensure that they are valid!\n\n"
-                 "If your key files are not in `pem` format, ensure that you convert your "
-                 "key files into `pem` format!", icon="🚨")
     except Exception as ex:
         # float it back to the user to handle
         st.exception(ex)

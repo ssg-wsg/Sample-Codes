@@ -1,9 +1,26 @@
+"""
+This page displays the demo code used for authenticating with the SSG APIs.
+
+There are 2 methods for authenticating with the SSG APIs:
+1. Open Authentication
+    - This method uses OAuth2.0 to authenticate with the SSG API
+2. Certificate Authentication
+    - This method uses SSL Certificates and Private Keys to authenticate with the SSG API
+    - Do note that the current implementation of the request sending process necessarily saves the certificate and
+      key files on the proxy system used to send the requests on your behalf. This might pose a security risk, as
+      anyone with access to the machine can view and extract the certificates and private keys.
+
+The demo code is provided to enable users to get up and running with the most fundamental aspects of the SSG API:
+Authentication. The demo code is also provided in 3 main languages: Java, Python and NodeJS.
+
+You may wish to verify if the code is actually functional and revise the sample code as you see fit.
+"""
+
 import tempfile
-
-import streamlit as st
 import requests
+import streamlit as st
 
-from revamped_application.utils.streamlit_utils import display_config
+from revamped_application.utils.streamlit_utils import init, display_config
 from revamped_application.core.system.logger import Logger
 
 from requests_oauthlib import OAuth2Session
@@ -11,6 +28,8 @@ from oauthlib.oauth2 import BackendApplicationClient
 
 st.set_page_config(page_title="Demo Code", page_icon="🔐")
 
+# initialise necessary variables
+init()
 LOGGER = Logger("Demo Code")
 
 CERT_AUTH_PYTHON = """
@@ -528,15 +547,17 @@ with cert_auth:
         if all([test_url, cert_key, secret_key]):
             try:
                 with tempfile.NamedTemporaryFile() as certfile, tempfile.NamedTemporaryFile() as keyfile:
-                    certfile.write(cert_auth)
+                    certfile.write(cert_key.read())
                     LOGGER.info("Loaded Certificate...")
 
-                    keyfile.write(secret_key)
+                    keyfile.write(secret_key.read())
                     LOGGER.info("Loaded Private Key...")
 
                     LOGGER.info(f"Sending GET request to {test_url}...")
                     req = requests.get(test_url, cert=(certfile.name, keyfile.name))
-                    st.success(f"Response code: {req.status_code}")
+
+                    st.subheader("Response")
+                    st.success(f"Response code: {req.status_code}", icon="✅")
 
                     LOGGER.info(f"Response received: {req.text}")
                     st.json(req.json())
@@ -602,15 +623,17 @@ with open_auth:
                     client_secret=client_secret
                 )
 
+                st.subheader("Response")
                 LOGGER.info("Sending GET request with OAuth token...")
                 response = oauth.get(request_url)
-                st.success(f"Response code: {response.status_code}")
+                st.success(f"Response code: {response.status_code}", icon="✅")
 
                 LOGGER.info(f"Response received: {response.text}")
                 st.code(response.json())
-            except:
+            except Exception as ex:
                 LOGGER.error(f"Unable to send request, error: {ex}")
-                st.error("An error has occurred. Please check data input!", icon="🚨")
+                st.error(f"An error has occurred. Please check your data input to make sure there are no mistakes!"
+                         f"\n\nError: {ex}", icon="🚨")
         else:
             LOGGER.error("Missing certificate or private key file!")
             st.error("Please check to ensure that you fill in all fields before submitting the API request!", icon="🚨")

@@ -1,3 +1,7 @@
+"""
+Contains classes that help encapsulate data for sending requests to the Attendance APIs.
+"""
+
 import json
 import streamlit as st
 
@@ -31,6 +35,26 @@ class UploadAttendanceInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, UploadAttendanceInfo):
+            return False
+
+        return (
+            self._sessionId == other._sessionId
+            and self._status_code == other._status_code
+            and self._trainee_id == other._trainee_id
+            and self._trainee_name == other._trainee_name
+            and self._trainee_email == other._trainee_email
+            and self._trainee_id_type == other._trainee_id_type
+            and self._contactNumber_mobile == other._contactNumber_mobile
+            and self._contactNumber_areacode == other._contactNumber_areacode
+            and self._contactNumber_countryCode == other._contactNumber_countryCode
+            and self._numberOfHours == other._numberOfHours
+            and self._surveyLanguage_code == other._surveyLanguage_code
+            and self._referenceNumber == other._referenceNumber
+            and self._corppassId == other._corppassId
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -78,7 +102,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
                                      "missing fields!")
 
         pl = {
-            "uen": st.session_state["uen"],
+            "uen": st.session_state["uen"] if "uen" in st.session_state else None,
             "course": {
                 "sessionID": self._sessionId,
                 "attendance": {

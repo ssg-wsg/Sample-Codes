@@ -1,21 +1,20 @@
 """
-Contains all classes and functions relevant for the deletion of a course run.
+Contains class used for the deletion of a course run.
 """
+
 import requests
 import streamlit as st
 
 from revamped_application.core.abc.abstract import AbstractRequest
 from revamped_application.core.models.course_runs import DeleteRunInfo
-from revamped_application.core.constants import Endpoints, HttpMethod
+from revamped_application.core.constants import HttpMethod
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 from typing import Literal
 
 
 class DeleteCourseRun(AbstractRequest):
-    """
-    Class used for deleting a course run
-    """
+    """Class used for deleting a course run."""
 
     _TYPE: HttpMethod = HttpMethod.POST
 
@@ -38,23 +37,15 @@ class DeleteCourseRun(AbstractRequest):
     def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
                  delete_runinfo: DeleteRunInfo) -> None:
         """
-        Scaffolds the request body and prepares it for execution
+        Creates an HTTP POST request for deleting a course run.
 
         :param runId: Run ID
         :param include_expired:  Indicate whether to retrieve expired courses or not
         :param delete_runinfo: Response body encapsulation
         """
 
-        match st.session_state["url"]:
-            case Endpoints.PRODUCTION:
-                url = Endpoints.prod()
-            case Endpoints.UAT | Endpoints.MOCK:
-                url = st.session_state["url"].urls[0]
-            case _:
-                raise ValueError("Invalid URL Type!")
-
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(url, direct_argument=f"/courses/courseRuns/edit/{runId}") \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/courses/courseRuns/edit/{runId}") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json")
 
@@ -68,7 +59,7 @@ class DeleteCourseRun(AbstractRequest):
 
     def execute(self) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """

@@ -1,3 +1,21 @@
+"""
+This page is used to enable access to the Courses API.
+
+There are 4 main processes:
+1. View Course Run
+    - This tab allows you to enter in a Course Run ID and retrieve course run information from the API
+2. Add Course Run
+    - This tab allows you to create/publish one or more course runs with sessions
+3. Edit/Delete Course Run
+    - This tab allows you to edit or delete your existing course runs.
+4. View Course Sessions
+    - This tab allows you to enter in a Course Reference ID and a corresponding Course Run ID to retrieve
+      course session information from the API
+
+It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
+functions to clean up the request body and send requests that contains only non-null fields.
+"""
+
 import streamlit as st
 
 from datetime import datetime
@@ -7,12 +25,15 @@ from revamped_application.core.courses.view_course_run import ViewCourseRun
 from revamped_application.core.courses.edit_course_run import EditCourseRun
 from revamped_application.core.courses.add_course_run import AddCourseRun
 from revamped_application.core.courses.view_course_sessions import ViewCourseSessions
-from revamped_application.core.models.course_runs import EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo, DeleteRunInfo, AddRunInfo, \
-    RunSessionAddInfo, RunTrainerAddInfo, AddRunIndividualInfo
-from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, Endpoints
+from revamped_application.core.models.course_runs import (EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo,
+                                                          DeleteRunInfo, AddRunInfo, RunSessionAddInfo,
+                                                          RunTrainerAddInfo, AddRunIndividualInfo)
+from revamped_application.core.constants import MODE_OF_TRAINING_MAPPING, ID_TYPE_MAPPING, SALUTATIONS, NUM2MONTH, \
+    Vacancy
 from revamped_application.core.system.logger import Logger
-from revamped_application.utils.http_utils import handle_error, handle_request
-from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_keys
+from revamped_application.utils.http_utils import handle_response, handle_request
+from revamped_application.utils.streamlit_utils import (init, display_config,
+                                                        validation_error_handler, does_not_have_keys)
 
 # initialise necessary variables
 init()
@@ -66,10 +87,11 @@ with view:
         LOGGER.info("Attempting to send request to View Course Run API...")
         if len(runs) == 0:
             LOGGER.error("Missing Course Run ID!")
-            st.error("Key in your course run ID to proceed!", icon="🚨")
+            st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
         elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
-            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
@@ -80,7 +102,7 @@ with view:
 
             with response:
                 LOGGER.info("Executing request...")
-                handle_error(lambda: vc.execute())
+                handle_response(lambda: vc.execute())
 
 with add:
     st.header("Add Course Runs")
@@ -105,6 +127,7 @@ with add:
                                        help="Reference number for the course of interest. "
                                             "Encode the course reference number as it may contains "
                                             "some special characters which could be blocked by the Gateway",
+                                       placeholder="XX-10000000K-01-TEST 166",
                                        key="add-crn"))
 
     st.subheader("Define Number of Runs to Add")
@@ -154,15 +177,20 @@ with add:
             st.markdown("#### Schedule Info Type")
             indiv_run.set_scheduleInfoType_code(st.text_input(label="Schedule Code",
                                                               key=f"add-schedule-code-{run}",
-                                                              help="Course run schedule info code"))
+                                                              help="Course run schedule info code",
+                                                              placeholder="01",
+                                                              max_chars=2))
             indiv_run.set_scheduleInfoType_description(st.text_area(label="Schedule Description",
                                                                     key=f"add-schedule-description-{run}",
                                                                     help="Course run schedule info description",
+                                                                    placeholder="Description",
                                                                     max_chars=32))
 
             indiv_run.set_scheduleInfo(st.text_input(label="Schedule Info",
                                                      key=f"add-schedule-info-{run}",
-                                                     help="Course run schedule info"))
+                                                     help="Course run schedule info",
+                                                     placeholder="Sat / 5 Sats / 9am - 6pm",
+                                                     max_chars=300))
 
             st.markdown("#### Venue Info")
             if st.checkbox("Specify Venue Block?", key=f"specify-add-venue-block-info-{run}"):
@@ -244,18 +272,15 @@ with add:
                 label="Course Admin Email",
                 key=f"add-course-admin-email-{run}",
                 help="Course admin email is under course run level that can receive the email from 'QR code "
-                     "Attendance Taking', 'Course Atendance with error' and 'Trainer information not updated'",
+                     "Attendance Taking', 'Course Attendance with error' and 'Trainer information not updated'",
                 max_chars=255))
 
             st.markdown("#### Course Vacancy Details")
-            indiv_run.set_courseVacancy_code(st.text_input(label="Vacancy Code",
-                                                           key=f"add-course-vacancy-code-{run}",
-                                                           help="Course run vacancy code",
-                                                           max_chars=1))
-            indiv_run.set_courseVacancy_description(st.text_input(label="Vacancy Description",
-                                                                  key=f"add-course-vacancy-description-{run}",
-                                                                  help="Course run vacancy description",
-                                                                  max_chars=128))
+            indiv_run.set_courseVacancy(st.selectbox(label="Course Vacancy",
+                                                     key=f"add-course-vacancy-{run}",
+                                                     options=Vacancy,
+                                                     format_func=lambda x: f"{x.value[0]}: {x.value[1]}",
+                                                     help="Course run vacancy status"))
 
             st.markdown("#### File Details")
             if st.checkbox("Specify File Name?", key=f"specify-add-file-Name-info-{run}"):
@@ -295,11 +320,12 @@ with add:
                     runsession: RunSessionAddInfo = RunSessionAddInfo()
 
                     st.markdown(f"##### Session {i + 1}")
-                    runsession.set_modeOfTraining(st.selectbox(label="Mode of Training",
-                                                               options=MODE_OF_TRAINING_MAPPING.keys(),
-                                                               help="Mode of training code",
-                                                               format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
-                                                               key=f"add-session-mode-of-training_{i}-{run}"))
+                    runsession.set_modeOfTraining(st.selectbox(
+                        label="Mode of Training",
+                        options=MODE_OF_TRAINING_MAPPING.keys(),
+                        help="Mode of training code",
+                        format_func=lambda x: f"{x}: {MODE_OF_TRAINING_MAPPING[x]}",
+                        key=f"add-session-mode-of-training_{i}-{run}"))
 
                     col1, col2 = st.columns(2)
                     with col1:
@@ -319,8 +345,8 @@ with add:
                                                                        hour=0,
                                                                        minute=0,
                                                                        year=runsession.get_start_date_year(),
-                                                                       month=runsession.get_start_time_month(),
-                                                                       day=runsession.get_start_time_day())
+                                                                       month=runsession.get_start_date_month(),
+                                                                       day=runsession.get_start_date_day())
                                                                    .time()))
 
                         with col2:
@@ -338,12 +364,13 @@ with add:
                                                                  value=datetime(hour=23,
                                                                                 minute=59,
                                                                                 year=runsession.get_start_date_year(),
-                                                                                month=runsession.get_start_time_month(),
-                                                                                day=runsession.get_start_time_day())
+                                                                                month=runsession.get_start_date_month(),
+                                                                                day=runsession.get_start_date_day())
                                                                  .time()))
 
-                        st.info(f"End date of course session is automatically set to **{runsession.get_start_date()}**\n\n"
-                                f"Start and end time set to **12:00 AM to 11:59 PM** respectively", icon="ℹ️")
+                        st.info(f"End date of course session is automatically set to "
+                                f"**{runsession.get_start_date()}**\n\nStart and end time set to "
+                                f"**12:00 AM to 11:59 PM** respectively", icon="ℹ️")
                     else:
                         with col1:
                             runsession.set_startTime(st.time_input("Start time of course session",
@@ -382,11 +409,11 @@ with add:
 
                     if st.checkbox("Specify Venue Wheelchair Accessible?",
                                    key=f"specify-add-session-venue-wheelchair-{i}-{run}"):
-                        runsession.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
-                                                                           options=["Select a value", "Yes", "No"],
-                                                                           key=f"add-session-venue-wheelchair-{i}-{run}",
-                                                                           help="Indication that the course run "
-                                                                                "location is wheelchair accessible"))
+                        runsession.set_venue_wheelChairAccess(st.selectbox(
+                            label="Wheelchair Access",
+                            options=["Select a value", "Yes", "No"],
+                            key=f"add-session-venue-wheelchair-{i}-{run}",
+                            help="Indication that the course run location is wheelchair accessible"))
 
                     if st.checkbox("Specify Primary Venue?", key=f"specify-add-session-primary-venue-{i}-{run}"):
                         runsession.set_venue_primaryVenue(st.selectbox(
@@ -523,7 +550,8 @@ with add:
                                  "and put in name & email.",
                             key=f"add-trainer-training-provider-profile-{i}"))
 
-                    if st.checkbox("Specify Domain Area of Practice?", key=f"specify-add-trainer-domain-area-{i}-{run}"):
+                    if st.checkbox("Specify Domain Area of Practice?",
+                                   key=f"specify-add-trainer-domain-area-{i}-{run}"):
                         runtrainer.set_domainAreaOfPractice(st.text_area(
                             label="Domain Area of Practice",
                             help="This field indicates the Key Domain/Sector Areas of practice of the trainer "
@@ -552,8 +580,8 @@ with add:
                             label="Salutations of the Trainer",
                             options=SALUTATIONS.keys(),
                             format_func=lambda x: SALUTATIONS[x],
-                            help="This field is used to enter the Salutation of the trainer (required for new trainer). "
-                                 "For existing trainer, leave this field empty.",
+                            help="This field is used to enter the Salutation of the trainer (required for new "
+                                 "trainer). For existing trainer, leave this field empty.",
                             key=f"add-trainer-salutation-id-code-{i}-{run}",
                         ))
 
@@ -572,8 +600,8 @@ with add:
                                                                       accept_multiple_files=False))
 
                     st.markdown("###### Linked SSEC EQAs")
-                    st.markdown("This field used to indicate the qualification level of the trainer. For existing trainer, "
-                                "please do not input this information.")
+                    st.markdown("This field used to indicate the qualification level of the trainer. For "
+                                "existing trainer, please do not input this information.")
                     linkedssec = st.number_input(label="Number of Linked SSEC EQAs",
                                                  key=f"add-trainer-linkedssec-{i}-{run}",
                                                  min_value=0,
@@ -636,7 +664,7 @@ with add:
 
                 with response:
                     LOGGER.info("Executing request...")
-                    handle_error(lambda: ac.execute())
+                    handle_response(lambda: ac.execute())
 
 with edit_delete:
     st.header("Edit/Delete Course Runs")
@@ -946,8 +974,8 @@ with edit_delete:
                             runsession.set_venue_wheelChairAccess(st.selectbox(label="Wheelchair Access",
                                                                                options=["Select a value", "Yes",
                                                                                         "No"],
-                                                                               key=f"edit-session-wheelchair-"
-                                                                                   f"access-{i}",
+                                                                               key=(f"edit-session-wheelchair-"
+                                                                                    f"access-{i}"),
                                                                                help="Indication that the course "
                                                                                     "run location is wheelchair "
                                                                                     "accessible"))
@@ -1204,7 +1232,7 @@ with edit_delete:
 
                 with response:
                     LOGGER.info("Executing request...")
-                    handle_error(lambda: ec.execute())
+                    handle_response(lambda: ec.execute())
 
 with sessions:
     st.header("View Course Sessions")
@@ -1253,6 +1281,10 @@ with sessions:
         if not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your UEN before proceeding!", icon="🚨")
+        elif does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vcs = ViewCourseSessions(runs, crn, month_value, year_value, include_expired)
@@ -1263,4 +1295,4 @@ with sessions:
 
             with response:
                 LOGGER.info("Executing request...")
-                handle_error(lambda: vcs.execute())
+                handle_response(lambda: vcs.execute())
