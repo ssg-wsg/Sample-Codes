@@ -33,6 +33,9 @@ class Vacancy(Enum):
     def __str__(self):
         return f"{self.value[0]}: {self.value[1]}"
 
+    AVAILABLE: tuple[str, str] = ("A", "Available")
+    FULL: tuple[str, str] = ("F", "Full")
+    LIMITED_VACANCY: tuple[str, str] = ("L", "Limited Vacancy")
 
 # ===== COURSE CONSTANTS ===== #
 class Role(Enum):
