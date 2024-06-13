@@ -10,8 +10,8 @@ from revamped_application.core.enrolment.search_enrolment import SearchEnrolment
 from revamped_application.core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFeeCollection
 from revamped_application.core.constants import (IdTypeSummary, CollectionStatus, CancellableCollectionStatus,
                                                  SponsorshipType, EnrolmentSortField, SortOrder, EnrolmentStatus)
-from revamped_application.utils.http_utils import handle_response
-from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.utils.http_utils import handle_request, handle_response
+from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
 from revamped_application.utils.verify import Validators
 
 init()
@@ -218,26 +218,16 @@ with create:
                      " before proceeding!", icon="🚨")
         else:
             errors, warnings = create_enrolment.validate()
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-                )
 
-            if len(errors) > 0:
-                st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-                )
-            else:
+            if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
                 ce = CreateEnrolment(create_enrolment)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ce), language="text")
+                    handle_request(ce, require_encryption=True)
 
                 with response:
-                    st.subheader("Response")
-                    handle_response(lambda: ce.execute())
+                    handle_response(lambda: ce.execute(), require_decryption=True)
 
 
 with update:
@@ -363,26 +353,16 @@ with update:
             st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
         else:
             errors, warnings = update_enrolment.validate()
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-                )
 
-            if len(errors) > 0:
-                st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-                )
-            else:
+            if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
                 ue = UpdateEnrolment(enrolment_reference_num, update_enrolment)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(ue), language="text")
+                    handle_request(ue, require_encryption=True)
 
                 with response:
-                    st.subheader("Response")
-                    handle_response(lambda: ue.execute())
+                    handle_response(lambda: ue.execute(), require_decryption=True)
 
 
 with cancel:
@@ -411,12 +391,10 @@ with cancel:
             cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(cancel_en), language="text")
+                handle_request(cancel_en, require_encryption=True)
 
             with response:
-                st.subheader("Response")
-                handle_response(lambda: cancel_en.execute())
+                handle_response(lambda: cancel_en.execute(), require_decryption=True)
 
 
 with search:
@@ -592,26 +570,15 @@ with search:
         else:
             errors, warnings = search_enrolment.validate()
 
-            if len(warnings) > 0:
-                st.warning(
-                    "**Some warnings are raised with your inputs:**\n\n- " + "\n- ".join(warnings), icon="⚠️"
-                )
-
-            if len(errors) > 0:
-                st.error(
-                    "**Some errors are detected with your inputs:**\n\n- " + "\n- ".join(errors), icon="🚨"
-                )
-            else:
+            if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
                 se = SearchEnrolment(search_enrolment)
 
                 with request:
-                    st.subheader("Request")
-                    st.code(repr(se), language="text")
+                    handle_request(se, require_encryption=True)
 
                 with response:
-                    st.subheader("Response")
-                    handle_response(lambda: se.execute())
+                    handle_response(lambda: se.execute(), require_decryption=True)
 
 
 with view:
@@ -636,12 +603,10 @@ with view:
             ve = ViewEnrolment(ref_num)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(ve), language="text")
+                handle_request(ve, require_encryption=False)
 
             with response:
-                st.subheader("Response")
-                handle_response(lambda: ve.execute())
+                handle_response(lambda: ve.execute(), require_decryption=True)
 
 
 with update_fee:
@@ -680,9 +645,7 @@ with update_fee:
             eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
 
             with request:
-                st.subheader("Request")
-                st.code(repr(eufc), language="text")
+                handle_request(eufc, require_encryption=True)
 
             with response:
-                st.subheader("Response")
-                handle_response(lambda: eufc.execute())
+                handle_response(lambda: eufc.execute(), require_decryption=True)

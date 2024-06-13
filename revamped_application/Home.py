@@ -62,9 +62,9 @@ st.markdown("Key in your UEN number, as well as your encryption keys, certificat
 with st.form(key="init_config"):
     uen = st.text_input("Enter in your UEN", help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
                                                   "to identify your organisation.")
-    enc_key = st.text_area("Enter in your encryption key", help="Refer to this [guide](https://developer.ssg-wsg.gov"
-                                                                ".sg/webapp/guides/6gvz7gEnwU2dSIKPrTcXnq#authenticat"
-                                                                "ion-types) for more info.")
+    enc_key = st.text_input("Enter in your encryption key", type="password",
+                            help="Refer to this [guide](https://developer.ssg-wsg.gov.sg/webapp/guides/"
+                                 "6gvz7gEnwU2dSIKPrTcXnq#authentication-types) for more info.")
     cert_pem = st.file_uploader("Upload your Certificate Key", type=["pem"], accept_multiple_files=False, key="cert")
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False, key="key")
 
