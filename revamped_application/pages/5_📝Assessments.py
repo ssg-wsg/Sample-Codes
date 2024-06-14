@@ -180,7 +180,7 @@ with update_void:
     update_void_assessment = UpdateVoidAssessmentInfo()
     update_void_assessment.set_action(st.selectbox(label="Select Action to Perform",
                                                    options=AssessmentUpdateVoidActions,
-                                                   format_func=lambda x: str(x),
+                                                   format_func=lambda x: str(x).upper(),
                                                    help="Select UPDATE to update an assessment record, and "
                                                         "VOID to void an assessment record",
                                                    key="update-void-assessment-action"))

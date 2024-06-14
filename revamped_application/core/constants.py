@@ -33,6 +33,7 @@ class Vacancy(Enum):
     def __str__(self):
         return f"{self.value[0]}: {self.value[1]}"
 
+
 # ===== COURSE CONSTANTS ===== #
 class Role(Enum):
     """Enum to represent the 2 roles a trainer may have."""
@@ -204,6 +205,7 @@ class SurveyLanguage(Enum):
 
     def __str__(self):
         return f"{self.value[0]}: {self.value[1]}"
+
 
 # ====== ENROLMENT CONSTANTS ===== #
 class CollectionStatus(Enum):

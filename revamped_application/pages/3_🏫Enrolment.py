@@ -197,7 +197,7 @@ with create:
 
         if len(uen) > 0 and not Validators.verify_uen(uen):
             st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
-        create_enrolment.set_training_partner_uen(uen)
+        create_enrolment.set_trainingPartner_uen(uen)
 
     create_enrolment.set_trainingPartner_code(st.text_input(label="Training Partner Code",
                                                             max_chars=15,

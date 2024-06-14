@@ -20,8 +20,8 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._course_referenceNumber: str = None
         self._trainee_id: str = None
         self._trainee_fees_discountAmount: Union[int, float] = None
-        self._trainee_fees_collectionStatus: CollectionStatus = None
-        self._trainee_idType_type: IdTypeSummary = None
+        self._trainee_fees_collectionStatus: CollectionStatus.value = None
+        self._trainee_idType_type: IdTypeSummary.value = None
         self._trainee_employer_uen: Optional[str] = None
         self._trainee_employer_contact_fullName: Optional[str] = None
         self._trainee_employer_contact_emailAddress: Optional[str] = None
@@ -35,10 +35,9 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._trainee_contactNumber_countryCode: Optional[str] = None
         self._trainee_contactNumber_phoneNumber: Optional[str] = None
         self._trainee_enrolmentDate: Optional[datetime.date] = None
-        self._trainee_sponsorshipType: SponsorshipType = None
+        self._trainee_sponsorshipType: SponsorshipType.value = None
         self._trainingPartner_code: str = None
         self._trainingPartner_uen: Optional[str] = None
-
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -191,7 +190,9 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
                     "sponsorshipType": self._trainee_sponsorshipType
                 },
                 "trainingPartner": {
-                    "uen": st.session_state["uen"] if self._trainingPartner_uen is None else self._trainingPartner_uen,
+                    "uen": (self._trainingPartner_uen
+                            if ("uen" not in st.session_state or st.session_state["uen"] is None)
+                            else self._trainingPartner_uen),
                     "code": self._trainingPartner_code
                 }
             }
@@ -226,8 +227,9 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         self._trainee_id = trainee_id
 
     def set_trainee_fees_discountAmount(self, discountAmount: Union[int, float]) -> None:
-        if not isinstance(discountAmount, int) and not isinstance(discountAmount, float) or \
-                discountAmount < 0:
+        if not isinstance(discountAmount, int) and not isinstance(discountAmount, float):
+            raise TypeError("Discount Amount must be a number")
+        elif discountAmount < 0:
             raise ValueError("Discount Amount must be a non-negative number!")
 
         self._trainee_fees_discountAmount = discountAmount
@@ -236,7 +238,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(collectionStatus, CollectionStatus):
             try:
                 collectionStatus = CollectionStatus(collectionStatus)
-            except:
+            except Exception:
                 raise ValueError("Invalid Collection Status provided!")
 
         self._trainee_fees_collectionStatus = collectionStatus.value
@@ -245,7 +247,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(idType, IdTypeSummary):
             try:
                 idType = IdTypeSummary(idType)
-            except:
+            except Exception:
                 raise ValueError("Invalid ID Type provided!")
 
         self._trainee_idType_type = idType.value
@@ -332,7 +334,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(sponsorshipType, SponsorshipType):
             try:
                 sponsorshipType = SponsorshipType(sponsorshipType)
-            except:
+            except Exception:
                 raise ValueError("Invalid Sponsorship Type provided!")
 
         self._trainee_sponsorshipType = sponsorshipType.value
@@ -343,7 +345,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         self._trainingPartner_code = code
 
-    def set_training_partner_uen(self, uen: str) -> None:
+    def set_trainingPartner_uen(self, uen: str) -> None:
         if not isinstance(uen, str):
             raise TypeError("Invalid Partner UEN must be a String!")
 
@@ -356,6 +358,10 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
+
+        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and not \
+                Validators.verify_uen(self._trainingPartner_uen):
+            errors.append("Invalid Training Partner UEN provided!")
 
         if self._course_run_id is not None and len(self._course_run_id) == 0:
             warnings.append("Course Run ID is empty even though it was marked as specified!")
@@ -480,14 +486,48 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
         if not isinstance(collectionStatus, CancellableCollectionStatus):
             try:
                 collectionStatus = CancellableCollectionStatus(collectionStatus)
-            except:
+            except Exception:
                 raise ValueError("Invalid Collection Status provided!")
 
         self._trainee_fees_collectionStatus = collectionStatus.value
 
+    def set_course_referenceNumber(self, course_reference_number: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_id(self, trainee_id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_idType(self, idType: IdTypeSummary) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_employer_uen(self, uen: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_fullName(self, fullName: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_dateOfBirth(self, dateOfBirth: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_enrolmentDate(self, enrolmentDate: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_sponsorshipType(self, sponsorshipType: SponsorshipType) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_code(self, code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_uen(self, uen: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class CancelEnrolmentInfo(UpdateEnrolmentInfo):
     """Contains information related to the cancelling of an enrolment"""
+
+    def validate(self) -> tuple[list[str], list[str]]:
+        # there is nothing to validate
+        return [], []
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         pl = {
@@ -501,6 +541,42 @@ class CancelEnrolmentInfo(UpdateEnrolmentInfo):
 
         return pl
 
+    def set_trainee_fees_discountAmount(self, discountAmount: Union[int, float]) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_fees_collectionStatus(self, collectionStatus: CancellableCollectionStatus):
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_run_id(self, run_id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_emailAddress(self, emailAddress: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_contactNumber_areaCode(self, areaCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_contactNumber_countryCode(self, countryCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_contactNumber_phoneNumber(self, phoneNumber: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_employer_contact_emailAddress(self, emailAddress: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_employer_contact_fullName(self, fullName: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_employer_contactNumber_areaCode(self, areaCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_employer_contactNumber_countryCode(self, countryCode: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_employer_contactNumber_phoneNumber(self, phoneNumber: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
 
 class SearchEnrolmentInfo(AbstractRequestInfo):
     """Contains information related to the query of an enrolment"""
@@ -508,16 +584,14 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     def __init__(self):
         self._lastUpdateDateTo: Optional[datetime.date] = None
         self._lastUpdateDateFrom: Optional[datetime.date] = None
-        self._sortBy_field: Optional[Literal["updatedOn", "createdOn"]] = None
-        self._sortBy_order: Optional[Literal["asc", "desc"]] = None
+        self._sortBy_field: Optional[EnrolmentSortField.value] = None
+        self._sortBy_order: Optional[SortOrder.value] = None
         self._course_run_id: Optional[str] = None
         self._course_referenceNumber: Optional[str] = None
-        self._course_status: Optional[Literal["Confirmed", "Cancelled"]] = None
+        self._course_status: Optional[EnrolmentCourseStatus.value] = None
         self._trainee_id: Optional[str] = None
-        self._trainee_fees_feeCollectionStatus: Optional[Literal[
-            "Pending Payment", "Partial Payment", "Full Payment", "Cancelled"
-        ]] = None
-        self._trainee_idType_type: Optional[Literal["NRIC", "FIN", "Others"]] = None
+        self._trainee_fees_feeCollectionStatus: Optional[CancellableCollectionStatus.value] = None
+        self._trainee_idType_type: Optional[IdTypeSummary.value] = None
         self._trainee_employer_uen: Optional[str] = None
         self._trainee_enrolmentDate: Optional[datetime.date] = None
         self._trainee_sponsorshipType: Optional[Literal["EMPLOYER", "INDIVIDUAL"]] = None
@@ -535,6 +609,10 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
+
+        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and not \
+                Validators.verify_uen(self._trainingPartner_uen):
+            errors.append("Invalid Training Partner UEN provided!")
 
         if self._lastUpdateDateFrom is not None and self._lastUpdateDateTo is not None and \
                 self._lastUpdateDateFrom > self._lastUpdateDateTo:
@@ -602,7 +680,9 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
                     "sponsorshipType": self._trainee_sponsorshipType,
                 },
                 "trainingPartner": {
-                    "uen": self._trainingPartner_uen if st.session_state["uen"] is None else st.session_state["uen"],
+                    "uen": (self._trainingPartner_uen
+                            if ("uen" not in st.session_state or st.session_state["uen"] is None)
+                            else st.session_state["uen"]),
                     "code": self._trainingPartner_code
                 }
             },
@@ -624,13 +704,13 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
     def set_lastUpdateDateTo(self, lastUpdateDateTo: datetime.date) -> None:
         if not isinstance(lastUpdateDateTo, datetime.date):
-            raise ValueError("No valid last update date to specified!")
+            raise TypeError("No valid last update date to specified!")
 
         self._lastUpdateDateTo = lastUpdateDateTo
 
     def set_lastUpdateDateFrom(self, lastUpdateDateFrom: datetime.date) -> None:
         if not isinstance(lastUpdateDateFrom, datetime.date):
-            raise ValueError("No valid last update date to specified!")
+            raise TypeError("No valid last update date to specified!")
 
         self._lastUpdateDateFrom = lastUpdateDateFrom
 
@@ -638,8 +718,8 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(sort_field, EnrolmentSortField):
             try:
                 sort_field = EnrolmentSortField(sort_field)
-            except:
-                raise ValueError("No valid sort field specified!")
+            except Exception:
+                raise TypeError("No valid sort field specified!")
 
         self._sortBy_field = sort_field.value
 
@@ -647,20 +727,20 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(sort_order, SortOrder):
             try:
                 sort_order = SortOrder(sort_order)
-            except:
-                raise ValueError("No valid sort order specified!")
+            except Exception:
+                raise TypeError("No valid sort order specified!")
 
-        self._sortBy_order = sort_order.value
+        self._sortBy_order = sort_order.value[0]
 
     def set_course_run_id(self, course_run_id: str) -> None:
         if not isinstance(course_run_id, str):
-            raise ValueError("No valid course run ID specified!")
+            raise TypeError("No valid course run ID specified!")
 
         self._course_run_id = course_run_id
 
     def set_course_referenceNumber(self, course_reference_number: str) -> None:
         if not isinstance(course_reference_number, str):
-            raise ValueError("No valid course reference number specified!")
+            raise TypeError("No valid course reference number specified!")
 
         self._course_referenceNumber = course_reference_number
 
@@ -668,14 +748,14 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(status, EnrolmentCourseStatus):
             try:
                 status = EnrolmentCourseStatus(status)
-            except:
-                raise ValueError("No valid course status specified!")
+            except Exception:
+                raise TypeError("No valid course status specified!")
 
         self._course_status = status.value
 
     def set_trainee_id(self, trainee_id: str) -> None:
         if not isinstance(trainee_id, str):
-            raise ValueError("No valid trainee ID specified!")
+            raise TypeError("No valid trainee ID specified!")
 
         self._trainee_id = trainee_id
 
@@ -683,8 +763,8 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(trainee_fee_collection_status, CancellableCollectionStatus):
             try:
                 trainee_fee_collection_status = CancellableCollectionStatus(trainee_fee_collection_status)
-            except:
-                raise ValueError("No valid trainee fee collection status specified!")
+            except Exception:
+                raise TypeError("No valid trainee fee collection status specified!")
 
         self._trainee_fees_feeCollectionStatus = trainee_fee_collection_status.value
 
@@ -692,20 +772,20 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(idType, IdTypeSummary):
             try:
                 idType = IdTypeSummary(idType)
-            except:
-                raise ValueError("No valid ID type specified!")
+            except Exception:
+                raise TypeError("No valid ID type specified!")
 
         self._trainee_idType_type = idType.value
 
     def set_employer_uen(self, uen: str) -> None:
         if not isinstance(uen, str):
-            raise ValueError("No valid UEN specified!")
+            raise TypeError("No valid UEN specified!")
 
         self._trainee_employer_uen = uen
 
     def set_trainee_enrolmentDate(self, enrolment_date: datetime.date) -> None:
         if not isinstance(enrolment_date, datetime.date):
-            raise ValueError("No valid employment date specified!")
+            raise TypeError("No valid employment date specified!")
 
         self._trainee_enrolmentDate = enrolment_date
 
@@ -713,38 +793,42 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
         if not isinstance(sponsorship_type, SponsorshipType):
             try:
                 sponsorship_type = SponsorshipType(sponsorship_type)
-            except:
-                raise ValueError("No valid sponsorship type specified!")
+            except Exception:
+                raise TypeError("No valid sponsorship type specified!")
 
         self._trainee_sponsorshipType = sponsorship_type.value
 
     def set_trainingPartner_uen(self, uen: str) -> None:
         if not isinstance(uen, str):
-            raise ValueError("No valid UEN specified!")
+            raise TypeError("No valid UEN specified!")
 
         self._trainingPartner_uen = uen
 
     def set_trainingPartner_code(self, code: str) -> None:
         if not isinstance(code, str):
-            raise ValueError("No valid code specified!")
+            raise TypeError("No valid code specified!")
 
         self._trainingPartner_code = code
 
     def set_page(self, page: int) -> None:
         if not isinstance(page, int) or page < 0:
-            raise ValueError("No valid page specified!")
+            raise TypeError("No valid page specified!")
 
         self._parameters_page = page
 
     def set_page_size(self, page_size: int) -> None:
         if not isinstance(page_size, int) or page_size < 0:
-            raise ValueError("No valid page size specified!")
+            raise TypeError("No valid page size specified!")
 
         self._parameters_page_size = page_size
 
 
 class UpdateEnrolmentFeeCollectionInfo(UpdateEnrolmentInfo):
     """Contains information about the updating of enrolment fee collection"""
+
+    def validate(self) -> tuple[list[str], list[str]]:
+        # there is nothing to validate
+        return [], []
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         pl = {
@@ -761,3 +845,60 @@ class UpdateEnrolmentFeeCollectionInfo(UpdateEnrolmentInfo):
             return json.dumps(pl)
 
         return pl
+
+    def set_lastUpdateDateTo(self, lastUpdateDateTo: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_lastUpdateDateFrom(self, lastUpdateDateFrom: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sortBy_field(self, sort_field: EnrolmentSortField) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_sortBy_order(self, sort_order: SortOrder) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_run_id(self, course_run_id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_referenceNumber(self, course_reference_number: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_course_status(self, status: EnrolmentCourseStatus):
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_id(self, trainee_id: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_fee_collection_status(self, trainee_fee_collection_status: CancellableCollectionStatus) -> None:
+        if not isinstance(trainee_fee_collection_status, CancellableCollectionStatus):
+            try:
+                trainee_fee_collection_status = CancellableCollectionStatus(trainee_fee_collection_status)
+            except Exception:
+                raise ValueError("No valid trainee fee collection status specified!")
+
+        self._trainee_fees_collectionStatus = trainee_fee_collection_status.value
+
+    def set_trainee_idType(self, idType: IdTypeSummary):
+        raise NotImplementedError("This method is not supported!")
+
+    def set_employer_uen(self, uen: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_enrolmentDate(self, enrolment_date: datetime.date) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainee_sponsorshipType(self, sponsorship_type: SponsorshipType) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_uen(self, uen: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_trainingPartner_code(self, code: str) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_page(self, page: int) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    def set_page_size(self, page_size: int) -> None:
+        raise NotImplementedError("This method is not supported!")
