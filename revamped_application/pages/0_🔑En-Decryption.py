@@ -7,8 +7,8 @@ import streamlit as st
 
 from revamped_application.core.cipher.encrypt_decrypt import Cryptography
 from revamped_application.core.system.logger import Logger
-from revamped_application.utils.streamlit_utils import (init, display_config,
-                                                        validation_error_handler, does_not_have_keys)
+from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -31,38 +31,59 @@ key = st.text_input(label="AES Key",
                     type="password",
                     key="encryption_key")
 
-st.header("Message Encryption/Decryption")
-st.markdown("Select the toggle to switch between encryption and decryption mode!")
-encrypt = st.toggle(label="Encrypt Mode")
-
-if encrypt:
-    col1, col2 = st.columns(2)
-    col1.subheader("Message to Encrypt")
-    col2.subheader("Ciphertext")
-
-    encrypt_out = ""
-    encrypt_in = col1.text_area(label="Message", key="message")
-
-    if len(encrypt_in) > 0:
-        encrypt_out = Cryptography.encrypt(encrypt_in, return_bytes=False, key=key)
-    else:
-        encrypt_out = ""
-
-    col2.text_area(label="Ciphertext", key="ciphertext", value=encrypt_out, disabled=True)
+if key is None:
+    LOGGER.error("No key provided!")
+    st.error("No AES-256 key provided!", icon="🚨")
+elif not Validators.verify_aes_encryption_key(key):
+    LOGGER.error("No valid AES-256 key provided!")
+    st.error("Invalid AES-256 key provided!", icon="🚨")
 else:
-    col1, col2 = st.columns(2)
-    col1.subheader("Message to Decrypt")
-    col2.subheader("Plaintext")
+    LOGGER.info("Valid AES-256 key detected!")
+    st.header("Message Encryption/Decryption")
+    st.markdown("Select the toggle to switch between encryption and decryption mode!")
+    encrypt = st.toggle(label="Encrypt Mode")
 
-    decrypt_out = ""
-    decrypt_in = col1.text_area(label="Ciphertext", key="ciphertext")
+    if encrypt:
+        LOGGER.info("Encryption mode set...")
+        col1, col2 = st.columns(2)
+        col1.subheader("Message to Encrypt")
+        col2.subheader("Ciphertext")
 
-    if len(decrypt_in) > 0:
-        try:
-            decrypt_out = Cryptography.decrypt(decrypt_in, return_bytes=False, key=key)
-        except:
-            col1.error("Ciphertext is invalid or key is incorrect!")
+        encrypt_out = ""
+        encrypt_in = col1.text_area(label="Message", label_visibility="hidden", key="message", height=200)
+
+        if len(encrypt_in) > 0:
+            LOGGER.info("Encrypting message...")
+
+            try:
+                encrypt_out = Cryptography.encrypt(encrypt_in, return_bytes=False, key=key)
+            except Exception as ex:
+                LOGGER.error(f"Encryption failed with: {ex}")
+                col1.error("Message is invalid or key is incorrect!", icon="🚨")
+        else:
+            encrypt_out = ""
+
+        col2.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext",
+                       value=encrypt_out, disabled=True, height=200)
     else:
-        decrypt_out = ""
+        LOGGER.info("Decryption mode set...")
+        col1, col2 = st.columns(2)
+        col1.subheader("Message to Decrypt")
+        col2.subheader("Plaintext")
 
-    col2.text_area(label="Plaintext", key="plaintext", value=decrypt_out, disabled=True)
+        decrypt_out = ""
+        decrypt_in = col1.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext", height=200)
+
+        if len(decrypt_in) > 0:
+            LOGGER.info("Decrypting message...")
+
+            try:
+                decrypt_out = Cryptography.decrypt(decrypt_in, return_bytes=False, key=key)
+            except Exception as ex:
+                LOGGER.error(f"Decryption failed with: {ex}")
+                col1.error("Ciphertext is invalid or key is incorrect!", icon="🚨")
+        else:
+            decrypt_out = ""
+
+        col2.text_area(label="Plaintext", label_visibility="hidden", key="plaintext",
+                       value=decrypt_out, disabled=True, height=200)
