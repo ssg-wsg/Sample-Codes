@@ -23,9 +23,11 @@ with st.sidebar:
 
 st.image("assets/sf.png", width=200)
 st.title("Encryption/Decryption")
+st.markdown("This page helps you to experiment with the AES-256 encryption algorithm, by allowing you to use "
+            "your AES key to encrypt or decrypt messages!")
 
-st.markdown("Enter in your AES256 key below and key in the message you wish to encrypt/decrypt!")
 st.header("AES Key")
+st.markdown("Enter in your AES key or reuse the AES key provided in the Home page!")
 key = st.text_input(label="AES Key",
                     value=st.session_state["encryption_key"] if "encryption_key" in st.session_state else "",
                     type="password",
@@ -50,7 +52,7 @@ else:
         col2.subheader("Ciphertext")
 
         encrypt_out = ""
-        encrypt_in = col1.text_area(label="Message", label_visibility="hidden", key="message", height=200)
+        encrypt_in = col1.text_area(label="Message", label_visibility="hidden", key="message-encrypt", height=200)
 
         if len(encrypt_in) > 0:
             LOGGER.info("Encrypting message...")
@@ -63,7 +65,7 @@ else:
         else:
             encrypt_out = ""
 
-        col2.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext",
+        col2.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext-encrypt",
                        value=encrypt_out, disabled=True, height=200)
     else:
         LOGGER.info("Decryption mode set...")
@@ -72,7 +74,7 @@ else:
         col2.subheader("Plaintext")
 
         decrypt_out = ""
-        decrypt_in = col1.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext", height=200)
+        decrypt_in = col1.text_area(label="Ciphertext", label_visibility="hidden", key="ciphertext-decrypt", height=200)
 
         if len(decrypt_in) > 0:
             LOGGER.info("Decrypting message...")
