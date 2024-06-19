@@ -99,6 +99,23 @@ class TestAttendanceInfo(unittest.TestCase):
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO, TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO)
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE, TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE)
 
+        attd = UploadAttendanceInfo()
+        attd.sessionId = TestAttendanceInfo.SESSION_ID_ONE
+        attd.status_code = TestAttendanceInfo.STATUS_CODE_ONE
+        attd.trainee_id = TestAttendanceInfo.TRAINEE_ID_ONE
+        attd.trainee_name = TestAttendanceInfo.TRAINEE_NAME_ONE
+        attd.trainee_email = TestAttendanceInfo.TRAINEE_EMAIL_ONE
+        attd.trainee_id_type = TestAttendanceInfo.TRAINEE_ID_TYPE_ONE
+        attd.contactNumber_mobile = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_MOBILE_ONE
+        attd.contactNumber_areacode = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_AREACODE_ONE
+        attd.contactNumber_countryCode = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_COUNTRYCODE_ONE
+        attd.numberOfHours = TestAttendanceInfo.NUMBER_OF_HOURS_ONE
+        attd.surveyLanguage_code = TestAttendanceInfo.SURVEY_LANGUAGE_CODE_ONE
+        attd.referenceNumber = TestAttendanceInfo.REFERENCE_NUMBER_ONE
+        attd.corppassId = TestAttendanceInfo.CORPPASS_ID_ONE
+
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO, attd)
+
     def test_UploadAttendanceInfo_inequality(self):
         self.assertNotEqual(vars(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE),
                             vars(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO))
@@ -110,6 +127,23 @@ class TestAttendanceInfo(unittest.TestCase):
         self.assertNotEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE, TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO)
         self.assertNotEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE, TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE)
         self.assertNotEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO, TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE)
+
+        attd = UploadAttendanceInfo()
+        attd.sessionId = TestAttendanceInfo.SESSION_ID_ONE
+        attd.status_code = TestAttendanceInfo.STATUS_CODE_ONE
+        attd.trainee_id = TestAttendanceInfo.TRAINEE_ID_ONE
+        attd.trainee_name = TestAttendanceInfo.TRAINEE_NAME_ONE
+        attd.trainee_email = TestAttendanceInfo.TRAINEE_EMAIL_ONE
+        attd.trainee_id_type = TestAttendanceInfo.TRAINEE_ID_TYPE_ONE
+        attd.contactNumber_mobile = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_MOBILE_ONE
+        attd.contactNumber_areacode = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_AREACODE_ONE
+        attd.contactNumber_countryCode = TestAttendanceInfo.TRAINEE_CONTACT_NUMBER_COUNTRYCODE_ONE
+        attd.numberOfHours = TestAttendanceInfo.NUMBER_OF_HOURS_ONE
+        attd.surveyLanguage_code = TestAttendanceInfo.SURVEY_LANGUAGE_CODE_ONE
+        attd.referenceNumber = TestAttendanceInfo.REFERENCE_NUMBER_ONE
+        attd.corppassId = TestAttendanceInfo.CORPPASS_ID_ONE
+
+        self.assertNotEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE, attd)
 
     def test_UploadAttendanceInfo_validate(self):
         e1, _ = TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.validate()

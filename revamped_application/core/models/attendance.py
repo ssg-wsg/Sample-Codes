@@ -184,6 +184,26 @@ class UploadAttendanceInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, UploadAttendanceInfo):
+            return False
+
+        return (
+            self.sessionId_ == other.sessionId_
+            and self.status_code_ == other.status_code_
+            and self.trainee_id_ == other.trainee_id_
+            and self.trainee_name_ == other.trainee_name_
+            and self.trainee_email_ == other.trainee_email_
+            and self.trainee_id_type_ == other.trainee_id_type_
+            and self.contactNumber_mobile_ == other.contactNumber_mobile_
+            and self.contactNumber_areacode_ == other.contactNumber_areacode_
+            and self.contactNumber_countryCode_ == other.contactNumber_countryCode_
+            and self.numberOfHours_ == other.numberOfHours_
+            and self.surveyLanguage_code_ == other.surveyLanguage_code_
+            and self.referenceNumber_ == other.referenceNumber_
+            and self.corppassId_ == other.corppassId_
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
