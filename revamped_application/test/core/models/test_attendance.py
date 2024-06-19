@@ -235,14 +235,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.sessionId = "Session ID 2"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.sessionId = "Session ID 3"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.sessionId_, "Session ID 1")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.sessionId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._sessionId, "Session ID 1")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._sessionId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.sessionId)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.sessionId_, "Session ID 2")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.sessionId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._sessionId, "Session ID 2")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._sessionId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.sessionId)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.sessionId_, "Session ID 3")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.sessionId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._sessionId, "Session ID 3")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._sessionId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.sessionId)
 
     def test_UploadAttendanceInfo_set_status_code(self):
@@ -259,14 +259,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.status_code = Attendance.REJECTED
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.status_code = Attendance.CONFIRMED
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.status_code_, Attendance.TP_VOIDED)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.status_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._status_code, Attendance.TP_VOIDED)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._status_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.status_code)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.status_code_, Attendance.REJECTED)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.status_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._status_code, Attendance.REJECTED)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._status_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.status_code)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.status_code_, Attendance.CONFIRMED)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.status_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._status_code, Attendance.CONFIRMED)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._status_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.status_code)
 
     def test_UploadAttendanceInfo_set_trainee_id(self):
@@ -283,14 +283,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id = "S7654321B"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id = "S1234567A"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id_, "T1234567A")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_id, "T1234567A")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_id,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_, "S7654321B")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_id, "S7654321B")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_id,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_, "S1234567A")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_id, "S1234567A")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_id,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id)
 
     def test_UploadAttendanceInfo_set_trainee_name(self):
@@ -307,14 +307,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_name = "Henry Doe"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_name = "Emily Doe"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_name_, "Eric Doe")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_name_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_name, "Eric Doe")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_name,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_name)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_name_, "Henry Doe")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_name_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_name, "Henry Doe")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_name,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_name)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_name_, "Emily Doe")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_name_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_name, "Emily Doe")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_name,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_name)
 
     def test_UploadAttendanceInfo_set_trainee_email(self):
@@ -331,14 +331,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_email = "henry@email.com"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_email = "emily@email.com"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_email_, "eric@email.com")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_email_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_email, "eric@email.com")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_email,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_email)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_email_, "henry@email.com")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_email_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_email, "henry@email.com")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_email,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_email)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_email_, "emily@email.com")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_email_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_email, "emily@email.com")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_email,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_email)
 
     def test_UploadAttendanceInfo_set_trainee_id_type(self):
@@ -355,14 +355,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_type = IdType.FOREIGN_PASSPORT
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_type = IdType.OTHERS
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id_type_, IdType.FIN_WORK_PERMIT)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id_type_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_id_type, IdType.FIN_WORK_PERMIT)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._trainee_id_type,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.trainee_id_type)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_type_, IdType.FOREIGN_PASSPORT)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_type_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_id_type, IdType.FOREIGN_PASSPORT)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._trainee_id_type,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.trainee_id_type)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_type_, IdType.OTHERS)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_type_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_id_type, IdType.OTHERS)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._trainee_id_type,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.trainee_id_type)
 
     def test_UploadAttendanceInfo_set_contact_number_mobile(self):
@@ -379,14 +379,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_mobile = "81234567"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_mobile = "98989898"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_mobile_, "95425555")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_mobile_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_mobile, "95425555")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_mobile,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_mobile)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_mobile_, "81234567")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_mobile_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_mobile, "81234567")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_mobile,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_mobile)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_mobile_, "98989898")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_mobile_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_mobile, "98989898")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_mobile,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_mobile)
 
     def test_UploadAttendanceInfo_set_contact_number_areacode(self):
@@ -403,14 +403,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_areacode = 64
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_areacode = 32
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_areacode_, 128)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_areacode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_areacode, 128)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_areacode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_areacode)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_areacode_, 64)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_areacode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_areacode, 64)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_areacode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_areacode)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_areacode_, 32)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_areacode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_areacode, 32)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_areacode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_areacode)
 
     def test_UploadAttendanceInfo_set_contact_number_country_code(self):
@@ -427,14 +427,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_countryCode = 64
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_countryCode = 32
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_countryCode_, 128)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_countryCode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_countryCode, 128)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._contactNumber_countryCode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.contactNumber_countryCode)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_countryCode_, 64)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_countryCode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_countryCode, 64)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._contactNumber_countryCode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.contactNumber_countryCode)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_countryCode_, 32)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_countryCode_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_countryCode, 32)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._contactNumber_countryCode,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.contactNumber_countryCode)
 
     def test_UploadAttendanceInfo_set_number_of_hours(self):
@@ -451,14 +451,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.numberOfHours = 4.5
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.numberOfHours = 6.5
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.numberOfHours_, 2.5)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.numberOfHours_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._numberOfHours, 2.5)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._numberOfHours,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.numberOfHours)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.numberOfHours_, 4.5)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.numberOfHours_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._numberOfHours, 4.5)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._numberOfHours,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.numberOfHours)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.numberOfHours_, 6.5)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.numberOfHours_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._numberOfHours, 6.5)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._numberOfHours,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.numberOfHours)
 
     def test_UploadAttendanceInfo_set_survey_language_code(self):
@@ -475,14 +475,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.surveyLanguage_code = SurveyLanguage.TAMIL
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.surveyLanguage_code = SurveyLanguage.MALAY
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.surveyLanguage_code_, SurveyLanguage.MANDARIN)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.surveyLanguage_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._surveyLanguage_code, SurveyLanguage.MANDARIN)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._surveyLanguage_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.surveyLanguage_code)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.surveyLanguage_code_, SurveyLanguage.TAMIL)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.surveyLanguage_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._surveyLanguage_code, SurveyLanguage.TAMIL)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._surveyLanguage_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.surveyLanguage_code)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.surveyLanguage_code_, SurveyLanguage.MALAY)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.surveyLanguage_code_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._surveyLanguage_code, SurveyLanguage.MALAY)
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._surveyLanguage_code,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.surveyLanguage_code)
 
     def test_UploadAttendanceInfo_set_reference_number(self):
@@ -499,14 +499,14 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.referenceNumber = "Reference Number 2"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.referenceNumber = "Reference Number 3"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.referenceNumber_, "Reference Number 1")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.referenceNumber_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._referenceNumber, "Reference Number 1")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._referenceNumber,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.referenceNumber)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.referenceNumber_, "Reference Number 2")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.referenceNumber_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._referenceNumber, "Reference Number 2")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._referenceNumber,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.referenceNumber)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.referenceNumber_, "Reference Number 3")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.referenceNumber_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._referenceNumber, "Reference Number 3")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._referenceNumber,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.referenceNumber)
 
     def test_UploadAttendanceInfo_set_corppass_id(self):
@@ -523,12 +523,12 @@ class TestAttendanceInfo(unittest.TestCase):
         TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.corppassId = "T7654321Y"
         TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.corppassId = "S1234567Z"
 
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.corppassId_, "T1234567X")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.corppassId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._corppassId, "T1234567X")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE._corppassId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.corppassId)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.corppassId_, "T7654321Y")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.corppassId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._corppassId, "T7654321Y")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO._corppassId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.corppassId)
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.corppassId_, "S1234567Z")
-        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.corppassId_,
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._corppassId, "S1234567Z")
+        self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE._corppassId,
                          TestAttendanceInfo.UPLOAD_ATTENDANCE_THREE.corppassId)
