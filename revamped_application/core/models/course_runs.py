@@ -8,6 +8,8 @@ import json
 import streamlit as st
 
 from typing import Optional, Literal
+
+from email_validator import validate_email, EmailSyntaxError
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role, OptionalSelector
@@ -882,6 +884,12 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         if self._email is None or len(self._email) == 0:
             errors.append("No Trainer Email specified!")
 
+        if self._email is not None and len(self._email) > 0:
+            try:
+                validate_email(self._email)
+            except EmailSyntaxError:
+                errors.append("Trainer Email specified is not of the correct format!")
+
         if self._idNumber is None or len(self._idNumber) == 0:
             errors.append("No Trainer ID number specified!")
 
@@ -1005,6 +1013,12 @@ class RunTrainerAddInfo(RunTrainerEditInfo):
 
         if self._email is None or len(self._email) == 0:
             errors.append("No email specified!")
+
+        if self._email is not None and len(self._email) > 0:
+            try:
+                validate_email(self._email)
+            except EmailSyntaxError:
+                errors.append("Trainer Email specified is not of the correct format!")
 
         if self._idNumber is None or len(self._idNumber) == 0:
             errors.append("No ID number specified!")
@@ -1525,6 +1539,12 @@ class EditRunInfo(AbstractRequestInfo):
 
         if self._courseVacancy_code is not None and len(self._courseVacancy_code) == 0:
             errors.append("No course vacancy code is specified")
+
+        if self._courseAdminEmail is not None and len(self._courseAdminEmail) > 0:
+            try:
+                validate_email(self._courseAdminEmail)
+            except EmailSyntaxError:
+                errors.append("Course Admin Email specified is not of the correct format!")
 
         # optional parameter verification
         if self._courseAdminEmail is not None and len(self._courseAdminEmail) == 0:
@@ -2373,6 +2393,12 @@ class AddRunIndividualInfo(EditRunInfo):
 
         if self._courseAdminEmail is None or len(self._courseAdminEmail) == 0:
             errors.append("No course admin email is specified!")
+
+        if self._courseAdminEmail is not None and len(self._courseAdminEmail) > 0:
+            try:
+                validate_email(self._courseAdminEmail)
+            except EmailSyntaxError:
+                errors.append("Course Admin Email specified is not of the correct format!")
 
         if self._courseVacancy_code is None or len(self._courseVacancy_code) == 0:
             errors.append("No course vacancy code is specified!")

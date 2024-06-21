@@ -4,6 +4,8 @@ import streamlit as st
 
 from typing import Optional, Union
 
+from email_validator import validate_email, EmailSyntaxError
+
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 from revamped_application.core.constants import (CollectionStatus, CancellableCollectionStatus, IdTypeSummary,
                                                  SponsorshipType, EnrolmentSortField, SortOrder,
@@ -317,6 +319,12 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if self._trainee_emailAddress is None or len(self._trainee_emailAddress) == 0:
             errors.append("No valid Trainee Email Address specified!")
 
+        if self._trainee_emailAddress is not None and len(self._trainee_emailAddress) > 0:
+            try:
+                validate_email(self._trainee_emailAddress)
+            except EmailSyntaxError:
+                errors.append("Trainee Email specified is not of the correct format!")
+
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
             errors.append("No valid Training Partner Code specified!")
 
@@ -341,6 +349,13 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         if self._trainee_employer_contact_emailAddress is not None \
                 and len(self._trainee_employer_contact_emailAddress) == 0:
             warnings.append("Employer Email Address is empty even though it is marked as specified!")
+
+        if self._trainee_employer_contact_emailAddress is not None and \
+                len(self._trainee_employer_contact_emailAddress) > 0:
+            try:
+                validate_email(self._trainee_employer_contact_emailAddress)
+            except EmailSyntaxError:
+                errors.append("Employer Email Address specified is not of the correct format!")
 
         if self._trainee_employer_contact_contactNumber_areaCode is not None and \
                 len(self._trainee_employer_contact_contactNumber_areaCode) != 0:
@@ -697,6 +712,21 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
         errors = []
         warnings = []
 
+        if self._trainee_employer_contact_emailAddress is not None and \
+                len(self._trainee_employer_contact_emailAddress) > 0:
+            try:
+                validate_email(self._trainee_employer_contact_emailAddress)
+            except EmailSyntaxError:
+                errors.append("Employer Email Address specified is not of the correct format!")
+
+        if self._trainee_emailAddress is not None and \
+                len(self._trainee_emailAddress) > 0:
+            try:
+                validate_email(self._trainee_emailAddress)
+            except EmailSyntaxError:
+                errors.append("Trainee Email Address specified is not of the correct format!")
+
+        # optional parameter validation
         if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and not \
                 Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Invalid Training Partner UEN provided!")

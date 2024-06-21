@@ -6,7 +6,7 @@ import json
 import streamlit as st
 
 from typing import Optional, Annotated
-from email_validator import validate_email
+from email_validator import validate_email, EmailSyntaxError
 
 from revamped_application.core.constants import SurveyLanguage, Attendance, IdType
 from revamped_application.utils.json_utils import remove_null_fields
@@ -234,8 +234,8 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         if self._trainee_email is not None and len(self._trainee_email) > 0:
             try:
                 validate_email(self._trainee_email)
-            except Exception:
-                errors.append("Email specified is not of the correct format!")
+            except EmailSyntaxError:
+                errors.append("Trainee Email specified is not of the correct format!")
 
         # optional param verification
         if self._trainee_email is not None and len(self._trainee_email) == 0:
