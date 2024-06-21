@@ -6,7 +6,7 @@ import json
 import streamlit as st
 
 import datetime
-from typing import Optional
+from typing import Optional, Annotated
 
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 from revamped_application.core.constants import (Grade, IdTypeSummary, Results, AssessmentUpdateVoidActions,
@@ -20,17 +20,17 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
     def __init__(self):
         self._grade: Optional[Grade] = None
-        self._score: Optional[int] = None
-        self._course_runId: str = None
-        self._course_referenceNumber: str = None
+        self._score: Annotated[Optional[int], "Max length of 3"] = None
+        self._course_runId: Annotated[str, "Max length of 20"] = None
+        self._course_referenceNumber: Annotated[str, "Max length of 100"] = None
         self._result: Results = None
-        self._trainee_id: str = None
+        self._trainee_id: Annotated[str, "Max length of 20"] = None
         self._trainee_idType: IdTypeSummary = None
-        self._trainee_fullName: str = None
-        self._skillCode: Optional[str] = None
-        self._assessmentDate: datetime.date = None
-        self._trainingPartner_code: str = None
-        self._trainingPartner_uen: Optional[str] = None
+        self._trainee_fullName: Annotated[str, "Max length of 200"] = None
+        self._skillCode: Annotated[Optional[str], "Max length of 30"] = None
+        self._assessmentDate: Annotated[datetime.date, "Should be formatted as YYYY-MM-DD"] = None
+        self._trainingPartner_code: Annotated[str, "Max length of 20"] = None
+        self._trainingPartner_uen: Annotated[Optional[str], "Max length of 15"] = None
         self._conferringInstitute_code: Optional[str] = None
 
     def __repr__(self):
@@ -436,19 +436,19 @@ class SearchAssessmentInfo(AbstractRequestInfo):
     """Encapsulates information about the searching for an assessment record"""
 
     def __init__(self):
-        self._lastUpdateDateTo: Optional[datetime.date] = None
-        self._lastUpdateDateFrom: Optional[datetime.date] = None
+        self._lastUpdateDateTo: Annotated[Optional[datetime.date], "Format is YYYY-MM-DD"] = None
+        self._lastUpdateDateFrom: Annotated[Optional[datetime.date], "Format is YYYY-MM-DD"] = None
         self._sortBy_field: Optional[SortField] = None
         self._sortBy_order: Optional[SortOrder] = None
-        self._parameters_page: int = None
-        self._parameters_pageSize: int = None
-        self._assessment_courseRunId: Optional[str] = None
-        self._assessment_referenceNumber: Optional[str] = None
-        self._assessment_traineeId: Optional[str] = None
+        self._parameters_page: Annotated[int, "Minimum is 0"] = None
+        self._parameters_pageSize: Annotated[int, "Minimum is 1, Maximum is 100"] = None
+        self._assessment_courseRunId: Annotated[Optional[str], "Max length of 20"] = None
+        self._assessment_referenceNumber: Annotated[Optional[str], "Max length of 50"] = None
+        self._assessment_traineeId: Annotated[Optional[str], "Max length of 20"] = None
         self._assessment_enrolement_referenceNumber: Optional[str] = None
-        self._assessment_skillCode: Optional[str] = None
-        self._trainingPartner_uen: Optional[str] = None
-        self._trainingPartner_code: Optional[str] = None
+        self._assessment_skillCode: Annotated[Optional[str], "Max length of 30"] = None
+        self._trainingPartner_uen: Annotated[Optional[str], "Max length of 12"] = None
+        self._trainingPartner_code: Annotated[Optional[str], "Max length of 15"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)

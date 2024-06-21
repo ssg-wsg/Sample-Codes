@@ -7,7 +7,7 @@ import datetime
 import json
 import streamlit as st
 
-from typing import Optional, Literal
+from typing import Optional, Literal, Annotated
 
 from email_validator import validate_email, EmailSyntaxError
 from streamlit.runtime.uploaded_file_manager import UploadedFile
@@ -190,19 +190,19 @@ class RunSessionEditInfo(AbstractRequestInfo):
     """Encapsulates all information regarding a course run's sessions"""
 
     def __init__(self):
-        self._sessionId: Optional[str] = None
-        self._startDate: Optional[datetime.date] = None
-        self._endDate: Optional[datetime.date] = None
-        self._startTime: Optional[datetime.time] = None
-        self._endTime: Optional[datetime.time] = None
-        self._modeOfTraining: Optional[ModeOfTraining] = None
-        self._venue_block: Optional[str] = None
-        self._venue_street: Optional[str] = None
-        self._venue_floor: str = None
-        self._venue_unit: str = None
-        self._venue_building: Optional[str] = None
-        self._venue_postalCode: str = None
-        self._venue_room: str = None
+        self._sessionId: Annotated[Optional[str], "string($varchar(300))"] = None
+        self._startDate: Annotated[Optional[datetime.date], "Formatted as YYYYMMDD or YYYY-MM-DD"] = None
+        self._endDate: Annotated[Optional[datetime.date], "Formatted as YYYYMMDD or YYYY-MM-DD"] = None
+        self._startTime: Annotated[Optional[datetime.time], "Formatted as HH:mm:ss or HH:mm"] = None
+        self._endTime: Annotated[Optional[datetime.time], "Formatted as HH:mm:ss or HH:mm"] = None
+        self._modeOfTraining: Annotated[Optional[ModeOfTraining], "string($varchar(4))"] = None
+        self._venue_block: Annotated[Optional[str], "string($varchar(10))"] = None
+        self._venue_street: Annotated[Optional[str], "string($varchar(32))"] = None
+        self._venue_floor: Annotated[str, "string($varchar(3))"] = None
+        self._venue_unit: Annotated[str, "string($varchar(5))"] = None
+        self._venue_building: Annotated[Optional[str], "string($varchar(66))"] = None
+        self._venue_postalCode: Annotated[str, "string($varchar(6))"] = None
+        self._venue_room: Annotated[str, "string($varchar(255))"] = None
         self._venue_wheelChairAccess: OptionalSelector = None
         self._venue_primaryVenue: OptionalSelector = None
 
@@ -604,23 +604,23 @@ class RunTrainerEditInfo(AbstractRequestInfo):
     """Encapsulates all information regarding a trainer in a course run"""
 
     def __init__(self):
-        self._trainerType_code: Literal["1", "2"] = None
-        self._trainerType_description: str = None
+        self._trainerType_code: Annotated[Literal["1", "2"], "string($varchar(1))"] = None
+        self._trainerType_description: Annotated[str, "string($varchar(128))"] = None
         self._indexNumber: Optional[int] = None
-        self._id: Optional[str] = None
-        self._name: str = None
-        self._email: str = None
-        self._idNumber: str = None
-        self._idType_code: IdType.value[0] = None
-        self._idType_description: IdType.value[1] = None
+        self._id: Annotated[Optional[str], "string($uniqueidentifier)"] = None
+        self._name: Annotated[str, "string($varchar(66))"] = None
+        self._email: Annotated[str, "string($varchar(320))"] = None
+        self._idNumber: Annotated[str, "string($varchar(50))"] = None
+        self._idType_code: Annotated[IdType.value[0], "	string($varchar(2))"] = None
+        self._idType_description: Annotated[IdType.value[1], "	string($varchar(128))"] = None
         self._roles: list[Role] = []
         self._inTrainingProviderProfile: OptionalSelector = None
-        self._domainAreaOfPractice: Optional[str] = None
-        self._experience: Optional[str] = None
-        self._linkedInURL: Optional[str] = None
+        self._domainAreaOfPractice: Annotated[Optional[str], "string($varchar(1000))"] = None
+        self._experience: Annotated[Optional[str], "string($varchar(1000))"] = None
+        self._linkedInURL: Annotated[Optional[str], "string($varchar(255))"] = None
         self._salutationId: Optional[Salutations] = None
-        self._photo_name: Optional[str] = None
-        self._photo_content: Optional[UploadedFile] = None
+        self._photo_name: Annotated[Optional[str], "string($varchar(255))"] = None
+        self._photo_content: Annotated[Optional[UploadedFile], "string($nvarbinary(max))"] = None
         self._linkedSsecEQAs: Optional[list[dict]] = []
 
     def __repr__(self):
@@ -1075,29 +1075,29 @@ class EditRunInfo(AbstractRequestInfo):
     def __init__(self):
         self._crid: str = None
         self._sequenceNumber: Optional[int] = None
-        self._registrationDates_opening: datetime.date = None
-        self._registrationDates_closing: datetime.date = None
-        self._courseDates_start: datetime.date = None
-        self._courseDates_end: datetime.date = None
-        self._scheduleInfoType_code: str = None
-        self._scheduleInfoType_description: Optional[str] = None
-        self._scheduleInfo: Optional[str] = None
-        self._venue_block: Optional[str] = None
-        self._venue_street: Optional[str] = None
-        self._venue_floor: str = None
-        self._venue_unit: str = None
-        self._venue_building: Optional[str] = None
-        self._venue_postalCode: str = None
-        self._venue_room: str = None
+        self._registrationDates_opening: Annotated[datetime.date, "Number formatted as YYYYMMDD"] = None
+        self._registrationDates_closing: Annotated[datetime.date, "Number formatted as YYYYMMDD"] = None
+        self._courseDates_start: Annotated[datetime.date, "Number formatted as YYYYMMDD"] = None
+        self._courseDates_end: Annotated[datetime.date, "String formatted as YYYYMMDD"] = None
+        self._scheduleInfoType_code: Annotated[str, "string($varchar(2))"] = None
+        self._scheduleInfoType_description: Annotated[Optional[str], "string($varchar(32))"] = None
+        self._scheduleInfo: Annotated[Optional[str], "string($nvarchar(max))"] = None
+        self._venue_block: Annotated[Optional[str], "string($varchar(10))"] = None
+        self._venue_street: Annotated[Optional[str], "string($varchar(32))"] = None
+        self._venue_floor: Annotated[str, "string($varchar(3))"] = None
+        self._venue_unit: Annotated[str, "string($varchar(5))"] = None
+        self._venue_building: Annotated[Optional[str], "string($varchar(66))"] = None
+        self._venue_postalCode: Annotated[str, "string($varchar(6))"] = None
+        self._venue_room: Annotated[str, "string($varchar(255))"] = None
         self._venue_wheelChairAccess: OptionalSelector = None
         self._intakeSize: Optional[int] = None
         self._threshold: Optional[int] = None
         self._registeredUserCount: Optional[int] = None
         self._modeOfTraining: Optional[ModeOfTraining] = None
-        self._courseAdminEmail: Optional[str] = None
-        self._courseVacancy_code: str = None
-        self._courseVacancy_description: Optional[str] = None
-        self._file_Name: Optional[str] = None
+        self._courseAdminEmail: Annotated[Optional[str], "string($varchar(255))"] = None
+        self._courseVacancy_code: Annotated[str, "string($varchar(1))"] = None
+        self._courseVacancy_description: Annotated[Optional[str], "string($varchar(128))"] = None
+        self._file_Name: Annotated[Optional[str], "string($varchar(255))"] = None
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
         self._linkCourseRunTrainer: Optional[list[RunTrainerEditInfo]] = []

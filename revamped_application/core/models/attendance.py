@@ -24,7 +24,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
         self._trainee_id: Annotated[str, "string($varchar(50))"] = None
         self._trainee_name: Annotated[str, "string($varchar(66))"] = None
         self._trainee_email: Annotated[str, "string($varchar(320))"] = None
-        self._trainee_id_type: Annotated[IdType, "string($varchar(2))"] = None
+        self._trainee_id_type: IdType = None
         self._contactNumber_mobile: Annotated[str, "string($varchar(15))"] = None
         self._contactNumber_areacode: Annotated[Optional[int], "integer($number(5))"] = None
         self._contactNumber_countryCode: Annotated[int, "integer($number(3))"] = None

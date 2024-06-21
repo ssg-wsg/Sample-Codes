@@ -2,7 +2,7 @@ import datetime
 import json
 import streamlit as st
 
-from typing import Optional, Union
+from typing import Optional, Union, Annotated
 
 from email_validator import validate_email, EmailSyntaxError
 
@@ -18,28 +18,28 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     """Class to encapsulate all information regarding the creation of an enrolment record for a trainee"""
 
     def __init__(self):
-        self._course_run_id: Optional[str] = None
-        self._course_referenceNumber: str = None
-        self._trainee_id: str = None
+        self._course_run_id: Annotated[Optional[str], "Max length of 20"] = None
+        self._course_referenceNumber: Annotated[str, "Max length of 100"] = None
+        self._trainee_id: Annotated[str, "Max length of 20"] = None
         self._trainee_fees_discountAmount: Union[int, float] = None
-        self._trainee_fees_collectionStatus: CollectionStatus.value = None
+        self._trainee_fees_collectionStatus: Annotated[CollectionStatus.value, "Max length of 50"] = None
         self._trainee_idType_type: IdTypeSummary.value = None
-        self._trainee_employer_uen: Optional[str] = None
-        self._trainee_employer_contact_fullName: Optional[str] = None
-        self._trainee_employer_contact_emailAddress: Optional[str] = None
-        self._trainee_employer_contact_contactNumber_areaCode: Optional[str] = None
-        self._trainee_employer_contact_contactNumber_countryCode: Optional[str] = None
-        self._trainee_employer_contact_contactNumber_phoneNumber: Optional[str] = None
-        self._trainee_fullName: Optional[str] = None
-        self._trainee_dateOfBirth: datetime.date = None
-        self._trainee_emailAddress: str = None
-        self._trainee_contactNumber_areaCode: Optional[str] = None
-        self._trainee_contactNumber_countryCode: Optional[str] = None
-        self._trainee_contactNumber_phoneNumber: Optional[str] = None
-        self._trainee_enrolmentDate: Optional[datetime.date] = None
-        self._trainee_sponsorshipType: SponsorshipType.value = None
-        self._trainingPartner_code: str = None
-        self._trainingPartner_uen: Optional[str] = None
+        self._trainee_employer_uen: Annotated[Optional[str], "Max length of 50"] = None
+        self._trainee_employer_contact_fullName: Annotated[Optional[str], "Max length of 50"] = None
+        self._trainee_employer_contact_emailAddress: Annotated[Optional[str], "Max length of 100"] = None
+        self._trainee_employer_contact_contactNumber_areaCode: Annotated[Optional[str], "Max length of 10"] = None
+        self._trainee_employer_contact_contactNumber_countryCode: Annotated[Optional[str], "Max length of 5"] = None
+        self._trainee_employer_contact_contactNumber_phoneNumber: Annotated[Optional[str], "Max length of 20"] = None
+        self._trainee_fullName: Annotated[Optional[str], "Max length of 200"] = None
+        self._trainee_dateOfBirth: Annotated[datetime.date, "Formatted as YYYY-MM-DD, max length of 10"] = None
+        self._trainee_emailAddress: Annotated[str, "Max length of 100"] = None
+        self._trainee_contactNumber_areaCode: Annotated[Optional[str], "Max length of 10"] = None
+        self._trainee_contactNumber_countryCode: Annotated[Optional[str], "Max length of 5"] = None
+        self._trainee_contactNumber_phoneNumber: Annotated[Optional[str], "Max length of 20"] = None
+        self._trainee_enrolmentDate: Annotated[Optional[datetime.date], "Formatted as YYYY-MM-DD"] = None
+        self._trainee_sponsorshipType: Annotated[SponsorshipType.value, "Max length of 50"] = None
+        self._trainingPartner_code: Annotated[str, "Max length of 12"] = None
+        self._trainingPartner_uen: Annotated[Optional[str], "Max length of 15"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -981,23 +981,23 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     """Contains information related to the query of an enrolment"""
 
     def __init__(self):
-        self._lastUpdateDateTo: Optional[datetime.date] = None
-        self._lastUpdateDateFrom: Optional[datetime.date] = None
+        self._lastUpdateDateTo: Annotated[Optional[datetime.date], "Formatted as YYYY-MM-DD"] = None
+        self._lastUpdateDateFrom: Annotated[Optional[datetime.date], "Formatted as YYYY-MM-DD"] = None
         self._sortBy_field: Optional[EnrolmentSortField] = None
         self._sortBy_order: Optional[SortOrder] = None
-        self._course_run_id: Optional[str] = None
-        self._course_referenceNumber: Optional[str] = None
+        self._course_run_id: Annotated[Optional[str], "Max length of 20"] = None
+        self._course_referenceNumber: Annotated[Optional[str], "Max length of 100"] = None
         self._course_status: Optional[EnrolmentCourseStatus] = None
-        self._trainee_id: Optional[str] = None
+        self._trainee_id: Annotated[Optional[str], "Max length of 20"] = None
         self._trainee_fees_feeCollectionStatus: Optional[CancellableCollectionStatus] = None
         self._trainee_idType_type: Optional[IdTypeSummary] = None
-        self._trainee_employer_uen: Optional[str] = None
+        self._trainee_employer_uen: Annotated[Optional[str], "Max length of 50"] = None
         self._trainee_enrolmentDate: Optional[datetime.date] = None
         self._trainee_sponsorshipType: Optional[SponsorshipType] = None
-        self._trainingPartner_uen: Optional[str] = None
-        self._trainingPartner_code: Optional[str] = None
-        self._parameters_page: int = None
-        self._parameters_page_size: int = None
+        self._trainingPartner_uen: Annotated[Optional[str], "Max length of 12"] = None
+        self._trainingPartner_code: Annotated[Optional[str], "Max length of 15"] = None
+        self._parameters_page: Annotated[int, "Minimum is 0"] = None
+        self._parameters_page_size: Annotated[int, "Minimum is 1, Maximum is 100"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
