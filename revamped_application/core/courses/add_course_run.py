@@ -5,11 +5,9 @@ Contains class used for adding a course run.
 import requests
 import streamlit as st
 
-from typing import Literal
-
 from revamped_application.core.models.course_runs import AddRunInfo
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import HttpMethod
+from revamped_application.core.constants import HttpMethod, OptionalSelector
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
@@ -18,7 +16,7 @@ class AddCourseRun(AbstractRequest):
 
     _TYPE: HttpMethod = HttpMethod.POST
 
-    def __init__(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo):
+    def __init__(self, include_expired: OptionalSelector, runinfo: AddRunInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(include_expired, runinfo)
@@ -33,7 +31,7 @@ class AddCourseRun(AbstractRequest):
 
         return self.__repr__()
 
-    def _prepare(self, include_expired: Literal["Select a value", "Yes", "No"], runinfo: AddRunInfo) -> None:
+    def _prepare(self, include_expired: OptionalSelector, runinfo: AddRunInfo) -> None:
         """
         Creates an HTTP POST request for creating/publishing a course run.
 
@@ -47,9 +45,9 @@ class AddCourseRun(AbstractRequest):
             .with_header("Content-Type", "application/json") \
 
         match include_expired:
-            case "Yes":
+            case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
-            case "No":
+            case OptionalSelector.NO:
                 self.req = self.req.with_param("includeExpiredCourses", "false")
 
         self.req = self.req.with_body(runinfo.payload())

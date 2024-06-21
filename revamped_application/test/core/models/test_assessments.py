@@ -346,29 +346,29 @@ class TestAssessmentInfo(unittest.TestCase):
         }
 
         p3 = {
-            'assessment': {
-                'grade': 'E',
-                'score': 50,
-                'course': {
-                    'run': {
-                        'id': 'course_run_id_2'
+            "assessment": {
+                "grade": "E",
+                "score": 50,
+                "course": {
+                    "run": {
+                        "id": "course_run_id_2"
                     },
-                    'referenceNumber': 'course_reference_number_2'
+                    "referenceNumber": "course_reference_number_2"
                 },
-                'result': 'Fail',
-                'trainee': {
-                    'id': 'S0123456Y',
-                    'idType': 'OTHERS',
-                    'fullName': 'Jane Doe'
+                "result": "Fail",
+                "trainee": {
+                    "id": "S0123456Y",
+                    "idType": "OTHERS",
+                    "fullName": "Jane Doe"
                 },
-                'skillCode': 'CODE2',
-                'assessmentDate': '2020-02-02',
-                'trainingPartner': {
-                    'uen': '87654321G',
-                    'code': 'TP2'
+                "skillCode": "CODE2",
+                "assessmentDate": "2020-02-02",
+                "trainingPartner": {
+                    "uen": "87654321G",
+                    "code": "TP2"
                 },
-                'conferringInstitute': {
-                    'code': 'CI2'
+                "conferringInstitute": {
+                    "code": "CI2"
                 }
             }
         }
@@ -721,30 +721,30 @@ class TestAssessmentInfo(unittest.TestCase):
             TestAssessmentInfo.UPDATE_VOID_ASSESSMENT_ONE.payload()
 
         p2 = {
-            'assessment': {
-                'grade': 'A',
-                'score': 100,
-                'action': 'update',
-                'result': 'Pass',
-                'trainee': {
-                    'fullName': 'John Doe'
+            "assessment": {
+                "grade": "A",
+                "score": 100,
+                "action": "update",
+                "result": "Pass",
+                "trainee": {
+                    "fullName": "John Doe"
                 },
-                'skillCode': 'CODE1',
-                'assessmentDate': '2020-01-01'
+                "skillCode": "CODE1",
+                "assessmentDate": "2020-01-01"
             }
         }
 
         p3 = {
-            'assessment': {
-                'grade': 'E',
-                'score': 50,
-                'action': 'void',
-                'result': 'Fail',
-                'trainee': {
-                    'fullName': 'Jane Doe'
+            "assessment": {
+                "grade": "E",
+                "score": 50,
+                "action": "void",
+                "result": "Fail",
+                "trainee": {
+                    "fullName": "Jane Doe"
                 },
-                'skillCode': 'CODE2',
-                'assessmentDate': '2020-02-02'
+                "skillCode": "CODE2",
+                "assessmentDate": "2020-02-02"
             }
         }
 
@@ -989,70 +989,70 @@ class TestAssessmentInfo(unittest.TestCase):
             TestAssessmentInfo.SEARCH_ASSESSMENT_ONE.payload()
 
         p2 = {
-            'meta': {
-                'lastUpdateDateTo': '2023-01-12',
-                'lastUpdateDateFrom': '2023-01-01'
+            "meta": {
+                "lastUpdateDateTo": "2023-01-12",
+                "lastUpdateDateFrom": "2023-01-01"
             },
-            'sortBy': {
-                'field': 'updatedOn',
-                'order': 'asc'
+            "sortBy": {
+                "field": "updatedOn",
+                "order": "asc"
             },
-            'parameters': {
-                'page': 1,
-                'pageSize': 10
+            "parameters": {
+                "page": 1,
+                "pageSize": 10
             },
-            'assessment': {
-                'course': {
-                    'run': {
-                        'id': 'course_run_id_1'
+            "assessment": {
+                "course": {
+                    "run": {
+                        "id": "course_run_id_1"
                     },
-                    'referenceNumber': 'assessment_reference_number_1'
+                    "referenceNumber": "assessment_reference_number_1"
                 }
             },
-            'trainee': {
-                'id': 'T0123456X'
+            "trainee": {
+                "id": "T0123456X"
             },
-            'enrolment': {
-                'referenceNumber': 'enrolment_reference_number_1'
+            "enrolment": {
+                "referenceNumber": "enrolment_reference_number_1"
             },
-            'skillCode': 'CODE1',
-            'trainingPartner': {
-                'uen': '12345678G',
-                'code': 'TP1'
+            "skillCode": "CODE1",
+            "trainingPartner": {
+                "uen": "12345678G",
+                "code": "TP1"
             }
         }
 
         p3 = {
-            'meta': {
-                'lastUpdateDateTo': '2023-02-12',
-                'lastUpdateDateFrom': '2023-02-01'
+            "meta": {
+                "lastUpdateDateTo": "2023-02-12",
+                "lastUpdateDateFrom": "2023-02-01"
             },
-            'sortBy': {
-                'field': 'assessmentDate',
-                'order': 'desc'
+            "sortBy": {
+                "field": "assessmentDate",
+                "order": "desc"
             },
-            'parameters': {
-                'page': 2,
-                'pageSize': 20
+            "parameters": {
+                "page": 2,
+                "pageSize": 20
             },
-            'assessment': {
-                'course': {
-                    'run': {
-                        'id': 'course_run_id_2'
+            "assessment": {
+                "course": {
+                    "run": {
+                        "id": "course_run_id_2"
                     },
-                    'referenceNumber': 'assessment_reference_number_2'
+                    "referenceNumber": "assessment_reference_number_2"
                 }
             },
-            'trainee': {
-                'id': 'S0123456Y'
+            "trainee": {
+                "id": "S0123456Y"
             },
-            'enrolment': {
-                'referenceNumber': 'enrolment_reference_number_2'
+            "enrolment": {
+                "referenceNumber": "enrolment_reference_number_2"
             },
-            'skillCode': 'CODE2',
-            'trainingPartner': {
-                'uen': '87654321G',
-                'code': 'TP2'
+            "skillCode": "CODE2",
+            "trainingPartner": {
+                "uen": "87654321G",
+                "code": "TP2"
             }
         }
 

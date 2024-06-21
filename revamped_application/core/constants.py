@@ -34,6 +34,17 @@ class Vacancy(Enum):
         return f"{self.value[0]}: {self.value[1]}"
 
 
+class OptionalSelector(Enum):
+    """Enum representing a selector that permits empty responses."""
+
+    NIL = ("Select a value", None)
+    YES = ("Yes", True)
+    NO = ("No", False)
+
+    def __str__(self):
+        return self.value[0]
+
+
 # ===== COURSE CONSTANTS ===== #
 class Role(Enum):
     """Enum to represent the 2 roles a trainer may have."""

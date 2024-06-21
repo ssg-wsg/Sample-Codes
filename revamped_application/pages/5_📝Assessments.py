@@ -63,38 +63,38 @@ with create:
     if st.checkbox("Override Training Partner UEN?", key="specify-create-assessment-tp-uen",
                    help="If specified, this will override the UEN provided under the Home page!"):
         create_assessment_info.trainingPartner_uen = st.text_input(label="Training Partner UEN",
-                                                                    key="create-assessment-tp-uen",
-                                                                    value=("" if st.session_state["uen"] is None
-                                                                           else st.session_state["uen"]),
-                                                                    max_chars=12)
+                                                                   key="create-assessment-tp-uen",
+                                                                   value=("" if st.session_state["uen"] is None
+                                                                          else st.session_state["uen"]),
+                                                                   max_chars=12)
 
     st.subheader("Course Info")
     create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
-                                                         max_chars=20,
-                                                         help="The ID for the course run",
-                                                         key="create-assessment-run-id")
+                                                        max_chars=20,
+                                                        help="The ID for the course run",
+                                                        key="create-assessment-run-id")
     create_assessment_info.course_referenceNumber = st.text_input(label="Enter the Course Reference Number",
-                                                                   max_chars=100,
-                                                                   help="The course reference number as in the "
-                                                                        "Training Partners Gateway course registry",
-                                                                   key="create-assessment-reference-number")
+                                                                  max_chars=100,
+                                                                  help="The course reference number as in the "
+                                                                       "Training Partners Gateway course registry",
+                                                                  key="create-assessment-reference-number")
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
     create_assessment_info.trainee_idType = col1.selectbox(label="Enter the Trainee ID Type",
-                                                            options=IdTypeSummary,
-                                                            format_func=lambda x: x.value,
-                                                            help="This describes the type of ID provided",
-                                                            key="create-assessment-trainee-id-type")
+                                                           options=IdTypeSummary,
+                                                           format_func=lambda x: x.value,
+                                                           help="This describes the type of ID provided",
+                                                           key="create-assessment-trainee-id-type")
     create_assessment_info.trainee_id = col2.text_input(label="Enter the Trainee ID Number",
-                                                         max_chars=20,
-                                                         help="This is the individual's government-issued "
-                                                              "ID number",
-                                                         key="create-assessment-trainee-id")
+                                                        max_chars=20,
+                                                        help="This is the individual's government-issued "
+                                                             "ID number",
+                                                        key="create-assessment-trainee-id")
     create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
-                                                             max_chars=200,
-                                                             help="This is the individual's full name",
-                                                             key="create-assessment-trainee-full-name")
+                                                            max_chars=200,
+                                                            help="This is the individual's full name",
+                                                            key="create-assessment-trainee-full-name")
 
     st.subheader("Assessment Info")
     col3, col4 = st.columns(2)
@@ -196,9 +196,9 @@ with update_void:
         st.subheader("Trainee Info")
         if st.checkbox("Update Trainee Full Name?", key="update-void-trainee-info"):
             update_void_assessment.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
-                                                                     max_chars=200,
-                                                                     help="The individual's full name",
-                                                                     key="update-void-assessment-trainee-full-name")
+                                                                    max_chars=200,
+                                                                    help="The individual's full name",
+                                                                    key="update-void-assessment-trainee-full-name")
 
         st.subheader("Assessment Info")
         col1, col2, col3 = st.columns(3)
@@ -354,12 +354,12 @@ with find:
     if st.checkbox("Override Training Partner UEN?", key="search-training-partner-uen",
                    help="If this is enabled, it will **override the default UEN provided** in the Home page!"):
         search_assessment.trainingPartner_uen = st.text_input(label="Enter the Training Partner UEN",
-                                                               max_chars=12,
-                                                               value=("" if st.session_state["uen"] is None
-                                                                      else st.session_state["uen"]),
-                                                               help="UEN of the training partner organisation "
-                                                                    "conducting the course for which the assessment "
-                                                                    "result is being submitted")
+                                                              max_chars=12,
+                                                              value=("" if st.session_state["uen"] is None
+                                                                     else st.session_state["uen"]),
+                                                              help="UEN of the training partner organisation "
+                                                                   "conducting the course for which the assessment "
+                                                                   "result is being submitted")
 
     if st.checkbox("Specify Training Partner Code?", key="search-training-partner-code"):
         search_assessment.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",

@@ -7,7 +7,7 @@ import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import HttpMethod, Month
+from revamped_application.core.constants import HttpMethod, Month, OptionalSelector
 
 from typing import Literal, Optional
 
@@ -18,7 +18,7 @@ class ViewCourseSessions(AbstractRequest):
     _TYPE: HttpMethod = HttpMethod.GET
 
     def __init__(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
-                 include_expired: Literal["Select a value", "Yes", "No"]):
+                 include_expired: OptionalSelector):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, crn, session_month, session_year, include_expired)
@@ -34,7 +34,7 @@ class ViewCourseSessions(AbstractRequest):
         return self.__repr__()
 
     def _prepare(self, runId: str, crn: str, session_month: Optional[Month], session_year: Optional[int],
-                 include_expired: Literal["Select a value", "Yes", "No"]) -> None:
+                 include_expired: OptionalSelector) -> None:
         """
         Creates an HTTP GET request for retrieving course sessions.
 
@@ -59,9 +59,9 @@ class ViewCourseSessions(AbstractRequest):
                 self.req = self.req.with_param("sessionMonth", f"{session_month.value[0]}{session_year}")
 
         match include_expired:
-            case "Yes":
+            case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
-            case "No":
+            case OptionalSelector.NO:
                 self.req = self.req.with_param("includeExpiredCourses", "false")
 
     def execute(self) -> requests.Response:

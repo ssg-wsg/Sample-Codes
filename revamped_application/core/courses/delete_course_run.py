@@ -7,10 +7,8 @@ import streamlit as st
 
 from revamped_application.core.abc.abstract import AbstractRequest
 from revamped_application.core.models.course_runs import DeleteRunInfo
-from revamped_application.core.constants import HttpMethod
+from revamped_application.core.constants import HttpMethod, OptionalSelector
 from revamped_application.utils.http_utils import HTTPRequestBuilder
-
-from typing import Literal
 
 
 class DeleteCourseRun(AbstractRequest):
@@ -18,8 +16,7 @@ class DeleteCourseRun(AbstractRequest):
 
     _TYPE: HttpMethod = HttpMethod.POST
 
-    def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 delete_runinfo: DeleteRunInfo):
+    def __init__(self, runId: str, include_expired: OptionalSelector, delete_runinfo: DeleteRunInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, include_expired, delete_runinfo)
@@ -34,8 +31,7 @@ class DeleteCourseRun(AbstractRequest):
 
         return self.__repr__()
 
-    def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 delete_runinfo: DeleteRunInfo) -> None:
+    def _prepare(self, runId: str, include_expired: OptionalSelector, delete_runinfo: DeleteRunInfo) -> None:
         """
         Creates an HTTP POST request for deleting a course run.
 
@@ -50,9 +46,9 @@ class DeleteCourseRun(AbstractRequest):
             .with_header("Content-Type", "application/json")
 
         match include_expired:
-            case "Yes":
+            case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", True)
-            case "No":
+            case OptionalSelector.NO:
                 self.req = self.req.with_param("includeExpiredCourses", False)
 
         self.req = self.req.with_body(delete_runinfo.payload())

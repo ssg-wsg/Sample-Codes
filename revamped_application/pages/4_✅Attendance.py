@@ -118,10 +118,10 @@ with upload:
     uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
                                                 key="corppass-upload-attendance-sessions")
     uploadAttendance.sessionId = st.text_input(label="Enter Session ID",
-                                                   help="The course session ID to be retrieved; encode this parameter "
-                                                        "to ensure that special characters will not be blocked by the "
-                                                        "Gateway",
-                                                   key="session_id_upload_attendance")
+                                               help="The course session ID to be retrieved; encode this parameter "
+                                                    "to ensure that special characters will not be blocked by the "
+                                                    "Gateway",
+                                               key="session_id_upload_attendance")
 
     st.subheader("Attendance Information")
     uploadAttendance.status_code = st.selectbox(label="Enter the Attendance Status Code",

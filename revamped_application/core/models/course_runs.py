@@ -10,7 +10,7 @@ import streamlit as st
 from typing import Optional, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from revamped_application.core.abc.abstract import AbstractRequestInfo
-from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role
+from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role, OptionalSelector
 from revamped_application.utils.json_utils import remove_null_fields
 
 
@@ -114,6 +114,37 @@ class LinkedSSECEQA(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, LinkedSSECEQA):
+            return False
+
+        return (
+            self._description == other._description
+            and self._ssecEQA == other._ssecEQA
+        )
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description: str):
+        if not isinstance(description, str):
+            raise ValueError("Invalid description")
+
+        self._description = description
+
+    @property
+    def ssecEQA(self):
+        return self._ssecEQA
+
+    @ssecEQA.setter
+    def ssecEQA(self, ssecEQA: str):
+        if not isinstance(ssecEQA, str):
+            raise ValueError("Invalid SSEC EQA")
+
+        self._ssecEQA = ssecEQA
+
     def validate(self) -> None | tuple[list[str], list[str]]:
         errors, warnings = [], []
 
@@ -170,8 +201,8 @@ class RunSessionEditInfo(AbstractRequestInfo):
         self._venue_building: Optional[str] = None
         self._venue_postalCode: str = None
         self._venue_room: str = None
-        self._venue_wheelChairAccess: Optional[bool] = None
-        self._venue_primaryVenue: Optional[bool] = None
+        self._venue_wheelChairAccess: OptionalSelector = None
+        self._venue_primaryVenue: OptionalSelector = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -200,6 +231,180 @@ class RunSessionEditInfo(AbstractRequestInfo):
             and self._venue_wheelChairAccess == other._venue_wheelChairAccess
             and self._venue_primaryVenue == other._venue_primaryVenue
         )
+
+    @property
+    def session_id(self):
+        return self._sessionId
+
+    @session_id.setter
+    def session_id(self, session_id: str):
+        if not isinstance(session_id, str):
+            raise ValueError("Invalid session id")
+
+        self._sessionId = session_id
+
+    @property
+    def start_date(self):
+        return self._startDate
+
+    @start_date.setter
+    def start_date(self, start_date: datetime.date):
+        if not isinstance(start_date, datetime.date):
+            raise ValueError("Invalid start date")
+
+        self._startDate = start_date
+
+    @property
+    def end_date(self):
+        return self._endDate
+
+    @end_date.setter
+    def end_date(self, end_date: datetime.date):
+        if not isinstance(end_date, datetime.date):
+            raise ValueError("Invalid end date")
+
+        self._endDate = end_date
+
+    @property
+    def start_time(self):
+        return self._startTime
+
+    @start_time.setter
+    def start_time(self, start_time: datetime.time):
+        if not isinstance(start_time, datetime.time):
+            raise ValueError("Invalid start time")
+
+        self._startTime = start_time
+
+    @property
+    def end_time(self):
+        return self._endTime
+
+    @end_time.setter
+    def end_time(self, end_time: datetime.time):
+        if not isinstance(end_time, datetime.time):
+            raise ValueError("Invalid end time")
+
+        self._endTime = end_time
+
+    @property
+    def mode_of_training(self):
+        return self._modeOfTraining
+
+    @mode_of_training.setter
+    def mode_of_training(self, mode_of_training: ModeOfTraining):
+        if not isinstance(mode_of_training, ModeOfTraining):
+            try:
+                mode_of_training = ModeOfTraining(mode_of_training)
+            except Exception:
+                raise ValueError("Invalid mode of training")
+
+        self._modeOfTraining = mode_of_training
+
+    @property
+    def block(self):
+        return self._venue_block
+
+    @block.setter
+    def block(self, block: str):
+        if not isinstance(block, str):
+            raise ValueError("Invalid venue block")
+
+        self._venue_block = block
+
+    @property
+    def street(self):
+        return self._venue_street
+
+    @street.setter
+    def street(self, street: str):
+        if not isinstance(street, str):
+            raise ValueError("Invalid venue street")
+
+        self._venue_street = street
+
+    @property
+    def floor(self):
+        return self._venue_floor
+
+    @floor.setter
+    def floor(self, floor: str):
+        if not isinstance(floor, str):
+            raise ValueError("Invalid venue floor")
+
+        self._venue_floor = floor
+
+    @property
+    def unit(self):
+        return self._venue_unit
+
+    @unit.setter
+    def unit(self, unit: str):
+        if not isinstance(unit, str):
+            raise ValueError("Invalid venue unit")
+
+        self._venue_unit = unit
+
+    @property
+    def building(self):
+        return self._venue_building
+
+    @building.setter
+    def building(self, building: str):
+        if not isinstance(building, str):
+            raise ValueError("Invalid venue building")
+
+        self._venue_building = building
+
+    @property
+    def postal_code(self):
+        return self._venue_postalCode
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        if not isinstance(postal_code, str):
+            raise ValueError("Invalid venue postal code")
+
+        self._venue_postalCode = postal_code
+
+    @property
+    def room(self):
+        return self._venue_room
+
+    @room.setter
+    def room(self, room: str):
+        if not isinstance(room, str):
+            raise ValueError("Invalid venue room")
+
+        self._venue_room = room
+
+    @property
+    def wheel_chair_access(self):
+        return self._venue_wheelChairAccess
+
+    @wheel_chair_access.setter
+    def wheel_chair_access(self, wheelChairAccess: OptionalSelector):
+        if not isinstance(wheelChairAccess, OptionalSelector):
+            try:
+                wheelChairAccess = OptionalSelector(wheelChairAccess)
+            except Exception:
+                raise ValueError("Invalid wheelchair access indicator")
+
+        self._venue_wheelChairAccess = wheelChairAccess
+
+    @property
+    def primary_venue(self):
+        return self._venue_primaryVenue
+
+    @primary_venue.setter
+    def primary_venue(self, primaryVenue: OptionalSelector):
+        if not isinstance(primaryVenue, OptionalSelector):
+            try:
+                primaryVenue = OptionalSelector(primaryVenue)
+            except Exception:
+                raise ValueError("Invalid primary venue indicator")
+
+        self._venue_primaryVenue = primaryVenue
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -253,7 +458,7 @@ class RunSessionEditInfo(AbstractRequestInfo):
             "endDate": self._endDate.strftime("%Y%m%d") if self._endDate is not None else None,
             "startTime": self._startTime.strftime("%H:%M") if self._startTime is not None else None,
             "endTime": self._endTime.strftime("%H:%M") if self._endTime is not None else None,
-            "modeOfTraining": self._modeOfTraining,
+            "modeOfTraining": self._modeOfTraining.value[0] if self._modeOfTraining is not None else None,
             "venue": {
                 "block": self._venue_block,
                 "street": self._venue_street,
@@ -262,8 +467,10 @@ class RunSessionEditInfo(AbstractRequestInfo):
                 "building": self._venue_building,
                 "postalCode": self._venue_postalCode,
                 "room": self._venue_room,
-                "wheelChairAccess": self._venue_wheelChairAccess,
-                "primaryVenue": self._venue_primaryVenue,
+                "wheelChairAccess": (self._venue_wheelChairAccess.value[1]
+                                     if self._venue_wheelChairAccess is not None else None),
+                "primaryVenue": (self._venue_primaryVenue.value[1]
+                                 if self._venue_primaryVenue is not None else None),
             }
         }
 
@@ -296,113 +503,8 @@ class RunSessionEditInfo(AbstractRequestInfo):
         return self._endDate.day if self._endDate else None
 
     def is_asynchronous_or_on_the_job(self) -> bool:
-        return self._modeOfTraining == "2" or self._modeOfTraining == "4"
-
-    def set_session_id(self, session_id: str) -> None:
-        if not isinstance(session_id, str):
-            raise ValueError("Invalid session id")
-
-        self._sessionId = session_id
-
-    def set_startDate(self, startDate: datetime.date) -> None:
-        if not isinstance(startDate, datetime.date):
-            raise ValueError("Invalid start date")
-
-        self._startDate = startDate
-
-    def set_endDate(self, endDate: datetime.date) -> None:
-        if not isinstance(endDate, datetime.date):
-            raise ValueError("Invalid end date")
-
-        self._endDate = endDate
-
-    def set_startTime(self, startTime: datetime.time) -> None:
-        if not isinstance(startTime, datetime.time):
-            raise ValueError("Invalid start time")
-
-        self._startTime = startTime
-
-    def set_endTime(self, endTime: datetime.time) -> None:
-        if not isinstance(endTime, datetime.time):
-            raise ValueError("Invalid end time")
-
-        self._endTime = endTime
-
-    def set_modeOfTraining(self, modeOfTraining: ModeOfTraining) -> None:
-        if not isinstance(modeOfTraining, ModeOfTraining):
-            try:
-                # needed to ensure that the enums are the same syntactically
-                modeOfTraining = ModeOfTraining(modeOfTraining)
-            except Exception:
-                raise ValueError("Invalid mode of training")
-
-        self._modeOfTraining = modeOfTraining.value[0]
-
-    def set_venue_block(self, venue_block: str) -> None:
-        if not isinstance(venue_block, str):
-            raise ValueError("Invalid venue block")
-
-        self._venue_block = venue_block
-
-    def set_venue_street(self, venue_street: str) -> None:
-        if not isinstance(venue_street, str):
-            raise ValueError("Invalid venue street")
-
-        self._venue_street = venue_street
-
-    def set_venue_floor(self, venue_floor: str) -> None:
-        if not isinstance(venue_floor, str):
-            raise ValueError("Invalid venue floor")
-
-        self._venue_floor = venue_floor
-
-    def set_venue_unit(self, venue_unit: str) -> None:
-        if not isinstance(venue_unit, str):
-            raise ValueError("Invalid venue unit")
-
-        self._venue_unit = venue_unit
-
-    def set_venue_building(self, venue_building: str) -> None:
-        if not isinstance(venue_building, str):
-            raise ValueError("Invalid venue building")
-
-        self._venue_building = venue_building
-
-    def set_venue_postalCode(self, venue_postalCode: str) -> None:
-        if not isinstance(venue_postalCode, str):
-            raise ValueError("Invalid venue postal code")
-
-        self._venue_postalCode = venue_postalCode
-
-    def set_venue_room(self, venue_room: str) -> None:
-        if not isinstance(venue_room, str):
-            raise ValueError("Invalid venue room")
-
-        self._venue_room = venue_room
-
-    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
-        if not isinstance(wheelChairAccess, str) or wheelChairAccess not in ["Select a value", "Yes", "No"]:
-            raise ValueError("Invalid wheel chair access indicator")
-
-        match wheelChairAccess:
-            case "Select a value":
-                self._venue_wheelChairAccess = None
-            case "Yes":
-                self._venue_wheelChairAccess = True
-            case "No":
-                self._venue_wheelChairAccess = False
-
-    def set_venue_primaryVenue(self, primaryVenue: Literal["Select a value", "Yes", "No"]) -> None:
-        if not isinstance(primaryVenue, str) or primaryVenue not in ["Select a value", "Yes", "No"]:
-            raise ValueError("Invalid primary venue indicator")
-
-        match primaryVenue:
-            case "Select a value":
-                self._venue_primaryVenue = None
-            case "Yes":
-                self._venue_primaryVenue = True
-            case "No":
-                self._venue_primaryVenue = False
+        return self._modeOfTraining == ModeOfTraining.ASYNCHRONOUS_ELEARNING or \
+            self._modeOfTraining == ModeOfTraining.ON_THE_JOB
 
 
 class RunSessionAddInfo(RunSessionEditInfo):
@@ -455,7 +557,7 @@ class RunSessionAddInfo(RunSessionEditInfo):
         if self._startTime is not None and self._endTime is not None and self._startTime > self._endTime:
             errors.append("Starting time must be before ending time")
 
-        if self._modeOfTraining is None or len(self._modeOfTraining) == 0:
+        if self._modeOfTraining is None:
             errors.append("No mode of training is specified!")
 
         if self._venue_floor is None or len(self._venue_floor) == 0:
@@ -507,14 +609,10 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._name: str = None
         self._email: str = None
         self._idNumber: str = None
-        self._idType_code: Literal["SB", "SP", "SO", "FP", "OT"] = None
-        self._idType_description: Literal["Singapore Pink Identification Card",
-                                          "Singapore Blue Identification Card",
-                                          "FIN/Work Permit",
-                                          "Foreign Passport",
-                                          "Others"] = None
-        self._roles: list[dict] = []
-        self._inTrainingProviderProfile: Optional[bool] = None
+        self._idType_code: IdType.value[0] = None
+        self._idType_description: IdType.value[1] = None
+        self._roles: list[Role] = []
+        self._inTrainingProviderProfile: OptionalSelector = None
         self._domainAreaOfPractice: Optional[str] = None
         self._experience: Optional[str] = None
         self._linkedInURL: Optional[str] = None
@@ -559,6 +657,214 @@ class RunTrainerEditInfo(AbstractRequestInfo):
                 and all(map(lambda x: x[0] == x[1], zip(self._linkedSsecEQAs, other._linkedSsecEQAs)))
             )
         )
+
+    @property
+    def trainer_type_code(self):
+        return self._trainerType_code
+
+    @trainer_type_code.setter
+    def trainer_type_code(self, trainer_type: str):
+        if not isinstance(trainer_type, str):
+            raise ValueError("Invalid trainer type")
+
+        self._trainerType_code = trainer_type
+
+    @property
+    def trainer_type_description(self):
+        return self._trainerType_description
+
+    @trainer_type_description.setter
+    def trainer_type_description(self, trainer_type_description: str):
+        if not isinstance(trainer_type_description, str):
+            raise ValueError("Invalid trainer type description")
+
+        self._trainerType_description = trainer_type_description
+
+    @property
+    def index_number(self):
+        return self._indexNumber
+
+    @index_number.setter
+    def index_number(self, indexNumber: int):
+        if not isinstance(indexNumber, int):
+            raise ValueError("Invalid indexNumber")
+
+        self._indexNumber = indexNumber
+
+    @property
+    def trainer_id(self):
+        return self._id
+
+    @trainer_id.setter
+    def trainer_id(self, id: str):
+        if not isinstance(id, str):
+            raise ValueError("Invalid trainer id")
+
+        self._id = id
+
+    @property
+    def trainer_name(self):
+        return self._name
+
+    @trainer_name.setter
+    def trainer_name(self, name: str):
+        if not isinstance(name, str):
+            raise ValueError("Invalid trainer name")
+
+        self._name = name
+
+    @property
+    def trainer_email(self):
+        return self._email
+
+    @trainer_email.setter
+    def trainer_email(self, email: str):
+        if not isinstance(email, str):
+            raise ValueError("Invalid trainer email")
+
+        self._email = email
+
+    @property
+    def trainer_idNumber(self):
+        return self._idNumber
+
+    @trainer_idNumber.setter
+    def trainer_idNumber(self, idNumber: str):
+        if not isinstance(idNumber, str):
+            raise ValueError("Invalid trainer idNumber")
+
+        self._idNumber = idNumber
+
+    @property
+    def trainer_idType(self):
+        return IdType((self._idType_code, self._idType_description))
+
+    @trainer_idType.setter
+    def trainer_idType(self, idType: IdType):
+        if not isinstance(idType, IdType):
+            try:
+                idType = IdType(idType)
+            except Exception:
+                raise ValueError("Invalid trainee ID type")
+
+        self._idType_code = idType.value[0]
+        self._idType_description = idType.value[1]
+
+    @property
+    def trainer_roles(self):
+        return self._roles
+
+    @trainer_roles.setter
+    def trainer_roles(self, roles: list[Role]):
+        if not isinstance(roles, list):
+            raise ValueError("Invalid trainer roles")
+
+        for role in roles:
+            try:
+                Role(role)
+            except Exception:
+                raise ValueError("Invalid trainer roles")
+
+        self._roles = roles
+
+    @property
+    def inTrainingProviderProfile(self):
+        return self._inTrainingProviderProfile
+
+    @inTrainingProviderProfile.setter
+    def inTrainingProviderProfile(self, inTrainingProviderProfile: OptionalSelector):
+        if not isinstance(inTrainingProviderProfile, OptionalSelector):
+            try:
+                inTrainingProviderProfile = OptionalSelector(inTrainingProviderProfile)
+            except Exception:
+                raise ValueError("Invalid inTrainingProviderProfile")
+
+        self._inTrainingProviderProfile = inTrainingProviderProfile
+
+    @property
+    def domain_area_of_practice(self):
+        return self._domainAreaOfPractice
+
+    @domain_area_of_practice.setter
+    def domain_area_of_practice(self, domainAreaOfPractice: str):
+        if not isinstance(domainAreaOfPractice, str):
+            raise ValueError("Invalid domainAreaOfPractice")
+
+        self._domainAreaOfPractice = domainAreaOfPractice
+
+    @property
+    def experience(self):
+        return self._experience
+
+    @experience.setter
+    def experience(self, experience: str):
+        if not isinstance(experience, str):
+            raise ValueError("Invalid experience")
+
+        self._experience = experience
+
+    @property
+    def linkedInURL(self):
+        return self._linkedInURL
+
+    @linkedInURL.setter
+    def linkedInURL(self, linkedInURL: str):
+        if not isinstance(linkedInURL, str):
+            raise ValueError("Invalid linkedInURL")
+
+        self._linkedInURL = linkedInURL
+
+    @property
+    def salutationId(self):
+        return self._salutationId
+
+    @salutationId.setter
+    def salutationId(self, salutationId: Salutations):
+        if not isinstance(salutationId, Salutations):
+            raise ValueError("Invalid salutation")
+
+        self._salutationId = salutationId
+
+    @property
+    def photo_name(self):
+        return self._photo_name
+
+    @photo_name.setter
+    def photo_name(self, photo_name: str):
+        if not isinstance(photo_name, str):
+            raise ValueError("Invalid photo_name")
+
+        self._photo_name = photo_name
+
+    @property
+    def photo_content(self):
+        return self._photo_content
+
+    @photo_content.setter
+    def photo_content(self, photo_content: UploadedFile):
+        if photo_content is not None and not isinstance(photo_content, UploadedFile):
+            raise ValueError("Invalid photo_content")
+
+        self._photo_content = photo_content
+
+    def add_linkedSsecEQA(self, linkedSsecEQA: dict):
+        """Method to add a Linked SSEC EQA record to this object."""
+
+        if not isinstance(linkedSsecEQA, dict):
+            raise ValueError("Invalid linkedSsecEQA")
+
+        self._linkedSsecEQAs.append(linkedSsecEQA)
+
+    @property
+    def linkedSsecEQAs(self):
+        return self._linkedSsecEQAs
+
+    @linkedSsecEQAs.setter
+    def linkedSsecEQAs(self, linkedSsecEQAs: list[dict]):
+        if not isinstance(linkedSsecEQAs, dict):
+            raise ValueError("Invalid linkedSsecEQA")
+
+        self._linkedSsecEQAs.append(linkedSsecEQAs)
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -613,12 +919,13 @@ class RunTrainerEditInfo(AbstractRequestInfo):
                     "code": self._idType_code,
                     "description": self._idType_description,
                 },
-                "roles": self._roles,
-                "inTrainingProviderProfile": self._inTrainingProviderProfile,
+                "roles": [x.value for x in self._roles],
+                "inTrainingProviderProfile": (self._inTrainingProviderProfile.value[1]
+                                              if self._inTrainingProviderProfile is not None else None),
                 "domainAreaOfPractice": self._domainAreaOfPractice,
                 "experience": self._experience,
                 "linkedInURL": self._linkedInURL,
-                "salutationId": self._salutationId,
+                "salutationId": self._salutationId.value[0] if self._salutationId is not None else None,
                 "photo": {
                     "name": self._photo_name,
                     "content": (base64.b64encode(
@@ -646,122 +953,6 @@ class RunTrainerEditInfo(AbstractRequestInfo):
             raise ValueError("Unable to infer trainer type as no trainer type code was provided!")
 
         return self._trainerType_code == "2"
-
-    def set_trainer_type_code(self, trainer_type: str) -> None:
-        if not isinstance(trainer_type, str):
-            raise ValueError("Invalid trainer type")
-
-        self._trainerType_code = trainer_type
-
-    def set_trainer_type_description(self, trainer_type_description: str) -> None:
-        if not isinstance(trainer_type_description, str):
-            raise ValueError("Invalid trainer type description")
-
-        self._trainerType_description = trainer_type_description
-
-    def set_indexNumber(self, indexNumber: int) -> None:
-        if not isinstance(indexNumber, int):
-            raise ValueError("Invalid indexNumber")
-
-        self._indexNumber = indexNumber
-
-    def set_trainer_id(self, id: str) -> None:
-        if not isinstance(id, str):
-            raise ValueError("Invalid trainer id")
-
-        self._id = id
-
-    def set_trainer_name(self, name: str) -> None:
-        if not isinstance(name, str):
-            raise ValueError("Invalid trainer name")
-
-        self._name = name
-
-    def set_trainer_email(self, email: str) -> None:
-        if not isinstance(email, str):
-            raise ValueError("Invalid trainer email")
-
-        self._email = email
-
-    def set_trainer_idNumber(self, idNumber: str) -> None:
-        if not isinstance(idNumber, str):
-            raise ValueError("Invalid trainer idNumber")
-
-        self._idNumber = idNumber
-
-    def set_trainer_idType(self, idType: IdType) -> None:
-        if not isinstance(idType, IdType):
-            try:
-                idType = IdType(idType)
-            except Exception:
-                raise ValueError("Invalid trainee ID type")
-
-        self._idType_code = idType.value[0]
-        self._idType_description = idType.value[1]
-
-    def set_trainer_roles(self, roles: list[Role]) -> None:
-        if not isinstance(roles, list):
-            raise ValueError("Invalid trainer roles")
-
-        try:
-            self._roles = [Role(role).value for role in roles]
-        except Exception:
-            raise ValueError("Invalid trainer roles")
-
-    def set_inTrainingProviderProfile(self, inTrainingProviderProfile: Literal["Select a value", "Yes", "No"]) -> None:
-        if not isinstance(inTrainingProviderProfile, str) or \
-                inTrainingProviderProfile not in ["Select a value", "Yes", "No"]:
-            raise ValueError("Invalid In Training Provider Profile indicator")
-
-        match inTrainingProviderProfile:
-            case "Select a value":
-                self._inTrainingProviderProfile = None
-            case "Yes":
-                self._inTrainingProviderProfile = True
-            case "No":
-                self._inTrainingProviderProfile = False
-
-    def set_domainAreaOfPractice(self, domainAreaOfPractice: str) -> None:
-        if not isinstance(domainAreaOfPractice, str):
-            raise ValueError("Invalid domainAreaOfPractice")
-
-        self._domainAreaOfPractice = domainAreaOfPractice
-
-    def set_experience(self, experience: str) -> None:
-        if not isinstance(experience, str):
-            raise ValueError("Invalid experience")
-
-        self._experience = experience
-
-    def set_linkedInURL(self, linkedInURL: str) -> None:
-        if not isinstance(linkedInURL, str):
-            raise ValueError("Invalid linkedInURL")
-
-        self._linkedInURL = linkedInURL
-
-    def set_salutationId(self, salutationId: Salutations) -> None:
-        if not isinstance(salutationId, Salutations):
-            raise ValueError("Invalid salutation")
-
-        self._salutationId = salutationId.value[0]
-
-    def set_photo_name(self, photo_name: str) -> None:
-        if not isinstance(photo_name, str):
-            raise ValueError("Invalid photo_name")
-
-        self._photo_name = photo_name
-
-    def set_photo_content(self, photo_content: UploadedFile) -> None:
-        if photo_content is not None and not isinstance(photo_content, UploadedFile):
-            raise ValueError("Invalid photo_content")
-
-        self._photo_content = photo_content
-
-    def add_linkedSsecEQA(self, linkedSsecEQA: dict) -> None:
-        if not isinstance(linkedSsecEQA, dict):
-            raise ValueError("Invalid linkedSsecEQA")
-
-        self._linkedSsecEQAs.append(linkedSsecEQA)
 
 
 class RunTrainerAddInfo(RunTrainerEditInfo):
@@ -884,14 +1075,14 @@ class EditRunInfo(AbstractRequestInfo):
         self._venue_building: Optional[str] = None
         self._venue_postalCode: str = None
         self._venue_room: str = None
-        self._venue_wheelChairAccess: Optional[bool] = None
+        self._venue_wheelChairAccess: OptionalSelector = None
         self._intakeSize: Optional[int] = None
         self._threshold: Optional[int] = None
         self._registeredUserCount: Optional[int] = None
         self._modeOfTraining: Optional[ModeOfTraining] = None
         self._courseAdminEmail: Optional[str] = None
-        self._courseVacancy_code: Literal["A", "F", "L"] = None
-        self._courseVacancy_description: Optional[Literal["Available", "Full", "Limited Vacancy"]] = None
+        self._courseVacancy_code: str = None
+        self._courseVacancy_description: Optional[str] = None
         self._file_Name: Optional[str] = None
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
@@ -944,6 +1135,348 @@ class EditRunInfo(AbstractRequestInfo):
             )
         )
 
+    @property
+    def crid(self):
+        return self._crid
+
+    @crid.setter
+    def crid(self, crn: str):
+        if not isinstance(crn, str):
+            raise ValueError("Invalid Course Reference ID number")
+
+        self._crid = crn
+
+    @property
+    def sequence_number(self):
+        return self._sequenceNumber
+
+    @sequence_number.setter
+    def sequence_number(self, sequence_number: int):
+        if not isinstance(sequence_number, int):
+            raise ValueError("Invalid sequence number")
+
+        self._sequenceNumber = sequence_number
+
+    @property
+    def opening_registration_date(self):
+        return self._registrationDates_opening
+
+    @opening_registration_date.setter
+    def opening_registration_date(self, opening_registration_date: datetime.date):
+        if not isinstance(opening_registration_date, datetime.date):
+            raise ValueError("Invalid opening registration dates")
+
+        self._registrationDates_opening = opening_registration_date
+
+    @property
+    def closing_registration_date(self):
+        return self._registrationDates_closing
+
+    @closing_registration_date.setter
+    def closing_registration_date(self, closing_registration_date: datetime.date):
+        if not isinstance(closing_registration_date, datetime.date):
+            raise ValueError("Invalid closing registration dates")
+
+        self._registrationDates_closing = closing_registration_date
+
+    @property
+    def course_start_date(self):
+        return self._courseDates_start
+
+    @course_start_date.setter
+    def course_start_date(self, course_start_date: datetime.date):
+        if not isinstance(course_start_date, datetime.date):
+            raise ValueError("Invalid course start date")
+
+        self._courseDates_start = course_start_date
+
+    @property
+    def course_end_date(self):
+        return self._courseDates_end
+
+    @course_end_date.setter
+    def course_end_date(self, course_end_date: datetime.date):
+        if not isinstance(course_end_date, datetime.date):
+            raise ValueError("Invalid course end date")
+
+        self._courseDates_end = course_end_date
+
+    @property
+    def schedule_info_type_code(self):
+        return self._scheduleInfoType_code
+
+    @schedule_info_type_code.setter
+    def schedule_info_type_code(self, schedule_info_type_code: str):
+        if not isinstance(schedule_info_type_code, str):
+            raise ValueError("Invalid schedule info type code")
+
+        self._scheduleInfoType_code = schedule_info_type_code
+
+    @property
+    def schedule_info_type_description(self):
+        return self._scheduleInfoType_description
+
+    @schedule_info_type_description.setter
+    def schedule_info_type_description(self, schedule_info_type_description: str):
+        if not isinstance(schedule_info_type_description, str):
+            raise ValueError("Invalid schedule info type description")
+
+        self._scheduleInfoType_description = schedule_info_type_description
+
+    @property
+    def schedule_info(self):
+        return self._scheduleInfo
+
+    @schedule_info.setter
+    def schedule_info(self, schedule_info: str):
+        if not isinstance(schedule_info, str):
+            raise ValueError("Invalid schedule info")
+
+        self._scheduleInfo = schedule_info
+
+    @property
+    def block(self):
+        return self._venue_block
+
+    @block.setter
+    def block(self, block: str):
+        if not isinstance(block, str):
+            raise ValueError("Invalid venue block")
+
+        self._venue_block = block
+
+    @property
+    def street(self):
+        return self._venue_street
+
+    @street.setter
+    def street(self, street: str):
+        if not isinstance(street, str):
+            raise ValueError("Invalid venue street")
+
+        self._venue_street = street
+
+    @property
+    def floor(self):
+        return self._venue_floor
+
+    @floor.setter
+    def floor(self, floor: str):
+        if not isinstance(floor, str):
+            raise ValueError("Invalid venue floor")
+
+        self._venue_floor = floor
+
+    @property
+    def unit(self):
+        return self._venue_unit
+
+    @unit.setter
+    def unit(self, unit: str):
+        if not isinstance(unit, str):
+            raise ValueError("Invalid venue unit")
+
+        self._venue_unit = unit
+
+    @property
+    def building(self):
+        return self._venue_building
+
+    @building.setter
+    def building(self, building: str):
+        if not isinstance(building, str):
+            raise ValueError("Invalid venue building")
+
+        self._venue_building = building
+
+    @property
+    def postal_code(self):
+        return self._venue_postalCode
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        if not isinstance(postal_code, str):
+            raise ValueError("Invalid venue postal code")
+
+        self._venue_postalCode = postal_code
+
+    @property
+    def room(self):
+        return self._venue_room
+
+    @room.setter
+    def room(self, room: str):
+        if not isinstance(room, str):
+            raise ValueError("Invalid venue room")
+
+        self._venue_room = room
+
+    @property
+    def wheel_chair_access(self):
+        return self._venue_wheelChairAccess
+
+    @wheel_chair_access.setter
+    def wheel_chair_access(self, wheelChairAccess: OptionalSelector):
+        if not isinstance(wheelChairAccess, OptionalSelector):
+            try:
+                wheelChairAccess = OptionalSelector(wheelChairAccess)
+            except Exception:
+                raise ValueError("Invalid wheelchair access indicator")
+
+        self._venue_wheelChairAccess = wheelChairAccess
+
+    @property
+    def intake_size(self):
+        return self._intakeSize
+
+    @intake_size.setter
+    def intake_size(self, intake_size: int):
+        if not isinstance(intake_size, int):
+            raise ValueError("Invalid intake size")
+
+        self._intakeSize = intake_size
+
+    @property
+    def threshold(self):
+        return self._threshold
+
+    @threshold.setter
+    def threshold(self, threshold: int):
+        if not isinstance(threshold, int):
+            raise ValueError("Invalid threshold")
+
+        self._threshold = threshold
+
+    @property
+    def registered_user_count(self):
+        return self._registeredUserCount
+
+    @registered_user_count.setter
+    def registered_user_count(self, registered_user_count: int):
+        if not isinstance(registered_user_count, int):
+            raise ValueError("Invalid registered user count")
+
+        self._registeredUserCount = registered_user_count
+
+    @property
+    def mode_of_training(self):
+        return self._modeOfTraining
+
+    @mode_of_training.setter
+    def mode_of_training(self, mode_of_training: ModeOfTraining):
+        if not isinstance(mode_of_training, ModeOfTraining):
+            try:
+                # needed to ensure that the enums are the same syntactically
+                mode_of_training = ModeOfTraining(mode_of_training)
+            except Exception:
+                raise ValueError("Invalid mode of training")
+
+        self._modeOfTraining = mode_of_training
+
+    @property
+    def course_admin_email(self):
+        return self._courseAdminEmail
+
+    @course_admin_email.setter
+    def course_admin_email(self, course_admin_email: str):
+        if not isinstance(course_admin_email, str):
+            raise ValueError("Invalid course admin email")
+
+        self._courseAdminEmail = course_admin_email
+
+    @property
+    def course_vacancy_code(self):
+        return self._courseVacancy_code
+
+    @course_vacancy_code.setter
+    def course_vacancy_code(self, course_vacancy_code: Vacancy.__members__):
+        if not isinstance(course_vacancy_code, str) or course_vacancy_code not in Vacancy.__members__:
+            raise ValueError("Invalid course vacancy code")
+
+        self._courseVacancy_code = course_vacancy_code
+
+    @property
+    def course_vacancy_description(self):
+        return self._courseVacancy_description
+
+    @course_vacancy_description.setter
+    def course_vacancy_description(self, course_vacancy_description: Vacancy):
+        if not isinstance(course_vacancy_description, str) or course_vacancy_description not in Vacancy:
+            raise ValueError("Invalid course vacancy description")
+
+        self._courseVacancy_description = course_vacancy_description
+
+    @property
+    def course_vacancy(self):
+        return Vacancy((self._courseVacancy_code, self._courseVacancy_description))
+
+    @course_vacancy.setter
+    def course_vacancy(self, course_vacancy: Vacancy):
+        if not isinstance(course_vacancy, Vacancy):
+            try:
+                course_vacancy = Vacancy(course_vacancy)
+            except Exception:
+                raise ValueError("Invalid course vacancy")
+
+        self._courseVacancy_code = course_vacancy.value[0]
+        self._courseVacancy_description = course_vacancy.value[1]
+
+    @property
+    def file_name(self):
+        return self._file_Name
+
+    @file_name.setter
+    def file_name(self, file_name: str):
+        if not isinstance(file_name, str):
+            raise ValueError("Invalid file name")
+
+        self._file_Name = file_name
+
+    @property
+    def file_content(self):
+        return self._file_content
+
+    @file_content.setter
+    def file_content(self, file_content: UploadedFile):
+        if file_content is not None and not isinstance(file_content, UploadedFile):
+            raise ValueError("Invalid file content")
+
+        self._file_content = file_content
+
+    @property
+    def sessions(self):
+        return self._sessions
+
+    @sessions.setter
+    def sessions(self, sessions: list[RunSessionEditInfo]):
+        if not isinstance(sessions, list):
+            raise ValueError("Invalid list of sessions")
+
+        self._sessions = sessions
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        if not isinstance(session, RunSessionEditInfo):
+            raise ValueError("Invalid session")
+
+        self._sessions.append(session)
+
+    @property
+    def linked_course_run_trainers(self):
+        return self._linkCourseRunTrainer
+
+    @linked_course_run_trainers.setter
+    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerEditInfo]):
+        if not isinstance(linked_course_run_trainers, list):
+            raise ValueError("Invalid course run trainer information")
+
+        self._linkCourseRunTrainer = linked_course_run_trainers
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        if not isinstance(linkCourseRunTrainer, RunTrainerEditInfo):
+            raise ValueError("Invalid course run trainer information")
+
+        self._linkCourseRunTrainer.append(linkCourseRunTrainer)
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -973,7 +1506,7 @@ class EditRunInfo(AbstractRequestInfo):
 
         if self._courseDates_start is not None and self._courseDates_end is not None and \
                 self._courseDates_start > self._courseDates_end:
-            errors.append("Course Registration Start Date must be before Course Registration End Date!")
+            errors.append("Course Start Date must be before Course End Date!")
 
         if self._scheduleInfoType_code is not None and len(self._scheduleInfoType_code) == 0:
             errors.append("No Course Run Schedule Info Code specified")
@@ -1088,12 +1621,13 @@ class EditRunInfo(AbstractRequestInfo):
                     "building": self._venue_building,
                     "postalCode": self._venue_postalCode,
                     "room": self._venue_room,
-                    "wheelChairAccess": self._venue_wheelChairAccess
+                    "wheelChairAccess": (self._venue_wheelChairAccess.value[1] if
+                                         self._venue_wheelChairAccess is not None else None)
                 },
                 "intakeSize": self._intakeSize,
                 "threshold": self._threshold,
                 "registeredUserCount": self._registeredUserCount,
-                "modeOfTraining": self._modeOfTraining,
+                "modeOfTraining": self._modeOfTraining.value[0] if self.mode_of_training is not None else None,
                 "courseAdminEmail": self._courseAdminEmail,
                 "courseVacancy": {
                     "code": self._courseVacancy_code,
@@ -1116,194 +1650,6 @@ class EditRunInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_crid(self, crn: str) -> None:
-        if not isinstance(crn, str):
-            raise ValueError("Invalid Course Reference ID number")
-
-        self._crid = crn
-
-    def set_sequence_number(self, sequence_number: int) -> None:
-        if not isinstance(sequence_number, int):
-            raise ValueError("Invalid sequence number")
-
-        self._sequenceNumber = sequence_number
-
-    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
-        if not isinstance(registrationDates_opening, datetime.date):
-            raise ValueError("Invalid opening registration dates")
-
-        self._registrationDates_opening = registrationDates_opening
-
-    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
-        if not isinstance(registrationDates_closing, datetime.date):
-            raise ValueError("Invalid closing registration dates")
-
-        self._registrationDates_closing = registrationDates_closing
-
-    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
-        if not isinstance(courseDates_start, datetime.date):
-            raise ValueError("Invalid start course dates")
-
-        self._courseDates_start = courseDates_start
-
-    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
-        if not isinstance(courseDates_end, datetime.date):
-            raise ValueError("Invalid end course dates")
-
-        self._courseDates_end = courseDates_end
-
-    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
-        if not isinstance(scheduleInfoType_code, str):
-            raise ValueError("Invalid schedule info type code")
-
-        self._scheduleInfoType_code = scheduleInfoType_code
-
-    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
-        if not isinstance(scheduleInfoType_description, str):
-            raise ValueError("Invalid schedule info type description")
-
-        self._scheduleInfoType_description = scheduleInfoType_description
-
-    def set_scheduleInfo(self, scheduleInfo: str) -> None:
-        if not isinstance(scheduleInfo, str):
-            raise ValueError("Invalid schedule info")
-
-        self._scheduleInfo = scheduleInfo
-
-    def set_venue_block(self, venue_block: str) -> None:
-        if not isinstance(venue_block, str):
-            raise ValueError("Invalid venue block")
-
-        self._venue_block = venue_block
-
-    def set_venue_street(self, venue_street: str) -> None:
-        if not isinstance(venue_street, str):
-            raise ValueError("Invalid venue street address")
-
-        self._venue_street = venue_street
-
-    def set_venue_floor(self, venue_floor: str) -> None:
-        if not isinstance(venue_floor, str):
-            raise ValueError("Invalid venue floor address")
-
-        self._venue_floor = venue_floor
-
-    def set_venue_unit(self, venue_unit: str) -> None:
-        if not isinstance(venue_unit, str):
-            raise ValueError("Invalid venue unit")
-
-        self._venue_unit = venue_unit
-
-    def set_venue_building(self, venue_building: str) -> None:
-        if not isinstance(venue_building, str):
-            raise ValueError("Invalid venue building")
-
-        self._venue_building = venue_building
-
-    def set_venue_postalCode(self, venue_postalCode: str) -> None:
-        if not isinstance(venue_postalCode, str):
-            raise ValueError("Invalid venue postal code")
-
-        self._venue_postalCode = venue_postalCode
-
-    def set_venue_room(self, venue_room: str) -> None:
-        if not isinstance(venue_room, str):
-            raise ValueError("Invalid venue room")
-
-        self._venue_room = venue_room
-
-    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
-        if not isinstance(wheelChairAccess, str) or wheelChairAccess not in ["Select a value", "Yes", "No"]:
-            raise ValueError("Invalid wheel chair access")
-
-        match wheelChairAccess:
-            case "Select a value":
-                self._venue_wheelChairAccess = None
-            case "Yes":
-                self._venue_wheelChairAccess = True
-            case "No":
-                self._venue_wheelChairAccess = False
-
-    def set_intakeSize(self, intakeSize: int) -> None:
-        if not isinstance(intakeSize, int):
-            raise ValueError("Invalid intake size")
-
-        self._intakeSize = intakeSize
-
-    def set_threshold(self, threshold: int) -> None:
-        if not isinstance(threshold, int):
-            raise ValueError("Invalid threshold")
-
-        self._threshold = threshold
-
-    def set_registeredUserCount(self, registeredUserCount: int) -> None:
-        if not isinstance(registeredUserCount, int):
-            raise ValueError("Invalid registered user count")
-
-        self._registeredUserCount = registeredUserCount
-
-    def set_modeOfTraining(self, modeOfTraining: ModeOfTraining) -> None:
-        if not isinstance(modeOfTraining, ModeOfTraining):
-            try:
-                # needed to ensure that the enums are the same syntactically
-                modeOfTraining = ModeOfTraining(modeOfTraining)
-            except Exception:
-                raise ValueError("Invalid mode of training")
-
-        self._modeOfTraining = modeOfTraining.value[0]
-
-    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
-        if not isinstance(courseAdminEmail, str):
-            raise ValueError("Invalid course admin email")
-
-        self._courseAdminEmail = courseAdminEmail
-
-    def set_courseVacancy(self, vacancy: Vacancy):
-        if not isinstance(vacancy, Vacancy):
-            try:
-                vacancy = Vacancy(vacancy)
-            except Exception:
-                raise ValueError("Invalid course vacancy")
-
-        self._courseVacancy_code = vacancy.value[0]
-        self._courseVacancy_description = vacancy.value[1]
-
-    def set_file_Name(self, file_Name: str) -> None:
-        if not isinstance(file_Name, str):
-            raise ValueError("Invalid file name")
-
-        self._file_Name = file_Name
-
-    def set_file_content(self, file_content: UploadedFile) -> None:
-        if file_content is not None and not isinstance(file_content, UploadedFile):
-            raise ValueError("Invalid file content")
-
-        self._file_content = file_content
-
-    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
-        if not isinstance(sessions, list):
-            raise ValueError("Invalid list of sessions")
-
-        self._sessions = sessions
-
-    def add_session(self, session: RunSessionEditInfo) -> None:
-        if not isinstance(session, RunSessionEditInfo):
-            raise ValueError("Invalid session")
-
-        self._sessions.append(session)
-
-    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
-        if not isinstance(linkCourseRunTrainer, list):
-            raise ValueError("Invalid course run trainer information")
-
-        self._linkCourseRunTrainer = linkCourseRunTrainer
-
-    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
-        if not isinstance(linkCourseRunTrainer, RunTrainerEditInfo):
-            raise ValueError("Invalid course run trainer information")
-
-        self._linkCourseRunTrainer.append(linkCourseRunTrainer)
-
 
 class DeleteRunInfo(EditRunInfo):
     """Encapsulates all information regarding the deletion of a course run"""
@@ -1316,6 +1662,247 @@ class DeleteRunInfo(EditRunInfo):
             return False
 
         return self._crid == other._crid
+
+    @property
+    def crid(self):
+        return self._crid
+
+    @crid.setter
+    def crid(self, crn: str):
+        if not isinstance(crn, str):
+            raise ValueError("Invalid Course Reference ID number")
+
+        self._crid = crn
+
+    @property
+    def sequence_number(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @sequence_number.setter
+    def sequence_number(self, sequence_number: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def opening_registration_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @opening_registration_date.setter
+    def opening_registration_date(self, opening_registration_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def closing_registration_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @closing_registration_date.setter
+    def closing_registration_date(self, closing_registration_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_start_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_start_date.setter
+    def course_start_date(self, course_start_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_end_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_end_date.setter
+    def course_end_date(self, course_end_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info_type_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info_type_code.setter
+    def schedule_info_type_code(self, schedule_info_type_code: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info_type_description(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info_type_description.setter
+    def schedule_info_type_description(self, schedule_info_type_description: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info.setter
+    def schedule_info(self, schedule_info: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def block(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @block.setter
+    def block(self, block: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def street(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @street.setter
+    def street(self, street: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def floor(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @floor.setter
+    def floor(self, floor: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def unit(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @unit.setter
+    def unit(self, unit: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def building(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @building.setter
+    def building(self, building: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def postal_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def room(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @room.setter
+    def room(self, room: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def wheel_chair_access(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @wheel_chair_access.setter
+    def wheel_chair_access(self, wheelChairAccess: OptionalSelector):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def intake_size(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @intake_size.setter
+    def intake_size(self, intake_size: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def threshold(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @threshold.setter
+    def threshold(self, threshold: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def registered_user_count(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @registered_user_count.setter
+    def registered_user_count(self, registered_user_count: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def mode_of_training(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @mode_of_training.setter
+    def mode_of_training(self, mode_of_training: ModeOfTraining):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_admin_email(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_admin_email.setter
+    def course_admin_email(self, course_admin_email: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy_code.setter
+    def course_vacancy_code(self, course_vacancy_code: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy_description(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy_description.setter
+    def course_vacancy_description(self, course_vacancy_description: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy.setter
+    def course_vacancy(self, course_vacancy: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def file_name(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @file_name.setter
+    def file_name(self, file_name: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def file_content(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @file_content.setter
+    def file_content(self, file_content: UploadedFile):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def sessions(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @sessions.setter
+    def sessions(self, sessions: list[RunSessionEditInfo]):
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def linked_course_run_trainers(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @linked_course_run_trainers.setter
+    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerEditInfo]):
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1352,90 +1939,6 @@ class DeleteRunInfo(EditRunInfo):
             return json.dumps(pl)
 
         return pl
-
-    def set_sequence_number(self, sequence_number: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfo(self, scheduleInfo: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_block(self, venue_block: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_street(self, venue_street: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_floor(self, venue_floor: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_unit(self, venue_unit: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_building(self, venue_building: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_postalCode(self, venue_postalCode: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_room(self, venue_room: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_intakeSize(self, intakeSize: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_threshold(self, threshold: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registeredUserCount(self, registeredUserCount: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_modeOfTraining(self, modeOfTraining: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseVacancy(self, vacancy: Vacancy):
-        raise NotImplementedError("This method is not supported!")
-
-    def set_file_Name(self, file_Name: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_file_content(self, file_content: UploadedFile) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def add_session(self, session: RunSessionEditInfo) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
-        raise NotImplementedError("This method is not supported!")
 
 
 class AddRunIndividualInfo(EditRunInfo):
@@ -1482,6 +1985,343 @@ class AddRunIndividualInfo(EditRunInfo):
                             zip(self._linkCourseRunTrainer, other._linkCourseRunTrainer)))
             )
         )
+
+    @property
+    def sequence_number(self):
+        return self._sequenceNumber
+
+    @sequence_number.setter
+    def sequence_number(self, sequence_number: int):
+        if not isinstance(sequence_number, int):
+            raise ValueError("Invalid sequence number")
+
+        self._sequenceNumber = sequence_number
+
+    @property
+    def opening_registration_date(self):
+        return self._registrationDates_opening
+
+    @opening_registration_date.setter
+    def opening_registration_date(self, opening_registration_date: datetime.date):
+        if not isinstance(opening_registration_date, datetime.date):
+            raise ValueError("Invalid opening registration dates")
+
+        self._registrationDates_opening = opening_registration_date
+
+    @property
+    def closing_registration_date(self):
+        return self._registrationDates_closing
+
+    @closing_registration_date.setter
+    def closing_registration_date(self, closing_registration_date: datetime.date):
+        if not isinstance(closing_registration_date, datetime.date):
+            raise ValueError("Invalid closing registration dates")
+
+        self._registrationDates_closing = closing_registration_date
+
+    @property
+    def course_start_date(self):
+        return self._courseDates_start
+
+    @course_start_date.setter
+    def course_start_date(self, course_start_date: datetime.date):
+        if not isinstance(course_start_date, datetime.date):
+            raise ValueError("Invalid course start date")
+
+        self._courseDates_start = course_start_date
+
+    @property
+    def course_end_date(self):
+        return self._courseDates_end
+
+    @course_end_date.setter
+    def course_end_date(self, course_end_date: datetime.date):
+        if not isinstance(course_end_date, datetime.date):
+            raise ValueError("Invalid course end date")
+
+        self._courseDates_end = course_end_date
+
+    @property
+    def schedule_info_type_code(self):
+        return self._scheduleInfoType_code
+
+    @schedule_info_type_code.setter
+    def schedule_info_type_code(self, schedule_info_type_code: str):
+        if not isinstance(schedule_info_type_code, str):
+            raise ValueError("Invalid schedule info type code")
+
+        self._scheduleInfoType_code = schedule_info_type_code
+
+    @property
+    def schedule_info_type_description(self):
+        return self._scheduleInfoType_description
+
+    @schedule_info_type_description.setter
+    def schedule_info_type_description(self, schedule_info_type_description: str):
+        if not isinstance(schedule_info_type_description, str):
+            raise ValueError("Invalid schedule info type description")
+
+        self._scheduleInfoType_description = schedule_info_type_description
+
+    @property
+    def schedule_info(self):
+        return self._scheduleInfo
+
+    @schedule_info.setter
+    def schedule_info(self, schedule_info: str):
+        if not isinstance(schedule_info, str):
+            raise ValueError("Invalid schedule info")
+
+        self._scheduleInfo = schedule_info
+
+    @property
+    def block(self):
+        return self._venue_block
+
+    @block.setter
+    def block(self, block: str):
+        if not isinstance(block, str):
+            raise ValueError("Invalid venue block")
+
+        self._venue_block = block
+
+    @property
+    def street(self):
+        return self._venue_street
+
+    @street.setter
+    def street(self, street: str):
+        if not isinstance(street, str):
+            raise ValueError("Invalid venue street")
+
+        self._venue_street = street
+
+    @property
+    def floor(self):
+        return self._venue_floor
+
+    @floor.setter
+    def floor(self, floor: str):
+        if not isinstance(floor, str):
+            raise ValueError("Invalid venue floor")
+
+        self._venue_floor = floor
+
+    @property
+    def unit(self):
+        return self._venue_unit
+
+    @unit.setter
+    def unit(self, unit: str):
+        if not isinstance(unit, str):
+            raise ValueError("Invalid venue unit")
+
+        self._venue_unit = unit
+
+    @property
+    def building(self):
+        return self._venue_building
+
+    @building.setter
+    def building(self, building: str):
+        if not isinstance(building, str):
+            raise ValueError("Invalid venue building")
+
+        self._venue_building = building
+
+    @property
+    def postal_code(self):
+        return self._venue_postalCode
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        if not isinstance(postal_code, str):
+            raise ValueError("Invalid venue postal code")
+
+        self._venue_postalCode = postal_code
+
+    @property
+    def room(self):
+        return self._venue_room
+
+    @room.setter
+    def room(self, room: str):
+        if not isinstance(room, str):
+            raise ValueError("Invalid venue room")
+
+        self._venue_room = room
+
+    @property
+    def wheel_chair_access(self):
+        return self._venue_wheelChairAccess
+
+    @wheel_chair_access.setter
+    def wheel_chair_access(self, wheelChairAccess: OptionalSelector):
+        if not isinstance(wheelChairAccess, OptionalSelector):
+            try:
+                wheelChairAccess = OptionalSelector(wheelChairAccess)
+            except Exception:
+                raise ValueError("Invalid wheelchair access indicator")
+
+        self._venue_wheelChairAccess = wheelChairAccess
+
+    @property
+    def intake_size(self):
+        return self._intakeSize
+
+    @intake_size.setter
+    def intake_size(self, intake_size: int):
+        if not isinstance(intake_size, int):
+            raise ValueError("Invalid intake size")
+
+        self._intakeSize = intake_size
+
+    @property
+    def threshold(self):
+        return self._threshold
+
+    @threshold.setter
+    def threshold(self, threshold: int):
+        if not isinstance(threshold, int):
+            raise ValueError("Invalid threshold")
+
+        self._threshold = threshold
+
+    @property
+    def registered_user_count(self):
+        return self._registeredUserCount
+
+    @registered_user_count.setter
+    def registered_user_count(self, registered_user_count: int):
+        if not isinstance(registered_user_count, int):
+            raise ValueError("Invalid registered user count")
+
+        self._registeredUserCount = registered_user_count
+
+    @property
+    def mode_of_training(self):
+        return self._modeOfTraining
+
+    @mode_of_training.setter
+    def mode_of_training(self, mode_of_training: ModeOfTraining):
+        if not isinstance(mode_of_training, ModeOfTraining):
+            try:
+                # needed to ensure that the enums are the same syntactically
+                mode_of_training = ModeOfTraining(mode_of_training)
+            except Exception:
+                raise ValueError("Invalid mode of training")
+
+        self._modeOfTraining = mode_of_training
+
+    @property
+    def course_admin_email(self):
+        return self._courseAdminEmail
+
+    @course_admin_email.setter
+    def course_admin_email(self, course_admin_email: str):
+        if not isinstance(course_admin_email, str):
+            raise ValueError("Invalid course admin email")
+
+        self._courseAdminEmail = course_admin_email
+
+    @property
+    def course_vacancy_code(self):
+        return self._courseVacancy_code
+
+    @course_vacancy_code.setter
+    def course_vacancy_code(self, course_vacancy_code: Vacancy):
+        if not isinstance(course_vacancy_code, Vacancy):
+            try:
+                course_vacancy_code = Vacancy(course_vacancy_code)
+            except Exception:
+                raise ValueError("Invalid course vacancy code")
+
+        self._courseVacancy_code = course_vacancy_code.value[0]
+
+    @property
+    def course_vacancy_description(self):
+        return self._courseVacancy_description
+
+    @course_vacancy_description.setter
+    def course_vacancy_description(self, course_vacancy_description: Vacancy):
+        if not isinstance(course_vacancy_description, Vacancy):
+            try:
+                course_vacancy_description = Vacancy(course_vacancy_description)
+            except Exception:
+                raise ValueError("Invalid course vacancy description")
+
+        self._courseVacancy_description = course_vacancy_description.value[1]
+
+    @property
+    def course_vacancy(self):
+        return Vacancy((self._courseVacancy_code, self._courseVacancy_description))
+
+    @course_vacancy.setter
+    def course_vacancy(self, course_vacancy: Vacancy):
+        if not isinstance(course_vacancy, Vacancy):
+            try:
+                course_vacancy = Vacancy(course_vacancy)
+            except Exception:
+                raise ValueError("Invalid course vacancy")
+
+        self._courseVacancy_code = course_vacancy.value[0]
+        self._courseVacancy_description = course_vacancy.value[1]
+
+    @property
+    def file_name(self):
+        return self._file_Name
+
+    @file_name.setter
+    def file_name(self, file_name: str):
+        if not isinstance(file_name, str):
+            raise ValueError("Invalid file name")
+
+        self._file_Name = file_name
+
+    @property
+    def file_content(self):
+        return self._file_content
+
+    @file_content.setter
+    def file_content(self, file_content: UploadedFile):
+        if file_content is not None and not isinstance(file_content, UploadedFile):
+            raise ValueError("Invalid file content")
+
+        self._file_content = file_content
+
+    @property
+    def sessions(self):
+        return self._sessions
+
+    @sessions.setter
+    def sessions(self, sessions: list[RunSessionEditInfo]):
+        if not isinstance(sessions, list):
+            raise ValueError("Invalid list of sessions")
+
+        self._sessions = sessions
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        if not isinstance(session, RunSessionEditInfo):
+            raise ValueError("Invalid session")
+
+        self._sessions.append(session)
+
+    @property
+    def linked_course_run_trainers(self):
+        return self._linkCourseRunTrainer
+
+    @linked_course_run_trainers.setter
+    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerEditInfo]):
+        if not isinstance(linked_course_run_trainers, list):
+            raise ValueError("Invalid course run trainer information")
+
+        self._linkCourseRunTrainer = linked_course_run_trainers
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        if not isinstance(linkCourseRunTrainer, RunTrainerEditInfo):
+            raise ValueError("Invalid course run trainer information")
+
+        self._linkCourseRunTrainer.append(linkCourseRunTrainer)
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1614,12 +2454,13 @@ class AddRunIndividualInfo(EditRunInfo):
                 "building": self._venue_building,
                 "postalCode": self._venue_postalCode,
                 "room": self._venue_room,
-                "wheelChairAccess": self._venue_wheelChairAccess
+                "wheelChairAccess": (self._venue_wheelChairAccess.value[1]
+                                     if self._venue_wheelChairAccess is not None else None)
             },
             "intakeSize": self._intakeSize,
             "threshold": self._threshold,
             "registeredUserCount": self._registeredUserCount,
-            "modeOfTraining": self._modeOfTraining,
+            "modeOfTraining": self._modeOfTraining.value[0] if self._modeOfTraining is not None else None,
             "courseAdminEmail": self._courseAdminEmail,
             "courseVacancy": {
                 "code": self._courseVacancy_code,
@@ -1661,6 +2502,264 @@ class AddRunInfo(EditRunInfo):
             and len(self._runs) == len(other._runs)
             and all(map(lambda x: x[0] == x[1], zip(self._runs, other._runs)))
         )
+
+    def add_run(self, run: AddRunIndividualInfo) -> None:
+        if not isinstance(run, AddRunIndividualInfo):
+            raise TypeError("Invalid individual run info")
+
+        self._runs.append(run)
+
+    @property
+    def runs(self):
+        return self._runs
+
+    @runs.setter
+    def runs(self, runs: list[AddRunIndividualInfo]):
+        if not isinstance(runs, list):
+            raise ValueError("Invalid list of runs")
+
+        self._runs = runs
+
+    @property
+    def crid(self):
+        return self._crid
+
+    @crid.setter
+    def crid(self, crn: str):
+        if not isinstance(crn, str):
+            raise ValueError("Invalid Course Reference ID number")
+
+        self._crid = crn
+
+    @property
+    def sequence_number(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @sequence_number.setter
+    def sequence_number(self, sequence_number: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def opening_registration_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @opening_registration_date.setter
+    def opening_registration_date(self, opening_registration_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def closing_registration_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @closing_registration_date.setter
+    def closing_registration_date(self, closing_registration_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_start_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_start_date.setter
+    def course_start_date(self, course_start_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_end_date(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_end_date.setter
+    def course_end_date(self, course_end_date: datetime.date):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info_type_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info_type_code.setter
+    def schedule_info_type_code(self, schedule_info_type_code: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info_type_description(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info_type_description.setter
+    def schedule_info_type_description(self, schedule_info_type_description: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def schedule_info(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @schedule_info.setter
+    def schedule_info(self, schedule_info: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def block(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @block.setter
+    def block(self, block: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def street(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @street.setter
+    def street(self, street: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def floor(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @floor.setter
+    def floor(self, floor: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def unit(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @unit.setter
+    def unit(self, unit: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def building(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @building.setter
+    def building(self, building: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def postal_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @postal_code.setter
+    def postal_code(self, postal_code: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def room(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @room.setter
+    def room(self, room: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def wheel_chair_access(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @wheel_chair_access.setter
+    def wheel_chair_access(self, wheelChairAccess: OptionalSelector):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def intake_size(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @intake_size.setter
+    def intake_size(self, intake_size: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def threshold(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @threshold.setter
+    def threshold(self, threshold: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def registered_user_count(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @registered_user_count.setter
+    def registered_user_count(self, registered_user_count: int):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def mode_of_training(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @mode_of_training.setter
+    def mode_of_training(self, mode_of_training: ModeOfTraining):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_admin_email(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_admin_email.setter
+    def course_admin_email(self, course_admin_email: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy_code(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy_code.setter
+    def course_vacancy_code(self, course_vacancy_code: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy_description(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy_description.setter
+    def course_vacancy_description(self, course_vacancy_description: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def course_vacancy(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @course_vacancy.setter
+    def course_vacancy(self, course_vacancy: Vacancy):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def file_name(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @file_name.setter
+    def file_name(self, file_name: str):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def file_content(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @file_content.setter
+    def file_content(self, file_content: UploadedFile):
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def sessions(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @sessions.setter
+    def sessions(self, sessions: list[RunSessionEditInfo]):
+        raise NotImplementedError("This method is not supported!")
+
+    def add_session(self, session: RunSessionEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
+
+    @property
+    def linked_course_run_trainers(self):
+        raise NotImplementedError("This method is not supported!")
+
+    @linked_course_run_trainers.setter
+    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerEditInfo]):
+        raise NotImplementedError("This method is not supported!")
+
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+        raise NotImplementedError("This method is not supported!")
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1704,93 +2803,3 @@ class AddRunInfo(EditRunInfo):
             return json.dumps(pl)
 
         return pl
-
-    def add_run(self, run: AddRunIndividualInfo) -> None:
-        if not isinstance(run, AddRunIndividualInfo):
-            raise TypeError("Invalid individual run info")
-
-        self._runs.append(run)
-
-    def set_sequence_number(self, sequence_number: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registrationDates_opening(self, registrationDates_opening: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registrationDates_closing(self, registrationDates_closing: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseDates_start(self, courseDates_start: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseDates_end(self, courseDates_end: datetime.date) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfoType_code(self, scheduleInfoType_code: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfoType_description(self, scheduleInfoType_description: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_scheduleInfo(self, scheduleInfo: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_block(self, venue_block: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_street(self, venue_street: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_floor(self, venue_floor: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_unit(self, venue_unit: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_building(self, venue_building: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_postalCode(self, venue_postalCode: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_room(self, venue_room: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_venue_wheelChairAccess(self, wheelChairAccess: Literal["Select a value", "Yes", "No"]) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_intakeSize(self, intakeSize: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_threshold(self, threshold: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_registeredUserCount(self, registeredUserCount: int) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_modeOfTraining(self, modeOfTraining: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseAdminEmail(self, courseAdminEmail: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_courseVacancy(self, Vacancy: Vacancy):
-        raise NotImplementedError("This method is not supported!")
-
-    def set_file_Name(self, file_Name: str) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_file_content(self, file_content: UploadedFile) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_sessions(self, sessions: list[RunSessionEditInfo]) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def add_session(self, session: RunSessionEditInfo) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def set_linkCourseRunTrainer(self, linkCourseRunTrainer: list) -> None:
-        raise NotImplementedError("This method is not supported!")
-
-    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
-        raise NotImplementedError("This method is not supported!")

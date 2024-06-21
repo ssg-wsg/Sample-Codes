@@ -44,19 +44,19 @@ class UploadAttendanceInfo(AbstractRequestInfo):
             return False
 
         return (
-                self._sessionId == other._sessionId
-                and self._status_code == other._status_code
-                and self._trainee_id == other._trainee_id
-                and self._trainee_name == other._trainee_name
-                and self._trainee_email == other._trainee_email
-                and self._trainee_id_type == other._trainee_id_type
-                and self._contactNumber_mobile == other._contactNumber_mobile
-                and self._contactNumber_areacode == other._contactNumber_areacode
-                and self._contactNumber_countryCode == other._contactNumber_countryCode
-                and self._numberOfHours == other._numberOfHours
-                and self._surveyLanguage_code == other._surveyLanguage_code
-                and self._referenceNumber == other._referenceNumber
-                and self._corppassId == other._corppassId
+            self._sessionId == other._sessionId
+            and self._status_code == other._status_code
+            and self._trainee_id == other._trainee_id
+            and self._trainee_name == other._trainee_name
+            and self._trainee_email == other._trainee_email
+            and self._trainee_id_type == other._trainee_id_type
+            and self._contactNumber_mobile == other._contactNumber_mobile
+            and self._contactNumber_areacode == other._contactNumber_areacode
+            and self._contactNumber_countryCode == other._contactNumber_countryCode
+            and self._numberOfHours == other._numberOfHours
+            and self._surveyLanguage_code == other._surveyLanguage_code
+            and self._referenceNumber == other._referenceNumber
+            and self._corppassId == other._corppassId
         )
 
     @property

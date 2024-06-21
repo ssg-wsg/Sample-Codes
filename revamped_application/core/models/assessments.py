@@ -6,7 +6,7 @@ import json
 import streamlit as st
 
 import datetime
-from typing import Optional, Literal
+from typing import Optional
 
 from revamped_application.core.abc.abstract import AbstractRequestInfo
 from revamped_application.core.constants import (Grade, IdTypeSummary, Results, AssessmentUpdateVoidActions,
@@ -44,19 +44,19 @@ class CreateAssessmentInfo(AbstractRequestInfo):
             return False
 
         return (
-                self._grade == other._grade
-                and self._score == other._score
-                and self._course_runId == other._course_runId
-                and self._course_referenceNumber == other._course_referenceNumber
-                and self._result == other._result
-                and self._trainee_id == other._trainee_id
-                and self._trainee_idType == other._trainee_idType
-                and self._trainee_fullName == other._trainee_fullName
-                and self._skillCode == other._skillCode
-                and self._assessmentDate == other._assessmentDate
-                and self._trainingPartner_code == other._trainingPartner_code
-                and self._trainingPartner_uen == other._trainingPartner_uen
-                and self._conferringInstitute_code == other._conferringInstitute_code
+            self._grade == other._grade
+            and self._score == other._score
+            and self._course_runId == other._course_runId
+            and self._course_referenceNumber == other._course_referenceNumber
+            and self._result == other._result
+            and self._trainee_id == other._trainee_id
+            and self._trainee_idType == other._trainee_idType
+            and self._trainee_fullName == other._trainee_fullName
+            and self._skillCode == other._skillCode
+            and self._assessmentDate == other._assessmentDate
+            and self._trainingPartner_code == other._trainingPartner_code
+            and self._trainingPartner_uen == other._trainingPartner_uen
+            and self._conferringInstitute_code == other._conferringInstitute_code
         )
 
     @property
@@ -292,7 +292,7 @@ class CreateAssessmentInfo(AbstractRequestInfo):
 
 class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
     """Encapsulates information about the updating or voiding of an assessment record"""
-    
+
     def __init__(self):
         super().__init__()
         self._action: AssessmentUpdateVoidActions = None
@@ -308,10 +308,10 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
             return False
 
         return (
-                super().__eq__(other)
-                and self._action == other._action
+            super().__eq__(other)
+            and self._action == other._action
         )
-    
+
     @property
     def action(self):
         return self._action
@@ -333,7 +333,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
     @course_runId.setter
     def course_runId(self, course_run_id: str):
         raise NotImplementedError("This method is not supported!")
-    
+
     @property
     def course_referenceNumber(self):
         raise NotImplementedError("This method is not supported!")
@@ -461,19 +461,19 @@ class SearchAssessmentInfo(AbstractRequestInfo):
             return False
 
         return (
-                self._lastUpdateDateTo == other._lastUpdateDateTo
-                and self._lastUpdateDateFrom == other._lastUpdateDateFrom
-                and self._sortBy_field == other._sortBy_field
-                and self._sortBy_order == other._sortBy_order
-                and self._parameters_page == other._parameters_page
-                and self._parameters_pageSize == other._parameters_pageSize
-                and self._assessment_courseRunId == other._assessment_courseRunId
-                and self._assessment_referenceNumber == other._assessment_referenceNumber
-                and self._assessment_traineeId == other._assessment_traineeId
-                and self._assessment_enrolement_referenceNumber == other._assessment_enrolement_referenceNumber
-                and self._assessment_skillCode == other._assessment_skillCode
-                and self._trainingPartner_uen == other._trainingPartner_uen
-                and self._trainingPartner_code == other._trainingPartner_code
+            self._lastUpdateDateTo == other._lastUpdateDateTo
+            and self._lastUpdateDateFrom == other._lastUpdateDateFrom
+            and self._sortBy_field == other._sortBy_field
+            and self._sortBy_order == other._sortBy_order
+            and self._parameters_page == other._parameters_page
+            and self._parameters_pageSize == other._parameters_pageSize
+            and self._assessment_courseRunId == other._assessment_courseRunId
+            and self._assessment_referenceNumber == other._assessment_referenceNumber
+            and self._assessment_traineeId == other._assessment_traineeId
+            and self._assessment_enrolement_referenceNumber == other._assessment_enrolement_referenceNumber
+            and self._assessment_skillCode == other._assessment_skillCode
+            and self._trainingPartner_uen == other._trainingPartner_uen
+            and self._trainingPartner_code == other._trainingPartner_code
         )
 
     @property

@@ -159,63 +159,63 @@ class TestAttendanceInfo(unittest.TestCase):
             TestAttendanceInfo.UPLOAD_ATTENDANCE_ONE.payload()
 
         p2 = {
-            'course': {
-                'sessionID': '123456',
-                'attendance': {
-                    'status': {
-                        'code': '1'
+            "course": {
+                "sessionID": "123456",
+                "attendance": {
+                    "status": {
+                        "code": "1"
                     },
-                    'trainee': {
-                        'id': 'T1234567A',
-                        'name': 'John Doe',
-                        'email': 'john@email.com',
-                        'idType': {
-                            'code': 'SB'
+                    "trainee": {
+                        "id": "T1234567A",
+                        "name": "John Doe",
+                        "email": "john@email.com",
+                        "idType": {
+                            "code": "SB"
                         },
-                        'contactNumber': {
-                            'mobile': '91234567',
-                            'areaCode': 65,
-                            'countryCode': 65
+                        "contactNumber": {
+                            "mobile": "91234567",
+                            "areaCode": 65,
+                            "countryCode": 65
                         },
-                        'numberOfHours': 1.5,
-                        'surveyLanguage': {
-                            'code': 'EL'
+                        "numberOfHours": 1.5,
+                        "surveyLanguage": {
+                            "code": "EL"
                         }
                     }
                 },
-                'referenceNumber': '123456'
+                "referenceNumber": "123456"
             },
-            'corppassId': 'C1234567A'
+            "corppassId": "C1234567A"
         }
 
         p3 = {
-            'course': {
-                'sessionID': '654321',
-                'attendance': {
-                    'status': {
-                        'code': '2'
+            "course": {
+                "sessionID": "654321",
+                "attendance": {
+                    "status": {
+                        "code": "2"
                     },
-                    'trainee': {
-                        'id': 'T7654321B',
-                        'name': 'Jane Doe',
-                        'email': 'jane@email.com',
-                        'idType': {
-                            'code': 'SP'
+                    "trainee": {
+                        "id": "T7654321B",
+                        "name": "Jane Doe",
+                        "email": "jane@email.com",
+                        "idType": {
+                            "code": "SP"
                         },
-                        'contactNumber': {
-                            'mobile': '98765432',
-                            'areaCode': 130,
-                            'countryCode': 66
+                        "contactNumber": {
+                            "mobile": "98765432",
+                            "areaCode": 130,
+                            "countryCode": 66
                         },
-                        'numberOfHours': 2.5,
-                        'surveyLanguage': {
-                            'code': 'MY'
+                        "numberOfHours": 2.5,
+                        "surveyLanguage": {
+                            "code": "MY"
                         }
                     }
                 },
-                'referenceNumber': '654321'
+                "referenceNumber": "654321"
             },
-            'corppassId': 'C7654321B'
+            "corppassId": "C7654321B"
         }
 
         self.assertEqual(TestAttendanceInfo.UPLOAD_ATTENDANCE_TWO.payload(), p2)

@@ -391,13 +391,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         self.assertTrue(TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.has_overridden_uen())
 
     def test_CreateEnrolmentInfo_set_course_run_id(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.course_run_id = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.course_run_id = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.course_run_id = [1234]
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_run_id = "1234"
@@ -415,13 +415,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_run_id)
 
     def test_CreateEnrolmentInfo_set_course_reference_number(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.course_referenceNumber = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.course_referenceNumber = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.course_referenceNumber = [1234]
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_referenceNumber = "1234"
@@ -439,13 +439,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_referenceNumber)
 
     def test_CreateEnrolmentInfo_set_trainee_id(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_id = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_id = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_id = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_id = "S1234567X"
@@ -463,13 +463,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_id)
 
     def test_CreateEnrolmentInfo_set_trainee_fees_discount_amount(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_fees_discountAmount = "abc"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_fees_discountAmount = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_fees_discountAmount = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_fees_discountAmount = 123.45
@@ -538,13 +538,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_idType)
 
     def test_CreateEnrolmentInfo_set_employer_uen(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_uen = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_uen = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_uen = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_uen = "G1234567X"
@@ -562,13 +562,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_uen)
 
     def test_CreateEnrolmentInfo_set_trainee_employer_contact_full_name(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_fullName = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_fullName = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_fullName = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_fullName = "John Doe"
@@ -586,13 +586,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_fullName)
 
     def test_CreateEnrolmentInfo_set_trainee_employer_contact_email_address(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_emailAddress = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_emailAddress = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_emailAddress = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_emailAddress = "email1@email.com"
@@ -613,13 +613,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_emailAddress)
 
     def test_CreateEnrolmentInfo_set_trainee_employer_contact_number_area_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_areaCode = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_areaCode = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_areaCode = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_areaCode = "123"
@@ -640,13 +640,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_areaCode)
 
     def test_CreateEnrolmentInfo_set_trainee_employer_contact_number_country_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_countryCode = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_countryCode = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_countryCode = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_countryCode = "12"
@@ -676,13 +676,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         )
 
     def test_CreateEnrolmentInfo_set_trainee_employer_contact_number_phone_number(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_phoneNumber = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.employer_phoneNumber = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.employer_phoneNumber = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.employer_phoneNumber = "91234567"
@@ -712,13 +712,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         )
 
     def test_CreateEnrolmentInfo_set_trainee_full_name(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_fullName = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_fullName = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_fullName = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_fullName = "John Doe"
@@ -736,13 +736,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_fullName)
 
     def test_CreateEnrolmentInfo_set_trainee_date_of_birth(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_dateOfBirth = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_dateOfBirth = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_dateOfBirth = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_dateOfBirth = datetime.date(1990, 1, 1)
@@ -760,13 +760,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_dateOfBirth)
 
     def test_CreateEnrolmentInfo_set_trainee_email_address(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_emailAddress = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_emailAddress = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_emailAddress = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_emailAddress = "email1@email.com"
@@ -784,13 +784,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_emailAddress)
 
     def test_CreateEnrolmentInfo_set_trainee_contact_number_area_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_areaCode = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_contactNumber_areaCode = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_areaCode = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_areaCode = "123"
@@ -808,13 +808,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_areaCode)
 
     def test_CreateEnrolmentInfo_set_trainee_contact_number_country_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_countryCode = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_contactNumber_countryCode = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_countryCode = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_countryCode = "12"
@@ -832,13 +832,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_countryCode)
 
     def test_CreateEnrolmentInfo_set_trainee_contact_number_phone_number(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_phoneNumber = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_contactNumber_phoneNumber = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_phoneNumber = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_contactNumber_phoneNumber = "91234567"
@@ -856,13 +856,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_contactNumber_phoneNumber)
 
     def test_CreateEnrolmentInfo_set_trainee_enrolment_date(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_enrolmentDate = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_enrolmentDate = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainee_enrolmentDate = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainee_enrolmentDate = datetime.date(2019, 1, 1)
@@ -903,13 +903,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainee_sponsorshipType)
 
     def test_CreateEnrolmentInfo_set_training_partner_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainingPartner_code = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainingPartner_code = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainingPartner_code = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainingPartner_code = "1234"
@@ -927,13 +927,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainingPartner_code)
 
     def test_CreateEnrolmentInfo_set_training_partner_uen(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainingPartner_uen = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_TWO.trainingPartner_uen = ["abc"]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.CREATE_ENROLMENT_INFO_THREE.trainingPartner_uen = [1234]
 
         TestEnrolmentInfo.CREATE_ENROLMENT_INFO_ONE.trainingPartner_uen = "G1234567X"
@@ -1363,13 +1363,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         self.assertTrue(TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.has_overridden_uen())
 
     def test_SearchEnrolmentInfo_set_last_update_date_to(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.lastUpdateDateTo = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.lastUpdateDateTo = "123"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.lastUpdateDateTo = [datetime.date.today()]
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.lastUpdateDateTo = datetime.date(2020, 1, 1)
@@ -1387,13 +1387,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.lastUpdateDateTo)
 
     def test_SearchEnrolmentInfo_set_last_update_date_from(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.lastUpdateDateFrom = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.lastUpdateDateFrom = "123"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.lastUpdateDateFrom = [datetime.date.today()]
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.lastUpdateDateFrom = datetime.date(2020, 1, 1)
@@ -1411,13 +1411,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.lastUpdateDateFrom)
 
     def test_SearchEnrolmentInfo_set_sort_by_field(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.sortBy_field = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.sortBy_field = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.sortBy_field = "asc"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.sortBy_field = EnrolmentSortField.CREATED_ON
@@ -1427,13 +1427,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         self.assertEqual(TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO._sortBy_field, EnrolmentSortField.UPDATED_ON)
 
     def test_SearchEnrolmentInfo_set_sort_by_order(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.sortBy_order = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.sortBy_order = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.sortBy_order = "asc"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.sortBy_order = SortOrder.ASCENDING
@@ -1443,13 +1443,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         self.assertEqual(TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO._sortBy_order, SortOrder.DESCENDING)
 
     def test_SearchEnrolmentInfo_set_course_run_id(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_run_id = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.course_run_id = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_run_id = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_run_id = "1234"
@@ -1467,13 +1467,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_run_id)
 
     def test_SearchEnrolmentInfo_set_course_reference_number(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_referenceNumber = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.course_referenceNumber = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_referenceNumber = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_referenceNumber = "1234"
@@ -1491,13 +1491,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_referenceNumber)
 
     def test_SearchEnrolmentInfo_set_course_status(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_status = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.course_status = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.course_status = "active"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.course_status = EnrolmentCourseStatus.CONFIRMED
@@ -1511,13 +1511,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.course_status)
 
     def test_SearchEnrolmentInfo_set_trainee_id(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_id = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_id = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_id = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_id = "1234"
@@ -1535,13 +1535,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_id)
 
     def test_SearchEnrolmentInfo_set_trainee_fee_collection_status(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_fees_feeCollectionStatus = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_fees_feeCollectionStatus = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_fees_feeCollectionStatus = "active"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_fees_feeCollectionStatus = (
@@ -1565,13 +1565,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          CancellableCollectionStatus.CANCELLED)
 
     def test_SearchEnrolmentInfo_set_trainee_id_type(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_idType = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_idType = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_idType = "active"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_idType = IdTypeSummary.NRIC
@@ -1589,13 +1589,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_idType)
 
     def test_SearchEnrolmentInfo_set_employer_uen(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.employer_uen = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.employer_uen = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.employer_uen = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.employer_uen = "G1234567X"
@@ -1613,13 +1613,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.employer_uen)
 
     def test_SearchEnrolmentInfo_set_trainee_enrolment_date(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_enrolmentDate = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_enrolmentDate = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_enrolmentDate = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_enrolmentDate = datetime.date(2020, 1, 1)
@@ -1638,13 +1638,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_enrolmentDate)
 
     def test_SearchEnrolmentInfo_set_trainee_sponsorship_type(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_sponsorshipType = "random"
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_sponsorshipType = 123
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainee_sponsorshipType = "active"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainee_sponsorshipType = SponsorshipType.EMPLOYER
@@ -1660,13 +1660,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainee_sponsorshipType)
 
     def test_SearchEnrolmentInfo_set_training_partner_uen(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainingPartner_uen = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainingPartner_uen = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainingPartner_uen = {"ABC123ABC"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainingPartner_uen = "G1234567X"
@@ -1684,13 +1684,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainingPartner_uen)
 
     def test_SearchEnrolmentInfo_set_training_partner_code(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainingPartner_code = 12345
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.trainingPartner_code = [123]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.trainingPartner_code = {"1234"}
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.trainingPartner_code = "123"
@@ -1704,13 +1704,13 @@ class TestEnrolmentInfo(unittest.TestCase):
         self.assertEqual(TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE._trainingPartner_code, "111")
 
     def test_SearchEnrolmentInfo_set_page(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.page = [1]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.page = -1
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.page = "1"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.page = 1
@@ -1728,13 +1728,13 @@ class TestEnrolmentInfo(unittest.TestCase):
                          TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.page)
 
     def test_SearchEnrolmentInfo_set_page_size(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.page_size = [1]
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_TWO.page_size = -1
 
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_THREE.page_size = "1"
 
         TestEnrolmentInfo.SEARCH_ENROLMENT_INFO_ONE.page_size = 1

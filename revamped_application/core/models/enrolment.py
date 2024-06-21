@@ -52,7 +52,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @course_run_id.setter
     def course_run_id(self, course_run_id: str):
         if not isinstance(course_run_id, str):
-            raise TypeError("Course Run ID must be a string!")
+            raise ValueError("Course Run ID must be a string!")
 
         self._course_run_id = course_run_id
 
@@ -63,7 +63,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @course_referenceNumber.setter
     def course_referenceNumber(self, course_referenceNumber: str):
         if not isinstance(course_referenceNumber, str):
-            raise TypeError("Course Reference Number must be a string!")
+            raise ValueError("Course Reference Number must be a string!")
 
         self._course_referenceNumber = course_referenceNumber
 
@@ -74,7 +74,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_id.setter
     def trainee_id(self, trainee_id: str):
         if not isinstance(trainee_id, str):
-            raise TypeError("Trainee ID must be a string!")
+            raise ValueError("Trainee ID must be a string!")
 
         self._trainee_id = trainee_id
 
@@ -85,7 +85,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_fees_discountAmount.setter
     def trainee_fees_discountAmount(self, discountAmount: Union[int, float]):
         if not isinstance(discountAmount, int) and not isinstance(discountAmount, float):
-            raise TypeError("Discount Amount must be a number")
+            raise ValueError("Discount Amount must be a number")
         elif discountAmount < 0:
             raise ValueError("Discount Amount must be a non-negative number!")
 
@@ -126,7 +126,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_uen.setter
     def employer_uen(self, uen: str):
         if not isinstance(uen, str):
-            raise TypeError("Employer UEN must be a String!")
+            raise ValueError("Employer UEN must be a String!")
 
         self._trainee_employer_uen = uen
 
@@ -137,7 +137,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_fullName.setter
     def employer_fullName(self, fullName: str):
         if not isinstance(fullName, str):
-            raise TypeError("Invalid Full Name provided!")
+            raise ValueError("Invalid Full Name provided!")
 
         self._trainee_employer_contact_fullName = fullName
 
@@ -148,7 +148,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_emailAddress.setter
     def employer_emailAddress(self, emailAddress: str):
         if not isinstance(emailAddress, str):
-            raise TypeError("Invalid Email Address provided!")
+            raise ValueError("Invalid Email Address provided!")
 
         self._trainee_employer_contact_emailAddress = emailAddress
 
@@ -159,7 +159,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_areaCode.setter
     def employer_areaCode(self, areaCode: str):
         if not isinstance(areaCode, str):
-            raise TypeError("Invalid Area Code provided!")
+            raise ValueError("Invalid Area Code provided!")
 
         self._trainee_employer_contact_contactNumber_areaCode = areaCode
 
@@ -170,7 +170,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_countryCode.setter
     def employer_countryCode(self, countryCode: str):
         if not isinstance(countryCode, str):
-            raise TypeError("Invalid Country Code provided!")
+            raise ValueError("Invalid Country Code provided!")
 
         self._trainee_employer_contact_contactNumber_countryCode = countryCode
 
@@ -181,7 +181,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @employer_phoneNumber.setter
     def employer_phoneNumber(self, phoneNumber: str):
         if not isinstance(phoneNumber, str):
-            raise TypeError("Invalid Phone Number provided!")
+            raise ValueError("Invalid Phone Number provided!")
 
         self._trainee_employer_contact_contactNumber_phoneNumber = phoneNumber
 
@@ -192,7 +192,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_fullName.setter
     def trainee_fullName(self, fullName: str):
         if not isinstance(fullName, str):
-            raise TypeError("Invalid Trainee Full Name provided!")
+            raise ValueError("Invalid Trainee Full Name provided!")
 
         self._trainee_fullName = fullName
 
@@ -203,7 +203,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_dateOfBirth.setter
     def trainee_dateOfBirth(self, dateOfBirth: datetime.date):
         if not isinstance(dateOfBirth, datetime.date):
-            raise TypeError("Invalid Trainee Date of Birth provided!")
+            raise ValueError("Invalid Trainee Date of Birth provided!")
 
         self._trainee_dateOfBirth = dateOfBirth
 
@@ -214,7 +214,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_emailAddress.setter
     def trainee_emailAddress(self, emailAddress: str):
         if not isinstance(emailAddress, str):
-            raise TypeError("Invalid Trainee Email Address provided!")
+            raise ValueError("Invalid Trainee Email Address provided!")
 
         self._trainee_emailAddress = emailAddress
 
@@ -225,7 +225,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_contactNumber_areaCode.setter
     def trainee_contactNumber_areaCode(self, areaCode: str):
         if not isinstance(areaCode, str):
-            raise TypeError("Invalid Trainee Area Code provided!")
+            raise ValueError("Invalid Trainee Area Code provided!")
 
         self._trainee_contactNumber_areaCode = areaCode
 
@@ -236,7 +236,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_contactNumber_countryCode.setter
     def trainee_contactNumber_countryCode(self, countryCode: str):
         if not isinstance(countryCode, str):
-            raise TypeError("Invalid Trainee Country Code provided!")
+            raise ValueError("Invalid Trainee Country Code provided!")
 
         self._trainee_contactNumber_countryCode = countryCode
 
@@ -247,7 +247,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_contactNumber_phoneNumber.setter
     def trainee_contactNumber_phoneNumber(self, phoneNumber: str):
         if not isinstance(phoneNumber, str):
-            raise TypeError("Invalid Trainee Phone Number provided!")
+            raise ValueError("Invalid Trainee Phone Number provided!")
 
         self._trainee_contactNumber_phoneNumber = phoneNumber
 
@@ -258,7 +258,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainee_enrolmentDate.setter
     def trainee_enrolmentDate(self, enrolmentDate: datetime.date):
         if not isinstance(enrolmentDate, datetime.date):
-            raise TypeError("Invalid Enrolment Date provided!")
+            raise ValueError("Invalid Enrolment Date provided!")
 
         self._trainee_enrolmentDate = enrolmentDate
 
@@ -283,7 +283,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainingPartner_code.setter
     def trainingPartner_code(self, code: str):
         if not isinstance(code, str):
-            raise TypeError("Invalid Partner code provided!")
+            raise ValueError("Invalid Partner code provided!")
 
         self._trainingPartner_code = code
 
@@ -294,7 +294,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
     @trainingPartner_uen.setter
     def trainingPartner_uen(self, uen: str):
         if not isinstance(uen, str):
-            raise TypeError("Invalid Partner UEN must be a String!")
+            raise ValueError("Invalid Partner UEN must be a String!")
 
         self._trainingPartner_uen = uen
 
@@ -483,7 +483,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @course_run_id.setter
     def course_run_id(self, course_run_id: str):
         if not isinstance(course_run_id, str):
-            raise TypeError("Course Run ID must be a string!")
+            raise ValueError("Course Run ID must be a string!")
 
         self._course_run_id = course_run_id
 
@@ -510,7 +510,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @trainee_fees_discountAmount.setter
     def trainee_fees_discountAmount(self, discountAmount: Union[int, float]):
         if not isinstance(discountAmount, int) and not isinstance(discountAmount, float):
-            raise TypeError("Discount Amount must be a number")
+            raise ValueError("Discount Amount must be a number")
         elif discountAmount < 0:
             raise ValueError("Discount Amount must be a non-negative number!")
 
@@ -553,7 +553,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @employer_fullName.setter
     def employer_fullName(self, fullName: str):
         if not isinstance(fullName, str):
-            raise TypeError("Invalid Full Name provided!")
+            raise ValueError("Invalid Full Name provided!")
 
         self._trainee_employer_contact_fullName = fullName
 
@@ -564,7 +564,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @employer_emailAddress.setter
     def employer_emailAddress(self, emailAddress: str):
         if not isinstance(emailAddress, str):
-            raise TypeError("Invalid Email Address provided!")
+            raise ValueError("Invalid Email Address provided!")
 
         self._trainee_employer_contact_emailAddress = emailAddress
 
@@ -575,7 +575,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @employer_areaCode.setter
     def employer_areaCode(self, areaCode: str):
         if not isinstance(areaCode, str):
-            raise TypeError("Invalid Area Code provided!")
+            raise ValueError("Invalid Area Code provided!")
 
         self._trainee_employer_contact_contactNumber_areaCode = areaCode
 
@@ -586,7 +586,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @employer_countryCode.setter
     def employer_countryCode(self, countryCode: str):
         if not isinstance(countryCode, str):
-            raise TypeError("Invalid Country Code provided!")
+            raise ValueError("Invalid Country Code provided!")
 
         self._trainee_employer_contact_contactNumber_countryCode = countryCode
 
@@ -597,7 +597,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @employer_phoneNumber.setter
     def employer_phoneNumber(self, phoneNumber: str):
         if not isinstance(phoneNumber, str):
-            raise TypeError("Invalid Phone Number provided!")
+            raise ValueError("Invalid Phone Number provided!")
 
         self._trainee_employer_contact_contactNumber_phoneNumber = phoneNumber
 
@@ -624,7 +624,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @trainee_emailAddress.setter
     def trainee_emailAddress(self, emailAddress: str):
         if not isinstance(emailAddress, str):
-            raise TypeError("Invalid Trainee Email Address provided!")
+            raise ValueError("Invalid Trainee Email Address provided!")
 
         self._trainee_emailAddress = emailAddress
 
@@ -635,7 +635,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @trainee_contactNumber_areaCode.setter
     def trainee_contactNumber_areaCode(self, areaCode: str):
         if not isinstance(areaCode, str):
-            raise TypeError("Invalid Trainee Area Code provided!")
+            raise ValueError("Invalid Trainee Area Code provided!")
 
         self._trainee_contactNumber_areaCode = areaCode
 
@@ -646,7 +646,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @trainee_contactNumber_countryCode.setter
     def trainee_contactNumber_countryCode(self, countryCode: str):
         if not isinstance(countryCode, str):
-            raise TypeError("Invalid Trainee Country Code provided!")
+            raise ValueError("Invalid Trainee Country Code provided!")
 
         self._trainee_contactNumber_countryCode = countryCode
 
@@ -657,7 +657,7 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
     @trainee_contactNumber_phoneNumber.setter
     def trainee_contactNumber_phoneNumber(self, phoneNumber: str):
         if not isinstance(phoneNumber, str):
-            raise TypeError("Invalid Trainee Phone Number provided!")
+            raise ValueError("Invalid Trainee Phone Number provided!")
 
         self._trainee_contactNumber_phoneNumber = phoneNumber
 
@@ -982,7 +982,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @lastUpdateDateTo.setter
     def lastUpdateDateTo(self, lastUpdateDateTo: datetime.date):
         if not isinstance(lastUpdateDateTo, datetime.date):
-            raise TypeError("No valid last update date to specified!")
+            raise ValueError("No valid last update date to specified!")
 
         self._lastUpdateDateTo = lastUpdateDateTo
 
@@ -993,7 +993,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @lastUpdateDateFrom.setter
     def lastUpdateDateFrom(self, lastUpdateDateFrom: datetime.date):
         if not isinstance(lastUpdateDateFrom, datetime.date):
-            raise TypeError("No valid last update date to specified!")
+            raise ValueError("No valid last update date to specified!")
 
         self._lastUpdateDateFrom = lastUpdateDateFrom
 
@@ -1007,7 +1007,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 sort_field = EnrolmentSortField(sort_field)
             except Exception:
-                raise TypeError("No valid sort field specified!")
+                raise ValueError("No valid sort field specified!")
 
         self._sortBy_field = sort_field
 
@@ -1021,7 +1021,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 sort_order = SortOrder(sort_order)
             except Exception:
-                raise TypeError("No valid sort order specified!")
+                raise ValueError("No valid sort order specified!")
 
         self._sortBy_order = sort_order
 
@@ -1032,7 +1032,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @course_run_id.setter
     def course_run_id(self, course_run_id: str):
         if not isinstance(course_run_id, str):
-            raise TypeError("No valid course run ID specified!")
+            raise ValueError("No valid course run ID specified!")
 
         self._course_run_id = course_run_id
 
@@ -1043,7 +1043,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @course_referenceNumber.setter
     def course_referenceNumber(self, course_referenceNumber: str):
         if not isinstance(course_referenceNumber, str):
-            raise TypeError("No valid course reference number specified!")
+            raise ValueError("No valid course reference number specified!")
 
         self._course_referenceNumber = course_referenceNumber
 
@@ -1057,7 +1057,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 status = EnrolmentCourseStatus(status)
             except Exception:
-                raise TypeError("No valid course status specified!")
+                raise ValueError("No valid course status specified!")
 
         self._course_status = status
 
@@ -1068,7 +1068,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @trainee_id.setter
     def trainee_id(self, trainee_id: str):
         if not isinstance(trainee_id, str):
-            raise TypeError("No valid trainee ID specified!")
+            raise ValueError("No valid trainee ID specified!")
 
         self._trainee_id = trainee_id
 
@@ -1082,7 +1082,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 feeCollectionStatus = CancellableCollectionStatus(feeCollectionStatus)
             except Exception:
-                raise TypeError("No valid trainee fee collection status specified!")
+                raise ValueError("No valid trainee fee collection status specified!")
 
         self._trainee_fees_feeCollectionStatus = feeCollectionStatus
 
@@ -1096,7 +1096,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 idType = IdTypeSummary(idType)
             except Exception:
-                raise TypeError("No valid ID type specified!")
+                raise ValueError("No valid ID type specified!")
 
         self._trainee_idType_type = idType
 
@@ -1107,7 +1107,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @employer_uen.setter
     def employer_uen(self, uen: str):
         if not isinstance(uen, str):
-            raise TypeError("No valid UEN specified!")
+            raise ValueError("No valid UEN specified!")
 
         self._trainee_employer_uen = uen
 
@@ -1118,7 +1118,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @trainee_enrolmentDate.setter
     def trainee_enrolmentDate(self, enrolmentDate: datetime.date):
         if not isinstance(enrolmentDate, datetime.date):
-            raise TypeError("No valid employment date specified!")
+            raise ValueError("No valid employment date specified!")
 
         self._trainee_enrolmentDate = enrolmentDate
 
@@ -1132,7 +1132,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
             try:
                 sponsorshipType = SponsorshipType(sponsorshipType)
             except Exception:
-                raise TypeError("No valid sponsorship type specified!")
+                raise ValueError("No valid sponsorship type specified!")
 
         self._trainee_sponsorshipType = sponsorshipType
 
@@ -1143,7 +1143,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @trainingPartner_uen.setter
     def trainingPartner_uen(self, uen: str):
         if not isinstance(uen, str):
-            raise TypeError("No valid UEN specified!")
+            raise ValueError("No valid UEN specified!")
 
         self._trainingPartner_uen = uen
 
@@ -1154,7 +1154,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @trainingPartner_code.setter
     def trainingPartner_code(self, code: str):
         if not isinstance(code, str):
-            raise TypeError("No valid code specified!")
+            raise ValueError("No valid code specified!")
 
         self._trainingPartner_code = code
 
@@ -1165,7 +1165,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @page.setter
     def page(self, page: int):
         if not isinstance(page, int) or page < 0:
-            raise TypeError("No valid page specified!")
+            raise ValueError("No valid page specified!")
 
         self._parameters_page = page
 
@@ -1176,7 +1176,7 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
     @page_size.setter
     def page_size(self, page_size: int):
         if not isinstance(page_size, int) or page_size < 0:
-            raise TypeError("No valid page size specified!")
+            raise ValueError("No valid page size specified!")
 
         self._parameters_page_size = page_size
 
@@ -1377,7 +1377,7 @@ class UpdateEnrolmentFeeCollectionInfo(UpdateEnrolmentInfo):
             try:
                 feeCollectionStatus = CancellableCollectionStatus(feeCollectionStatus)
             except Exception:
-                raise TypeError("No valid trainee fee collection status specified!")
+                raise ValueError("No valid trainee fee collection status specified!")
 
         self._trainee_fees_feeCollectionStatus = feeCollectionStatus
 
