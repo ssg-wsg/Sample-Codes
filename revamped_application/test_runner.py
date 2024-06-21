@@ -38,7 +38,7 @@ runner = unittest.TextTestRunner(stream=sys.stdout)
 result = runner.run(suite)
 
 cov.stop()
-cov.save()
+cov.xml_report()
 
 if len(result.errors) > 0:
     LOGGER.error(f"Tests failed with {len(result.errors)} errors.")

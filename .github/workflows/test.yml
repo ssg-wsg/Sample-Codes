@@ -25,20 +25,17 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
 
-      - name: Prepare repository
-        run: |
-          cd revamped_application
-
       - name: Install dependencies
-        run: |
-          pwd
-          pip install -r requirements.txt
+        working-directory: ./revamped_application
+        run: pip install -r requirements.txt
 
       - name: Run tests
+        working-directory: ./revamped_application
         run: python test_runner.py
 
-      - name: Upload coverage
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
+          files: ./revamped_application/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
