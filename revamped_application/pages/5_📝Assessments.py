@@ -39,6 +39,7 @@ st.set_page_config(page_title="Assessments", page_icon="📝")
 
 with st.sidebar:
     st.header("View Configs")
+    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
     if st.button("Configs", key="config_display"):
         display_config()
 
