@@ -24,6 +24,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display"):
         display_config()
 
+st.image("assets/sf.png", width=200)
 st.title("Enrolment API")
 st.markdown("Integration with the Enrolment APIs enable enrolment records to be updated on the Training Partners "
             "Gateway. It facilitates enrolment of a trainee to a course run and allows the updating, cancellation, "
@@ -36,6 +37,7 @@ create, update, cancel, search, view, update_fee = st.tabs([
     "Create Enrolment", "Update Enrolment", "Cancel Enrolment", "Search Enrolment", "View Enrolment",
     "Update Enrolment Fee Collection"
 ])
+
 
 with create:
     st.header("Create Enrolment")
@@ -237,6 +239,7 @@ with create:
                 with response:
                     handle_response(lambda: ce.execute(), require_decryption=True)
 
+
 with update:
     st.header("Update Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching of "
@@ -379,6 +382,7 @@ with update:
                 with response:
                     handle_response(lambda: ue.execute(), require_decryption=True)
 
+
 with cancel:
     st.header("Cancel Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching of "
@@ -409,6 +413,7 @@ with cancel:
 
             with response:
                 handle_response(lambda: cancel_en.execute(), require_decryption=True)
+
 
 with search:
     st.header("Search Enrolment")
@@ -593,6 +598,7 @@ with search:
                 with response:
                     handle_response(lambda: se.execute(), require_decryption=True)
 
+
 with view:
     st.header("View Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching "
@@ -619,6 +625,7 @@ with view:
 
             with response:
                 handle_response(lambda: ve.execute(), require_decryption=True)
+
 
 with update_fee:
     st.header("Update Enrolment Fee Collection")

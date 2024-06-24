@@ -37,14 +37,16 @@ LOGGER.info("Running tests...")
 runner = unittest.TextTestRunner(stream=sys.stdout)
 result = runner.run(suite)
 
+cov.stop()
+cov.xml_report()
+
 if len(result.errors) > 0:
     LOGGER.error(f"Tests failed with {len(result.errors)} errors.")
+    raise Exception("Tests failed with errors.")
 
 if len(result.failures) > 0:
     LOGGER.error(f"Tests failed with {len(result.failures)} failures.")
+    raise Exception("Tests failed with failures.")
 
 if len(result.errors) == 0 and len(result.failures) == 0:
     LOGGER.info("All tests passed!")
-
-cov.stop()
-cov.save()
