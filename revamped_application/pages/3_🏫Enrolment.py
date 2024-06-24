@@ -458,7 +458,7 @@ with search:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.sortBy_order = st.selectbox(label="Sort By Order",
                                                          options=SortOrder,
-                                                         format_func=lambda x: x.value[0],
+                                                         format_func=lambda x: str(x),
                                                          help="Sort order. Ascending - asc, Descending - desc. "
                                                               "Will default to desc if null",
                                                          key="search-enrolment-sort-by-order")

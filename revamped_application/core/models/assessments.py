@@ -429,7 +429,7 @@ class UpdateVoidAssessmentInfo(CreateAssessmentInfo):
         return pl
 
     def is_update(self) -> bool:
-        return self._action == "update"
+        return self._action == AssessmentUpdateVoidActions.UPDATE
 
 
 class SearchAssessmentInfo(AbstractRequestInfo):
