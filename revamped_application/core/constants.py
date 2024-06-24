@@ -33,9 +33,6 @@ class Vacancy(Enum):
     def __str__(self):
         return f"{self.value[0]}: {self.value[1]}"
 
-    AVAILABLE: tuple[str, str] = ("A", "Available")
-    FULL: tuple[str, str] = ("F", "Full")
-    LIMITED_VACANCY: tuple[str, str] = ("L", "Limited Vacancy")
 
 # ===== COURSE CONSTANTS ===== #
 class Role(Enum):
@@ -208,3 +205,67 @@ class SurveyLanguage(Enum):
 
     def __str__(self):
         return f"{self.value[0]}: {self.value[1]}"
+
+
+# ====== ENROLMENT CONSTANTS ===== #
+class CollectionStatus(Enum):
+    """Enum represents the different statuses of a collection."""
+
+    PENDING_PAYMENT = "Pending Payment"
+    PARTIAL_PAYMENT = "Partial Payment"
+    FULL_PAYMENT = "Full Payment"
+
+    def __str__(self):
+        return self.value
+
+
+class CancellableCollectionStatus(Enum):
+    """Enum represents the statuses of a collection that can be cancelled."""
+
+    PENDING_PAYMENT = "Pending Payment"
+    PARTIAL_PAYMENT = "Partial Payment"
+    FULL_PAYMENT = "Full Payment"
+    CANCELLED = "Cancelled"
+
+    def __str__(self):
+        return self.value
+
+
+class SponsorshipType(Enum):
+    """Enum represents the different types of sponsorships that can be made."""
+
+    EMPLOYER = "EMPLOYER"
+    INDIVIDUAL = "INDIVIDUAL"
+
+    def __str__(self):
+        return self.value
+
+
+class EnrolmentSortField(Enum):
+    """Enum represents the different fields that can be sorted by."""
+
+    UPDATED_ON = "updatedOn"
+    CREATED_ON = "createdOn"
+
+    def __str__(self):
+        return self.value
+
+
+class EnrolmentStatus(Enum):
+    """Enum represents the different statuses of an enrolment."""
+
+    CONFIRMED = "Confirmed"
+    REJECTED = "Rejected"
+
+    def __str__(self):
+        return self.value
+
+
+class EnrolmentCourseStatus(Enum):
+    """Enum represents the different statuses of a course enrolment."""
+
+    CONFIRMED = "Confirmed"
+    CANCELLED = "Cancelled"
+
+    def __str__(self):
+        return self.value

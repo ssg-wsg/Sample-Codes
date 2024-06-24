@@ -16,7 +16,7 @@ import streamlit_nested_layout  # noqa: E402
 from tempfile import NamedTemporaryFile  # noqa: E402
 
 from utils.streamlit_utils import init, display_config  # noqa: E402
-from utils.verify import verify_uen, verify_aes_encryption_key, verify_cert_private_key  # noqa: E402
+from utils.verify import Validators  # noqa: E402
 from core.system.cleaner import start_schedule  # noqa: E402
 from core.system.logger import Logger  # noqa: E402
 from core.constants import Endpoints  # noqa: E402
@@ -62,18 +62,18 @@ st.markdown("Key in your UEN number, as well as your encryption keys, certificat
 with st.form(key="init_config"):
     uen = st.text_input("Enter in your UEN", help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
                                                   "to identify your organisation.")
-    enc_key = st.text_area("Enter in your encryption key", help="Refer to this [guide](https://developer.ssg-wsg.gov"
-                                                                ".sg/webapp/guides/6gvz7gEnwU2dSIKPrTcXnq#authenticat"
-                                                                "ion-types) for more info.")
+    enc_key = st.text_input("Enter in your encryption key", type="password",
+                            help="Refer to this [guide](https://developer.ssg-wsg.gov.sg/webapp/guides/"
+                                 "6gvz7gEnwU2dSIKPrTcXnq#authentication-types) for more info.")
     cert_pem = st.file_uploader("Upload your Certificate Key", type=["pem"], accept_multiple_files=False, key="cert")
     key_pem = st.file_uploader("Upload your Private Key", type=["pem"], accept_multiple_files=False, key="key")
 
     if st.form_submit_button("Load"):
         LOGGER.info("Loading configurations...")
-        if not verify_uen(uen):
+        if not Validators.verify_uen(uen):
             LOGGER.error("Invalid UEN provided!")
             st.error("Invalid **UEN** provided!", icon="🚨")
-        elif not verify_aes_encryption_key(enc_key):
+        elif not Validators.verify_aes_encryption_key(enc_key):
             LOGGER.error("Invalid AES-256 encryption key provided!")
             st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
         elif cert_pem is None:
@@ -97,7 +97,7 @@ with st.form(key="init_config"):
                 LOGGER.info("Private key loaded!")
 
                 LOGGER.info("Verifying certificate and key...")
-                if not verify_cert_private_key(st.session_state["cert_pem"], st.session_state["key_pem"]):
+                if not Validators.verify_cert_private_key(st.session_state["cert_pem"], st.session_state["key_pem"]):
                     LOGGER.error("Certificate and private key are not valid!")
                     raise AssertionError("Certificate and private key are not valid! Are you sure that you "
                                          "have uploaded your certificates and private keys properly?")
