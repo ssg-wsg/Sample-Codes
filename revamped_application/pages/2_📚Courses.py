@@ -27,9 +27,9 @@ from revamped_application.core.courses.add_course_run import AddCourseRun
 from revamped_application.core.courses.view_course_sessions import ViewCourseSessions
 from revamped_application.core.models.course_runs import (EditRunInfo, RunSessionEditInfo, RunTrainerEditInfo,
                                                           DeleteRunInfo, AddRunInfo, RunSessionAddInfo,
-                                                          RunTrainerAddInfo, AddRunIndividualInfo)
+                                                          RunTrainerAddInfo, AddRunIndividualInfo, LinkedSSECEQA)
 from revamped_application.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutations, Role, \
-    OptionalSelector
+    OptionalSelector, TrainerType
 from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import (init, display_config,
@@ -472,14 +472,13 @@ with add:
                     runtrainer = RunTrainerAddInfo()
 
                     st.markdown(f"##### Trainer {i + 1}")
-                    runtrainer.trainer_type_code = st.text_input(label="Trainer Type",
-                                                                 key=f"add-trainer-type-{i}-{run}",
-                                                                 help="Trainer type code",
-                                                                 max_chars=1)
-                    runtrainer.trainer_type_description = st.text_input(label="Trainer Description",
-                                                                        key=f"add-trainer-type-description-{i}-{run}",
-                                                                        help="Trainer description",
-                                                                        max_chars=128)
+                    code = st.selectbox(label="Trainer Type Code",
+                                        options=TrainerType,
+                                        format_func=lambda x: str(x),
+                                        key=f"add-trainer-type-code-{i}-{run}")
+
+                    runtrainer.trainer_type_code = code.value
+                    runtrainer.trainer_type_description = code.name.title()
 
                     st.markdown("###### Trainer Particulars")
                     if st.checkbox("Specify Trainer Index Number", key=f"specify-add-trainer-index-number-{i}-{run}"):
@@ -609,19 +608,12 @@ with add:
 
                     for j in range(linkedssec):
                         # create a dict first then fill in
-                        temp_ssec = {"ssecEQA": {}}
+                        temp_ssec = LinkedSSECEQA()
 
                         st.markdown(f"*Linked SSEC EQA {j + 1}*")
-                        if st.checkbox("Specify SSEC EQA Description",
-                                       key=f"specify-add-trainer-linkedssec-description-{i}-{j}-{run}"):
-                            temp_ssec["description"] = st.text_area(
-                                label="Description",
-                                help="Description of the linked ssec-EQA",
-                                key=f"add-trainer-linkedssec-description-{i}-{j}-{run}",
-                                max_chars=1000)
 
                         if st.checkbox("Specify SSEC EQA", key=f"specify-add-trainer-linkedssec-{i}-{j}-{run}"):
-                            temp_ssec["ssecEQA"]["code"] = st.text_input(
+                            temp_ssec.ssecEQA = st.text_input(
                                 label="SSEC EQA Code",
                                 key=f"add-trainer-linkedssec-{i}-{j}-{run}",
                                 help="SSEC EQA is defined by Department of Statitics Singapore, please refer to "
@@ -629,6 +621,13 @@ with add:
                                      "ssec) for more details",
                                 max_chars=2)
 
+                        if st.checkbox("Specify SSEC EQA Description",
+                                       key=f"specify-add-trainer-linkedssec-description-{i}-{j}-{run}"):
+                            temp_ssec.description = st.text_area(
+                                label="Description",
+                                help="Description of the linked ssec-EQA",
+                                key=f"add-trainer-linkedssec-description-{i}-{j}-{run}",
+                                max_chars=1000)
                         runtrainer.add_linkedSsecEQA(temp_ssec)
 
                 indiv_run.add_linkCourseRunTrainer(runtrainer)
@@ -782,12 +781,14 @@ with edit_delete:
             runinfo.schedule_info_type_code = st.text_input(label="Schedule Code",
                                                             key="edit-schedule-info-type-code",
                                                             max_chars=2,
+                                                            placeholder="01",
                                                             help="Course run schedule info code")
 
             if st.checkbox("Specify Schedule Info Type Description?",
                            key="specify-edit-schedule-info-type-description"):
                 runinfo.schedule_info_type_description = st.text_area(label="Schedule Info Type Description",
                                                                       key="edit-schedule-info-type-description",
+                                                                      placeholder="Description",
                                                                       help="Course run schedule info description",
                                                                       max_chars=32)
 
@@ -1026,14 +1027,13 @@ with edit_delete:
                     runtrainer = RunTrainerEditInfo()
 
                     st.markdown(f"##### Trainer {i + 1}")
-                    runtrainer.trainer_type_code = st.text_input(label="Trainer Type",
-                                                                 key=f"edit-trainer-trainer-code-{i}",
-                                                                 help="Trainer type code",
-                                                                 max_chars=1)
-                    runtrainer.trainer_type_description = st.text_input(label="Trainer Description",
-                                                                        key=f"trainer_description_{i}",
-                                                                        help="Trainer description",
-                                                                        max_chars=128)
+                    code = st.selectbox(label="Trainer Type Code",
+                                        options=TrainerType,
+                                        format_func=lambda x: str(x),
+                                        key=f"edit-trainer-code-{i}")
+
+                    runtrainer.trainer_type_code = code.value
+                    runtrainer.trainer_type_description = code.name.title()
 
                     if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
                         runtrainer.index_number = st.number_input(
@@ -1111,10 +1111,10 @@ with edit_delete:
                             max_chars=1000)
 
                     if st.checkbox("Specify Experience?", key=f"specify-edit-trainer-experience-{i}"):
-                        runtrainer.experience = st.text_input(label="Experience",
-                                                              key=f"edit-trainer-experience-{i}",
-                                                              help="Trainer experience",
-                                                              max_chars=1000)
+                        runtrainer.experience = st.text_area(label="Experience",
+                                                             key=f"edit-trainer-experience-{i}",
+                                                             help="Trainer experience",
+                                                             max_chars=1000)
 
                     if st.checkbox("Specify LinkedIn URL?", key=f"specify-edit-trainer-linkedin-url-{i}"):
                         runtrainer.linkedInURL = st.text_input(label="LinkedIn URL",
@@ -1158,28 +1158,27 @@ with edit_delete:
                     )
 
                     for j in range(linkedssec):
-                        # create a dict first then fill in
-                        temp_ssec = {"ssecEQA": {}}
+                        temp_ssec = LinkedSSECEQA()
 
                         st.markdown(f"*Linked SSEC EQA {j + 1}*")
 
                         if st.checkbox("Specify SSEC EQA", key=f"specify-edit-trainer-linkedSsecEQA-{i}-{j}"):
-                            temp_ssec["ssecEQA"]["code"] = st.text_input(label="SSEC EQA Code",
-                                                                         help="SSEC EQA is defined by Department "
-                                                                              "of Statitics Singapore, please "
-                                                                              "refer to [this link](https://www."
-                                                                              "singstat.gov.sg/standards/standards"
-                                                                              "-and-classifications/ssec) for "
-                                                                              "more details",
-                                                                         key=f"edit-trainer-linkedSsecEQA-{i}-{j}",
-                                                                         max_chars=2)
+                            temp_ssec.ssecEQA = st.text_input(label="SSEC EQA Code",
+                                                              help="SSEC EQA is defined by Department "
+                                                                   "of Statitics Singapore, please "
+                                                                   "refer to [this link](https://www."
+                                                                   "singstat.gov.sg/standards/standards"
+                                                                   "-and-classifications/ssec) for "
+                                                                   "more details",
+                                                              key=f"edit-trainer-linkedSsecEQA-{i}-{j}",
+                                                              max_chars=2)
 
                         if st.checkbox("Specify SSEC EQA Description",
                                        key=f"specify-edit-linkedSsecEQA-description-{i}-{j}"):
-                            temp_ssec["description"] = st.text_area(label="Description",
-                                                                    help="Description of the linked ssec-EQA",
-                                                                    key=f"edit-linkedSsecEQA-description-{i}-{j}",
-                                                                    max_chars=1000)
+                            temp_ssec.description = st.text_area(label="Description",
+                                                                 help="Description of the linked ssec-EQA",
+                                                                 key=f"edit-linkedSsecEQA-description-{i}-{j}",
+                                                                 max_chars=1000)
 
                         runtrainer.add_linkedSsecEQA(temp_ssec)
 

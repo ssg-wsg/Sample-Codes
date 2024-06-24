@@ -16,7 +16,7 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile, UploadedFileRe
 from revamped_application.core.constants import Vacancy, ModeOfTraining, IdType, Salutations, Role, OptionalSelector
 from revamped_application.core.models.course_runs import (RunSessionEditInfo, RunSessionAddInfo, RunTrainerEditInfo,
                                                           RunTrainerAddInfo, EditRunInfo, DeleteRunInfo,
-                                                          AddRunIndividualInfo, AddRunInfo)
+                                                          AddRunIndividualInfo, AddRunInfo, LinkedSSECEQA)
 from revamped_application.test.resources.definitions import RESOURCES_PATH
 
 
@@ -146,27 +146,24 @@ class TestCourseRunsModels(unittest.TestCase):
             FileURLsProto()
         )
 
+    TEST_SSEC_ONE = LinkedSSECEQA()
+    TEST_SSEC_ONE.ssecEQA = "12"
+    TEST_SSEC_ONE.description = "EQA test 4"
+
+    TEST_SSEC_TWO = LinkedSSECEQA()
+    TEST_SSEC_TWO.ssecEQA = "22"
+    TEST_SSEC_TWO.description = "EQA test 7"
+
+    TEST_SSEC_THREE = LinkedSSECEQA()
+    TEST_SSEC_THREE.ssecEQA = "65"
+    TEST_SSEC_THREE.description = "EQA test 11"
+
     LINKED_SSEC_EQAS_ONE = [
-        {
-            "description": "EQA test 4",
-            "ssecEQA": {
-                "code": "12"
-            }
-        }
+        TEST_SSEC_ONE
     ]
+
     LINKED_SSEC_EQAS_TWO = [
-        {
-            "description": "EQA test 7",
-            "ssecEQA": {
-                "code": "22"
-            }
-        },
-        {
-            "description": "EQA test 11",
-            "ssecEQA": {
-                "code": "65"
-            }
-        }
+        TEST_SSEC_TWO, TEST_SSEC_THREE
     ]
 
     # model instances
@@ -2061,7 +2058,7 @@ class TestCourseRunsModels(unittest.TestCase):
             self.fail(f"Unable to load resources: {ex}")
 
         # since the photo is large, we need to up the size of the diff to view the differences if any
-        self.maxDiff = 99999999
+        self.maxDiff = None
 
         p2 = {
             "trainer": {
@@ -2080,8 +2077,10 @@ class TestCourseRunsModels(unittest.TestCase):
                 },
                 "roles": [
                     {
-                        "id": 1,
-                        "description": "Trainer"
+                        "role": {
+                            "id": 1,
+                            "description": "Trainer"
+                        }
                     }
                 ],
                 "inTrainingProviderProfile": True,
@@ -2122,12 +2121,16 @@ class TestCourseRunsModels(unittest.TestCase):
                 },
                 "roles": [
                     {
-                        "id": 1,
-                        "description": "Trainer"
+                        "role": {
+                            "id": 1,
+                            "description": "Trainer"
+                        }
                     },
                     {
-                        "id": 2,
-                        "description": "Assessor"
+                        "role": {
+                            "id": 2,
+                            "description": "Assessor"
+                        }
                     }
                 ],
                 "inTrainingProviderProfile": False,
@@ -2625,26 +2628,17 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE.add_linkedSsecEQA("three")
 
-        EQA1 = {
-            "description": "EQA 1",
-            "ssecEQA": {
-                "code": "1"
-            }
-        }
+        EQA1 = LinkedSSECEQA()
+        EQA1.ssecEQA = "1"
+        EQA1.description = "EQA 1"
 
-        EQA2 = {
-            "description": "EQA test 21",
-            "ssecEQA": {
-                "code": "22"
-            }
-        }
+        EQA2 = LinkedSSECEQA()
+        EQA2.ssecEQA = "22"
+        EQA2.description = "EQA test 21"
 
-        EQA3 = {
-            "description": "EQA test 12",
-            "ssecEQA": {
-                "code": "23"
-            }
-        }
+        EQA3 = LinkedSSECEQA()
+        EQA3.ssecEQA = "23"
+        EQA3.description = "EQA test 12"
 
         # reset the linked SSEC EQAs in RUN_TRAINER_EDIT_INFO_TWO and RUN_TRAINER_EDIT_INFO_THREE
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._linkedSsecEQAs = []
@@ -2654,9 +2648,9 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO.add_linkedSsecEQA(EQA2)
         TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE.add_linkedSsecEQA(EQA3)
 
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._linkedSsecEQAs, [EQA1])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._linkedSsecEQAs, [EQA2])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._linkedSsecEQAs, [EQA3])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_ONE._linkedSsecEQAs, [EQA1.payload()])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_TWO._linkedSsecEQAs, [EQA2.payload()])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_EDIT_INFO_THREE._linkedSsecEQAs, [EQA3.payload()])
 
     # RunTrainerAddInfo tests
     def test_RunTrainerAddInfo_validate(self):
@@ -2678,7 +2672,7 @@ class TestCourseRunsModels(unittest.TestCase):
             self.fail(f"Unable to load resources: {ex}")
 
         # since the photo is large, we need to up the size of the diff to view the differences if any
-        self.maxDiff = 99999999
+        self.maxDiff = None
 
         p2 = {
             "trainer": {
@@ -2697,8 +2691,10 @@ class TestCourseRunsModels(unittest.TestCase):
                 },
                 "roles": [
                     {
-                        "id": 1,
-                        "description": "Trainer"
+                        "role": {
+                            "id": 1,
+                            "description": "Trainer"
+                        }
                     }
                 ],
                 "inTrainingProviderProfile": True,
@@ -2739,12 +2735,16 @@ class TestCourseRunsModels(unittest.TestCase):
                 },
                 "roles": [
                     {
-                        "id": 1,
-                        "description": "Trainer"
+                        "role": {
+                            "id": 1,
+                            "description": "Trainer"
+                        }
                     },
                     {
-                        "id": 2,
-                        "description": "Assessor"
+                        "role": {
+                            "id": 2,
+                            "description": "Assessor"
+                        }
                     }
                 ],
                 "inTrainingProviderProfile": False,
@@ -3240,26 +3240,17 @@ class TestCourseRunsModels(unittest.TestCase):
         with self.assertRaises(ValueError):
             TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.add_linkedSsecEQA("three")
 
-        EQA1 = {
-            "description": "EQA 1",
-            "ssecEQA": {
-                "code": "1"
-            }
-        }
+        EQA1 = LinkedSSECEQA()
+        EQA1.description = "EQA 1"
+        EQA1.ssecEQA = "1"
 
-        EQA2 = {
-            "description": "EQA test 21",
-            "ssecEQA": {
-                "code": "22"
-            }
-        }
+        EQA2 = LinkedSSECEQA()
+        EQA2.description = "EQA test 2"
+        EQA2.ssecEQA = "22"
 
-        EQA3 = {
-            "description": "EQA test 12",
-            "ssecEQA": {
-                "code": "23"
-            }
-        }
+        EQA3 = LinkedSSECEQA()
+        EQA3.description = "EQA test 12"
+        EQA3.ssecEQA = "23"
 
         # reset the linked SSEC EQAs in RUN_TRAINER_ADD_INFO_TWO and RUN_TRAINER_ADD_INFO_THREE
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._linkedSsecEQAs = []
@@ -3269,9 +3260,9 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO.add_linkedSsecEQA(EQA2)
         TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE.add_linkedSsecEQA(EQA3)
 
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._linkedSsecEQAs, [EQA1])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._linkedSsecEQAs, [EQA2])
-        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._linkedSsecEQAs, [EQA3])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_ONE._linkedSsecEQAs, [EQA1.payload()])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_TWO._linkedSsecEQAs, [EQA2.payload()])
+        self.assertEqual(TestCourseRunsModels.RUN_TRAINER_ADD_INFO_THREE._linkedSsecEQAs, [EQA3.payload()])
 
     # EditRunInfo tests
     def test_EditRunInfo_validate(self):
@@ -3293,7 +3284,7 @@ class TestCourseRunsModels(unittest.TestCase):
             self.fail(f"Unable to load resources: {ex}")
 
         # since the photo is large, we need to up the size of the diff to view the differences if any
-        self.maxDiff = 99999999
+        self.maxDiff = None
 
         p3 = {
             "course": {
@@ -3398,8 +3389,10 @@ class TestCourseRunsModels(unittest.TestCase):
                             },
                             "roles": [
                                 {
-                                    "id": 1,
-                                    "description": "Trainer"
+                                    "role": {
+                                        "id": 1,
+                                        "description": "Trainer"
+                                    }
                                 }
                             ],
                             "inTrainingProviderProfile": True,
@@ -3439,8 +3432,10 @@ class TestCourseRunsModels(unittest.TestCase):
                             },
                             "roles": [
                                 {
-                                    "id": 1,
-                                    "description": "Trainer"
+                                    "role": {
+                                        "id": 1,
+                                        "description": "Trainer"
+                                    }
                                 }
                             ],
                             "inTrainingProviderProfile": True,
@@ -4502,8 +4497,7 @@ class TestCourseRunsModels(unittest.TestCase):
             TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_TWO.payload()
 
         # since the photo is large, we need to up the size of the diff to view the differences if any
-        self.maxDiff = 99999999999
-
+        self.maxDiff = None
         pl = {
             "sequenceNumber": 2,
             "registrationDates": {
@@ -4602,8 +4596,10 @@ class TestCourseRunsModels(unittest.TestCase):
                         },
                         "roles": [
                             {
-                                "id": 1,
-                                "description": "Trainer"
+                                "role": {
+                                    "id": 1,
+                                    "description": "Trainer"
+                                }
                             }
                         ],
                         "inTrainingProviderProfile": True,
@@ -4643,8 +4639,10 @@ class TestCourseRunsModels(unittest.TestCase):
                         },
                         "roles": [
                             {
-                                "id": 1,
-                                "description": "Trainer"
+                                "role": {
+                                    "id": 1,
+                                    "description": "Trainer"
+                                }
                             }
                         ],
                         "inTrainingProviderProfile": True,
@@ -5463,7 +5461,7 @@ class TestCourseRunsModels(unittest.TestCase):
         TestCourseRunsModels.ADD_RUN_INFO_THREE._runs = [TestCourseRunsModels.ADD_INDIVIDUAL_RUN_INFO_THREE]
 
         # since images are tested, we need to increase the size of the diffs
-        self.maxDiff = 99999999
+        self.maxDiff = None
 
         p3 = {
             "course": {
@@ -5567,8 +5565,10 @@ class TestCourseRunsModels(unittest.TestCase):
                                 },
                                 "roles": [
                                     {
-                                        "id": 1,
-                                        "description": "Trainer"
+                                        "role": {
+                                            "id": 1,
+                                            "description": "Trainer"
+                                        }
                                     }
                                 ],
                                 "inTrainingProviderProfile": True,
@@ -5611,8 +5611,10 @@ class TestCourseRunsModels(unittest.TestCase):
                                 "roles":
                                     [
                                         {
-                                            "id": 1,
-                                            "description": "Trainer"
+                                            "role": {
+                                                "id": 1,
+                                                "description": "Trainer"
+                                            }
                                         }
                                     ],
                                 "inTrainingProviderProfile": True,

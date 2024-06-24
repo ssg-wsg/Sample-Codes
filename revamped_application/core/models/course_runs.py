@@ -179,6 +179,8 @@ class LinkedSSECEQA(AbstractRequestInfo):
             }
         }
 
+        pl = remove_null_fields(pl)
+
         if as_json_str:
             return json.dumps(pl)
 
@@ -849,24 +851,30 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
         self._photo_content = photo_content
 
-    def add_linkedSsecEQA(self, linkedSsecEQA: dict):
+    def add_linkedSsecEQA(self, linkedSsecEQA: LinkedSSECEQA):
         """Method to add a Linked SSEC EQA record to this object."""
 
-        if not isinstance(linkedSsecEQA, dict):
+        if not isinstance(linkedSsecEQA, LinkedSSECEQA):
             raise ValueError("Invalid linkedSsecEQA")
 
-        self._linkedSsecEQAs.append(linkedSsecEQA)
+        # the object is converted to a dict as the object itself is not JSON-serializable
+        self._linkedSsecEQAs.append(linkedSsecEQA.payload(verify=False))
 
     @property
     def linkedSsecEQAs(self):
-        return self._linkedSsecEQAs
+        # the object is converted to a dict as the object itself is not JSON-serializable
+        return list(map(lambda x: LinkedSSECEQA(x), self._linkedSsecEQAs))
 
     @linkedSsecEQAs.setter
-    def linkedSsecEQAs(self, linkedSsecEQAs: list[dict]):
-        if not isinstance(linkedSsecEQAs, dict):
+    def linkedSsecEQAs(self, linkedSsecEQAs: list[LinkedSSECEQA]):
+        if not isinstance(linkedSsecEQAs, list):
             raise ValueError("Invalid linkedSsecEQA")
 
-        self._linkedSsecEQAs.append(linkedSsecEQAs)
+        if not all(map(lambda x: isinstance(x, LinkedSSECEQA), linkedSsecEQAs)):
+            raise ValueError("Invalid linkedSsecEQA")
+
+        # the object is converted to a dict as the object itself is not JSON-serializable
+        self._linkedSsecEQAs = list(map(lambda x: x.payload(verify=False), linkedSsecEQAs))
 
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
@@ -1159,6 +1167,21 @@ class EditRunInfo(AbstractRequestInfo):
             raise ValueError("Invalid Course Reference ID number")
 
         self._crid = crn
+
+    @property
+    def vacancy(self):
+        return Vacancy((self._courseVacancy_code, self._courseVacancy_description))
+
+    @vacancy.setter
+    def vacancy(self, vacancy: Vacancy):
+        if not isinstance(vacancy, Vacancy):
+            try:
+                vacancy = Vacancy(vacancy)
+            except Exception:
+                raise ValueError("Invalid Vacancy code")
+
+        self._courseVacancy_code = vacancy.value[0]
+        self._courseVacancy_description = vacancy.value[1]
 
     @property
     def sequence_number(self):
