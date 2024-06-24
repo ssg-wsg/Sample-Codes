@@ -25,6 +25,7 @@ from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, \
     does_not_have_keys
+from revamped_application.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -156,6 +157,10 @@ with upload:
                                                             "necessary",
                                                        max_chars=320,
                                                        key="trainee-email-upload-attendance")
+
+        if len(uploadAttendance.trainee_email) > 0:
+            if not Validators.verify_email(uploadAttendance.trainee_email):
+                st.warning(f"Email format is not valid!", icon="⚠️")
 
     uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
                                                           max_chars=15,

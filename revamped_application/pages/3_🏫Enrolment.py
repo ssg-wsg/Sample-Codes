@@ -9,8 +9,7 @@ from revamped_application.core.enrolment.cancel_enrolment import CancelEnrolment
 from revamped_application.core.enrolment.search_enrolment import SearchEnrolment
 from revamped_application.core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFeeCollection
 from revamped_application.core.constants import (IdTypeSummary, CollectionStatus, CancellableCollectionStatus,
-                                                 SponsorshipType, EnrolmentSortField, SortOrder, EnrolmentStatus,
-                                                 EnrolmentCourseStatus)
+                                                 SponsorshipType, EnrolmentSortField, SortOrder, EnrolmentCourseStatus)
 from revamped_application.utils.http_utils import handle_request, handle_response
 from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler
 from revamped_application.utils.verify import Validators
@@ -118,6 +117,10 @@ with create:
             help="The employer contact's email address",
             key="enrolment-employer-contact-email-address")
 
+        if len(create_enrolment.employer_emailAddress) > 0:
+            if not Validators.verify_email(create_enrolment.employer_emailAddress):
+                st.warning(f"Email format is not valid!", icon="⚠️")
+
     col1, col2, col3 = st.columns(3)
 
     if col1.checkbox("Specify Employer Phone Number Area Code?",
@@ -157,6 +160,9 @@ with create:
                                                           max_chars=100,
                                                           help="The trainee's email address",
                                                           key="enrolment-trainee-email-address")
+    if len(create_enrolment.trainee_emailAddress) > 0:
+        if not Validators.verify_email(create_enrolment.trainee_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -285,6 +291,10 @@ with update:
             help="The employer contact's email address",
             key="update-enrolment-employer-contact-email-address")
 
+        if len(update_enrolment.employer_emailAddress) > 0:
+            if not Validators.verify_email(update_enrolment.employer_emailAddress):
+                st.warning(f"Email format is not valid!", icon="⚠️")
+
     col1, col2, col3 = st.columns(3)
 
     if col1.checkbox("Specify Employer Phone Number Area Code?",
@@ -316,6 +326,10 @@ with update:
                                                               max_chars=100,
                                                               help="The trainee's email address",
                                                               key="update-enrolment-trainee-email-address")
+
+        if len(update_enrolment.trainee_emailAddress) > 0:
+            if not Validators.verify_email(update_enrolment.trainee_emailAddress):
+                st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
     if col1.checkbox("Specify Trainee Phone Number Area Code",

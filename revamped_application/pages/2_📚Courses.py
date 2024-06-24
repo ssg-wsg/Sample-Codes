@@ -34,6 +34,7 @@ from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import (init, display_config,
                                                         validation_error_handler, does_not_have_keys)
+from revamped_application.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -278,6 +279,10 @@ with add:
                      "Attendance Taking', 'Course Attendance with error' and 'Trainer information not updated'",
                 max_chars=255)
 
+            if len(indiv_run.course_admin_email) > 0:
+                if not Validators.verify_email(indiv_run.course_admin_email):
+                    st.warning(f"Email format is not valid!", icon="⚠️")
+
             st.markdown("#### Course Vacancy Details")
             indiv_run.course_vacancy = st.selectbox(label="Course Vacancy",
                                                     key=f"add-course-vacancy-{run}",
@@ -507,6 +512,9 @@ with add:
                                                              key=f"add-trainer-email-{i}-{run}",
                                                              help="Trainer email address",
                                                              max_chars=320)
+                    if len(runtrainer.trainer_email) > 0:
+                        if not Validators.verify_email(runtrainer.trainer_email):
+                            st.warning(f"Email format is not valid!", icon="⚠️")
 
                     st.markdown("###### Trainer ID")
                     col1, col2 = st.columns(2)
@@ -736,6 +744,10 @@ with edit_delete:
                                                             "Attendance Taking', 'Course Atendance with error'"
                                                             " and 'Trainer information not updated'",
                                                        max_chars=255)
+
+            if len(runinfo.course_admin_email) > 0:
+                if not Validators.verify_email(runinfo.course_admin_email):
+                    st.warning(f"Email format is not valid!", icon="⚠️")
 
         st.markdown("#### Course Vacancy Details")
         if st.checkbox("Specify Course Vacancy?", key="specify-edit-vacancy-code"):
@@ -1060,6 +1072,10 @@ with edit_delete:
                                                              key=f"edit-trainer-trainer-email-{i}",
                                                              help="Trainer email address",
                                                              max_chars=320)
+
+                    if len(runtrainer.trainer_email) > 0:
+                        if not Validators.verify_email(runtrainer.trainer_email):
+                            st.warning(f"Email format is not valid!", icon="⚠️")
 
                     st.markdown("###### Trainer ID")
                     col1, col2 = st.columns(2)
