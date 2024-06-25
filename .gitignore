@@ -6,3 +6,10 @@
 
 # ignore .secrets
 revamped_application/.secrets
+secrets
+
+# ignore logs
+.log
+
+# ignore coverage files
+revamped_application/coverage.xml
