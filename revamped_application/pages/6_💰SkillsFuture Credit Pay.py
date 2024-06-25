@@ -177,7 +177,7 @@ with upload:
                                     key="upload-document-nric",
                                     max_chars=9)
 
-    if not Validators.verify_nric(upload_doc.nric):
+    if len(upload_doc.nric) > 0 and not Validators.verify_nric(upload_doc.nric):
         st.warning("NRIC format is not valid!", icon="⚠️")
 
     st.subheader("Supporting Documents")
@@ -302,7 +302,7 @@ with cancel:
                                        max_chars=9,
                                        help="NRIC of the individual")
 
-    if not Validators.verify_nric(cancel_claims.nric):
+    if len(cancel_claims.nric) > 0 and not Validators.verify_nric(cancel_claims.nric):
         st.warning("NRIC format is not valid!", icon="⚠️")
 
     cancel_claims.cancel_claims_code = st.selectbox(label="Select Cancel Claims Code",
