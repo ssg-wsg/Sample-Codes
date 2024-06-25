@@ -2,7 +2,7 @@
 This file contains helper functions that handles the manipulation of JSON data.
 """
 
-from typing import Sequence
+from typing import Sequence, Sized
 
 
 def remove_null_fields(d: dict, exclude: Sequence[str] = ()) -> dict:
@@ -33,7 +33,14 @@ def remove_null_fields(d: dict, exclude: Sequence[str] = ()) -> dict:
             if len(d[k]) == 0:
                 keys_to_remove.append(k)
 
-        # remove any keys with None values
+        # if a list is found, check if its contents are None or empty, and remove accordingly
+        if isinstance(v, list):
+            # remove any keys with None values or empty values
+            d[k] = [item for item in v if item is not None and (not isinstance(item, Sized) or len(item) > 0)]
+
+            if len(v) == 0:
+                keys_to_remove.append(k)
+
         if v is None:
             keys_to_remove.append(k)
 

@@ -7,9 +7,7 @@ import streamlit as st
 
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import HttpMethod
-
-from typing import Literal
+from revamped_application.core.constants import HttpMethod, OptionalSelector
 
 
 class ViewCourseRun(AbstractRequest):
@@ -17,7 +15,7 @@ class ViewCourseRun(AbstractRequest):
 
     _TYPE: HttpMethod = HttpMethod.GET
 
-    def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]):
+    def __init__(self, runId: str, include_expired: OptionalSelector):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, include_expired)
@@ -32,7 +30,7 @@ class ViewCourseRun(AbstractRequest):
 
         return self.__repr__()
 
-    def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"]) -> None:
+    def _prepare(self, runId: str, include_expired: OptionalSelector) -> None:
         """
         Creates an HTTP GET request for retrieving course runs by runId.
 
@@ -46,9 +44,9 @@ class ViewCourseRun(AbstractRequest):
             .with_header("Content-Type", "application/json")
 
         match include_expired:
-            case "Yes":
+            case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
-            case "No":
+            case OptionalSelector.NO:
                 self.req = self.req.with_param("includeExpiredCourses", "false")
 
     def execute(self) -> requests.Response:

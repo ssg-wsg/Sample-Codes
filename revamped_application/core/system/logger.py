@@ -57,7 +57,7 @@ class Logger:
         self.logger.addHandler(Logger.STREAM_HANDLER)
         self.logger.addHandler(Logger.FILE_HANDLER)
 
-    def debug(self, message):
+    def debug(self, message) -> None:
         """
         Generates a DEBUG level logging message.
 
@@ -66,7 +66,7 @@ class Logger:
 
         self.logger.debug(message)
 
-    def info(self, message):
+    def info(self, message) -> None:
         """
         Generates an INFO level logging message.
 
@@ -75,7 +75,7 @@ class Logger:
 
         self.logger.info(message)
 
-    def warning(self, message):
+    def warning(self, message) -> None:
         """
         Generates a WARNING level logging message.
 
@@ -84,7 +84,7 @@ class Logger:
 
         self.logger.warning(message)
 
-    def error(self, message):
+    def error(self, message) -> None:
         """
         Generates an ERROR level logging message.
 
@@ -92,3 +92,14 @@ class Logger:
         """
 
         self.logger.error(message)
+
+    def close(self) -> None:
+        """
+        Closes any handlers attached to this logger instance and removes them from this logger.
+
+        Taken from https://stackoverflow.com/questions/15435652/python-does-not-release-filehandles-to-logfile
+        """
+
+        for handler in self.logger.handlers:
+            self.logger.removeHandler(handler)
+            handler.close()

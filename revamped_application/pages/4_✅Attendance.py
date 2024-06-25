@@ -25,6 +25,7 @@ from revamped_application.core.system.logger import Logger
 from revamped_application.utils.http_utils import handle_response, handle_request
 from revamped_application.utils.streamlit_utils import init, display_config, validation_error_handler, \
     does_not_have_keys
+from revamped_application.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -34,6 +35,7 @@ st.set_page_config(page_title="Attendance", page_icon="✅")
 
 with st.sidebar:
     st.header("View Configs")
+    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
     if st.button("Configs", key="config_display"):
         display_config()
 
@@ -113,69 +115,80 @@ with upload:
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.set_referenceNumber(st.text_input(label="Key in the Course Reference Number",
-                                                       key="crn-upload-attendance-sessions"))
-    uploadAttendance.set_corppassId(st.text_input(label="Key in your CorpPass Number",
-                                                  key="corppass-upload-attendance-sessions"))
-    uploadAttendance.set_sessionId(st.text_input(label="Enter Session ID",
-                                                 help="The course session ID to be retrieved; encode this parameter "
-                                                      "to ensure that special characters will not be blocked by the "
-                                                      "Gateway",
-                                                 key="session_id_upload_attendance"))
+    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
+                                                     key="crn-upload-attendance-sessions")
+    uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
+                                                key="corppass-upload-attendance-sessions")
+    uploadAttendance.sessionId = st.text_input(label="Enter Session ID",
+                                               help="The course session ID to be retrieved; encode this parameter "
+                                                    "to ensure that special characters will not be blocked by the "
+                                                    "Gateway",
+                                               key="session_id_upload_attendance")
 
     st.subheader("Attendance Information")
-    uploadAttendance.set_statusCode(st.selectbox(label="Enter the Attendance Status Code",
-                                                 options=Attendance,
-                                                 format_func=lambda x: str(x),
-                                                 key="attendance-status-code-upload-attendance"))
+    uploadAttendance.status_code = st.selectbox(label="Enter the Attendance Status Code",
+                                                options=Attendance,
+                                                format_func=lambda x: str(x),
+                                                key="attendance-status-code-upload-attendance")
 
     st.subheader("Trainee Information")
-    uploadAttendance.set_trainee_id(st.text_input(label="Enter Trainee ID",
-                                                  help="The ID of the trainee",
-                                                  max_chars=100,
-                                                  key="trainee-id-upload-attendance"))
-    uploadAttendance.set_trainee_name(st.text_input(label="Enter Trainee Name",
-                                                    help="Name of the trainee",
-                                                    max_chars=66,
-                                                    key="trainee-name-upload-attendance"))
+    col1, col2 = st.columns(2)
+
+    with col1:
+        uploadAttendance.trainee_id_type = st.selectbox(label="Enter Trainee ID Type",
+                                                        options=IdType,
+                                                        format_func=lambda x: str(x),
+                                                        key="trainee-id-type-upload-attendance")
+
+    with col2:
+        uploadAttendance.trainee_id = st.text_input(label="Enter Trainee ID",
+                                                    help="The ID of the trainee",
+                                                    max_chars=50,
+                                                    key="trainee-id-upload-attendance")
+
+    uploadAttendance.trainee_name = st.text_input(label="Enter Trainee Name",
+                                                  help="Name of the trainee",
+                                                  max_chars=66,
+                                                  key="trainee-name-upload-attendance")
 
     if st.checkbox("Specify Trainee Email?", key="specify-trainee-email-upload-attendance"):
-        uploadAttendance.set_trainee_email(st.text_input(label="Enter Trainee Email",
-                                                         help="Email of the trainee; either email or contact number is "
-                                                              "necessary",
-                                                         max_chars=320,
-                                                         key="trainee-email-upload-attendance"))
-    uploadAttendance.set_trainee_id_type(st.selectbox(label="Enter Trainee ID Type",
-                                                      options=IdType,
-                                                      format_func=lambda x: str(x),
-                                                      key="trainee-id-type-upload-attendance"))
-    uploadAttendance.set_contactNumber_mobile(st.text_input(label="Enter Mobile Number of Trainee",
-                                                            max_chars=15,
-                                                            key="contact-number-mobile-upload-attendance"))
+        uploadAttendance.trainee_email = st.text_input(label="Enter Trainee Email",
+                                                       help="Email of the trainee; either email or contact number is "
+                                                            "necessary",
+                                                       max_chars=320,
+                                                       key="trainee-email-upload-attendance")
+
+        if len(uploadAttendance.trainee_email) > 0:
+            if not Validators.verify_email(uploadAttendance.trainee_email):
+                st.warning(f"Email format is not valid!", icon="⚠️")
+
+    uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
+                                                          max_chars=15,
+                                                          key="contact-number-mobile-upload-attendance")
 
     if st.checkbox("Specify Contact Number Area Code?", key="specify-areacode-upload-attendance"):
-        uploadAttendance.set_contactNumber_areacode(st.number_input(label="Enter Mobile Number Area Code",
-                                                                    min_value=0,
-                                                                    max_value=99999,
-                                                                    value=0))
+        uploadAttendance.contactNumber_areacode = st.number_input(label="Enter Mobile Number Area Code",
+                                                                  min_value=0,
+                                                                  max_value=99999,
+                                                                  value=0)
 
-    uploadAttendance.set_contactNumber_countryCode(st.number_input(label="Enter Mobile Number Country Code",
-                                                                   min_value=0,
-                                                                   max_value=999,
-                                                                   value=65))
+    uploadAttendance.contactNumber_countryCode = st.number_input(label="Enter Mobile Number Country Code",
+                                                                 min_value=0,
+                                                                 max_value=999,
+                                                                 value=65)
 
     st.subheader("Course Information")
     if st.checkbox("Specify number of hours?", key="hours-upload-attendance"):
-        uploadAttendance.set_numberOfHours(st.number_input(label="Enter number of hours",
-                                                           min_value=0.5,
-                                                           max_value=8.0,
-                                                           step=0.1))
+        uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
+                                                         min_value=0.5,
+                                                         max_value=8.0,
+                                                         step=0.1)
 
-    uploadAttendance.set_surveyLanguage_code(st.selectbox(
+    uploadAttendance.surveyLanguage_code = st.selectbox(
         label="Enter Survey Language",
         options=SurveyLanguage,
         format_func=lambda x: str(x),
-        key="language-upload-attendance"))
+        key="language-upload-attendance")
 
     st.divider()
     st.subheader("Preview Request Body")

@@ -5,11 +5,9 @@ Contains class used for editing a course run.
 import requests
 import streamlit as st
 
-from typing import Literal
-
 from revamped_application.core.models.course_runs import EditRunInfo
 from revamped_application.core.abc.abstract import AbstractRequest
-from revamped_application.core.constants import HttpMethod
+from revamped_application.core.constants import HttpMethod, OptionalSelector
 from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
@@ -18,8 +16,7 @@ class EditCourseRun(AbstractRequest):
 
     _TYPE: HttpMethod = HttpMethod.POST
 
-    def __init__(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: EditRunInfo):
+    def __init__(self, runId: str, include_expired: OptionalSelector, runinfo: EditRunInfo):
         super().__init__()
         self.req: HTTPRequestBuilder = None
         self._prepare(runId, include_expired, runinfo)
@@ -34,8 +31,7 @@ class EditCourseRun(AbstractRequest):
 
         return self.__repr__()
 
-    def _prepare(self, runId: str, include_expired: Literal["Select a value", "Yes", "No"],
-                 runinfo: EditRunInfo) -> None:
+    def _prepare(self, runId: str, include_expired: OptionalSelector, runinfo: EditRunInfo) -> None:
         """
         Creates an HTTP POST request for editing the details of a course run.
 
@@ -50,9 +46,9 @@ class EditCourseRun(AbstractRequest):
             .with_header("Content-Type", "application/json")
 
         match include_expired:
-            case "Yes":
+            case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
-            case "No":
+            case OptionalSelector.NO:
                 self.req = self.req.with_param("includeExpiredCourses", "false")
 
         self.req = self.req.with_body(runinfo.payload())

@@ -38,4 +38,8 @@ class TestLogger(unittest.TestCase):
         """Deletion script taken from https://www.squash.io/how-to-delete-a-file-or-folder-in-python/"""
 
         if os.path.exists(Logger.LOG_DIR):
-            shutil.rmtree(Logger.LOG_DIR)
+            try:
+                shutil.rmtree(Logger.LOG_DIR)
+            except PermissionError:
+                # the file is still open in the logger tested, we can ignore it for now
+                pass

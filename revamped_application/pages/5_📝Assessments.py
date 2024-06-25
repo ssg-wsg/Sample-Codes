@@ -39,6 +39,7 @@ st.set_page_config(page_title="Assessments", page_icon="📝")
 
 with st.sidebar:
     st.header("View Configs")
+    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
     if st.button("Configs", key="config_display"):
         display_config()
 
@@ -62,87 +63,87 @@ with create:
     create_assessment_info = CreateAssessmentInfo()
     if st.checkbox("Override Training Partner UEN?", key="specify-create-assessment-tp-uen",
                    help="If specified, this will override the UEN provided under the Home page!"):
-        create_assessment_info.set_trainingPartner_uen(st.text_input(label="Training Partner UEN",
-                                                                     key="create-assessment-tp-uen",
-                                                                     value=("" if st.session_state["uen"] is None
-                                                                            else st.session_state["uen"]),
-                                                                     max_chars=12))
+        create_assessment_info.trainingPartner_uen = st.text_input(label="Training Partner UEN",
+                                                                   key="create-assessment-tp-uen",
+                                                                   value=("" if st.session_state["uen"] is None
+                                                                          else st.session_state["uen"]),
+                                                                   max_chars=12)
 
     st.subheader("Course Info")
-    create_assessment_info.set_course_runId(st.text_input(label="Enter the Course Run ID",
-                                                          max_chars=20,
-                                                          help="The ID for the course run",
-                                                          key="create-assessment-run-id"))
-    create_assessment_info.set_course_referenceNumber(st.text_input(label="Enter the Course Reference Number",
-                                                                    max_chars=100,
-                                                                    help="The course reference number as in the "
-                                                                         "Training Partners Gateway course registry",
-                                                                    key="create-assessment-reference-number"))
+    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
+                                                        max_chars=20,
+                                                        help="The ID for the course run",
+                                                        key="create-assessment-run-id")
+    create_assessment_info.course_referenceNumber = st.text_input(label="Enter the Course Reference Number",
+                                                                  max_chars=100,
+                                                                  help="The course reference number as in the "
+                                                                       "Training Partners Gateway course registry",
+                                                                  key="create-assessment-reference-number")
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
-    create_assessment_info.set_trainee_id_type(col1.selectbox(label="Enter the Trainee ID Type",
-                                                              options=IdTypeSummary,
-                                                              format_func=lambda x: x.value,
-                                                              help="This describes the type of ID provided",
-                                                              key="create-assessment-trainee-id-type"))
-    create_assessment_info.set_traineeId(col2.text_input(label="Enter the Trainee ID Number",
-                                                         max_chars=20,
-                                                         help="This is the individual's government-issued "
-                                                               "ID number",
-                                                         key="create-assessment-trainee-id"))
-    create_assessment_info.set_trainee_fullName(st.text_input(label="Enter the Trainee Full Name",
-                                                              max_chars=200,
-                                                              help="This is the individual's full name",
-                                                              key="create-assessment-trainee-full-name"))
+    create_assessment_info.trainee_idType = col1.selectbox(label="Enter the Trainee ID Type",
+                                                           options=IdTypeSummary,
+                                                           format_func=lambda x: x.value,
+                                                           help="This describes the type of ID provided",
+                                                           key="create-assessment-trainee-id-type")
+    create_assessment_info.trainee_id = col2.text_input(label="Enter the Trainee ID Number",
+                                                        max_chars=20,
+                                                        help="This is the individual's government-issued "
+                                                             "ID number",
+                                                        key="create-assessment-trainee-id")
+    create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
+                                                            max_chars=200,
+                                                            help="This is the individual's full name",
+                                                            key="create-assessment-trainee-full-name")
 
     st.subheader("Assessment Info")
     col3, col4 = st.columns(2)
     if col3.checkbox("Specify Grade?", key="specify-create-grade"):
-        create_assessment_info.set_grade(col3.selectbox(label="Select Grade",
-                                                        options=Grade,
-                                                        format_func=lambda x: x.value,
-                                                        help="A grade, entered as A-F",
-                                                        key="create-assessment-grade"))
+        create_assessment_info.grade = col3.selectbox(label="Select Grade",
+                                                      options=Grade,
+                                                      format_func=lambda x: x.value,
+                                                      help="A grade, entered as A-F",
+                                                      key="create-assessment-grade")
 
     if col4.checkbox("Specify Score?", key="specify-create-score"):
-        create_assessment_info.set_score(col4.number_input(label="Select Score",
-                                                           min_value=0,
-                                                           value=0,
-                                                           help="A numerical score or percentage, entered "
-                                                                "as a whole number",
-                                                           key="create-assessment-score"))
+        create_assessment_info.score = col4.number_input(label="Select Score",
+                                                         min_value=0,
+                                                         value=0,
+                                                         help="A numerical score or percentage, entered "
+                                                              "as a whole number",
+                                                         key="create-assessment-score")
 
     if col3.checkbox("Specify Skill Code?", key="specify-create-assessment-skill-code"):
-        create_assessment_info.set_skillCode(col3.text_input(label="Enter the Skill Code",
-                                                             max_chars=30,
-                                                             help="The competency or skill code assessed for the "
-                                                                  "course, derived from the course data in the "
-                                                                  "Training Partners Gateway",
-                                                             key="create-assessment-skill-code"))
+        create_assessment_info.skillCode = col3.text_input(label="Enter the Skill Code",
+                                                           max_chars=30,
+                                                           help="The competency or skill code assessed for the "
+                                                                "course, derived from the course data in the "
+                                                                "Training Partners Gateway",
+                                                           key="create-assessment-skill-code")
 
     if col4.checkbox("Specify Conferring Institute Code?", key="specify-create-assessment-conferring-institute-code"):
-        create_assessment_info.set_conferringInstitute_code(col4.text_input(label="Enter the Conferring Institute Code",
-                                                                            help="This field refers to the UEN/branch "
-                                                                                 "code of the supporting assessment TP "
-                                                                                 "for the results. If left blank, the "
-                                                                                 "trainingProvider.code is set as the "
-                                                                                 "default value!"))
+        create_assessment_info.conferringInstitute_code = col4.text_input(label="Enter the Conferring Institute Code",
+                                                                          help="This field refers to the UEN/branch "
+                                                                               "code of the supporting assessment TP "
+                                                                               "for the results. If left blank, the "
+                                                                               "trainingProvider.code is set as the "
+                                                                               "default value!")
 
-    create_assessment_info.set_result(st.selectbox(label="Select Result",
-                                                   options=Results,
-                                                   format_func=lambda x: str(x),
-                                                   help="The outcome of the assessment, specified as pass or fail",
-                                                   key="create-assessment-result"))
-    create_assessment_info.set_assessmentDate(st.date_input(label="Select Assessment Date",
-                                                            help="Date the assessment was conducted",
-                                                            key="create-assessment-date"))
-    create_assessment_info.set_trainingPartner_code(st.text_input(label="Enter the Training Partner Code",
-                                                                  max_chars=12,
-                                                                  help="Code for the training partner conducting the "
-                                                                       "course for which the assessment result is "
-                                                                       "being submitted",
-                                                                  key="create-assessment-training-partner-code"))
+    create_assessment_info.result = st.selectbox(label="Select Result",
+                                                 options=Results,
+                                                 format_func=lambda x: str(x),
+                                                 help="The outcome of the assessment, specified as pass or fail",
+                                                 key="create-assessment-result")
+    create_assessment_info.assessmentDate = st.date_input(label="Select Assessment Date",
+                                                          help="Date the assessment was conducted",
+                                                          key="create-assessment-date")
+    create_assessment_info.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+                                                                max_chars=12,
+                                                                help="Code for the training partner conducting the "
+                                                                     "course for which the assessment result is "
+                                                                     "being submitted",
+                                                                key="create-assessment-training-partner-code")
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -178,12 +179,12 @@ with update_void:
     st.markdown("You can use this API to update or void an assessment record for trainees enrolled in your courses.")
 
     update_void_assessment = UpdateVoidAssessmentInfo()
-    update_void_assessment.set_action(st.selectbox(label="Select Action to Perform",
-                                                   options=AssessmentUpdateVoidActions,
-                                                   format_func=lambda x: str(x).upper(),
-                                                   help="Select UPDATE to update an assessment record, and "
-                                                        "VOID to void an assessment record",
-                                                   key="update-void-assessment-action"))
+    update_void_assessment.action = st.selectbox(label="Select Action to Perform",
+                                                 options=AssessmentUpdateVoidActions,
+                                                 format_func=lambda x: str(x).upper(),
+                                                 help="Select UPDATE to update an assessment record, and "
+                                                      "VOID to void an assessment record",
+                                                 key="update-void-assessment-action")
 
     st.subheader("Course Info")
     assessment_ref_num = st.text_input(label="Enter the Assessment Reference Number",
@@ -195,50 +196,50 @@ with update_void:
     if update_void_assessment.is_update():
         st.subheader("Trainee Info")
         if st.checkbox("Update Trainee Full Name?", key="update-void-trainee-info"):
-            update_void_assessment.set_trainee_fullName(st.text_input(label="Enter the Trainee Full Name",
-                                                                      max_chars=200,
-                                                                      help="The individual's full name",
-                                                                      key="update-void-assessment-trainee-full-name"))
+            update_void_assessment.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
+                                                                    max_chars=200,
+                                                                    help="The individual's full name",
+                                                                    key="update-void-assessment-trainee-full-name")
 
         st.subheader("Assessment Info")
         col1, col2, col3 = st.columns(3)
         if col1.checkbox("Update Grade?", key="update-void-grade"):
-            update_void_assessment.set_grade(col1.selectbox(label="Select Grade",
-                                                            options=Grade,
-                                                            format_func=lambda x: x.value,
-                                                            help="The letter grade of the assessment, entered as A-F, "
-                                                                 "if applicable",
-                                                            key="update-void-assessment-grade"))
+            update_void_assessment.grade = col1.selectbox(label="Select Grade",
+                                                          options=Grade,
+                                                          format_func=lambda x: x.value,
+                                                          help="The letter grade of the assessment, entered as A-F, "
+                                                               "if applicable",
+                                                          key="update-void-assessment-grade")
 
         if col2.checkbox("Update Score?", key="update-void-score"):
-            update_void_assessment.set_score(col2.number_input(label="Select Score",
-                                                               min_value=0,
-                                                               value=0,
-                                                               help="The numerical score or percentage score of the "
-                                                                    "assessment, entered as a whole number, "
-                                                                    "if applicable",
-                                                               key="update-void-assessment-score"))
+            update_void_assessment.score = col2.number_input(label="Select Score",
+                                                             min_value=0,
+                                                             value=0,
+                                                             help="The numerical score or percentage score of the "
+                                                                  "assessment, entered as a whole number, "
+                                                                  "if applicable",
+                                                             key="update-void-assessment-score")
 
         if col3.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
-            update_void_assessment.set_result(col3.selectbox(label="Select Result",
-                                                             options=Results,
-                                                             format_func=lambda x: str(x),
-                                                             help="The outcome of the assessment, specified as pass, "
-                                                                  "fail or exempt",
-                                                             key="update-void-assessment-result"))
+            update_void_assessment.result = col3.selectbox(label="Select Result",
+                                                           options=Results,
+                                                           format_func=lambda x: str(x),
+                                                           help="The outcome of the assessment, specified as pass, "
+                                                                "fail or exempt",
+                                                           key="update-void-assessment-result")
 
         if st.checkbox("Update Skill Code?", key="will-update-void-assessment-skill-code"):
-            update_void_assessment.set_skillCode(st.text_input(label="Enter the Skill Code",
-                                                               max_chars=30,
-                                                               help="The competency or skill code assessed for the "
-                                                                    "course, derived from the course data in the "
-                                                                    "Training Partners Gateway",
-                                                               key="update-void-assessment-skill-code"))
+            update_void_assessment.skillCode = st.text_input(label="Enter the Skill Code",
+                                                             max_chars=30,
+                                                             help="The competency or skill code assessed for the "
+                                                                  "course, derived from the course data in the "
+                                                                  "Training Partners Gateway",
+                                                             key="update-void-assessment-skill-code")
 
         if st.checkbox("Update Assessment Date?", key="will-update-void-assessment-date"):
-            update_void_assessment.set_assessmentDate(st.date_input(label="Select Assessment Date",
-                                                                    help="Date the assessment was conducted",
-                                                                    key="update-void-assessment-date"))
+            update_void_assessment.assessmentDate = st.date_input(label="Select Assessment Date",
+                                                                  help="Date the assessment was conducted",
+                                                                  key="update-void-assessment-date")
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -278,95 +279,95 @@ with find:
     col1, col2 = st.columns(2)
 
     if col1.checkbox("Specify Last Update Date From?", key="search-last-update-date-from"):
-        search_assessment.set_lastUpdateDateFrom(col1.date_input(label="Select Last Update Date",
-                                                                 help="Last update date of records from",
-                                                                 key="search-last-update-date-from-input"))
+        search_assessment.lastUpdateDateTo = col1.date_input(label="Select Last Update Date",
+                                                             help="Last update date of records from",
+                                                             key="search-last-update-date-from-input")
 
     if col2.checkbox("Specify Last Update Date To?", key="search-last-update-date-to"):
-        search_assessment.set_lastUpdateDateTo(col2.date_input(label="Select Last Update Date",
+        search_assessment.lastUpdateDateFrom = col2.date_input(label="Select Last Update Date",
                                                                help="Last update date of records to",
-                                                               key="search-last-update-date-to-input"))
+                                                               key="search-last-update-date-to-input")
 
     if col1.checkbox("Specify Sort By Field?", key="search-sort-by-field"):
-        search_assessment.set_sortBy_field(col1.selectbox(label="Select Sort By Field",
-                                                          options=SortField,
-                                                          format_func=lambda x: str(x),
-                                                          help="Field to sort by. Available fields:\n"
-                                                               "- 'updatedOn'\n"
-                                                               "- 'createdOn'\n"
-                                                               "- 'assessmentDate'\n",
-                                                          key="search-sort-by-field-input"))
+        search_assessment.sortBy_field = col1.selectbox(label="Select Sort By Field",
+                                                        options=SortField,
+                                                        format_func=lambda x: str(x),
+                                                        help="Field to sort by. Available fields:\n"
+                                                             "- 'updatedOn'\n"
+                                                             "- 'createdOn'\n"
+                                                             "- 'assessmentDate'\n",
+                                                        key="search-sort-by-field-input")
 
     if col2.checkbox("Specify Sort Order?", key="search-sort-order"):
-        search_assessment.set_sortBy_order(col2.selectbox(label="Select Sort Order",
-                                                          options=SortOrder,
-                                                          format_func=lambda x: str(x),
-                                                          help="Sort order",
-                                                          key="search-sort-by-order-input"))
+        search_assessment.sortBy_order = col2.selectbox(label="Select Sort Order",
+                                                        options=SortOrder,
+                                                        format_func=lambda x: str(x),
+                                                        help="Sort order",
+                                                        key="search-sort-by-order-input")
 
-    search_assessment.set_page(st.number_input(label="Page Number",
-                                               min_value=0,
-                                               value=0,
-                                               help="Page number of page displayed, starting from 0",
-                                               key="search-page-number"))
-    search_assessment.set_pageSize(st.number_input(label="Page Size",
-                                                   min_value=1,
-                                                   max_value=100,
-                                                   help="The number of items to be displayed on one page.",
-                                                   key="search-page-size"))
+    search_assessment.page = st.number_input(label="Page Number",
+                                             min_value=0,
+                                             value=0,
+                                             help="Page number of page displayed, starting from 0",
+                                             key="search-page-number")
+    search_assessment.pageSize = st.number_input(label="Page Size",
+                                                 min_value=1,
+                                                 max_value=100,
+                                                 help="The number of items to be displayed on one page.",
+                                                 key="search-page-size")
 
     st.subheader("Assessment Query Parameters")
     if st.checkbox("Specify Course Run ID?", key="search-course-run-id"):
-        search_assessment.set_courseRunId(st.text_input(label="Select Course Run ID",
-                                                        help="The ID for the course run, configured in My SkillsFuture",
-                                                        key="search-course-run-id-input",
-                                                        max_chars=20))
+        search_assessment.courseRunId = st.text_input(label="Select Course Run ID",
+                                                      help="The ID for the course run, configured in My SkillsFuture",
+                                                      key="search-course-run-id-input",
+                                                      max_chars=20)
 
     if st.checkbox("Specify Course Reference Number?", key="search-course-reference-number"):
-        search_assessment.set_courseReferenceNumber(st.text_input(label="Select Course Reference Number",
-                                                                  max_chars=50,
-                                                                  help="The course reference number of the course in "
-                                                                       "the Training Partners Gateway course registry",
-                                                                  key="search-course-reference-number-input"))
+        search_assessment.courseReferenceNumber = st.text_input(label="Select Course Reference Number",
+                                                                max_chars=50,
+                                                                help="The course reference number of the course in "
+                                                                     "the Training Partners Gateway course registry",
+                                                                key="search-course-reference-number-input")
 
     if st.checkbox("Specify Trainee ID?", key="search-trainee-id"):
-        search_assessment.set_traineeId(st.text_input(label="Select Trainee ID Number",
+        search_assessment.trainee_id_ = st.text_input(label="Select Trainee ID Number",
                                                       max_chars=20,
                                                       help="Government-issued ID number",
-                                                      key="search-trainee-id-input"))
+                                                      key="search-trainee-id-input")
 
     if st.checkbox("Specify Enrolment Reference Number?", key="search-enrolment-reference-number"):
-        search_assessment.set_enrolment_referenceNumber(st.text_input(label="Select Enrolment Reference Number",
-                                                                      help="The reference number of the associated "
-                                                                           "enrolment in the Training Partners "
-                                                                           "Gateway, if applicable",
-                                                                      key="search-enrolment-reference-number-input"))
+        search_assessment.enrolment_referenceNumber = st.text_input(label="Select Enrolment Reference Number",
+                                                                    help="The reference number of the associated "
+                                                                         "enrolment in the Training Partners "
+                                                                         "Gateway, if applicable",
+                                                                    key="search-enrolment-reference-number-input")
 
     if st.checkbox("Specify Skill Code?", key="search-skill-code"):
-        search_assessment.set_skillCode(st.text_input(label="Enter the Skill Code",
-                                                      max_chars=30,
-                                                      help="The competency or skill code assessed for the course, "
-                                                           "derived from the course data in the Training Partners "
-                                                           "Gateway",
-                                                      key="search-skill-code-input"))
+        search_assessment.skillCode = st.text_input(label="Enter the Skill Code",
+                                                    max_chars=30,
+                                                    help="The competency or skill code assessed for the course, "
+                                                         "derived from the course data in the Training Partners "
+                                                         "Gateway",
+                                                    key="search-skill-code-input")
 
     st.subheader("Training Partner Parameters")
     if st.checkbox("Override Training Partner UEN?", key="search-training-partner-uen",
                    help="If this is enabled, it will **override the default UEN provided** in the Home page!"):
-        search_assessment.set_trainingPartner_uen(st.text_input(label="Enter the Training Partner UEN",
-                                                                max_chars=12,
-                                                                value=("" if st.session_state["uen"] is None
-                                                                       else st.session_state["uen"]),
-                                                                help="UEN of the training partner organisation "
-                                                                     "conducting the course for which the assessment "
-                                                                     "result is being submitted"))
+        search_assessment.trainingPartner_uen = st.text_input(label="Enter the Training Partner UEN",
+                                                              max_chars=12,
+                                                              value=("" if st.session_state["uen"] is None
+                                                                     else st.session_state["uen"]),
+                                                              help="UEN of the training partner organisation "
+                                                                   "conducting the course for which the assessment "
+                                                                   "result is being submitted")
 
     if st.checkbox("Specify Training Partner Code?", key="search-training-partner-code"):
-        search_assessment.set_trainingPartner_code(st.text_input(label="Enter the Training Partner Code",
-                                                                 max_chars=15,
-                                                                 help="Code for the training partner conducting the "
-                                                                      "course for which the trainee is enrolled",
-                                                                 key="search-training-partner-code-input"))
+        search_assessment.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+                                                               max_chars=15,
+                                                               help="Code for the training partner conducting the "
+                                                                    "course for which the trainee is enrolled",
+                                                               key="search-training-partner-code-input")
 
     st.divider()
     st.subheader("Preview Request Body")

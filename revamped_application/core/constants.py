@@ -34,21 +34,36 @@ class Vacancy(Enum):
         return f"{self.value[0]}: {self.value[1]}"
 
 
+class OptionalSelector(Enum):
+    """Enum representing a selector that permits empty responses."""
+
+    NIL = ("Select a value", None)
+    YES = ("Yes", True)
+    NO = ("No", False)
+
+    def __str__(self):
+        return self.value[0]
+
+
 # ===== COURSE CONSTANTS ===== #
 class Role(Enum):
     """Enum to represent the 2 roles a trainer may have."""
 
     TRAINER = {
-        "id": 1,
-        "description": "Trainer"
+        "role": {
+            "id": 1,
+            "description": "Trainer"
+        }
     }
     ASSESSOR = {
-        "id": 2,
-        "description": "Assessor"
+        "role": {
+            "id": 2,
+            "description": "Assessor"
+        }
     }
 
     def __str__(self):
-        return self.value["description"]
+        return self.value["role"]["description"]
 
 
 class ModeOfTraining(Enum):
@@ -113,6 +128,14 @@ class Month(Enum):
 
     def __str__(self):
         return self.value[1]
+
+
+class TrainerType(Enum):
+    EXISTING = "1"
+    NEW = "2"
+
+    def __str__(self):
+        return f"{self.value} - {self.name.title()}"
 
 
 # ===== ASSESSMENT CONSTANTS ===== #

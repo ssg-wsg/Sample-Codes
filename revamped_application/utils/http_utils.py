@@ -342,15 +342,20 @@ def handle_response(throwable: Callable[[], requests.Response], require_decrypti
             st.code(response.text)
             return
 
-        LOGGER.info("Decryption response...")
+        LOGGER.info("Decrypting response...")
         if require_decryption:
             st.subheader("Encrypted Response")
             st.code(response.text)
 
             st.subheader("Decrypted Response")
-            data = Cryptography.decrypt(response.text).decode()
-            json_data = json.loads(data)
-            st.json(json_data)
+            try:
+                data = Cryptography.decrypt(response.text).decode()
+                json_data = json.loads(data)
+                st.json(json_data)
+            except Exception:
+                st.error("Unable to decrypt the response! It might be possible that the outputs are already "
+                         "decrypted (as with the Mock API endpoint)!", icon="🚨")
+
         else:
             st.subheader("Response")
             try:

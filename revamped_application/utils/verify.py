@@ -5,6 +5,7 @@ This file contains verification functions for fields in the Sample Application.
 import re
 
 import OpenSSL.crypto
+from email_validator import EmailSyntaxError, validate_email
 
 
 class Validators:
@@ -171,3 +172,20 @@ class Validators:
             return Validators._M_CHECKDIGIT[checkdigit] == last_char
 
         return False
+
+    @staticmethod
+    def verify_email(email: str) -> bool:
+        """
+        Verifies if an input string is a valid email or otherwise.
+
+        :param email: Email to verify
+        """
+
+        if not isinstance(email, str):
+            raise ValueError("Email must be a string!")
+
+        try:
+            validate_email(email)
+            return True
+        except EmailSyntaxError:
+            return False
