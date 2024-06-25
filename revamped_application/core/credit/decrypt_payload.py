@@ -1,16 +1,17 @@
 import requests
 
-from typing import Literal
+import streamlit as st
 
 from core.abc.abstract import AbstractRequest
+from core.constants import HttpMethod
 from core.models.credit import DecryptPayloadInfo
-from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from utils.http_utils import HTTPRequestBuilder
 
 
 class DecryptPayload(AbstractRequest):
     """Class used for decrypting a request"""
 
-    _TYPE: Literal["POST"] = "POST"
+    _TYPE: HttpMethod.POST = HttpMethod.POST
 
     def __init__(self, encrypt: DecryptPayloadInfo):
         super().__init__()
@@ -31,9 +32,9 @@ class DecryptPayload(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(st.session_state["url"].value,
+                           direct_argument="skillsFutureCredits/claims/decryptRequests") \
             .with_header("accept", "application/json") \
-            .with_direct_argument("skillsFutureCredits/claims/decryptRequests") \
             .with_body(encrypt.payload())
 
     def execute(self) -> requests.Response:

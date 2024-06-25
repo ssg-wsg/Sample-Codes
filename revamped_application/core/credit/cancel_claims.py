@@ -1,16 +1,17 @@
 import requests
 
-from typing import Literal
+import streamlit as st
 
-from core.abc.abstract import AbstractRequest
-from core.models.credit import CancelClaimsInfo
-from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod
+from revamped_application.core.models.credit import CancelClaimsInfo
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class CancelClaims(AbstractRequest):
     """Class used for cancelling a claim"""
 
-    _TYPE: Literal["POST"] = "POST"
+    _TYPE: HttpMethod.POST = HttpMethod.POST
 
     def __init__(self, claimId: str, cancel_claim: CancelClaimsInfo):
         super().__init__()
@@ -32,9 +33,8 @@ class CancelClaims(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/skillsFutureCredits/claims/{claimId}") \
             .with_header("accept", "application/json") \
-            .with_direct_argument(f"/skillsFutureCredits/claims/{claimId}") \
             .with_body(cancel_claim.payload())
 
     def execute(self) -> requests.Response:

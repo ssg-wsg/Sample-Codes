@@ -1,16 +1,17 @@
 import requests
 
-from typing import Literal
+import streamlit as st
 
-from core.abc.abstract import AbstractRequest
-from core.models.credit import EncryptPayloadInfo
-from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod
+from revamped_application.core.models.credit import EncryptPayloadInfo
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class EncryptPayload(AbstractRequest):
     """Class used for cancelling a claim"""
 
-    _TYPE: Literal["POST"] = "POST"
+    _TYPE: HttpMethod.POST = HttpMethod.POST
 
     def __init__(self, encrypt: EncryptPayloadInfo):
         super().__init__()
@@ -31,9 +32,9 @@ class EncryptPayload(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(st.session_state["url"].value,
+                           direct_argument="skillsFutureCredits/claims/encryptRequests") \
             .with_header("accept", "application/json") \
-            .with_direct_argument("skillsFutureCredits/claims/encryptRequests") \
             .with_body(encrypt.payload())
 
     def execute(self) -> requests.Response:

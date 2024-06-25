@@ -1,15 +1,16 @@
 import requests
 
-from typing import Literal
+import streamlit as st
 
-from core.abc.abstract import AbstractRequest
-from utils.http_utils import HTTPRequestBuilder, ALTERNATIVE_PROD_URL
+from revamped_application.core.abc.abstract import AbstractRequest
+from revamped_application.core.constants import HttpMethod
+from revamped_application.utils.http_utils import HTTPRequestBuilder
 
 
 class ViewClaims(AbstractRequest):
     """Class used for viewing the details of a claim"""
 
-    _TYPE: Literal["GET"] = "GET"
+    _TYPE: HttpMethod.GET = HttpMethod.GET
 
     def __init__(self, nric: str, claimId: str):
         super().__init__()
@@ -31,9 +32,8 @@ class ViewClaims(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(ALTERNATIVE_PROD_URL) \
+            .with_endpoint(st.session_state["url"].value, direct_argument=f"/skillsFutureCredits/claims/{claimId}") \
             .with_header("accept", "application/json") \
-            .with_direct_argument(f"/skillsFutureCredits/claims/{claimId}") \
             .with_param("nric", nric)
 
     def execute(self) -> requests.Response:

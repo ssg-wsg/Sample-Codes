@@ -5,6 +5,7 @@ Enums code is inspired by https://stackoverflow.com/questions/12680080/python-en
 """
 
 from enum import Enum
+from typing import Literal, Self
 
 
 # ===== BASE CONSTANTS ===== #
@@ -293,12 +294,27 @@ class EnrolmentCourseStatus(Enum):
     def __str__(self):
         return self.value
 
+
 # ===== SF Credit Pay ===== #
-CANCEL_CLAIMS_CODE = {
-    "51": "I do not wish to use my credit",
-    "52": "I wish to resubmit a new claim",
-    "53": "The course has been cancelled",
-    "54": "The course has been postponed",
-    "55": "I was not enrolled for the course"
-}
-PERMITTED_UPLOAD_FILE_TYPE = ["pdf", "doc", "docx", "tif", "jpg", "jpeg", "png", "xls", "xlsm", "xlsx"]
+class CancelClaimsCode(Enum):
+    NO_CREDIT_CLAIM = ("51", "I do not wish to use my credit")
+    RESUBMIT_CLAIM = ("52", "I wish to resubmit a new claim")
+    COURSE_CANCELLED = ("53", "The course has been cancelled")
+    COURSE_POSTPONED = ("54", "The course has been postponed")
+    NOT_ENROLLED = ("55", "I was not enrolled for the course")
+
+    def __str__(self):
+        return f"{self.value[0]}: {self.value[1]}"
+
+
+class PermittedFileUploadType(Enum):
+    PDF = "pdf"
+    DOC = "doc"
+    DOCX = "docx"
+    TIF = "tif"
+    JPG = "jpg"
+    JPEG = "jpeg"
+    PNG = "png"
+    XLS = "xls"
+    XLSM = "xlsm"
+    XLSX = "xlsx"

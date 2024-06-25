@@ -2,25 +2,25 @@ import datetime
 import json
 import base64
 
-from typing import Optional, Literal
+from typing import Optional, Sequence, Annotated
 
-from core.abc.abstract import AbstractRequestInfo
-from core.constants import CANCEL_CLAIMS_CODE
+from revamped_application.core.abc.abstract import AbstractRequestInfo
+from revamped_application.core.constants import CancelClaimsCode, PermittedFileUploadType
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-from utils.json_utils import remove_null_fields
+from revamped_application.utils.json_utils import remove_null_fields
 
 
 class EncryptPayloadInfo(AbstractRequestInfo):
     def __init__(self):
-        self._course_id: str = None
-        self._course_fee: float = None
-        self._course_run_id: Optional[str] = None
-        self._startDate: datetime.date = None
-        self._nric: str = None
-        self._email: str = None
-        self._homeNumber: str = None
-        self._mobileNumber: str = None
-        self._additionalInformation: Optional[str] = None
+        self._course_id: Annotated[str, "Unique Course ID"] = None
+        self._course_fee: Annotated[float, "Must be in the currency format (2 d.p.)"] = None
+        self._course_run_id: Annotated[Optional[str], "Unique Course Run ID"] = None
+        self._startDate: Annotated[datetime.date, "Start date of course"] = None
+        self._nric: Annotated[str, "NRIC string of length 9"] = None
+        self._email: Annotated[str, "Email string"] = None
+        self._homeNumber: Annotated[str, "Mandatory if mobile number is not provided"] = None
+        self._mobileNumber: Annotated[str, "Mandatory if home number is not provided"] = None
+        self._additionalInformation: Annotated[Optional[str], "Additional info to be provided"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -89,64 +89,109 @@ class EncryptPayloadInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_course_id(self, course_id: str) -> None:
+    @property
+    def course_id(self):
+        return self._course_id
+
+    @course_id.setter
+    def course_id(self, course_id: str):
         if not isinstance(course_id, str):
-            raise TypeError("Course ID must be a string!")
+            raise ValueError("Invalid Course ID")
 
         self._course_id = course_id
 
-    def set_course_fee(self, course_fee: float) -> None:
+    @property
+    def course_fee(self):
+        return self._course_fee
+
+    @course_fee.setter
+    def course_fee(self, course_fee: float):
         if not isinstance(course_fee, float):
-            raise TypeError("Course fee must be a floating point number!")
+            raise ValueError("Invalid Course Fee")
 
-        self._course_fee = course_fee
+        self._course_fee = float(course_fee)
 
-    def set_course_run_id(self, course_run_id: str) -> None:
+    @property
+    def course_run_id(self):
+        return self._course_run_id
+
+    @course_run_id.setter
+    def course_run_id(self, course_run_id: str):
         if not isinstance(course_run_id, str):
-            raise TypeError("Course run ID must be a string!")
+            raise ValueError("Invalid Course Run ID")
 
         self._course_run_id = course_run_id
 
-    def set_start_date(self, startDate: datetime.date) -> None:
-        if not isinstance(startDate, datetime.date):
-            raise TypeError("Start date must be a date!")
+    @property
+    def start_date(self):
+        return self._startDate
 
-        self._startDate = startDate
+    @start_date.setter
+    def start_date(self, start_date: datetime.date):
+        if not isinstance(start_date, datetime.date):
+            raise ValueError
 
-    def set_nric(self, nric: str) -> None:
+        self._startDate = start_date
+
+    @property
+    def nric(self):
+        return self._nric
+
+    @nric.setter
+    def nric(self, nric: str):
         if not isinstance(nric, str):
-            raise TypeError("NRIC must be a string!")
+            raise ValueError("Invalid NRIC number")
 
         self._nric = nric
 
-    def set_email(self, email: str) -> None:
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, email: str):
         if not isinstance(email, str):
-            raise TypeError("Email must be a string!")
+            raise ValueError("Invalid email")
 
         self._email = email
 
-    def set_home_number(self, homeNumber: str) -> None:
-        if not isinstance(homeNumber, str):
-            raise TypeError("Home Number must be a string!")
+    @property
+    def home_number(self):
+        return self._homeNumber
 
-        self._homeNumber = homeNumber
+    @home_number.setter
+    def home_number(self, home_number: str):
+        if not isinstance(home_number, str):
+            raise ValueError("Invalid home number")
 
-    def set_mobile_number(self, mobileNumber: str) -> None:
-        if not isinstance(mobileNumber, str):
-            raise TypeError("Mobile Number must be a string!")
+        self._homeNumber = home_number
 
-        self._mobileNumber = mobileNumber
+    @property
+    def mobile_number(self):
+        return self._mobileNumber
 
-    def set_additional_information(self, additionalInformation: str) -> None:
-        if not isinstance(additionalInformation, str):
-            raise TypeError("Additional information must be a string!")
+    @mobile_number.setter
+    def mobile_number(self, mobile_number: str):
+        if not isinstance(mobile_number, str):
+            raise ValueError("Invalid mobile number")
 
-        self._additionalInformation = additionalInformation
+        self._mobileNumber = mobile_number
+
+    @property
+    def additional_information(self):
+        return self._additionalInformation
+
+    @additional_information.setter
+    def additional_information(self, additional_information: str):
+        if not isinstance(additional_information, str):
+            raise ValueError("Invalid additional information")
+
+        self._additionalInformation = additional_information
 
 
 class DecryptPayloadInfo(AbstractRequestInfo):
     def __init__(self):
-        self._encrypted_request: str = None
+        self._encrypted_request: Annotated[str, "Payload to decrypt"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -182,20 +227,25 @@ class DecryptPayloadInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_request(self, request: str) -> None:
-        if not isinstance(request, str):
-            raise TypeError("Encrypted Request must be a string!")
+    @property
+    def encrypted_request(self):
+        return self._encrypted_request
 
-        self._encrypted_request = request
+    @encrypted_request.setter
+    def encrypted_request(self, encrypted_request: str):
+        if not isinstance(encrypted_request, str):
+            raise ValueError("Invalid encrypted request")
+
+        self._encrypted_request = encrypted_request
 
 
 class DocumentInfo(AbstractRequestInfo):
     def __init__(self):
-        self._fileName: str = None
-        self._fileSize: str = None
-        self._fileType: Literal["pdf", "doc", "docx", "tif", "jpg", "jpeg", "png", "xls", "xlsm", "xlsx"] = None
-        self._attachmentId: Optional[str] = None
-        self._attachmentBytes: UploadedFile = None
+        self._fileName: Annotated[str, "Name of the attached file"] = None
+        self._fileSize: Annotated[str, "Size of attached file, auto-inferred if not provided"] = None
+        self._fileType: PermittedFileUploadType = None
+        self._attachmentId: Annotated[Optional[str], "Unique ID for each attachment"] = None
+        self._attachmentBytes: Annotated[UploadedFile, "Base64 encoded value of the file contents"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -237,7 +287,7 @@ class DocumentInfo(AbstractRequestInfo):
         pl = {
             "fileName": self._fileName,
             "fileSize": self._fileSize,
-            "fileType": self._fileType,
+            "fileType": self._fileType.value if self._fileType is not None else None,
             "attachmentId": self._attachmentId,
             "attachmentBytes": (base64.b64encode(self._attachmentBytes.getvalue() if self._attachmentBytes else b"")
                                 .decode("utf-8")),
@@ -250,51 +300,60 @@ class DocumentInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_file_name(self, file_name: str) -> None:
+    @property
+    def file_name(self):
+        return self._fileName if self._fileName is not None else ""
+
+    @file_name.setter
+    def file_name(self, file_name: str):
         if not isinstance(file_name, str):
-            raise TypeError("File name must be a string!")
+            raise ValueError("Invalid file name")
 
         self._fileName = file_name
 
-    def set_file_size(self, file_size: str) -> None:
+    @property
+    def file_size(self):
+        return self._fileSize
+
+    @file_size.setter
+    def file_size(self, file_size: str):
         if not isinstance(file_size, str):
-            raise TypeError("File size must be a string!")
+            raise ValueError("Invalid file size")
 
         self._fileSize = file_size
 
-    def set_file_type(self, file_type: str) -> None:
-        if not isinstance(file_type, str):
-            raise TypeError("File type must be a string!")
+    @property
+    def file_type(self):
+        return self._fileType
+
+    @file_type.setter
+    def file_type(self, file_type: PermittedFileUploadType):
+        if not isinstance(file_type, PermittedFileUploadType):
+            raise ValueError("Invalid file type")
 
         self._fileType = file_type
 
-    def set_attachment_id(self, attachment_id: str) -> None:
+    @property
+    def attachment_id(self):
+        return self._attachmentId
+
+    @attachment_id.setter
+    def attachment_id(self, attachment_id: str):
         if not isinstance(attachment_id, str):
-            raise TypeError("Attachment ID must be a string!")
+            raise ValueError("Invalid attachment ID")
 
         self._attachmentId = attachment_id
 
-    def set_file(self, file: UploadedFile) -> None:
-        if file is not None and not isinstance(file, UploadedFile):
-            print(file)
-            raise TypeError("File should of a Streamlit UploadedFile type!")
+    @property
+    def attachment_bytes(self):
+        return self._attachmentBytes
 
-        self._attachmentBytes = file
+    @attachment_bytes.setter
+    def attachment_bytes(self, attachment_bytes: UploadedFile):
+        if attachment_bytes is not None and not isinstance(attachment_bytes, UploadedFile):
+            raise ValueError("Invalid attachment bytes")
 
-    def get_file_name(self) -> str:
-        if self._attachmentBytes is not None:
-            return self._attachmentBytes.name
-
-        return ""
-
-    def get_file_type(self) -> str:
-        return self._fileType
-
-    def get_attachment_id(self) -> str:
-        if self._attachmentId is not None:
-            return self._attachmentId
-
-        return ""
+        self._attachmentBytes = attachment_bytes
 
     def get_file_size(self) -> int:
         """Returns the size of the file in MB, if uploaded"""
@@ -318,8 +377,8 @@ class DocumentInfo(AbstractRequestInfo):
 
 class UploadDocumentInfo(AbstractRequestInfo):
     def __init__(self):
-        self._nric: str = None
-        self._documents: list[DocumentInfo] = []
+        self._nric: Annotated[str, "Must be a NRIC number"] = None
+        self._documents: Annotated[list[DocumentInfo], "List of DocumentInfo objects"] = []
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -365,11 +424,27 @@ class UploadDocumentInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_nric(self, nric: str) -> None:
+    @property
+    def nric(self):
+        return self._nric
+
+    @nric.setter
+    def nric(self, nric: str):
         if not isinstance(nric, str):
-            raise TypeError("NRIC must be a string!")
+            raise ValueError("Invalid NRIC number")
 
         self._nric = nric
+
+    @property
+    def documents(self):
+        return self._documents
+
+    @documents.setter
+    def documents(self, documents: Sequence[DocumentInfo]):
+        if not isinstance(documents, Sequence) or not all(map(lambda x: isinstance(x, DocumentInfo), documents)):
+            raise ValueError("Documents must be a sequence of DocumentInfo objects!")
+
+        self._documents = documents
 
     def add_document(self, document: DocumentInfo) -> None:
         if not isinstance(document, DocumentInfo):
@@ -380,8 +455,8 @@ class UploadDocumentInfo(AbstractRequestInfo):
 
 class CancelClaimsInfo(AbstractRequestInfo):
     def __init__(self):
-        self._nric: str = None
-        self._claimCancelCode: Literal["51", "52", "53", "54", "55"] = None
+        self._nric: Annotated[str, "Must be a NRIC number"] = None
+        self._claimCancelCode: CancelClaimsCode = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -396,7 +471,7 @@ class CancelClaimsInfo(AbstractRequestInfo):
         if self._nric is None or len(self._nric) != 9:
             errors.append("No valid NRIC number is provided!")
 
-        if self._claimCancelCode is None or len(self._claimCancelCode) == 10:
+        if self._claimCancelCode is None:
             errors.append("No valid Claim Cancel Code is provided!")
 
         return errors, warnings
@@ -411,7 +486,7 @@ class CancelClaimsInfo(AbstractRequestInfo):
 
         pl = {
             "nric": self._nric,
-            "claimCancelCode": self._claimCancelCode
+            "claimCancelCode": self._claimCancelCode.value[0] if self._claimCancelCode is not None else None
         }
 
         pl = remove_null_fields(pl)
@@ -421,14 +496,24 @@ class CancelClaimsInfo(AbstractRequestInfo):
 
         return pl
 
-    def set_nric(self, nric: str) -> None:
+    @property
+    def nric(self):
+        return self._nric
+
+    @nric.setter
+    def nric(self, nric: str):
         if not isinstance(nric, str):
-            raise TypeError("NRIC must be a string")
+            raise ValueError("Invalid NRIC number")
 
         self._nric = nric
 
-    def set_cancel_claims_code(self, cancel_claims_code: Literal["51", "52", "53", "54", "55"]) -> None:
-        if not isinstance(cancel_claims_code, str) or cancel_claims_code not in CANCEL_CLAIMS_CODE:
-            raise TypeError(f"Claim Cancel Code must be of values: {CANCEL_CLAIMS_CODE.keys()}")
+    @property
+    def cancel_claims_code(self):
+        return self._claimCancelCode
 
-        self._claimCancelCode = cancel_claims_code
+    @cancel_claims_code.setter
+    def cancel_claims_code(self, code: CancelClaimsCode):
+        if not isinstance(code, CancelClaimsCode):
+            raise ValueError("Invalid Claim Cancel Code")
+
+        self._claimCancelCode = code
