@@ -1,3 +1,7 @@
+"""
+This file contains different abstract base classes that form the basis for other request-related classes.
+"""
+
 import requests
 
 from abc import ABC, abstractmethod
@@ -38,10 +42,6 @@ class AbstractRequestInfo(ABC):
     """
 
     @abstractmethod
-    def __init__(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
     def __repr__(self):
         pass
 
@@ -50,8 +50,8 @@ class AbstractRequestInfo(ABC):
         pass
 
     @abstractmethod
-    def validate(self) -> None | list[str]:
-        """Validates the inputs passed to the APIs"""
+    def validate(self, **kwargs) -> tuple[list[str], list[str]]:
+        """Validates the inputs passed to the APIs."""
 
         pass
 

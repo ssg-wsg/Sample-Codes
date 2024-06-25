@@ -1,15 +1,38 @@
+"""
+This page displays the demo code used for authenticating with the SSG APIs.
+
+There are 2 methods for authenticating with the SSG APIs:
+1. Open Authentication
+    - This method uses OAuth2.0 to authenticate with the SSG API
+2. Certificate Authentication
+    - This method uses SSL Certificates and Private Keys to authenticate with the SSG API
+    - Do note that the current implementation of the request sending process necessarily saves the certificate and
+      key files on the proxy system used to send the requests on your behalf. This might pose a security risk, as
+      anyone with access to the machine can view and extract the certificates and private keys.
+
+The demo code is provided to enable users to get up and running with the most fundamental aspects of the SSG API:
+Authentication. The demo code is also provided in 3 main languages: Java, Python and NodeJS.
+
+You may wish to verify if the code is actually functional and revise the sample code as you see fit.
+"""
+
 import tempfile
-
-import streamlit as st
 import requests
+import streamlit as st
 
-from utils.streamlit_utils import display_config
+from revamped_application.utils.streamlit_utils import init, display_config
+from revamped_application.core.system.logger import Logger
+
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 
 st.set_page_config(page_title="Demo Code", page_icon="🔐")
 
-CERT_AUTH_PYTHON = '''
+# initialise necessary variables
+init()
+LOGGER = Logger("Demo Code")
+
+CERT_AUTH_PYTHON = """
 import requests
 
 try:
@@ -19,9 +42,9 @@ try:
     print("Response body: ", response.json())
 except:
     print("Please check to make sure that the endpoint URL or the path to certificates is valid!")
-'''
+"""
 
-CERT_AUTH_JAVA = '''
+CERT_AUTH_JAVA = """
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -136,9 +159,9 @@ public class SSGWSGSampleCodeCertJava {
     }
 
 }
-'''
+"""
 
-CERT_AUTH_NODE = '''
+CERT_AUTH_NODE = """
 var https = require('https'),                  // Module for https
     fs =    require('fs');                     // Required to read certs and keys
 
@@ -165,9 +188,9 @@ var https = require('https'),                  // Module for https
     }
 
 https.request(options, makeAPICall).end();
-'''
+"""
 
-OPEN_AUTH_PYTHON = '''
+OPEN_AUTH_PYTHON = """
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 
@@ -189,9 +212,9 @@ try:
     print(response.json())
 except:
     print("An error has occurred. Please check data input")
-'''
+"""
 
-OPEN_AUTH_JAVA = '''
+OPEN_AUTH_JAVA = """
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Arrays;
@@ -358,9 +381,9 @@ public class SSGWSGSampleCodeJava {
     }
 
 }
-'''
+"""
 
-OPEN_AUTH_NODE = '''
+OPEN_AUTH_NODE = """
 console.log('################################################################');
 console.log('Simple Program in JavaScript to call OAuth 2 Token for Get API');
 console.log('################################################################');
@@ -472,16 +495,21 @@ if (err) {
     }
 }
 });
-'''
+"""
+
+st.image("assets/sf.png", width=200)
+st.title("Demo Code")
 
 with st.sidebar:
+    st.header("View Configs")
+    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
     if st.button("Configs", key="config_display"):
         display_config()
 
 open_auth, cert_auth = st.tabs(["Open Authentication", "Certificate Authentication"])
 
 with cert_auth:
-    st.title("Certificate Authentication")
+    st.subheader("Certificate Authentication")
     st.markdown("Certificate Authentication employs a BYOK (bring-your-own-keys) approach to ensuring that your "
                 "API Requests are secure, by requiring you to use your own symmetric keys (certificate and "
                 "private key) for authentication!")
@@ -516,22 +544,35 @@ with cert_auth:
     secret_key = st.file_uploader("Secret Key", accept_multiple_files=False, type=["pem"], key="key")
 
     if st.button("Request!", key="cert_button"):
+        LOGGER.info("Certificate Authentication requested...")
         if all([test_url, cert_key, secret_key]):
             try:
                 with tempfile.NamedTemporaryFile() as certfile, tempfile.NamedTemporaryFile() as keyfile:
-                    certfile.write(cert_auth)
-                    keyfile.write(secret_key)
+                    certfile.write(cert_key.read())
+                    LOGGER.info("Loaded Certificate...")
 
+                    keyfile.write(secret_key.read())
+                    LOGGER.info("Loaded Private Key...")
+
+                    LOGGER.info(f"Sending GET request to {test_url}...")
                     req = requests.get(test_url, cert=(certfile.name, keyfile.name))
-                    st.success(f"Response code: {req.status_code}")
+
+                    st.subheader("Response")
+                    st.success(f"Response code: {req.status_code}", icon="✅")
+
+                    LOGGER.info(f"Response received: {req.text}")
                     st.json(req.json())
-            except:
-                st.error("Please check to make sure that the endpoint URL or the path to certificates is valid!")
+            except Exception as ex:
+                LOGGER.error(f"Unable to send request, error: {ex}")
+                st.error("Please check to make sure that the endpoint URL or the path to certificates is valid!",
+                         icon="🚨")
         else:
-            st.error("Please check to ensure that you fill in all fields before submitting the API request!")
+            LOGGER.error("Missing certificate or private key file!")
+            st.error("Please check to ensure that you fill in all fields before submitting the API request!",
+                     icon="🚨")
 
 with open_auth:
-    st.title("Open Authentication")
+    st.subheader("Open Authentication")
     st.markdown("Open Authentication uses OAuth 2.0 to authenticate your client to SSG APIs, "
                 "without the need to create your own symmetric keys (certificate and keys) as with "
                 "Certificate Authentication!")
@@ -567,20 +608,33 @@ with open_auth:
     client_secret = st.text_input("Input Secret Key: ")
 
     if st.button("Request!", key="open_button"):
+        LOGGER.info("Open Authentication requested...")
         if all([request_url, client_id, client_secret]):
             try:
+                LOGGER.info("Creating backend application...")
                 client = BackendApplicationClient(client_id=client_id)
+
+                LOGGER.info("Creating OAuth2.0 Session...")
                 oauth = OAuth2Session(client=client)
+
+                LOGGER.info("Fetching token...")
                 token = oauth.fetch_token(
                     token_url='https://public-api.ssg-wsg.sg/dp-oauth/oauth/token',
                     client_id=client_id,
                     client_secret=client_secret
                 )
 
+                st.subheader("Response")
+                LOGGER.info("Sending GET request with OAuth token...")
                 response = oauth.get(request_url)
-                st.success(f"Response code: {response.status_code}")
+                st.success(f"Response code: {response.status_code}", icon="✅")
+
+                LOGGER.info(f"Response received: {response.text}")
                 st.code(response.json())
-            except:
-                print("An error has occurred. Please check data input")
+            except Exception as ex:
+                LOGGER.error(f"Unable to send request, error: {ex}")
+                st.error(f"An error has occurred. Please check your data input to make sure there are no mistakes!"
+                         f"\n\nError: {ex}", icon="🚨")
         else:
-            st.error("Please check to ensure that you fill in all fields before submitting the API request!")
+            LOGGER.error("Missing certificate or private key file!")
+            st.error("Please check to ensure that you fill in all fields before submitting the API request!", icon="🚨")
