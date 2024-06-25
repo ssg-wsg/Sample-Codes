@@ -16,15 +16,11 @@ class TestLogger(unittest.TestCase):
         with self.assertLogs(logger.logger, level="DEBUG"):
             logger.debug("Test debug message")
 
-        logger.close()
-
     def test_info(self):
         logger = Logger("test_logger")
 
         with self.assertLogs(logger.logger, level="INFO"):
             logger.info("Test info message")
-
-        logger.close()
 
     def test_warning(self):
         logger = Logger("test_logger")
@@ -32,15 +28,11 @@ class TestLogger(unittest.TestCase):
         with self.assertLogs(logger.logger, level="WARNING"):
             logger.warning("Test warning message")
 
-        logger.close()
-
     def test_error(self):
         logger = Logger("test_logger")
 
         with self.assertLogs(logger.logger, level="ERROR"):
             logger.error("Test error message")
-
-        logger.close()
 
     def tearDown(self):
         """Deletion script taken from https://www.squash.io/how-to-delete-a-file-or-folder-in-python/"""
