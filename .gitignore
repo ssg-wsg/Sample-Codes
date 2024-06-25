@@ -5,4 +5,4 @@
 .idea
 
 # ignore .secrets
-revamped_application/.secrets
+SSG-API-Testing-Application-v2/.secrets
