@@ -13,3 +13,4 @@ secrets
 
 # ignore coverage files
 revamped_application/coverage.xml
+revamped_application/.coverage
