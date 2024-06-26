@@ -34,7 +34,7 @@ suite = loader.discover(TEST_DIR)
 
 # run the test suite containing all the discovered test files
 LOGGER.info("Running tests...")
-runner = unittest.TextTestRunner(stream=sys.stdout)
+runner = unittest.TextTestRunner(stream=sys.stdout, verbosity=2, failfast=True)
 result = runner.run(suite)
 
 cov.stop()

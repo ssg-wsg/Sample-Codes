@@ -28,6 +28,22 @@ class EncryptPayloadInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, EncryptPayloadInfo):
+            return False
+
+        return (
+            self._course_id == other._course_id
+            and self._course_fee == other._course_fee
+            and self._course_run_id == other._course_run_id
+            and self._startDate == other._startDate
+            and self._nric == other._nric
+            and self._email == other._email
+            and self._homeNumber == other._homeNumber
+            and self._mobileNumber == other._mobileNumber
+            and self._additionalInformation == other._additionalInformation
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         warnings = []
         errors = []
@@ -199,6 +215,12 @@ class DecryptPayloadInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, DecryptPayloadInfo):
+            return False
+
+        return self._encrypted_request == other._encrypted_request
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -253,6 +275,18 @@ class DocumentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, DocumentInfo):
+            return False
+
+        return (
+            self._fileName == other._fileName
+            and self._fileSize == other._fileSize
+            and self._fileType == other._fileType
+            and self._attachmentId == other._attachmentId
+            and self._attachmentBytes == other._attachmentBytes
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
@@ -263,7 +297,7 @@ class DocumentInfo(AbstractRequestInfo):
         if self._fileSize is not None and len(self._fileSize) == 0:
             errors.append("File size cannot be empty!")
 
-        if self._fileType is not None and len(self._fileType) == 0:
+        if self._fileType is None:
             errors.append("File type cannot be empty!")
 
         if self._attachmentBytes is None:
@@ -289,8 +323,8 @@ class DocumentInfo(AbstractRequestInfo):
             "fileSize": self._fileSize,
             "fileType": self._fileType.value if self._fileType is not None else None,
             "attachmentId": self._attachmentId,
-            "attachmentBytes": (base64.b64encode(self._attachmentBytes.getvalue() if self._attachmentBytes else b"")
-                                .decode("utf-8")),
+            "attachmentBytes": (base64.b64encode(self._attachmentBytes.getvalue()).decode("utf-8")
+                                if self._attachmentBytes else None),
         }
 
         pl = remove_null_fields(pl)
@@ -355,7 +389,7 @@ class DocumentInfo(AbstractRequestInfo):
 
         self._attachmentBytes = attachment_bytes
 
-    def get_file_size(self) -> int:
+    def get_file_size(self) -> float:
         """Returns the size of the file in MB, if uploaded"""
 
         if self._attachmentBytes is not None:
@@ -386,11 +420,20 @@ class UploadDocumentInfo(AbstractRequestInfo):
     def __str__(self):
         return self.__repr__()
 
+    def __eq__(self, other):
+        if not isinstance(other, UploadDocumentInfo):
+            return False
+
+        return (
+            self._nric == other._nric
+            and all(map(lambda x: x[0] == x[1], zip(self._documents, other._documents)))
+        )
+
     def validate(self) -> tuple[list[str], list[str]]:
         errors = []
         warnings = []
 
-        if self._nric is not None and len(self._nric) != 9:
+        if self._nric is None or (self._nric is not None and len(self._nric) != 9):
             errors.append("No valid NRIC number was specified!")
 
         for i, doc in enumerate(self._documents):
@@ -448,7 +491,7 @@ class UploadDocumentInfo(AbstractRequestInfo):
 
     def add_document(self, document: DocumentInfo) -> None:
         if not isinstance(document, DocumentInfo):
-            raise TypeError("Document must be a DocumentInfo!")
+            raise ValueError("Document must be a DocumentInfo!")
 
         self._documents.append(document)
 
@@ -463,6 +506,15 @@ class CancelClaimsInfo(AbstractRequestInfo):
 
     def __str__(self):
         return self.__repr__()
+
+    def __eq__(self, other):
+        if not isinstance(other, CancelClaimsInfo):
+            return False
+
+        return (
+            self._nric == other._nric
+            and self._claimCancelCode == other._claimCancelCode
+        )
 
     def validate(self) -> tuple[list[str], list[str]]:
         warnings = []
