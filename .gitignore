@@ -5,12 +5,12 @@
 .idea
 
 # ignore .secrets
-revamped_application/.secrets
+SSG_API_Testing_Application_v2/.secrets
 secrets
 
 # ignore logs
 .log
 
 # ignore coverage files
-revamped_application/coverage.xml
-revamped_application/.coverage
+SSG_API_Testing_Application_v2/coverage.xml
+SSG_API_Testing_Application_v2/.coverage
