@@ -9,12 +9,12 @@ import streamlit as st
 
 from typing import Optional, Literal, Annotated
 
-from email_validator import validate_email, EmailSyntaxError
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from SSG_API_Testing_Application_v2.core.abc.abstract import AbstractRequestInfo
 from SSG_API_Testing_Application_v2.core.constants import (Vacancy, ModeOfTraining, IdType, Salutations,
-                                                           Role, OptionalSelector)
+                                                           Role, OptionalSelector, TrainerType)
 from SSG_API_Testing_Application_v2.utils.json_utils import remove_null_fields
+from SSG_API_Testing_Application_v2.utils.verify import Validators
 
 
 class LinkedSSECEQA(AbstractRequestInfo):
@@ -30,55 +30,55 @@ class LinkedSSECEQA(AbstractRequestInfo):
         '01': 'Never attended school',
         '02': 'Pre-Primary (i.e. Nursery, Kindergarten 1, Kindergarten 2)',
         '03': 'Primary education without Primary School Leaving Examination (PSLE) / '
-        'Primary School Proficiency Examination (PSPE) certificate or equivalent',
+              'Primary School Proficiency Examination (PSPE) certificate or equivalent',
         '04': 'Certificate in BEST 1-3',
         '1': 'PRIMARY',
         '11': 'Primary School Leaving Examination (PSLE) / Primary School Proficiency '
-        'Examination (PSPE) certificate or equivalent',
+              'Examination (PSPE) certificate or equivalent',
         '12': 'Certificate in BEST 4',
         '13': 'At least 3 achievements for different Workplace Literacy or Numeracy '
-        '(WPLN) skills at Level 1 or 2',
+              '(WPLN) skills at Level 1 or 2',
         '2': 'LOWER SECONDARY',
         '21': "Secondary education without any subject pass at GCE 'O'/'N' Level or equivalent",
         '22': 'Certificate in WISE 1-3',
         '23': 'Basic vocational certificate (including ITE Basic Vocational Training)',
         '24': 'At least 3 achievements for different Workplace Literacy or Numeracy '
-        '(WPLN) skills at Level 3 or 4',
+              '(WPLN) skills at Level 3 or 4',
         '3': 'SECONDARY',
         '31': "At least 1 subject pass at GCE 'N' Level",
         '32': "At least 1 subject pass at GCE 'O' Level",
         '33': 'National ITE Certificate (Intermediate) or equivalent (including National '
-        'Technical Certificate (NTC) Grade 3, Certificate of Vocational Training, '
-        'BCA Builder Certificate)',
+              'Technical Certificate (NTC) Grade 3, Certificate of Vocational Training, '
+              'BCA Builder Certificate)',
         '34': 'ITE Skills Certificate (ISC) or equivalent (including Certificate of '
-        'Competency, Certificate in Service Skills)',
+              'Competency, Certificate in Service Skills)',
         '35': 'At least 3 achievements for different Workplace Literacy or Numeracy '
-        '(WPLN) skills at Level 5 and above',
+              '(WPLN) skills at Level 5 and above',
         '39': 'Other secondary education/certificates or equivalent',
         '4': 'POST-SECONDARY (NON-TERTIARY): GENERAL AND VOCATIONAL',
         '41': "At least 1 subject pass at GCE 'A'/'H2' Level or equivalent (general)",
         '42': 'National ITE Certificate (Nitec) or equivalent (including Post Nitec '
-        'Certificate,Specialist Nitec, Certificate in Office Skills,'
-        'National Technical Certificate (NTC) Grade 2, National Certificate in Nursing,'
-        'BCA Advanced Builder Certificate)',
+              'Certificate,Specialist Nitec, Certificate in Office Skills,'
+              'National Technical Certificate (NTC) Grade 2, National Certificate in Nursing,'
+              'BCA Advanced Builder Certificate)',
         '43': 'Higher Nitec or equivalent (including Certificate in Business Skills,'
-        'Industrial Technician Certificate)',
+              'Industrial Technician Certificate)',
         '44': 'Master Nitec or equivalent (including NTC Grade 1)',
         '45': 'WSQ Certificate or equivalent',
         '46': 'WSQ Higher Certificate or equivalent',
         '47': 'WSQ Advanced Certificate or equivalent',
         '48': 'Other post-secondary (non-tertiary; general) qualifications or equivalent '
-        '(including International Baccalaureate / NUS High School Diploma)',
+              '(including International Baccalaureate / NUS High School Diploma)',
         '49': 'Other post-secondary (non-tertiary; vocational) certificates/qualifications '
-        'or equivalent (including SIM certificate)',
+              'or equivalent (including SIM certificate)',
         '5': 'POLYTECHNIC DIPLOMA',
         '51': 'Polytechnic diploma',
         '52': 'Polytechnic post-diploma (including polytechnic advanced/specialist/'
-        'management/graduate diploma, diploma (conversion))',
+              'management/graduate diploma, diploma (conversion))',
         '6': 'PROFESSIONAL QUALIFICATION AND OTHER DIPLOMA',
         '61': 'ITE diploma',
         '62': 'Other locally or externally developed diploma (including NIE diploma, '
-        'SIM diploma, LASALLE diploma, NAFA diploma)',
+              'SIM diploma, LASALLE diploma, NAFA diploma)',
         '63': 'Qualification awarded by professional bodies (including ACCA, CFA)',
         '64': 'WSQ diploma',
         '65': 'WSQ specialist diploma',
@@ -95,13 +95,13 @@ class LinkedSSECEQA(AbstractRequestInfo):
         '92': 'Doctoral degree or equivalent',
         'N': 'MODULAR CERTIFICATION (NON-AWARD COURSES / NON-FULL QUALIFICATIONS)',
         'N1': 'At least 1 WSQ Statement of Attainment or ITE modular certificate at '
-        'post-secondary level (non-tertiary) or equivalent',
+              'post-secondary level (non-tertiary) or equivalent',
         'N2': 'At least 1 WSQ Statement of Attainment or other modular certificate at '
-        'diploma level or equivalent (including polytechnic post-diploma certificate)',
+              'diploma level or equivalent (including polytechnic post-diploma certificate)',
         'N3': 'At least 1 WSQ Statement of Attainment or other modular certificate at degree '
-        'level or equivalent',
+              'level or equivalent',
         'N4': 'At least 1 WSQ Statement of Attainment or other modular certificate at '
-        'postgraduate level or equivalent',
+              'postgraduate level or equivalent',
         'N9': 'Other statements of attainment, modular certificates or equivalent',
         'X': 'NOT REPORTED',
         'XX': 'Not reported'
@@ -622,7 +622,7 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         self._experience: Annotated[Optional[str], "string($varchar(1000))"] = None
         self._linkedInURL: Annotated[Optional[str], "string($varchar(255))"] = None
         self._salutationId: Optional[Salutations] = None
-        self._photo_name: Annotated[Optional[str], "string($varchar(255))"] = None
+        self._photo_name: Annotated[Optional[str], "string($varchar(255))"] = ""
         self._photo_content: Annotated[Optional[UploadedFile], "string($nvarbinary(max))"] = None
         self._linkedSsecEQAs: Optional[list[dict]] = []
 
@@ -887,28 +887,28 @@ class RunTrainerEditInfo(AbstractRequestInfo):
         if self._trainerType_description is None or len(self._trainerType_description) == 0:
             errors.append("No Trainer Type Description specified!")
 
-        if self._name is None or len(self._name) == 0:
+        if self._trainerType_code == TrainerType.EXISTING and (self._name is None or len(self._name) == 0):
             errors.append("No Trainer Name specified!")
 
-        if self._email is None or len(self._email) == 0:
+        if self._trainerType_code == TrainerType.EXISTING and (self._email is None or len(self._email) == 0):
             errors.append("No Trainer Email specified!")
 
-        if self._email is not None and len(self._email) > 0:
-            try:
-                validate_email(self._email)
-            except EmailSyntaxError:
+        if self._trainerType_code == TrainerType.EXISTING and (self._email is not None and len(self._email) > 0):
+            if not Validators.verify_email(self._email):
                 errors.append("Trainer Email specified is not of the correct format!")
 
         if self._idNumber is None or len(self._idNumber) == 0:
             errors.append("No Trainer ID number specified!")
 
-        if self._idType_code is None or len(self._idType_code) == 0:
+        if self._trainerType_code == TrainerType.EXISTING and \
+                (self._idType_code is None or len(self._idType_code) == 0):
             errors.append("No Trainer ID type specified!")
 
-        if self._idType_description is None or len(self._idType_description) == 0:
+        if self._trainerType_code == TrainerType.EXISTING and \
+                (self._idType_description is None or len(self._idType_description) == 0):
             errors.append("No Trainer ID description specified!")
 
-        if self._roles is None or len(self._roles) == 0:
+        if self._trainerType_code == TrainerType.EXISTING and (self._roles is None or len(self._roles) == 0):
             errors.append("No Trainer Roles specified!")
 
         return errors, warnings
@@ -923,20 +923,9 @@ class RunTrainerEditInfo(AbstractRequestInfo):
 
         pl = {
             "trainer": {
-                "trainerType": {
-                    "code": self._trainerType_code,
-                    "description": self._trainerType_description,
-                },
                 "indexNumber": self._indexNumber,
                 "id": self._id,
                 "name": self._name,
-                "email": self._email,
-                "idNumber": self._idNumber,
-                "idType": {
-                    "code": self._idType_code,
-                    "description": self._idType_description,
-                },
-                "roles": [x.value for x in self._roles],
                 "inTrainingProviderProfile": (self._inTrainingProviderProfile.value[1]
                                               if self._inTrainingProviderProfile is not None else None),
                 "domainAreaOfPractice": self._domainAreaOfPractice,
@@ -946,9 +935,20 @@ class RunTrainerEditInfo(AbstractRequestInfo):
                 "photo": {
                     "name": self._photo_name,
                     "content": (base64.b64encode(
-                        self._photo_content.getvalue()).decode("utf-8") if self._photo_content else None)
+                        self._photo_content.getvalue()).decode("utf-8") if self._photo_content else "")
                 },
-                "linkedSsecEQAs": self._linkedSsecEQAs
+                "email": self._email,
+                "trainerType": {
+                    "code": self._trainerType_code,
+                    "description": self._trainerType_description,
+                },
+                "linkedSsecEQAs": self._linkedSsecEQAs,
+                "idNumber": self._idNumber,
+                "idType": {
+                    "code": self._idType_code,
+                    "description": self._idType_description,
+                },
+                "roles": [x.value for x in self._roles]
             }
         }
 
@@ -1017,49 +1017,43 @@ class RunTrainerAddInfo(RunTrainerEditInfo):
         if self._trainerType_description is None or len(self._trainerType_description) == 0:
             errors.append("No trainerType description specified!")
 
-        if self._name is None or len(self._name) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and (self._name is None or len(self._name) == 0):
             errors.append("No name specified!")
 
-        if self._email is None or len(self._email) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and (self._email is None or len(self._email) == 0):
             errors.append("No email specified!")
 
-        if self._email is not None and len(self._email) > 0:
-            try:
-                validate_email(self._email)
-            except EmailSyntaxError:
+        if self._trainerType_code == TrainerType.NEW.value and (self._email is not None and len(self._email) > 0):
+            if not Validators.verify_email(self._email):
                 errors.append("Trainer Email specified is not of the correct format!")
 
-        if self._idNumber is None or len(self._idNumber) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and (self._idNumber is None or len(self._idNumber) == 0):
             errors.append("No ID number specified!")
 
-        if self._idType_code is None or len(self._idType_code) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and \
+                (self._idType_code is None or len(self._idType_code) == 0):
             errors.append("No ID type code specified!")
 
-        if self._idType_description is None or len(self._idType_description) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and \
+                (self._idType_description is None or len(self._idType_description) == 0):
             errors.append("No ID Type Description specified!")
 
-        if self._roles is None or len(self._roles) == 0:
+        if self._trainerType_code == TrainerType.NEW.value and (self._roles is None or len(self._roles) == 0):
             errors.append("No roles specified!")
+
+        if self._domainAreaOfPractice is not None and len(self._domainAreaOfPractice) == 0:
+            errors.append("Domain Area of Practice is empty even though Domain Area of Practice is marked as "
+                          "specified!")
 
         # optional parameters verification
         if self._id is not None and len(self._id) == 0:
             warnings.append("Index Number is empty even though Index Number is marked as specified!")
-
-        if self._domainAreaOfPractice is not None and len(self._domainAreaOfPractice) == 0:
-            warnings.append("Domain Area of Practice is empty even though Domain Area of Practice is marked as "
-                            "specified!")
 
         if self._experience is not None and len(self._experience) == 0:
             warnings.append("Experience is empty even though Experience is marked as specified!")
 
         if self._linkedInURL is not None and len(self._linkedInURL) == 0:
             warnings.append("LinkedIn URL is empty even though LinkedIn URL is marked as specified!")
-
-        if self._photo_name is not None and len(self._photo_name) == 0:
-            warnings.append("Photo Name is empty but Photo Name is marked as specified!")
-
-        if self._photo_name is not None and self._photo_content is None:
-            warnings.append("Photo Name is specified but there is no photo file uploaded!")
 
         if self._photo_name is None and self._photo_content is not None:
             warnings.append("Photo Content is specified but there is no photo file name!")
@@ -1089,7 +1083,7 @@ class EditRunInfo(AbstractRequestInfo):
         self._courseDates_start: Annotated[datetime.date, "Number formatted as YYYYMMDD"] = None
         self._courseDates_end: Annotated[datetime.date, "String formatted as YYYYMMDD"] = None
         self._scheduleInfoType_code: Annotated[str, "string($varchar(2))"] = None
-        self._scheduleInfoType_description: Annotated[Optional[str], "string($varchar(32))"] = None
+        self._scheduleInfoType_description: Annotated[str, "string($varchar(32))"] = None
         self._scheduleInfo: Annotated[Optional[str], "string($nvarchar(max))"] = None
         self._venue_block: Annotated[Optional[str], "string($varchar(10))"] = None
         self._venue_street: Annotated[Optional[str], "string($varchar(32))"] = None
@@ -1103,10 +1097,10 @@ class EditRunInfo(AbstractRequestInfo):
         self._threshold: Optional[int] = None
         self._registeredUserCount: Optional[int] = None
         self._modeOfTraining: Optional[ModeOfTraining] = None
-        self._courseAdminEmail: Annotated[Optional[str], "string($varchar(255))"] = None
+        self._courseAdminEmail: Annotated[str, "string($varchar(255))"] = None
         self._courseVacancy_code: Annotated[str, "string($varchar(1))"] = None
         self._courseVacancy_description: Annotated[Optional[str], "string($varchar(128))"] = None
-        self._file_Name: Annotated[Optional[str], "string($varchar(255))"] = None
+        self._file_Name: Annotated[Optional[str], "string($varchar(255))"] = ""
         self._file_content: Optional[UploadedFile] = None
         self._sessions: Optional[list[RunSessionEditInfo]] = []
         self._linkCourseRunTrainer: Optional[list[RunTrainerEditInfo]] = []
@@ -1565,22 +1559,20 @@ class EditRunInfo(AbstractRequestInfo):
             errors.append("No course vacancy code is specified")
 
         if self._courseAdminEmail is not None and len(self._courseAdminEmail) > 0:
-            try:
-                validate_email(self._courseAdminEmail)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._courseAdminEmail):
                 errors.append("Course Admin Email specified is not of the correct format!")
 
-        # optional parameter verification
         if self._courseAdminEmail is not None and len(self._courseAdminEmail) == 0:
-            warnings.append("Course Admin Email is empty even though Course Admin Email is marked as specified!")
+            errors.append("Course Admin Email is empty even though Course Admin Email is marked as specified!")
 
         if self._scheduleInfoType_description is not None and len(self._scheduleInfoType_description) == 0:
-            warnings.append("Schedule Info Type Description is empty but Schedule Info Type "
-                            "Description is marked as specified!")
+            errors.append("Schedule Info Type Description is empty but Schedule Info Type "
+                          "Description is marked as specified!")
 
         if self._scheduleInfo is not None and len(self._scheduleInfo) == 0:
-            warnings.append("Schedule Info is empty but Schedule Info is marked as specified!")
+            errors.append("Schedule Info is empty but Schedule Info is marked as specified!")
 
+        # optional parameter verification
         if self._venue_block is not None and len(self._venue_block) == 0:
             warnings.append("Venue Block is empty but Venue Block is marked as specified!")
 
@@ -1589,12 +1581,6 @@ class EditRunInfo(AbstractRequestInfo):
 
         if self._venue_building is not None and len(self._venue_building) == 0:
             warnings.append("Venue Building is empty but Venue Building is marked as specified!")
-
-        if self._file_Name is not None and len(self._file_Name) == 0:
-            warnings.append("File Name is empty but File Name is marked as specified!")
-
-        if self._file_Name is not None and self._file_content is None:
-            warnings.append("File Name is specified but there is no file uploaded!")
 
         if self._courseVacancy_description is not None and len(self._courseVacancy_description) == 0:
             warnings.append("Course Description is empty but Course Description is marked as specified!")
@@ -1635,55 +1621,55 @@ class EditRunInfo(AbstractRequestInfo):
                 "courseReferenceNumber": self._crid,
                 "trainingProvider": {
                     "uen": st.session_state["uen"] if "uen" in st.session_state else None
+                },
+                "run": {
+                    "action": "update",
+                    "sequenceNumber": self._sequenceNumber,
+                    "registrationDates": {
+                        "opening": (int(self._registrationDates_opening.strftime("%Y%m%d"))
+                                    if self._registrationDates_opening is not None else None),
+                        "closing": (int(self._registrationDates_closing.strftime("%Y%m%d"))
+                                    if self._registrationDates_closing is not None else None),
+                    },
+                    "courseDates": {
+                        "start": (int(self._courseDates_start.strftime("%Y%m%d"))
+                                  if self._courseDates_start is not None else None),
+                        "end": (int(self._courseDates_end.strftime("%Y%m%d"))
+                                if self._courseDates_end is not None else None),
+                    },
+                    "scheduleInfoType": {
+                        "code": self._scheduleInfoType_code,
+                        "description": self._scheduleInfoType_description
+                    },
+                    "scheduleInfo": self._scheduleInfo,
+                    "venue": {
+                        "block": self._venue_block,
+                        "street": self._venue_street,
+                        "floor": self._venue_floor,
+                        "unit": self._venue_unit,
+                        "building": self._venue_building,
+                        "postalCode": self._venue_postalCode,
+                        "room": self._venue_room,
+                        "wheelChairAccess": (self._venue_wheelChairAccess.value[1] if
+                                             self._venue_wheelChairAccess is not None else None)
+                    },
+                    "intakeSize": self._intakeSize,
+                    "threshold": self._threshold,
+                    "registeredUserCount": self._registeredUserCount,
+                    "modeOfTraining": self._modeOfTraining.value[0] if self.mode_of_training is not None else None,
+                    "courseAdminEmail": self._courseAdminEmail,
+                    "courseVacancy": {
+                        "code": self._courseVacancy_code,
+                        "description": self._courseVacancy_description
+                    },
+                    "file": {
+                        "Name": self._file_Name,
+                        "content": (base64.b64encode(
+                            self._file_content.getvalue()).decode() if self._file_content else ""),
+                    },
+                    "sessions": list(map(lambda x: x.payload(verify=False), self._sessions)),
+                    "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
                 }
-            },
-            "run": {
-                "action": "update",
-                "sequenceNumber": self._sequenceNumber,
-                "registrationDates": {
-                    "opening": (int(self._registrationDates_opening.strftime("%Y%m%d"))
-                                if self._registrationDates_opening is not None else None),
-                    "closing": (int(self._registrationDates_closing.strftime("%Y%m%d"))
-                                if self._registrationDates_closing is not None else None),
-                },
-                "courseDates": {
-                    "start": (int(self._courseDates_start.strftime("%Y%m%d"))
-                              if self._courseDates_start is not None else None),
-                    "end": (int(self._courseDates_end.strftime("%Y%m%d"))
-                            if self._courseDates_end is not None else None),
-                },
-                "scheduleInfoType": {
-                    "code": self._scheduleInfoType_code,
-                    "description": self._scheduleInfoType_description
-                },
-                "scheduleInfo": self._scheduleInfo,
-                "venue": {
-                    "block": self._venue_block,
-                    "street": self._venue_street,
-                    "floor": self._venue_floor,
-                    "unit": self._venue_unit,
-                    "building": self._venue_building,
-                    "postalCode": self._venue_postalCode,
-                    "room": self._venue_room,
-                    "wheelChairAccess": (self._venue_wheelChairAccess.value[1] if
-                                         self._venue_wheelChairAccess is not None else None)
-                },
-                "intakeSize": self._intakeSize,
-                "threshold": self._threshold,
-                "registeredUserCount": self._registeredUserCount,
-                "modeOfTraining": self._modeOfTraining.value[0] if self.mode_of_training is not None else None,
-                "courseAdminEmail": self._courseAdminEmail,
-                "courseVacancy": {
-                    "code": self._courseVacancy_code,
-                    "description": self._courseVacancy_description
-                },
-                "file": {
-                    "Name": self._file_Name,
-                    "content": (base64.b64encode(
-                        self._file_content.getvalue()).decode() if self._file_content else None),
-                },
-                "sessions": list(map(lambda x: x.payload(verify=False), self._sessions)),
-                "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
             }
         }
 
@@ -2355,13 +2341,13 @@ class AddRunIndividualInfo(EditRunInfo):
         return self._linkCourseRunTrainer
 
     @linked_course_run_trainers.setter
-    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerEditInfo]):
+    def linked_course_run_trainers(self, linked_course_run_trainers: list[RunTrainerAddInfo]):
         if not isinstance(linked_course_run_trainers, list):
             raise ValueError("Invalid course run trainer information")
 
         self._linkCourseRunTrainer = linked_course_run_trainers
 
-    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerEditInfo) -> None:
+    def add_linkCourseRunTrainer(self, linkCourseRunTrainer: RunTrainerAddInfo) -> None:
         if not isinstance(linkCourseRunTrainer, RunTrainerEditInfo):
             raise ValueError("Invalid course run trainer information")
 
@@ -2419,9 +2405,7 @@ class AddRunIndividualInfo(EditRunInfo):
             errors.append("No course admin email is specified!")
 
         if self._courseAdminEmail is not None and len(self._courseAdminEmail) > 0:
-            try:
-                validate_email(self._courseAdminEmail)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._courseAdminEmail):
                 errors.append("Course Admin Email specified is not of the correct format!")
 
         if self._courseVacancy_code is None or len(self._courseVacancy_code) == 0:
@@ -2439,15 +2423,6 @@ class AddRunIndividualInfo(EditRunInfo):
 
         if self._venue_building is not None and len(self._venue_building) == 0:
             warnings.append("Venue Building is empty but Venue Building is marked as specified!")
-
-        if self._file_Name is not None and len(self._file_Name) == 0:
-            warnings.append("File Name is empty but File Name is marked as specified!")
-
-        if self._file_Name is not None and self._file_content is None:
-            warnings.append("File Name is specified but there is no file uploaded!")
-
-        if self._file_Name is None and self._file_content is not None:
-            warnings.append("File Content is specified but there is no file name!")
 
         for i, session in enumerate(self._sessions):
             err, war = session.validate()
@@ -2519,7 +2494,7 @@ class AddRunIndividualInfo(EditRunInfo):
             "file": {
                 "Name": self._file_Name,
                 "content": (base64.b64encode(
-                    self._file_content.getvalue()).decode() if self._file_content else None),
+                    self._file_content.getvalue()).decode() if self._file_content else ""),
             },
             "sessions": list(map(lambda x: x.payload(verify=False), self._sessions)),
             "linkCourseRunTrainer": list(map(lambda x: x.payload(verify=False), self._linkCourseRunTrainer))
@@ -2842,12 +2817,12 @@ class AddRunInfo(EditRunInfo):
                 "courseReferenceNumber": self._crid,
                 "trainingProvider": {
                     "uen": st.session_state["uen"] if "uen" in st.session_state else None
-                }
-            },
-            "runs": [x.payload(verify=False) for x in self._runs]
+                },
+                "runs": [x.payload(verify=False) for x in self._runs]
+            }
         }
 
-        pl = remove_null_fields(pl)
+        pl = remove_null_fields(pl, exclude="runs")
 
         if as_json_str:
             return json.dumps(pl)

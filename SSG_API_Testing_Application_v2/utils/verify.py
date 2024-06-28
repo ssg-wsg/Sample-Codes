@@ -5,7 +5,8 @@ This file contains verification functions for fields in the Sample Application.
 import re
 
 import OpenSSL.crypto
-from email_validator import EmailSyntaxError, validate_email
+from dns.resolver import NoResolverConfiguration
+from email_validator import EmailSyntaxError, validate_email, EmailUndeliverableError, EmailNotValidError
 
 
 class Validators:
@@ -188,4 +189,13 @@ class Validators:
             validate_email(email)
             return True
         except EmailSyntaxError:
+            # there is something wrong with the email string
+            return False
+        except EmailUndeliverableError:
+            # the email address is invalid
+            return False
+        except EmailNotValidError:
+            return False
+        except NoResolverConfiguration:
+            # unable to resolve DNS, might be an internet issue
             return False

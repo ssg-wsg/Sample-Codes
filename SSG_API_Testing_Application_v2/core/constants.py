@@ -5,7 +5,6 @@ Enums code is inspired by https://stackoverflow.com/questions/12680080/python-en
 """
 
 from enum import Enum
-from typing import Literal, Self
 
 
 # ===== BASE CONSTANTS ===== #

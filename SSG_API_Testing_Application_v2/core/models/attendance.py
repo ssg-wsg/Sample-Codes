@@ -6,11 +6,11 @@ import json
 import streamlit as st
 
 from typing import Optional, Annotated
-from email_validator import validate_email, EmailSyntaxError
 
 from SSG_API_Testing_Application_v2.core.constants import SurveyLanguage, Attendance, IdType
 from SSG_API_Testing_Application_v2.utils.json_utils import remove_null_fields
 from SSG_API_Testing_Application_v2.core.abc.abstract import AbstractRequestInfo
+from SSG_API_Testing_Application_v2.utils.verify import Validators
 
 
 class UploadAttendanceInfo(AbstractRequestInfo):
@@ -222,7 +222,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
             errors.append("No Country Code specified!")
 
         if self._referenceNumber is None or len(self._referenceNumber) == 0:
-            errors.append("No Attendance Reference Number specified!")
+            errors.append("No Course Reference Number specified!")
 
         if self._corppassId is None or len(self._corppassId) == 0:
             errors.append("No CorpPass ID specified!")
@@ -232,9 +232,7 @@ class UploadAttendanceInfo(AbstractRequestInfo):
             errors.append("You need to specify either the trainee's mobile number or email address!")
 
         if self._trainee_email is not None and len(self._trainee_email) > 0:
-            try:
-                validate_email(self._trainee_email)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._trainee_email):
                 errors.append("Trainee Email specified is not of the correct format!")
 
         # optional param verification

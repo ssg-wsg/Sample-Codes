@@ -44,4 +44,4 @@ class EncryptPayload(AbstractRequest):
         :return: requests.Response object
         """
 
-        return self.req.post()
+        return self.req.post_encrypted()

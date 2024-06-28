@@ -15,6 +15,7 @@ There are 4 main processes:
 It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
 functions to clean up the request body and send requests that contains only non-null fields.
 """
+import datetime
 
 import streamlit as st
 
@@ -47,7 +48,8 @@ st.image("assets/sf.png", width=200)
 st.title("Assessments API")
 st.markdown("The Assessments API allows you to create, update, void, find and view assessments that are "
             "assigned to your trainees in your courses!")
-st.info("**These APIs requires your *requests* to be encrypted and returns *encrypted responses*!**", icon="ℹ️")
+st.info("**These APIs requires your *requests payloads* to be encrypted and returns *encrypted responses*!**",
+        icon="ℹ️")
 
 create, update_void, find, view = st.tabs([
     "Create Assessment", "Update/Void Assessment", "Find Assessment", "View Assessment"
@@ -69,6 +71,12 @@ with create:
                                                                           else st.session_state["uen"]),
                                                                    max_chars=12)
 
+    create_assessment_info.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+                                                                max_chars=15,
+                                                                help="Code for the training partner conducting the "
+                                                                     "course for which the assessment result is "
+                                                                     "being submitted",
+                                                                key="create-assessment-training-partner-code")
     st.subheader("Course Info")
     create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
                                                         max_chars=20,
@@ -136,14 +144,9 @@ with create:
                                                  help="The outcome of the assessment, specified as pass or fail",
                                                  key="create-assessment-result")
     create_assessment_info.assessmentDate = st.date_input(label="Select Assessment Date",
+                                                          min_value=datetime.date(1900, 1, 1),
                                                           help="Date the assessment was conducted",
                                                           key="create-assessment-date")
-    create_assessment_info.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
-                                                                max_chars=12,
-                                                                help="Code for the training partner conducting the "
-                                                                     "course for which the assessment result is "
-                                                                     "being submitted",
-                                                                key="create-assessment-training-partner-code")
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -238,6 +241,7 @@ with update_void:
 
         if st.checkbox("Update Assessment Date?", key="will-update-void-assessment-date"):
             update_void_assessment.assessmentDate = st.date_input(label="Select Assessment Date",
+                                                                  min_value=datetime.date(1900, 1, 1),
                                                                   help="Date the assessment was conducted",
                                                                   key="update-void-assessment-date")
 
@@ -254,6 +258,10 @@ with update_void:
         if does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+        elif len(assessment_ref_num) == 0:
+            LOGGER.error("Missing Assessment Reference Number!")
+            st.error("Make sure that you have entered in your **Assessment Reference Number** before proceeding!",
                      icon="🚨")
         else:
             errors, warnings = update_void_assessment.validate()
@@ -352,22 +360,19 @@ with find:
                                                     key="search-skill-code-input")
 
     st.subheader("Training Partner Parameters")
-    if st.checkbox("Override Training Partner UEN?", key="search-training-partner-uen",
-                   help="If this is enabled, it will **override the default UEN provided** in the Home page!"):
-        search_assessment.trainingPartner_uen = st.text_input(label="Enter the Training Partner UEN",
-                                                              max_chars=12,
-                                                              value=("" if st.session_state["uen"] is None
-                                                                     else st.session_state["uen"]),
-                                                              help="UEN of the training partner organisation "
-                                                                   "conducting the course for which the assessment "
-                                                                   "result is being submitted")
+    search_assessment.trainingPartner_uen = st.text_input(label="Enter the Training Partner UEN",
+                                                          max_chars=12,
+                                                          value=("" if st.session_state["uen"] is None
+                                                                 else st.session_state["uen"]),
+                                                          help="UEN of the training partner organisation "
+                                                               "conducting the course for which the assessment "
+                                                               "result is being submitted")
 
-    if st.checkbox("Specify Training Partner Code?", key="search-training-partner-code"):
-        search_assessment.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
-                                                               max_chars=15,
-                                                               help="Code for the training partner conducting the "
-                                                                    "course for which the trainee is enrolled",
-                                                               key="search-training-partner-code-input")
+    search_assessment.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+                                                           max_chars=15,
+                                                           help="Code for the training partner conducting the "
+                                                                "course for which the trainee is enrolled",
+                                                           key="search-training-partner-code-input")
 
     st.divider()
     st.subheader("Preview Request Body")

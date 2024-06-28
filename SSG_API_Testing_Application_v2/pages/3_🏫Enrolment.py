@@ -1,3 +1,5 @@
+import datetime
+
 import streamlit as st
 
 from SSG_API_Testing_Application_v2.core.models.enrolment import (CreateEnrolmentInfo, UpdateEnrolmentInfo,
@@ -31,7 +33,8 @@ st.title("Enrolment API")
 st.markdown("Integration with the Enrolment APIs enable enrolment records to be updated on the Training Partners "
             "Gateway. It facilitates enrolment of a trainee to a course run and allows the updating, cancellation, "
             "searching and viewing of enrolment records!")
-st.info("**This API requires your *requests* to be encrypted and will return *encrypted responses*!**", icon="ℹ️")
+st.info("**This API requires your *request payloads* to be encrypted and will return *encrypted responses*!**",
+        icon="ℹ️")
 st.info("To scroll through the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or you "
         "can use the arrow keys to navigate between the tabs!", icon="ℹ️")
 
@@ -76,24 +79,24 @@ with create:
                                                   key="enrolment-trainee-id")
 
     st.markdown("#### Payment Info")
-    if st.checkbox("Specify Fees Discount?", key="specify-enrolment-trainee-fees-discount"):
-        if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
-            create_enrolment.trainee_fees_discountAmount = st.number_input(label="Trainee Fees Discount",
-                                                                           value=0.00,
-                                                                           step=0.01,
-                                                                           min_value=0.00,
-                                                                           help="Amount of discount the training "
-                                                                                "partner is deducting from course "
-                                                                                "fees",
-                                                                           key="enrolment-trainee-fees-discount-"
-                                                                               "amount")
-        create_enrolment.trainee_fees_collectionStatus = st.selectbox(label="Trainee Fees Collection Status",
-                                                                      options=CollectionStatus,
-                                                                      format_func=lambda x: x.value,
-                                                                      help="Status of the trainee's or employer's "
-                                                                           "payment of the course fees to the "
-                                                                           "training partner",
-                                                                      key="enrolment-trainee-fees-collection-status")
+    if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
+        create_enrolment.trainee_fees_discountAmount = st.number_input(label="Trainee Fees Discount",
+                                                                       value=0.00,
+                                                                       step=0.01,
+                                                                       min_value=0.00,
+                                                                       help="Amount of discount the training "
+                                                                            "partner is deducting from course "
+                                                                            "fees",
+                                                                       key="enrolment-trainee-fees-discount-"
+                                                                           "amount")
+
+    create_enrolment.trainee_fees_collectionStatus = st.selectbox(label="Trainee Fees Collection Status",
+                                                                  options=CollectionStatus,
+                                                                  format_func=lambda x: x.value,
+                                                                  help="Status of the trainee's or employer's "
+                                                                       "payment of the course fees to the "
+                                                                       "training partner",
+                                                                  key="enrolment-trainee-fees-collection-status")
 
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
@@ -158,6 +161,7 @@ with create:
             help="The trainee's full name",
             key="enrolment-trainee-full-name")
     create_enrolment.trainee_dateOfBirth = st.date_input(label="Trainee Date of Birth",
+                                                         min_value=datetime.date(1900, 1, 1),
                                                          help="Trainee Date of Birth",
                                                          key="enrolment-trainee-date-of-birth")
     create_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
@@ -192,6 +196,7 @@ with create:
 
     if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
         create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
+                                                               min_value=datetime.date(1900, 1, 1),
                                                                help="Trainee Date of Enrolment",
                                                                key="enrolment-trainee-date-of-enrolment")
 
@@ -201,15 +206,14 @@ with create:
                                                             key="enrolment-trainee-sponsorship-type")
 
     st.subheader("Training Partner Info")
-    if st.checkbox("Specify Training Partner UEN?", key="specify-enrolment-training-partner-uen",
-                   help="If specified, the input UEN will override the UEN specified under the Home page!"):
-        uen = st.text_input(label="Training Partner UEN",
-                            key="enrolment-training-partner-uen",
-                            max_chars=12)
+    uen = st.text_input(label="Training Partner UEN",
+                        key="enrolment-training-partner-uen",
+                        value=st.session_state["uen"] if "uen" in st.session_state else "",
+                        max_chars=12)
 
-        if len(uen) > 0 and not Validators.verify_uen(uen):
-            st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
-        create_enrolment.trainingPartner_uen = uen
+    if len(uen) > 0 and not Validators.verify_uen(uen):
+        st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
+    create_enrolment.trainingPartner_uen = uen
 
     create_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
                                                           max_chars=15,
@@ -249,12 +253,10 @@ with update:
 
     update_enrolment = UpdateEnrolmentInfo()
 
-    if st.checkbox("Specify Course Run ID?", key="specify-update-enrolment-course-run-id"):
-        update_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                       help="SSG-generated Unique ID for the course run",
-                                                       key="update-enrolment-course-run-id",
-                                                       max_chars=20)
-
+    update_enrolment.course_run_id = st.text_input(label="Course Run ID",
+                                                   help="SSG-generated Unique ID for the course run",
+                                                   key="update-enrolment-course-run-id",
+                                                   max_chars=20)
     enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-enrolment-reference-number")
@@ -395,6 +397,10 @@ with cancel:
                                             help="SSG enrolment reference number",
                                             key="cancel-enrolment-enrolment-reference-number")
 
+    cancel_enrolment.course_run_id = st.text_input(label="Course Run ID",
+                                                   help="SSG Course Run ID",
+                                                   key="cancel-enrolment-course-run-id")
+
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
@@ -408,13 +414,17 @@ with cancel:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
-            cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
 
-            with request:
-                handle_request(cancel_en, require_encryption=True)
+            errors, warnings = cancel_enrolment.validate()
 
-            with response:
-                handle_response(lambda: cancel_en.execute(), require_decryption=True)
+            if validation_error_handler(errors, warnings):
+                cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
+
+                with request:
+                    handle_request(cancel_en, require_encryption=True)
+
+                with response:
+                    handle_response(lambda: cancel_en.execute(), require_decryption=True)
 
 
 with search:
@@ -435,6 +445,7 @@ with search:
         if st.checkbox("Specify Last Updated Date From?", key="specify-search-enrolment-last-updated-from"):
             search_enrolment.lastUpdateDateFrom = st.date_input(label="Last Updated Date From",
                                                                 key="search-enrolment-last-updated-from",
+                                                                min_value=datetime.date(1900, 1, 1),
                                                                 format="YYYY-MM-DD",
                                                                 help="This parameter is mandatory if retrieveType is "
                                                                      "DELTA. This will return records with last "
@@ -445,6 +456,7 @@ with search:
         if st.checkbox("Specify Last Updated Date To?", key="specify-search-enrolment-last-updated-to"):
             search_enrolment.lastUpdateDateTo = st.date_input(label="Last Updated Date To",
                                                               key="search-enrolment-last-updated-to",
+                                                              min_value=datetime.date(1900, 1, 1),
                                                               format="YYYY-MM-DD",
                                                               help="Optional parameter. This will return records up "
                                                                    "till the specified date. Format YYYY-MM-DD.")
@@ -527,6 +539,7 @@ with search:
 
     if st.checkbox("Specify Enrolment Date?", key="specify-search-enrolment-date"):
         search_enrolment.trainee_enrolmentDate = st.date_input(label="Enrolment Date",
+                                                               min_value=datetime.date(1900, 1, 1),
                                                                key="search-enrolment-date",
                                                                format="YYYY-MM-DD",
                                                                help="Enrolment date")
@@ -553,12 +566,11 @@ with search:
 
         search_enrolment.trainingPartner_uen = uen
 
-    if st.checkbox("Specify Training Partner Code?", key="specify-search-enrolment-training-partner-code"):
-        search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
-                                                              key="search-enrolment-training-partner-code",
-                                                              max_chars=15,
-                                                              help="Code for the training partner conducting the "
-                                                                   "course for which the trainee is enrolled")
+    search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
+                                                          key="search-enrolment-training-partner-code",
+                                                          max_chars=15,
+                                                          help="Code for the training partner conducting the "
+                                                               "course for which the trainee is enrolled")
 
     st.subheader("Query Parameters Info")
     if st.checkbox("Specify Query Parameters?", key="specify-query-parameters"):
@@ -568,12 +580,12 @@ with search:
                                                 key="search-enrolment-page-number",
                                                 help="Page number of page displayed, starting from 0")
 
-        search_enrolment.page_size = st.number_input(label="Page Size",
-                                                     min_value=1,
-                                                     max_value=100,
-                                                     value=20,
-                                                     key="search-enrolment-page-size",
-                                                     help="The number of items to be displayed on one page.")
+    search_enrolment.page_size = st.number_input(label="Page Size",
+                                                 min_value=1,
+                                                 max_value=100,
+                                                 value=20,
+                                                 key="search-enrolment-page-size",
+                                                 help="The number of items to be displayed on one page.")
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -623,7 +635,7 @@ with view:
             ve = ViewEnrolment(ref_num)
 
             with request:
-                handle_request(ve, require_encryption=False)
+                handle_request(ve)
 
             with response:
                 handle_response(lambda: ve.execute(), require_decryption=True)
@@ -639,16 +651,14 @@ with update_fee:
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-fee-collection-enrolment-reference-number")
 
-    if st.checkbox("Specify Fee Collection Status?",
-                   key="specify-update-enrolment-fee-collection-trainee-fees-collection-status"):
-        update_enrolment_fee_collection.trainee_fees_collectionStatus = (
-            st.selectbox(label="Trainee Fees Collection Status",
-                         options=CancellableCollectionStatus,
-                         format_func=lambda x: x.value,
-                         help="Status of the trainee's or employer's payment of the course fees to the training "
-                              "partner",
-                         key="update-enrolment-fee-collection-trainee-fees-collection-status")
-        )
+    update_enrolment_fee_collection.trainee_fees_collectionStatus = (
+        st.selectbox(label="Trainee Fees Collection Status",
+                     options=CancellableCollectionStatus,
+                     format_func=lambda x: x.value,
+                     help="Status of the trainee's or employer's payment of the course fees to the training "
+                          "partner",
+                     key="update-enrolment-fee-collection-trainee-fees-collection-status")
+    )
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -663,10 +673,13 @@ with update_fee:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
-            eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
+            errors, warnings = update_enrolment_fee_collection.validate()
 
-            with request:
-                handle_request(eufc, require_encryption=True)
+            if validation_error_handler(errors, warnings):
+                eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
 
-            with response:
-                handle_response(lambda: eufc.execute(), require_decryption=True)
+                with request:
+                    handle_request(eufc, require_encryption=True)
+
+                with response:
+                    handle_response(lambda: eufc.execute(), require_decryption=True)

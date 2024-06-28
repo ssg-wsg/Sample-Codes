@@ -447,8 +447,8 @@ class SearchAssessmentInfo(AbstractRequestInfo):
         self._assessment_traineeId: Annotated[Optional[str], "Max length of 20"] = None
         self._assessment_enrolement_referenceNumber: Optional[str] = None
         self._assessment_skillCode: Annotated[Optional[str], "Max length of 30"] = None
-        self._trainingPartner_uen: Annotated[Optional[str], "Max length of 12"] = None
-        self._trainingPartner_code: Annotated[Optional[str], "Max length of 15"] = None
+        self._trainingPartner_uen: Annotated[str, "Max length of 12"] = None
+        self._trainingPartner_code: Annotated[str, "Max length of 15"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -643,6 +643,12 @@ class SearchAssessmentInfo(AbstractRequestInfo):
                 not Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Invalid Training Partner UEN specified!")
 
+        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) == 0:
+            errors.append("Training Partner UEN is empty even though Training Partner UEN is marked as specified!")
+
+        if self._trainingPartner_code is not None and len(self._trainingPartner_code) == 0:
+            errors.append("Training Partner Code is empty even though Training Partner Code is marked as specified!")
+
         # optionals check
         if self._assessment_courseRunId is not None and len(self._assessment_courseRunId) == 0:
             warnings.append("Course Run ID is empty even though Course Run ID is marked as specified!")
@@ -660,12 +666,6 @@ class SearchAssessmentInfo(AbstractRequestInfo):
 
         if self._assessment_skillCode is not None and len(self._assessment_skillCode) == 0:
             warnings.append("Skill Code is empty even though Skill Code is marked as specified!")
-
-        if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) == 0:
-            warnings.append("Training Partner UEN is empty even though Training Partner UEN is marked as specified!")
-
-        if self._trainingPartner_code is not None and len(self._trainingPartner_code) == 0:
-            warnings.append("Training Partner Code is empty even though Training Partner Code is marked as specified!")
 
         return errors, warnings
 
@@ -692,24 +692,25 @@ class SearchAssessmentInfo(AbstractRequestInfo):
                 "page": self._parameters_page,
                 "pageSize": self._parameters_pageSize,
             },
-            "assessment": {
+            "assessments": {
                 "course": {
                     "run": {
                         "id": self._assessment_courseRunId
                     },
                     "referenceNumber": self._assessment_referenceNumber,
+                },
+                "trainee": {
+                    "id": self._assessment_traineeId,
+                },
+                "enrolment": {
+                    "referenceNumber": self._assessment_enrolement_referenceNumber
+                },
+                "skillCode": self._assessment_skillCode,
+                "trainingPartner": {
+                    "uen": self._trainingPartner_uen if self._trainingPartner_uen is not None else st.session_state[
+                        "uen"],
+                    "code": self._trainingPartner_code,
                 }
-            },
-            "trainee": {
-                "id": self._assessment_traineeId,
-            },
-            "enrolment": {
-                "referenceNumber": self._assessment_enrolement_referenceNumber
-            },
-            "skillCode": self._assessment_skillCode,
-            "trainingPartner": {
-                "uen": self._trainingPartner_uen if self._trainingPartner_uen is not None else st.session_state["uen"],
-                "code": self._trainingPartner_code,
             }
         }
 

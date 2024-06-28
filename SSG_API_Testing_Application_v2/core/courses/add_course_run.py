@@ -40,9 +40,7 @@ class AddCourseRun(AbstractRequest):
         """
 
         self.req = HTTPRequestBuilder() \
-            .with_endpoint(st.session_state["url"].value, direct_argument="/courses/courseRuns/publish") \
-            .with_header("accept", "application/json") \
-            .with_header("Content-Type", "application/json") \
+            .with_endpoint(st.session_state["url"].value, direct_argument="/courses/courseRuns/publish")
 
         match include_expired:
             case OptionalSelector.YES:
@@ -59,4 +57,4 @@ class AddCourseRun(AbstractRequest):
         :return: requests.Response object
         """
 
-        return self.req.post()
+        return self.req.post_encrypted()

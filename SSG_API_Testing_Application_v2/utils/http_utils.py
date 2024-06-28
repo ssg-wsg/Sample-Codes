@@ -152,7 +152,7 @@ class HTTPRequestBuilder:
         if not isinstance(data, dict):
             raise ValueError("Data must be a dict!")
 
-        self.body = json.dumps(data)
+        self.body = data
         return self
 
     def with_api_version(self, version: str) -> Self:
@@ -228,7 +228,6 @@ class HTTPRequestBuilder:
                              params=self.params,
                              headers=self.header,
                              json=Cryptography.encrypt(json.dumps(self.body), return_bytes=False),
-                             verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
     def repr(self, req_type: HttpMethod) -> str:
@@ -282,7 +281,7 @@ class HTTPRequestBuilder:
                    .newline()
                    .append("-------")
                    .newline()
-                   .append(json.dumps(json.loads(str(self.body)), indent=HTTPRequestBuilder._INDENT_LEVEL))
+                   .append(json.dumps(self.body, indent=HTTPRequestBuilder._INDENT_LEVEL))
                    .newline())
 
         return builder.get()
@@ -315,7 +314,9 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
         st.code(repr(rec_obj), language="text")
 
 
-def handle_response(throwable: Callable[[], requests.Response], require_decryption: bool = False) -> None:
+def handle_response(throwable: Callable[[], requests.Response],
+                    require_decryption: bool = False,
+                    fields_to_decrypt: list[str] = []) -> dict:
     """
     Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
@@ -324,6 +325,8 @@ def handle_response(throwable: Callable[[], requests.Response], require_decrypti
                       This function should also return the response object from the request.
     :param require_decryption: Boolean indicating whether decryption is required for the returned payload. If the
                                response should be decrypted, then a section will display the decrypted response.
+    :param fields_to_decrypt: A list of fields to decrypt after the decryption action has taken place. This is mostly
+                              used by the SFC API.
     """
 
     try:
@@ -339,27 +342,31 @@ def handle_response(throwable: Callable[[], requests.Response], require_decrypti
             # is an error, no need to decrypt
             LOGGER.error(f"Request failed with HTTP request code {response.status_code}! Aborting request...")
             st.header("Error Message")
-            st.code(response.text)
+            try:
+                data = json.loads(response.text)
+                st.code(Cryptography.decrypt(data["error"]).decode("utf-8"))
+            except Exception:
+                st.code(response.text.replace(r"\u003D", "="))
             return
 
         LOGGER.info("Decrypting response...")
         if require_decryption:
             st.subheader("Encrypted Response")
             st.code(response.text)
-
             st.subheader("Decrypted Response")
             try:
                 data = Cryptography.decrypt(response.text).decode()
                 json_data = json.loads(data)
                 st.json(json_data)
-            except Exception:
+            except Exception as ex:
+                print(ex)
                 st.error("Unable to decrypt the response! It might be possible that the outputs are already "
                          "decrypted (as with the Mock API endpoint)!", icon="🚨")
-
         else:
             st.subheader("Response")
             try:
-                st.json(response.json())
+                data = response.json()
+                st.json(data)
             except json.decoder.JSONDecodeError:
                 LOGGER.warning("Message is not JSON-serializable! Defaulting to plain text instead...")
                 st.code(response.text, language="text")

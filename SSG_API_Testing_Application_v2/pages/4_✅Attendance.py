@@ -44,7 +44,8 @@ st.image("assets/sf.png", width=200)
 st.title("Attendance API")
 st.markdown("The Attendance API allows you effortlessly retrieve and update the course session attendance "
             "of your trainees who are enrolled into your courses!")
-st.info("**This API requires your requests and data to be encrypted!**", icon="ℹ️")
+st.info("**Course Session Attendance returns *encrypted responses* while the Upload Course Session Attendance "
+        "requires encrypted *request payloads*!**", icon="ℹ️")
 
 view, upload = st.tabs(["Course Session Attendance", "Upload Course Session Attendance"])
 
@@ -99,7 +100,7 @@ with view:
 
             with response:
                 LOGGER.info("Executing request...")
-                handle_response(lambda: vc.execute())
+                handle_response(lambda: vc.execute(), require_decryption=True)
 
 with upload:
     st.header("Upload Course Session Attendance")
@@ -219,7 +220,7 @@ with upload:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(uca)
+                    handle_request(uca, require_encryption=True)
 
                 with response:
                     LOGGER.info("Executing request...")

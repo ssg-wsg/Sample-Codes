@@ -320,9 +320,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
             errors.append("No valid Trainee Email Address specified!")
 
         if self._trainee_emailAddress is not None and len(self._trainee_emailAddress) > 0:
-            try:
-                validate_email(self._trainee_emailAddress)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._trainee_emailAddress):
                 errors.append("Trainee Email specified is not of the correct format!")
 
         if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
@@ -333,7 +331,19 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) > 0 and \
                 not Validators.verify_uen(self._trainee_employer_uen):
-            errors.append("Employer UEN is not valid")
+            errors.append("Employer UEN is not valid!")
+
+        if self._trainee_contactNumber_countryCode is not None and \
+                len(self._trainee_contactNumber_countryCode) != 0:
+            try:
+                int(self._trainee_contactNumber_countryCode)
+            except ValueError:
+                errors.append("Trainee Country Code is not a number!")
+        elif self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) == 0:
+            errors.append("No valid Trainee Country Code specified!")
+
+        if self._trainee_contactNumber_phoneNumber is not None and len(self._trainee_contactNumber_phoneNumber) == 0:
+            errors.append("No valid Trainee Phone Number specified!")
 
         # optional parameter validation
         # validate the pseudo-numerical values
@@ -352,9 +362,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         if self._trainee_employer_contact_emailAddress is not None and \
                 len(self._trainee_employer_contact_emailAddress) > 0:
-            try:
-                validate_email(self._trainee_employer_contact_emailAddress)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._trainee_employer_contact_emailAddress):
                 errors.append("Employer Email Address specified is not of the correct format!")
 
         if self._trainee_employer_contact_contactNumber_areaCode is not None and \
@@ -395,15 +403,6 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
                 warnings.append("Trainee Area Code is not a number!")
         elif self._trainee_contactNumber_areaCode is not None and len(self._trainee_contactNumber_areaCode) == 0:
             warnings.append("Trainee Area Code is empty though it is marked as specified!")
-
-        if self._trainee_contactNumber_countryCode is not None and \
-                len(self._trainee_contactNumber_countryCode) != 0:
-            try:
-                int(self._trainee_contactNumber_countryCode)
-            except ValueError:
-                warnings.append("Trainee Country Code is not a number!")
-        elif self._trainee_contactNumber_countryCode is not None and len(self._trainee_contactNumber_countryCode) == 0:
-            warnings.append("Trainee Country Code is empty though it is marked as specified!")
 
         return errors, warnings
 
@@ -712,27 +711,23 @@ class UpdateEnrolmentInfo(CreateEnrolmentInfo):
         errors = []
         warnings = []
 
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            errors.append("Course Run ID is empty even though it was marked as specified!")
+
         if self._trainee_employer_contact_emailAddress is not None and \
                 len(self._trainee_employer_contact_emailAddress) > 0:
-            try:
-                validate_email(self._trainee_employer_contact_emailAddress)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._trainee_employer_contact_emailAddress):
                 errors.append("Employer Email Address specified is not of the correct format!")
 
         if self._trainee_emailAddress is not None and \
                 len(self._trainee_emailAddress) > 0:
-            try:
-                validate_email(self._trainee_emailAddress)
-            except EmailSyntaxError:
+            if not Validators.verify_email(self._trainee_emailAddress):
                 errors.append("Trainee Email Address specified is not of the correct format!")
 
         # optional parameter validation
         if self._trainingPartner_uen is not None and len(self._trainingPartner_uen) > 0 and not \
                 Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Invalid Training Partner UEN provided!")
-
-        if self._course_run_id is not None and len(self._course_run_id) == 0:
-            warnings.append("Course Run ID is empty even though it was marked as specified!")
 
         if self._trainee_employer_contact_fullName is not None and len(self._trainee_employer_contact_fullName) == 0:
             warnings.append("Employer Full Name is empty even though it was marked as specified!")
@@ -865,15 +860,26 @@ class CancelEnrolmentInfo(UpdateEnrolmentInfo):
         return self.__repr__()
 
     def validate(self) -> tuple[list[str], list[str]]:
-        # there is nothing to validate
-        return [], []
+        errors, warnings = [], []
+
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            errors.append("No valid Course Run ID specified!")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         pl = {
             "enrolment": {
-                "action": "Cancel"
+                "action": "Cancel",
+                "course": {
+                    "run": {
+                        "id": self._course_run_id
+                    }
+                }
             }
         }
+
+        pl = remove_null_fields(pl)
 
         if as_json_str:
             return json.dumps(pl)
@@ -882,11 +888,14 @@ class CancelEnrolmentInfo(UpdateEnrolmentInfo):
 
     @property
     def course_run_id(self):
-        raise NotImplementedError("This method is not supported!")
+        return self._course_run_id
 
     @course_run_id.setter
     def course_run_id(self, course_run_id: str):
-        raise NotImplementedError("This method is not supported!")
+        if not isinstance(course_run_id, str):
+            raise ValueError("Invalid Course Run ID")
+
+        self._course_run_id = course_run_id
 
     @property
     def trainee_fees_discountAmount(self):
@@ -1218,6 +1227,9 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
                 Validators.verify_uen(self._trainingPartner_uen):
             errors.append("Invalid Training Partner UEN provided!")
 
+        if self._trainingPartner_code is None or len(self._trainingPartner_code) == 0:
+            errors.append("Invalid Training Partner Code provided!")
+
         if self._lastUpdateDateFrom is not None and self._lastUpdateDateTo is not None and \
                 self._lastUpdateDateFrom > self._lastUpdateDateTo:
             warnings.append("Last Update Date From should not be after Date To!")
@@ -1230,14 +1242,6 @@ class SearchEnrolmentInfo(AbstractRequestInfo):
 
         if self._trainee_id is not None and len(self._trainee_id) == 0:
             warnings.append("Trainee ID is empty even though it is marked as specified!")
-
-        if self._trainingPartner_uen is None or len(self._trainingPartner_uen) == 0 or \
-                not Validators.verify_uen(self._trainingPartner_uen):
-            warnings.append("No valid Training Partner UEN specified!")
-
-        if self._trainee_employer_uen is None or len(self._trainee_employer_uen) == 0 or \
-                not Validators.verify_uen(self._trainee_employer_uen):
-            warnings.append("No valid Training Employer UEN specified!")
 
         return errors, warnings
 
@@ -1313,8 +1317,13 @@ class UpdateEnrolmentFeeCollectionInfo(UpdateEnrolmentInfo):
     """Contains information about the updating of enrolment fee collection"""
 
     def validate(self) -> tuple[list[str], list[str]]:
-        # there is nothing to validate
-        return [], []
+        errors = []
+        warnings = []
+
+        if self._trainee_fees_collectionStatus is None:
+            errors.append("No Fee Collection Status provided")
+
+        return errors, warnings
 
     def payload(self, verify: bool = True, as_json_str: bool = False) -> dict | str:
         pl = {

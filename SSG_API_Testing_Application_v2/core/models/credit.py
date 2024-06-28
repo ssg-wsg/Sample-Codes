@@ -8,6 +8,7 @@ from SSG_API_Testing_Application_v2.core.abc.abstract import AbstractRequestInfo
 from SSG_API_Testing_Application_v2.core.constants import CancelClaimsCode, PermittedFileUploadType
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from SSG_API_Testing_Application_v2.utils.json_utils import remove_null_fields
+from SSG_API_Testing_Application_v2.utils.verify import Validators
 
 
 class EncryptPayloadInfo(AbstractRequestInfo):
@@ -48,10 +49,10 @@ class EncryptPayloadInfo(AbstractRequestInfo):
         warnings = []
         errors = []
 
-        if self._nric is None or len(self._nric) != 9:
+        if self._nric is None or len(self._nric) != 9 or not Validators.verify_nric(self._nric):
             errors.append("No valid NRIC number is provided!")
 
-        if self._email is None or len(self._email) == 0:
+        if self._email is None or len(self._email) == 0 or not Validators.verify_email(self._email):
             errors.append("No valid email address is provided!")
 
         if self._course_id is not None and len(self._course_id) == 0:

@@ -53,7 +53,7 @@ def display_config() -> None:
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
     st.header("Encryption Key:")
-    st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
+    st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] is not None else "-")
 
     st.header("Certificate Key:")
     st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")

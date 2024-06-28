@@ -1,3 +1,5 @@
+import datetime
+
 import streamlit as st
 
 from SSG_API_Testing_Application_v2.core.models.credit import (EncryptPayloadInfo, DecryptPayloadInfo, CancelClaimsInfo,
@@ -31,7 +33,8 @@ st.markdown("The SkillsFuture Credit Pay API serves to integrate the SkillsFutur
             "payment with course registration. It allows users to indicate the amount of credits to offset from "
             "the course fee payment during course registration. Please note that individuals must give their "
             "consent for the use of their SkillsFuture Credit information.")
-st.info("**This API requires your *requests* to be encrypted, and will return *encrypted responses*!**", icon="ℹ️")
+st.info("**This API requires your *requests payloads* to be encrypted, and will return *encrypted responses*!**",
+        icon="ℹ️")
 
 encryption, decryption, upload, view, cancel = st.tabs([
     "Encryption", "Decryption", "Upload Supporting Documents", "View Claims", "Cancel Claims"
@@ -46,53 +49,52 @@ with encryption:
     encrypt = EncryptPayloadInfo()
 
     st.subheader("Course Details")
-    if st.checkbox("Specify Course Details?", key="specify-encryption-course-details"):
-        if st.checkbox("Specify Course Run ID?", key="specify-encryption-course-details-course-run-id"):
-            encrypt.course_run_id = st.text_input(label="Course Run ID",
-                                                  key="encryption-course-details-course-run-id",
-                                                  help="Unique ID of the course run.")
+    if st.checkbox("Specify Course Run ID?", key="specify-encryption-course-details-course-run-id"):
+        encrypt.course_run_id = st.text_input(label="Course Run ID",
+                                              key="encryption-course-details-course-run-id",
+                                              help="Unique ID of the course run.")
 
-        encrypt.course_id = st.text_input(label="Course ID",
-                                          key="encryption-course-details-course-id",
-                                          help="Unique ID of the run.")
+    encrypt.course_id = st.text_input(label="Course ID",
+                                      key="encryption-course-details-course-id",
+                                      help="Unique ID of the run.")
 
-        encrypt.course_fee = st.number_input(label="Course Fee",
-                                             key="encryption-course-details-course-fee",
-                                             help="Course Fee. Please ensure that the amount is in the currency "
-                                                  "format (i.e. with 2 decimal places).",
-                                             value=0.00,
-                                             min_value=0.00,
-                                             step=0.01)
-        encrypt.start_date = st.date_input(label="Start Date",
-                                           key="encryption-course-details-start-date",
-                                           help="Start date of the course.",
-                                           format="YYYY-MM-DD")
+    encrypt.course_fee = st.number_input(label="Course Fee",
+                                         key="encryption-course-details-course-fee",
+                                         help="Course Fee. Please ensure that the amount is in the currency "
+                                              "format (i.e. with 2 decimal places).",
+                                         value=0.00,
+                                         min_value=0.00,
+                                         step=0.01)
+    encrypt.start_date = st.date_input(label="Start Date",
+                                       min_value=datetime.date(1900, 1, 1),
+                                       key="encryption-course-details-start-date",
+                                       help="Start date of the course.",
+                                       format="YYYY-MM-DD")
 
     st.subheader("Individual Details")
-    if st.checkbox("Specify Individual Details?", key="specify-individual-details"):
-        encrypt.nric = st.text_input(label="NRIC",
-                                     key="encryption-individual-nric",
-                                     max_chars=9,
-                                     help="Refers to the NRIC of the individual submitting the SFC Payment Request.")
+    encrypt.nric = st.text_input(label="NRIC",
+                                 key="encryption-individual-nric",
+                                 max_chars=9,
+                                 help="Refers to the NRIC of the individual submitting the SFC Payment Request.")
 
-        if len(encrypt.nric) > 0 and not Validators.verify_nric(encrypt.nric):
-            st.warning("NRIC format is not valid!", icon="⚠️")
+    if len(encrypt.nric) > 0 and not Validators.verify_nric(encrypt.nric):
+        st.warning("NRIC format is not valid!", icon="⚠️")
 
-        encrypt.email = st.text_input(label="Email",
-                                      key="encryption-individual-email",
-                                      help="Email address of the individual.")
+    encrypt.email = st.text_input(label="Email",
+                                  key="encryption-individual-email",
+                                  help="Email address of the individual.")
 
-        if len(encrypt.email) > 0 and not Validators.verify_email(encrypt.email):
-            st.warning("Email format is not valid!", icon="⚠️")
+    if len(encrypt.email) > 0 and not Validators.verify_email(encrypt.email):
+        st.warning("Email format is not valid!", icon="⚠️")
 
-        encrypt.home_number = st.text_input(label="Home Number",
-                                            key="encryption-individual-home-number",
-                                            help="Home number of the individual. This is a mandatory field if "
-                                                 "mobile number is not provided.")
-        encrypt.mobile_number = st.text_input(label="Mobile Number",
-                                              key="encryption-individual-mobile-number",
-                                              help="Mobile number of the individual. This is a mandatory field if "
-                                                   "home number is not provided.")
+    encrypt.home_number = st.text_input(label="Home Number",
+                                        key="encryption-individual-home-number",
+                                        help="Home number of the individual. This is a mandatory field if "
+                                             "mobile number is not provided.")
+    encrypt.mobile_number = st.text_input(label="Mobile Number",
+                                          key="encryption-individual-mobile-number",
+                                          help="Mobile number of the individual. This is a mandatory field if "
+                                               "home number is not provided.")
 
     st.subheader("Additional Information")
     if st.checkbox("Specify Additional Information?", key="specify-encryption-additional-information"):
@@ -117,10 +119,10 @@ with encryption:
             request, response = st.tabs(["Request", "Response"])
 
             with request:
-                handle_request(enc)
+                handle_request(enc, require_encryption=True)
 
             with response:
-                handle_response(lambda: enc.execute(), require_decryption=False)
+                handle_response(lambda: enc.execute(), require_decryption=True)
 
 with decryption:
     st.header("SF Credit Claims Payment Request Decryption")
@@ -152,10 +154,10 @@ with decryption:
             request, response = st.tabs(["Request", "Response"])
 
             with request:
-                handle_request(dec)
+                handle_request(dec, require_encryption=True)
 
             with response:
-                handle_response(lambda: dec.execute())
+                handle_response(lambda: dec.execute(), require_decryption=True)
 
 with upload:
     st.header("Upload Supporting Documents")
@@ -246,10 +248,10 @@ with upload:
                 request, response = st.tabs(["Request", "Response"])
 
                 with request:
-                    handle_request(ud)
+                    handle_request(ud, require_encryption=True)
 
                 with response:
-                    handle_response(lambda: ud.execute())
+                    handle_response(lambda: ud.execute(), require_decryption=True)
 
 with view:
     st.header("View Claim Details")
@@ -330,4 +332,4 @@ with cancel:
                     handle_request(cc)
 
                 with response:
-                    handle_response(lambda: cc.execute())
+                    handle_response(lambda: cc.execute(), require_decryption=True)
