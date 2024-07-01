@@ -34,7 +34,7 @@ key = st.text_input(label="AES Key",
                     type="password",
                     key="encryption_key")
 
-if key is None:
+if key is None or len(key) == 0:
     LOGGER.error("No key provided!")
     st.error("No AES-256 key provided!", icon="🚨")
 elif not Validators.verify_aes_encryption_key(key):
