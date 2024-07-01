@@ -26,16 +26,16 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        working-directory: ./SSG_API_Testing_Application_v2
+        working-directory: ./SSG-API-Testing-Application-v2/app
         run: pip install -r requirements.txt
 
       - name: Run tests
-        working-directory: ./SSG_API_Testing_Application_v2
+        working-directory: ./SSG-API-Testing-Application-v2/app
         run: python test_runner.py
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
-          files: ./SSG_API_Testing_Application_v2/coverage.xml
+          files: ./SSG-API-Testing-Application-v2/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
