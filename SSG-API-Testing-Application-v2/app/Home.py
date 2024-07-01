@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(FILE_LOC))
 # ignore E402 rule for this part only
 import base64  # noqa: E402
 import streamlit as st  # noqa: E402
+import streamlit_nested_layout  # noqa: E402
 
 from tempfile import NamedTemporaryFile  # noqa: E402
 
