@@ -328,7 +328,7 @@ To access this API, follow the steps below:
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Course Run by Run Id
    (View Course Runs) API
    ![Send Request Button](assets/request-button.png)
-5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
       as well as the body of the request
    2. The Response tab shows the response from the API after receiving your request
@@ -343,7 +343,6 @@ To access this API, follow the following steps:
    ![Add Course Run Page](assets/user-guide/courses/add-course-run-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define 
    and can be left as if not needed
-   
    > [!TIP]
    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
    > the fields mean and what you should fill it up with!
@@ -353,12 +352,11 @@ To access this API, follow the following steps:
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview
    Request Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Add Course Run (New) API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
-   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
-      you will be view the encrypted payload that you are receiving from the API.
+   2. The Response tab shows the API response after receiving your request.
 
 #### Edit or Delete Course Runs
 
@@ -381,12 +379,11 @@ To access this API, follow the following steps:
    on the action that you have specified above, the JSON representation you see may be different
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Edit Course Run
    (New) API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
-   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
-      you will be view the encrypted payload that you are receiving from the API.
+   2. The Response tab shows the API response after receiving your request.
 
 #### View Course Sessions
 
@@ -406,11 +403,10 @@ To access the Course Sessions API (via the View Course Sessions page), follow th
    > before unselecting it.
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Edit Course Run
    (New) API
-5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
       as well as the body of the request.
-   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
-      you will be view the encrypted payload that you are receiving from the API.
+   2. The Response tab shows the API response after receiving your request.
 
 ### Enrolment
 
@@ -446,19 +442,19 @@ To access the Create Enrolment API, follow the steps below:
 1. Select the “Create Enrolment” tab
    ![Create Enrolment Tab](assets/user-guide/enrolment/create-enrolment-tab.png)
 2. You should be able to see the Create Enrolment page show up on your screen
-    ![Create Enrolment Page](assets/user-guide/enrolment/create-enrolment-page.png)
+   ![Create Enrolment Page](assets/user-guide/enrolment/create-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
     Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Enrolment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
@@ -472,18 +468,18 @@ To access the Update Enrolment API, follow the steps below:
 1. Select the “Update Enrolment” tab
    ![Update Enrolment Tab](assets/user-guide/enrolment/update-enrolment-tab.png)
 2. You should be able to see the Update Enrolment page show up on your screen
-    ![Update Enrolment Page](assets/user-guide/enrolment/update-enrolment-page.png)
+   ![Update Enrolment Page](assets/user-guide/enrolment/update-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
@@ -497,19 +493,19 @@ To access the Cancel Enrolment API, follow the steps below:
 1. Select the “Cancel Enrolment” tab
    ![Cancel Enrolment Tab](assets/user-guide/enrolment/cancel-enrolment-tab.png)
 2. You should be able to see the Cancel Enrolment page show up on your screen
-    ![Cancel Enrolment Page](assets/user-guide/enrolment/cancel-enrolment-page.png)
+   ![Cancel Enrolment Page](assets/user-guide/enrolment/cancel-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
     Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Enrolment API 
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
@@ -522,19 +518,19 @@ To access the Search Enrolment API, follow the steps below:
 1. Select the “Search Enrolment” tab
    ![Search Enrolment Tab](assets/user-guide/enrolment/search-enrolment-tab.png)
 2. You should be able to see the Search Enrolment page show up on your screen
-    ![Search Enrolment Page](assets/user-guide/enrolment/search-enrolment-page.png)
+   ![Search Enrolment Page](assets/user-guide/enrolment/search-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
     Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Search Enrolment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
@@ -550,15 +546,15 @@ To access the View Enrolment API, follow the steps below:
 2. You should be able to see the View Enrolment page show up on your screen
    ![View Enrolment Page](assets/user-guide/enrolment/view-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 5. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Enrolment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
         as well as the body of the request.
     2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
@@ -573,18 +569,18 @@ To access the Update Enrolment Fee Collection API, follow the steps below:
 2. You should be able to see the Update Enrolment Fee Collection page show up on your screen
    ![Update Enrolment Fee Collection Page](assets/user-guide/enrolment/update-enrolment-fee-collection-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
-    and can be left as if not needed
-    > [!TIP]
-    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-    > the fields mean and what you should fill it up with!
-    > 
-    > To view the tooltips for the optional parameters, you can select the parameter first to view it
-    > before unselecting it.
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
     Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment Fee
     Collection API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
@@ -630,7 +626,7 @@ To access the Course Session Attendance API, follow the steps below:
    > before unselecting it.
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Course Session Attendance
    API
-5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
       as well as the body of the request.
    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
@@ -656,12 +652,11 @@ To access the Upload Course Session Attendance API, follow the steps below:
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Course Session
    Attendance API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
-   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
-      you will be view the encrypted payload that you are receiving from the API.
+   2. The Response tab shows the API response after receiving your request.
 
 
 ### Assessment
@@ -706,7 +701,7 @@ To access the Create Assessment API, follow the steps below:
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Assessment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
@@ -733,7 +728,7 @@ To access the Update or Void Assessment API, follow the steps below:
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update or Void Assessment
    API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
@@ -759,7 +754,7 @@ To access the Find Assessment API, follow the steps below:
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Find Assessment API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
       able to view the encrypted payload that you are sending to the API.
@@ -783,7 +778,7 @@ To access the View Assessment API, follow the steps below:
    > To view the tooltips for the optional parameters, you can select the parameter first to view it
    > before unselecting it.
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Assessment API
-5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
    1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
       as well as the body of the request.
    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
@@ -827,7 +822,7 @@ To access the SF Credit Claims Payment Request Encryption API, follow the steps 
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
    Request Encryption API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
        able to view the encrypted payload that you are sending to the API.
@@ -865,7 +860,7 @@ To access the SF Credit Claims Payment Request Decryption API, follow the steps 
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
    Request Decryption API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
        able to view the encrypted payload that you are sending to the API.
@@ -892,7 +887,7 @@ To access the Upload Supporting Documents API, follow the steps below:
    Body” heading to view a JSON representation of the request body which you will be sending to the API
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Supporting Documents
    API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
        able to view the encrypted payload that you are sending to the API.
@@ -916,7 +911,7 @@ To access the View Claim Details API, follow the steps below:
    > To view the tooltips for the optional parameters, you can select the parameter first to view it
    > before unselecting it.
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Claim Details API
-5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
        able to view the encrypted payload that you are sending to the API.
@@ -942,13 +937,12 @@ To access the Cancel Claim API, follow the steps below:
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
     Body” heading to view a JSON representation of the request body which you will be sending to the API
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Claim API
-6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
         as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
         able to view the encrypted payload that you are sending to the API.
     2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
         you will be view the encrypted payload that you are receiving from the API.
-
 
 
 ## Glossary
