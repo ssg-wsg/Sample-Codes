@@ -17,24 +17,49 @@ Here is a quick summary of what the SSG Sample Application does:
 
 ## Table of Contents
 
-* [Introduction](#introduction)
-  * [About this Guide](#about-this-guide)
-  * [Target User](#target-user)
-  * [System Requirements](#system-requirements)
-  * [Usage of the Guide](#usage-of-the-guide)
-* [Quick Start Guide](#quick-start-guide)
-  * [Installation](#installation)
-  * [Interface](#interface)
-  * [Setup](#setup)
-* [Pages](#pages)
-  * [En-Decryption](#en-decryption)
-  * [Demo Code](#demo-code)
-  * [Courses](#courses)
-  * [Enrolment](#enrolment)
-  * [Attendance](#attendance)
-  * [Assessment](#assessment)
-  * [SkillsFuture Credit Pay](#skillsfuture-credit-pay)
-* [Glossary](#glossary)
+- [Introduction](#Introduction)
+  - [About this Guide](#About-This-Guide)
+  - [Target User](#Target-User)
+  - [System Requirements](#System-Requirements)
+  - [Usage of the Guide](#Usage-of-the-Guide)
+- [Quick Start Guide](#Quick-Start-Guide)
+  - [Installation](#Installation)
+  - [Interface](#Interface)
+  - [Setup](#Setup)
+- [Pages](#Pages)
+  - [En-Decryption](#En-Decryption)
+    - [Encryption Mode](#Encryption-Mode)
+    - [Decryption Mode](#Decryption-Mode)
+  - [Demo Code](#Demo-Code)
+    - [Open Authentication](#Open-Authentication)
+    - [Certificate Authentication](#Certificate-Authentication)
+  - [Courses](#Courses)
+    - [Course Run by Run Id](#Course-Run-by-Run-Id)
+    - [Add Course Runs](#Add-Course-Runs)
+    - [Edit or Delete Course Runs](#Edit-or-Delete-Course-Runs)
+    - [View Course Sessions](#View-Course-Sessions)
+  - [Enrolment](#Enrolment)
+    - [Create Enrolment](#Create-Enrolment)
+    - [Update Enrolment](#Update-Enrolment)
+    - [Cancel Enrolment](#Cancel-Enrolment)
+    - [Search Enrolment](#Search-Enrolment)
+    - [View Enrolment](#View-Enrolment)
+    - [Update Enrolment Fee Collection](#Update-Enrolment-Fee-Collection)
+  - [Attendance](#Attendance)
+    - [Course Session Attendance](#Course-Session-Attendance)
+    - [Upload Course Session Attendance](#Upload-Course-Session-Attendance)
+  - [Assessment](#Assessment)
+    - [Create Assessment](#Create-Assessment)
+    - [Update or Void Assessment](#Update-or-Void-Assessment)
+    - [Find Assessment](#Find-Assessment)
+    - [View Assessment](#View-Assessment) 
+  - [SkillsFuture Credit Pay](#SkillsFuture-Credit-Pay)
+    - [SF Credit Claims Payment Request Encryption](#SF-Credit-Claims-Payment-Request-Encryption)
+    - [SF Credit Claims Payment Request Decryption](#SF-Credit-Claims-Payment-Request-Decryption)
+    - [Upload Supporting Documents](#Upload-Supporting-Documents)
+    - [View Claim Details](#View-Claim-Details)
+    - [Cancel Claim](#Cancel-Claim)
+- [Glossary](#Glossary)
 
 ## Introduction
 
@@ -267,19 +292,17 @@ Once you have keyed in your details, click on the “Request!” button to start
 
 ### Courses
 
-This component helps you to call APIs related to managing your course runs and sessions using the SSG APIs.
-
-
+This page helps you to call APIs related to managing your course runs and sessions using the SSG APIs.
 
 4 Course-related APIs implemented in the Sample Application are as such:
 
-1. Course Run by Run Id (View Course Runs)
+1. [Course Run by Run Id](#Course-Run-by-Run-Id)
    1. This API is used to retrieve course run details based on a provided course reference number and course run ID
-2. Add Course Runs
+2. [Add Course Runs](#Add-Course-Runs)
    1. This API is used to publish course run(s) with sessions (if any)
-3. Edit/Delete Course Runs
+3. [Edit or Delete Course Runs](#Edit-or-Delete-Course-Runs)
    1. This API is used to update or delete course run with sessions (if any)
-4. Course Sessions (View Course Sessions)
+4. [View Course Sessions](#View-Course-Sessions)
    1. This API is used to retrieve course sessions based on a provided course reference number, course run ID and month
 
 To access this page, navigate to the sidebar and click on the “Courses” page.
@@ -381,21 +404,552 @@ To access the Course Sessions API (via the View Course Sessions page), follow th
    > 
    > To view the tooltips for the optional parameters, you can select the parameter first to view it
    > before unselecting it.
-4. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Edit Course Run
+4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Edit Course Run
    (New) API
 5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
-   1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+   1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
       as well as the body of the request.
    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
       you will be view the encrypted payload that you are receiving from the API.
 
 ### Enrolment
 
+This page helps you to call APIs related to managing the enrolment records for your courses using the SSG APIs.
+
+6 Enrolment-related APIs implemented in the Sample Application are as such:
+
+1. [Create Enrolment](#Create-Enrolment)
+   1. This API is used to create enrolment records
+2. [Update Enrolment](#Update-Enrolment)
+   1. This API is used to update enrolment records by referencing an enrolment reference number and providing the fields to update
+3. [Cancel Enrolment](#Cancel-Enrolment)
+   1. This API is used to cancel enrolment records by referencing an enrolment reference number
+4. [Search Enrolment](#Search-Enrolment)
+   1. This API is used to search for enrolment records based on the input query parameters
+5. [View Enrolment](#View-Enrolment)
+   1. This API is used to view an enrolment record by referencing an enrolment reference number
+6. [Update Enrolment Fee Collection](#Update-Enrolment-Fee-Collection)
+   1. This API is used to update the fee collection status of an enrolment record
+
+To access this page, navigate to the sidebar and click on the “Enrolment” page.
+
+![Enrolment Sidebar](assets/user-guide/enrolment/enrolment-sidebar.png)
+
+You should be able to see the Enrolment page.
+
+![Enrolment Page](assets/user-guide/enrolment/enrolment-page.png)
+
+#### Create Enrolment
+
+To access the Create Enrolment API, follow the steps below:
+
+1. Select the “Create Enrolment” tab
+   ![Create Enrolment Tab](assets/user-guide/enrolment/create-enrolment-tab.png)
+2. You should be able to see the Create Enrolment page show up on your screen
+    ![Create Enrolment Page](assets/user-guide/enrolment/create-enrolment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+    Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Enrolment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+#### Update Enrolment
+
+To access the Update Enrolment API, follow the steps below:
+
+1. Select the “Update Enrolment” tab
+   ![Update Enrolment Tab](assets/user-guide/enrolment/update-enrolment-tab.png)
+2. You should be able to see the Update Enrolment page show up on your screen
+    ![Update Enrolment Page](assets/user-guide/enrolment/update-enrolment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+#### Cancel Enrolment
+
+To access the Cancel Enrolment API, follow the steps below:
+
+1. Select the “Cancel Enrolment” tab
+   ![Cancel Enrolment Tab](assets/user-guide/enrolment/cancel-enrolment-tab.png)
+2. You should be able to see the Cancel Enrolment page show up on your screen
+    ![Cancel Enrolment Page](assets/user-guide/enrolment/cancel-enrolment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+    Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Enrolment API 
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+
+#### Search Enrolment
+
+To access the Search Enrolment API, follow the steps below:
+
+1. Select the “Search Enrolment” tab
+   ![Search Enrolment Tab](assets/user-guide/enrolment/search-enrolment-tab.png)
+2. You should be able to see the Search Enrolment page show up on your screen
+    ![Search Enrolment Page](assets/user-guide/enrolment/search-enrolment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+    Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Search Enrolment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+#### View Enrolment
+
+To access the View Enrolment API, follow the steps below:
+
+1. Select the “View Enrolment” tab
+   ![View Enrolment Tab](assets/user-guide/enrolment/view-enrolment-tab.png)
+2. You should be able to see the View Enrolment page show up on your screen
+   ![View Enrolment Page](assets/user-guide/enrolment/view-enrolment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+5. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Enrolment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
+        as well as the body of the request.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+#### Update Enrolment Fee Collection
+
+To access the Update Enrolment Fee Collection API, follow the steps below:
+
+1. Select the “Update Enrolment Fee Collection” tab
+   ![Update Enrolment Fee Collection Tab](assets/user-guide/enrolment/update-enrolment-fee-collection-tab.png)
+2. You should be able to see the Update Enrolment Fee Collection page show up on your screen
+   ![Update Enrolment Fee Collection Page](assets/user-guide/enrolment/update-enrolment-fee-collection-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+    and can be left as if not needed
+    > [!TIP]
+    > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+    > the fields mean and what you should fill it up with!
+    > 
+    > To view the tooltips for the optional parameters, you can select the parameter first to view it
+    > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+    Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment Fee
+    Collection API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+
 ### Attendance
+
+This page helps you to call APIs related to managing the attendance of your trainees enrolled in your courses using the SSG APIs.
+
+2 Attendance-related APIs implemented in the Sample Application are as such:
+
+1. [Course Session Attendance](#Course-Session-Attendance)
+   1. This API is used to retrieve the course session attendance information based on a given course run ID,
+      course reference number and course session ID
+2. [Upload Course Session Attendance](#Upload-Course-Session-Attendance)
+   1. This API is used to upload course session attendance information
+
+To access this page, navigate to the sidebar and click on the “Attendance” page.
+
+![Attendance Sidebar](assets/user-guide/attendance/attendance-sidebar.png)
+
+You should then be able to see the front page of the Attendance page.
+
+![Attendance Page](assets/user-guide/attendance/attendance-page.png)
+
+#### Course Session Attendance
+
+To access the Course Session Attendance API, follow the steps below:
+
+1. Select the “Course Session Attendance” tab
+   ![Course Session Attendance Tab](assets/user-guide/attendance/course-session-attendance-tab.png)
+2. You should be able to see the Course Session Attendance page show up on your screen
+   ![Course Session Attendance Page](assets/user-guide/attendance/course-session-attendance-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Course Session Attendance
+   API
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
+      as well as the body of the request.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
+#### Upload Course Session Attendance
+
+To access the Upload Course Session Attendance API, follow the steps below:
+
+1. Select the “Upload Course Session Attendance” tab
+   ![Upload Course Session Attendance Tab](assets/user-guide/attendance/upload-course-session-attendance-tab.png)
+2. You should be able to see the Upload Course Session Attendance page show up on your screen
+   ![Upload Course Session Attendance Page](assets/user-guide/attendance/upload-course-session-attendance-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Course Session
+   Attendance API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+      as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+      able to view the encrypted payload that you are sending to the API.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
 
 ### Assessment
 
+This page helps you to call APIs related to managing the assessment records of the trainees enrolled in your courses using the SSG APIs.
+
+4 Assessment-related APIs implemented in the Sample Application are as such:
+
+1. [Create Assessment](#Create-Assessment)
+   1. This API is used to create an assessment record 
+2. [Update or Void Assessment](#Update-or-Void-Assessment)
+   1. This API is used to update or void an assessment record
+3. [Find Assessment](#Find-Assessment)
+   1. This API is used to find an assessment record based on the query parameters provided
+4. [View Assessment](#View-Assessment) 
+   1. This API is used to view an assessment record based on a given assessment reference number
+
+To access the APIs, navigate to the sidebar and click on the “Assessments” page.
+
+![img.png](assets/user-guide/assessment/assessment-sidebar.png)
+
+You should then be able to see the front page of the Assessment page.
+
+![assessment-page.png](assets/user-guide/assessment/assessment-page.png)
+
+#### Create Assessment
+
+To access the Create Assessment API, follow the steps below:
+
+1. Select the “Create Assessment” tab
+   ![Create Assessment Tab](assets/user-guide/assessment/create-assessment-tab.png)
+2. You should be able to see the Create Assessment page show up on your screen
+   ![Create Assessment Page](assets/user-guide/assessment/create-assessment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Assessment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+      as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+      able to view the encrypted payload that you are sending to the API.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
+#### Update or Void Assessment
+
+To access the Update or Void Assessment API, follow the steps below:
+
+1. Select the “Update or Void Assessment” tab
+   ![Update or Void Assessment Tab](assets/user-guide/assessment/update-void-assessment-tab.png)
+2. You should be able to see the Update or Void Assessment page show up on your screen
+   ![Update or Void Assessment Page](assets/user-guide/assessment/update-void-assessment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update or Void Assessment
+   API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+      as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+      able to view the encrypted payload that you are sending to the API.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
+#### Find Assessment
+
+To access the Find Assessment API, follow the steps below:
+
+1. Select the “Find Assessment” tab
+   ![Find Assessment Tab](assets/user-guide/assessment/find-assessment-tab.png)
+2. You should be able to see the Find Assessments page show up on your screen
+   ![Find Assessment Page](assets/user-guide/assessment/find-assessment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Find Assessment API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+      as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+      able to view the encrypted payload that you are sending to the API.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
+#### View Assessment
+
+To access the View Assessment API, follow the steps below:
+
+1. Select the “View Assessment” tab
+   ![View Assessment Tab](assets/user-guide/assessment/view-assessment-tab.png)
+2. You should be able to see the View Assessment page show up on your screen
+   ![View Assessment Page](assets/user-guide/assessment/view-assessment-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Assessment API
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+   1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
+      as well as the body of the request.
+   2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+      you will be view the encrypted payload that you are receiving from the API.
+
 ### SkillsFuture Credit Pay
+
+This page helps you to call APIs related to managing the SkillsFuture Credit Claims for trainees enrolled in your courses using the SSG APIs.
+
+5 SkillsFuture Credit Pay-related APIs implemented in the Sample Application are as such:
+
+1. [SF Credit Claims Payment Request Encryption](#SF-Credit-Claims-Payment-Request-Encryption)
+   1. This API is used to perform encryption on a request payload that will be send out in a Form POST to begin the claims
+      process
+2. [SF Credit Claims Payment Request Decryption](#SF-Credit-Claims-Payment-Request-Decryption)
+   1. This API is used to perform decryption on a response payload that is returned after the Form POST is complete
+3. [Upload Supporting Documents](#Upload-Supporting-Documents)
+   1. This API is used to upload supporting documents for a claim
+4. [View Claim Details](#View-Claim-Details)
+   1. This API is used to view the details of a claim
+5. [Cancel Claim](#Cancel-Claim)
+   1. This API is used to cancel a claim
+
+#### SF Credit Claims Payment Request Encryption
+
+To access the SF Credit Claims Payment Request Encryption API, follow the steps below:
+
+1. Select the “SF Credit Claims Payment Request Encryption” tab
+   ![SF Credit Claims Payment Request Encryption Tab](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-encryption-tab.png)
+2. You should be able to see the SF Credit Claims Payment Request Encryption page show up on your screen
+   ![SF Credit Claims Payment Request Encryption Page](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-encryption-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
+   Request Encryption API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+       able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+       you will be view the encrypted payload that you are receiving from the API.
+7. Using the encrypted payload returned from the API, you can then proceed to send a Form POST request to the SSG
+   SkillsFuture Credit Claims API to begin the claims process. The Form POST template is provided below the results of
+   the API response.
+   ![Form POST](assets/user-guide/sf-credit-pay/form-post.png)
+
+   1. Enter in the encrypted payload into the text field in the Form POST template
+   2. Click on the “Submit” button to send the Form POST request to the SSG SkillsFuture Credit Claims API
+   3. You will be directed to log in with your Singpass
+   4. After logging in, specify the claim amount and make the claim
+   5. The callback action will trigger after you submit the claim
+   6. Use the Developer Mode console of your browser to view the encrypted response. This will be used in the next API.
+
+#### SF Credit Claims Payment Request Decryption
+
+To access the SF Credit Claims Payment Request Decryption API, follow the steps below:
+
+1. Select the “SF Credit Claims Payment Request Decryption” tab
+   ![SF Credit Claims Payment Request Decryption Tab](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-decryption-tab.png)
+2. You should be able to see the SF Credit Claims Payment Request Decryption page show up on your screen
+   ![SF Credit Claims Payment Request Decryption Page](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-decryption-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API.
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
+   Request Decryption API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+       able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+       you will be view the encrypted payload that you are receiving from the API.
+
+#### Upload Supporting Documents
+
+To access the Upload Supporting Documents API, follow the steps below:
+
+1. Select the “Upload Supporting Documents” tab
+   ![Upload Supporting Documents Tab](assets/user-guide/sf-credit-pay/upload-supporting-documents-tab.png)
+2. You should be able to see the Upload Supporting Documents page show up on your screen
+   ![Upload Supporting Documents Page](assets/user-guide/sf-credit-pay/upload-supporting-documents-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+   Body” heading to view a JSON representation of the request body which you will be sending to the API
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Supporting Documents
+   API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+       able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+       you will be view the encrypted payload that you are receiving from the API.
+
+#### View Claim Details
+
+To access the View Claim Details API, follow the steps below:
+
+1. Select the “View Claim Details” tab
+   ![View Claim Details Tab](assets/user-guide/sf-credit-pay/view-claim-details-tab.png)
+2. You should be able to see the View Claim Details page show up on your screen
+   ![View Claim Details Page](assets/user-guide/sf-credit-pay/view-claim-details-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Claim Details API
+5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+       as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+       able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+       you will be view the encrypted payload that you are receiving from the API.
+
+#### Cancel Claim
+
+To access the Cancel Claim API, follow the steps below:
+
+1. Select the “Cancel Claim” tab
+   ![Cancel Claim Tab](assets/user-guide/sf-credit-pay/cancel-claim-tab.png)
+2. You should be able to see the Cancel Claim page show up on your screen
+   ![Cancel Claim Page](assets/user-guide/sf-credit-pay/cancel-claim-page.png)
+3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
+   and can be left as if not needed
+   > [!TIP]
+   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+   > the fields mean and what you should fill it up with!
+   > 
+   > To view the tooltips for the optional parameters, you can select the parameter first to view it
+   > before unselecting it.
+4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
+    Body” heading to view a JSON representation of the request body which you will be sending to the API
+5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Claim API
+6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen as such:
+    1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
+        as well as the body of the request. Since this API requires you to send encrypted payloads, you will also be
+        able to view the encrypted payload that you are sending to the API.
+    2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
+        you will be view the encrypted payload that you are receiving from the API.
+
+
 
 ## Glossary
 
