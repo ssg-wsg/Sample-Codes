@@ -36,7 +36,8 @@ get the different installers for your Operating System. If you are using Windows
 are using macOS, use the **macOS Installer**; If you are using Linux, refer to [this guide](https://www.geeksforgeeks.org/how-to-install-python-in-ubuntu/)
 on how to install Python 3.12.
 
->  ❗ For Linux, make sure that you **explicitly specify Python version 3.12** in the commands that require specification 
+> [!WARNING]
+> For Linux, make sure that you **explicitly specify Python version 3.12** in the commands that require specification 
 > of Python version.
 
 #### Installation of libraries
@@ -51,7 +52,8 @@ pip install -r requirements.txt
 
 The command should install all the required Python libraries on your system.
 
-> ❓ If your command fails to execute, try replacing `pip` with `pip3` instead!
+> [!TIP]
+> If your command fails to execute, try replacing `pip` with `pip3` instead!
 
 
 ### `conda`
@@ -59,14 +61,16 @@ The command should install all the required Python libraries on your system.
 `conda` is a Command Line tool that helps you manage your packages and environments on your system. It is compatible 
 with Windows, MacOS and Linux.
 
-> ❗ You are highly recommended to use Python package managers to help maintain your Python environments. Installations 
+> [!WARNING]
+> You are highly recommended to use Python package managers to help maintain your Python environments. Installations 
 > on the base environment provided when you first install Python may result in dependency clashes with future 
 > packages you install.
 
 Refer to the following links to find out more on how to install `conda` on your OS of choice:
-[Windows](https://conda.io/projects/conda/en/latest/user-guide/install/windows.html),
-[MacOS](https://conda.io/projects/conda/en/latest/user-guide/install/macos.html),
-[Linux](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html)
+
+* [Windows](https://conda.io/projects/conda/en/latest/user-guide/install/windows.html)
+* [MacOS](https://conda.io/projects/conda/en/latest/user-guide/install/macos.html)
+* [Linux](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 
 After installing `conda`, open up a command prompt or a terminal in the same location as this `README.md` document.
 
@@ -76,7 +80,8 @@ Run the command:
 conda create -n [YOUR ENV NAME HERE] python=3.12
 ```
 
-> ❗ Make sure to change `[YOUR ENV NAME HERE]` to any name that you desire (e.g. `ssg`, `api`, `demo`, `application`)!
+> [!WARNING]
+> Make sure to change `[YOUR ENV NAME HERE]` to any name that you desire (e.g. `ssg`, `api`, `demo`, `application`)!
 
 Running the command will create a new `conda` environment with `Python 3.12` installed!
 
@@ -97,7 +102,8 @@ Then, run the following commands to install the required Python libraries into y
 pip install -r requirements.txt
 ```
 
-> ❓ If your command fails to execute, try replacing `pip` with `pip3` instead!
+> [!TIP]
+> If your command fails to execute, try replacing `pip` with `pip3` instead!
 
 ## Usage
 
@@ -115,13 +121,30 @@ streamlit run Home.py
 If successful, you should be able to see that your browser would open, and you will be navigated to the `localhost`
 address where this application is hosted on!
 
+By default, the application is set to run on `localhost:8502`, where `8502` is the port number allocated to the
+application.
+
+The application is also run over HTTP; take care not to connect to the application via HTTPS!
+
+> [!NOTE]
+> If you wish to host the application on a server, make sure to open up the port `8502` on your server to allow
+> connections to the application! Otherwise, do consider using port forwarding or reverse proxies to route requests
+> to the correct port!
+
 
 ## Features
 
-There are 6 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
+There are 7 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
 as well as the SkillsFuture Credit API.
 
 The pages are all found within the [pages](app/pages) folder.
+
+### En-Decryption
+
+This page allows you to quickly encrypt and decrypt your text using the same algorithm that is used in the SSG APIs.
+
+This allows you to quickly convert encrypted responses from the API into plaintext, or generate encrypted payloads
+to send to the API!
 
 ### Demo Code - Authentication
 
@@ -190,4 +213,5 @@ Using this API, you can:
 
 ## Acknowledgements
 
-Many of the backend functions are adapted from the [SSG-API-Testing-Application](../../Sample-Codes/SSG-API-Testing-Application).
+Many of the backend functions are adapted from the [SSG-API-Testing-Application](../../Sample-Codes/SSG-API-Testing-Application) and various sources from the
+Internet. They are credited where they are due.
