@@ -1,0 +1,74 @@
+@startuml
+'Hide the boxes at the bottom of the bottom of the diagram
+hide footbox
+autoactivate on
+
+skinparam maxMessageSize 200
+
+!define SERVER_COLOUR #BA4040
+!define FRONTEND_COLOUR #AF5397
+!define BACKEND_COLOUR #5E7CC8
+
+
+actor User as User
+participant "Tornado Server" as Server SERVER_COLOUR
+participant "Frontend" as Frontend FRONTEND_COLOUR
+participant "Backend" as Backend BACKEND_COLOUR
+
+note right of Frontend
+    Frontend refers to the user
+    interface that the user
+    interacts with; it is what
+    the user can see
+end note
+
+note right of Backend
+    Backend refers to the server-side code that
+    processes the data sent from the Frontend.
+    Frontend and backend are integrated in Streamlit.
+end note
+
+[-> Server : Start the server
+ref over Server
+    Server starts and listens to
+    connections on port 8502
+end ref
+
+User -> Server : User makes HTTP/S connection to application
+return Handshake and send Frontend view
+
+loop until the user disconnects
+    User -> Server : Interacts with Frontend (fill in forms, click buttons, etc.)
+
+    note right of User
+        All user interactions
+        that trigger a rerun
+        in the application
+        sends HTTP/S requests
+        to the Server
+    end note
+
+    Server -> Frontend : Request reflect changes on frontend
+
+    note right of Frontend
+        Note that almost all Frontend action would invoke
+        the methods from the Backend since Streamlit code
+        integrates both the Frontend and the Backend into
+        one script that reruns when needed
+    end note
+
+    Frontend -> Backend: Frontend changes trigger backend action
+    ref over Backend, Frontend
+        Data is saved in the Backend either in classes
+        or in the session state
+
+        Validation of data input is also performed here and
+        results of validation is returned to the Frontend
+    end ref
+
+    return Backend changes reflected on frontend
+    return Sends new view back to User
+    return User sees changes in Frontend
+end loop
+return Server stopped
+@enduml

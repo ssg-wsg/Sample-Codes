@@ -3,27 +3,16 @@ actor User
 
 package "SSG-API-Testing-Application-v2" {
     package app {
-        package core as core {
-
-        }
-
-        package pages as pages {
-
-        }
-
-        package test as test {
-
-        }
-
-        package utils as utils {
-
-        }
+        package #lightblue core as core
+        package #lightgreen pages as pages
+        package #lightyellow test as test
+        package #orange utils as utils
 
         test --> core
         test --> utils
 
-        pages --> core
-        pages --> utils
+        pages <--> core
+        pages <--> utils
 
         core --> utils
     }

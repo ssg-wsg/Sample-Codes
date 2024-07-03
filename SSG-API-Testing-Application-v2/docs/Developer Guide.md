@@ -12,10 +12,21 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
    2. [Next Steps](#Next-Steps)
 4. [Design](#Design)
    1. [Architecture](#Architecture)
-      1. [Pages](#Pages)
-      2. [Core](#Core)
-      3. [Utils](#Utils)
-      4. [Tests](#Tests)
+      1. [Entrypoint](#Entrypoint)
+      2. [User Flow](#User-Flow)
+      3. [AWS Architecture](#AWS-Architecture)
+      4. [Pages](#Pages)
+         1. [`Encryption-Decryption`](#Encryption-Decryption)
+         2. [`Demo Code`](#Demo-Code)
+         3. [`Courses`](#Courses)
+         4. [`Enrolment`](#Enrolment)
+         5. [`Attendance`](#Attendance)
+         6. [`Assessments`](#Assessments)
+         7. [`SkillsFuture Credit Pay`](#SkillsFuture-Credit-Pay)
+      5. [Core](#Core)
+      6. [Utils](#Utils)
+      7. [Tests](#Tests)
+   2. [AWS Architecture](#AWS-Architecture)
 5. [Implementation](#Implementation)
 6. [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD)
    1. [Logging](#Logging)
@@ -64,6 +75,7 @@ Code from the application is reused from multiple sources:
   * https://www.uen.gov.sg/ueninternet/faces/pages/admin/aboutUEN.jspx.
 
 This guide's structure is also heavily inspired by https://github.com/AY2324S1-CS2103T-T17-1/tp/blob/master/docs/DeveloperGuide.md.
+
 
 ## Introduction
 
@@ -150,16 +162,222 @@ The application has 4 main components:
 
 We will explore in greater detail each of the components in the following sections.
 
+#### Entrypoint
+
+The application is launched when you run the command within the [`app`](../app) directory:
+
+```shell
+streamlit run Home.py
+```
+
+The process taken to start the Streamlit server is detailed below in the sequence diagram:
+
+![entrypoint sequence diagram](assets/developer-guide/sequence/OverallServerStartup-Tornado_Server_Setup.png)
+
+![entrypoint ref diagram](assets/developer-guide/sequence/OverallServerStartupStart-start__.png)
+
+1. `run` from `bootstrap.py` is invoked
+2. This creates an instance of `Server`, which forms the abstraction of the Streamlit Server where the application is
+   served
+3. In the constructor for `Server`,
+   1. `MemoryMediaFileStorage`, `MediaFileHandler`, `MemoryUploadedFileManager` are initialised
+   2. `Runtime` is initialised, and in the process, `RuntimeConfig` is also initialised and passed to `Runtime`
+4. In the constructor for `Runtime`,
+   1. `ForwardMsgCache`,  `MediaFileManager` and `ScriptCache` are initialised
+   2. When creating an instance of `StatsManager`, `Runtime` invokes `StatsManager::register_provider()` to register
+      the data, resources and message caches and the uploaded file manager. It also registers a `SessionStateStatProvider`
+      object initialised by `StatsManager`.
+5. `Server` then registers the `MemoryMediaFileStorage` object as a provider by invoking `StatsManager::register_provider()`
+6. In a spawned asynchronous thread,
+   1. `run_server()` is invoked, which invokes and awaits for the `Server::start()` method to return
+      1. `Server::_create_app()` is invoked, which returns an instance of `tornado.web.Application`
+      2. `start_listening(app)` from the server package is then invoked
+      3. `HttpServer::start()` is invoked
+      4. If the server address is a UNIX socket, `start_listening_unix_socket()` is invoked, else invoke `start_listening_tcp_socket()`
+   2. `Runtime::start()` is finally invoked and awaited, which creates `AsyncObjects` and returns them to `Server`
+7. The server is up and running
+
+For most intents and purposes, it is highly unlike you will need to modify any of these processes, as they are provided
+by the Streamlit library.
+
+This section is to aid you in understanding how the Streamlit server is started and how the application is served.
+
+#### User Flow
+
+Once the server is started, you are able to access it via:
+
+```text
+http://localhost:[YOUR PORT HERE]
+```
+
+> [!NOTE]
+> Replace `[YOUR_PORT_HERE]` entirely with the port number that is used in the [Streamlit configuration file](../app/.streamlit/config.toml).
+> 
+> By default, the port number is set to `8502`.
+
+The following diagram showcases how a user might interact with the application:
+
+![overall flow](assets/developer-guide/sequence/OverallFlow.png)
+
+![backend flow](assets/developer-guide/sequence/OverallBackendFlow-Backend_Flow.png)
+
+1. The server is started
+2. User makes a HTTP/HTTPS connection to the server
+3. While the server is active,
+   1. When the user interacts with the frontend UI elements, HTTP requests are sent to the server
+   2. The request trigger a change on the frontend
+   3. This frontend change (usually) triggers a backend action
+      1. For data entry changes, setters for backend model classes are called
+      2. For event triggers (such as clicking buttons), depending on the event in question, either UI changes are made
+         or backend logic is executed that calls external APIs
+   4. Backend changes is then pushed to the frontend
+   5. The user's view is then updated with the changes made
+
+This flow is also something that you will highly unlikely need to modify, as it is provided by the Streamlit library.
+
+However, the frontend to backend and then backend to frontend loop is something that you can modify if you wish.
+
 #### Pages
+
+The `pages` component contains the Streamlit pages that are rendered when the application is run.
+
+Within this component, there are 7 pages, each corresponding to the 7 non-Home pages in the application.
+
+Each page of the application either showcases a certain functionality required for the application or utilises a
+particular set of SSG APIs.
+
+More information about the APIs are provided
+
+##### `Encryption-Decryption`
+
+This page allows users to encrypt and decrypt text using their encryption key.
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![en-decryption](assets/developer-guide/classes/pages/En-DecryptionPageClassDiagram-En_Decryption_Page_Class_Dependencies.png)
+
+
+##### `Demo Code`
+
+This page allows users to view the sample code snippets that they can use to get started quickly with the
+authentication process.
+
+The code snippets are written in Python, Java and NodeJS. You may be required to maintain these code snippets should
+any of the underlying libraries or APIs change.
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![demo-code](assets/developer-guide/classes/pages/DemoCodePageClassDiagram-Demo_Code_Page_Class_Dependencies.png)
+
+
+##### `Courses`
+
+This page allows users to call the Courses API. More specifically, users can call the following APIs:
+
+* Add Course Run
+* Edit Course Run
+* Course Run by Run Id
+* Course Sessions
+
+Users can navigate to the screen supporting the above APIs by clicking on the respective tabs.
+
+![courses tabs](assets/user-guide/courses/add-course-run-tab.png)
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![courses](assets/developer-guide/classes/pages/CoursesPageClassDiagram-Courses_Page_Class_Dependencies.png)
+
+
+##### `Enrolment`
+
+This page allows users to call the Enrolment API. More specifically, users can call the following APIs:
+
+* Create Enrolment
+* Update Enrolment
+* Cancel Enrolment
+* Search Enrolment
+* View Enrolment
+* Update Enrolment Fee Collection
+
+Users can navigate to the screen supporting the above APIs by clicking on the respective tabs.
+
+![enrolment tabs](assets/user-guide/enrolment/create-enrolment-tab.png)
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![enrolment](assets/developer-guide/classes/pages/EnrolmentPageClassDiagram-Enrolment_Page_Class_Dependencies.png)
+
+
+##### `Attendance`
+
+This page allows users to call the Attendance API. More specifically, users can call the following APIs:
+
+* Course Session Attendance
+* Upload Course Session Attendance
+
+Users can navigate to the screen supporting the above APIs by clicking on the respective tabs.
+
+![attendance tabs](assets/user-guide/attendance/course-session-attendance-tab.png)
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![attendance](assets/developer-guide/classes/pages/AttendancePageClassDiagram-Attendance_Page_Class_Dependencies.png)
+
+
+##### `Assessments`
+
+This page allows users to call the Assessments API. More specifically, users can call the following APIs:
+
+* Create Assessment
+* Update/Void Assessment
+* Search Assessment
+* View Assessment
+
+Users can navigate to the screen supporting the above APIs by clicking on the respective tabs.
+
+![assessments tabs](assets/user-guide/assessment/create-assessment-tab.png)
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![assessments](assets/developer-guide/classes/pages/AssessmentsPageClassDiagram-Assessments_Page_Class_Dependencies.png)
+
+
+##### `SkillsFuture Credit Pay`
+
+This page allows users to call the SkillsFuture Credit Pay API. More specifically, users can call the following APIs:
+
+* Payment Request Encryption
+* Payment Response Decryption
+* Upload Supporting Documents
+* View Claim Details
+* Cancel Claim
+
+Users can navigate to the screen supporting the above APIs by clicking on the respective tabs.
+
+![sf credit tabs](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-decryption-tab.png)
+
+The class diagram of classes involved in the creation of this page is as follows:
+
+![sf credit](assets/developer-guide/classes/pages/SFCreditPageClassDiagram-SkillsFuture_Credit_Pay_Page_Class_Dependencies.png)
+
 
 #### Core
 
+
 #### Utils
+
 
 #### Tests
 
 
+### AWS Architecture
+
+This application is also hosted on AWS. More information about the AWS cloud architecture is provided in the 
+[Deployment Guide](Deployment%20Guide.md).
+
+
 ## Implementation
+
 
 ### API 1
 
@@ -168,6 +386,7 @@ We will explore in greater detail each of the components in the following sectio
 
 To assist you in logging, removing unused credential files and automatically testing and deploying the Sample Application,
 we have put in place some helpful features to help you achieve just that!
+
 
 ### Logging
 
@@ -191,6 +410,7 @@ The `Logger` class also has another utility method: `Logger::close()`, which is 
 You may indicate `close_handler = False` to override the default behaviour of closing the global handlers in the loggers
 as well.
 
+
 ### Housekeeping
 
 To help you better maintain the state of the temporary file location used to store your uploaded credentials, we have
@@ -202,6 +422,7 @@ execution of the base Sample Application.
 
 We chose those to use this package over other packages due to its ease of use, compatability with Streamlit and the
 lack of the need to write explicit multithreading/concurrent code to execute cron task.
+
 
 #### `start_scheduler()`
 
@@ -220,6 +441,7 @@ method is called:
 > Do note that the interval is arbitrarily set, you may wish to use another interval for a stricter housekeeping and
 > certificate and private key retention policy.
 
+
 #### `_clean_temp()`
 
 `_clean_temp()` is the task that the scheduler will execute at a fixed interval.
@@ -229,14 +451,20 @@ This (private) method does the following:
 1. Iterate through all files in the temporary directory where the certificate and key files are uploaded and saved into
 2. If the filename ends with `.pem`, remove it
 
+
 #### Extending tasks to perform
 
 If you wish to include more cron tasks to perform, feel free to define more methods within this file, and add them into
 the scheduler within `start_scheduler()`, defining the interval in which to execute the task.
 
+
 ### CI/CD
 
-Automation of unit testing and deployment is done in part using GitHub Actions.
+CI/CD represents Continuous Integration and Continuous Deployment. This is a process where code is automatically tested
+and deployed to a server when a new commit is pushed to the repository.
+
+For the Sample Application, the automation of unit testing, checkstyle and deployment is done in part using GitHub
+Actions.
 
 Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/test.yml) for a better understanding of the
 process.
@@ -257,4 +485,3 @@ The steps of the CI/CD pipeline is as such:
 
 ## Glossary
 
-## 

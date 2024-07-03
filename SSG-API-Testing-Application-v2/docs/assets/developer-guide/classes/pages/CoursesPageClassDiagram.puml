@@ -1,0 +1,191 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Courses Page Class Dependencies
+
+package "2_Courses" as page {
+
+}
+
+package core {
+    package constants {
+        enum "<<enumeration>>\nVacancy" {
+            AVAILABLE
+            FULL
+            LIMITED_VACANCY
+        }
+
+        enum "<<enumeration>>\nRole" {
+            TRAINER
+            ASSESSOR
+        }
+
+        enum "<<enumeration>>\nModeOfTraining" {
+            CLASSROOM
+            ASYNCHRONOUS_ELEARNING
+            IN_HOUSE
+            ON_THE_JOB
+            PRACTICAL_PRACTICUM
+            SUPERVISED_FIELD
+            TRAINEESHIP
+            ASSESSMENT
+            SYNCHRONOUS_LEARNING
+        }
+
+        enum "<<enumeration>>\nIdType" {
+            SINGAPORE_BLUE
+            SINGAPORE_PINK
+            FIN_WORK_PERMIT
+            FOREIGN_PASSPORT
+            OTHERS
+        }
+
+        enum "<<enumeration>>\nSalutations" {
+            MR
+            MS
+            MDM
+            MRS
+            DR
+            PROF
+        }
+
+        enum "<<enumeration>>\nMonth" {
+            JAN
+            FEB
+            MAR
+            APR
+            MAY
+            JUN
+            JUL
+            AUG
+            SEP
+            OCT
+            NOV
+            DEC
+        }
+
+        enum OptionalSelector {
+            NIL
+            YES
+            NO
+        }
+    }
+
+    package courses {
+        class AddCourseRun {
+
+        }
+
+        class DeleteCourseRun {
+
+        }
+
+        class EditCourseRun {
+
+        }
+
+        class ViewCourseRun {
+
+        }
+
+        class ViewCourseSessions {
+
+        }
+
+        AddCourseRun -down[hidden]|> DeleteCourseRun
+        EditCourseRun -down[hidden]|> ViewCourseRun
+        AddCourseRun -up[hidden]-> EditCourseRun
+    }
+
+    package models {
+        package "course_runs" {
+            class LinkedSSECEQA {
+
+            }
+
+            class RunSessionEditInfo {
+
+            }
+
+            class RunSessionAddInfo{
+
+            }
+
+            class RunTrainerEditInfo {
+
+            }
+
+            class RunTrainerAddInfo {
+
+            }
+
+            class EditRunInfo {
+
+            }
+
+            class DeleteRunInfo {
+
+            }
+
+            class AddRunIndividualInfo {
+
+            }
+
+            class AddRunInfo {
+
+            }
+
+            AddRunInfo --up-|> EditRunInfo
+            AddRunIndividualInfo --up--|> EditRunInfo
+            DeleteRunInfo -up-|> EditRunInfo
+
+            RunTrainerAddInfo -up-|> RunTrainerEditInfo
+            RunSessionAddInfo -up-|> RunSessionEditInfo
+        }
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+}
+
+package utils {
+    package http_utils {
+        class "Static Context" as husc {
+            + handle_request(AbstractRequest, bool): None {static}
+            + handle_response(Callable[[], requests.Response], bool]: None {static}
+        }
+    }
+
+    package streamlit_utils {
+        class "Static Context" as susc {
+            + init(): None {static}
+            + display_config(): None {static}
+            + http_code_handler(Union[int, str]): None {static}}
+            + validation_error_handler(list[str], list[str]): bool {static}
+            + does_not_have_keys(): bool {static}
+        }
+    }
+}
+
+page .right.> Logger
+page ..> susc
+page ..> husc
+page ..> courses
+page ..> "course_runs"
+page ..> constants
+
+
+@enduml

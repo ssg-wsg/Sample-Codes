@@ -1,0 +1,184 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title High Level Class Diagram Of Core Package
+
+package pages {
+    package 3_Enrolment {
+
+    }
+}
+
+package utils {
+    package http_utils {
+        class HttpRequest {
+            + WRAP_LEVEL: int {static}
+            - _INDENT_LEVEL: int {static}
+
+            + __init__()
+            + __str__()
+            + with_endpoint(str, str)
+            + with_header(str, str)
+            + with_param(str, str)
+            + with_body(dict)
+            + with_api_version(str)
+            + get()
+            + post()
+            + post_encrypted()
+            + repr()
+        }
+    }
+}
+
+package core {
+    package abc {
+        abstract AbstractRequest {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            - _prepare() {abstract}
+            + execute() {abstract}
+        }
+
+        abstract AbstractRequestInfo {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            + validate() {abstract}
+            + payload() {abstract}
+        }
+    }
+
+    package enrolment {
+        class CancelEnrolment {
+
+        }
+
+        class CreateEnrolment {
+
+        }
+
+        class SearchEnrolment {
+
+        }
+
+        class UpdateEnrolment {
+
+        }
+
+        class UpdateEnrolmentFeeCollection {
+
+        }
+
+        class ViewEnrolment {
+
+        }
+
+        CancelEnrolment -up-|> AbstractRequest
+        CreateEnrolment -up-|> AbstractRequest
+
+        SearchEnrolment -up-|> AbstractRequest
+        UpdateEnrolment -up-|> AbstractRequest
+
+        UpdateEnrolmentFeeCollection -up-|> AbstractRequest
+        ViewEnrolment -up-|> AbstractRequest
+
+        CancelEnrolment ..> HttpRequest
+        CreateEnrolment ..> HttpRequest
+        SearchEnrolment ..> HttpRequest
+        UpdateEnrolment ..> HttpRequest
+        UpdateEnrolmentFeeCollection ..> HttpRequest
+        ViewEnrolment ..> HttpRequest
+    }
+
+    package models {
+        package enrolment {
+            class CreateEnrolmentInfo {
+                - _course_run_id: Optional[str]
+                - _course_referenceNumber: str
+                - _trainee_id: str
+                - _trainee_fees_discountAmount: Union[int, float]
+                - _trainee_fees_collectionStatus: CollectionStatus.value
+                - _trainee_idType_type: IdTypeSummary.value
+                - _trainee_employer_uen: Optional[str]
+                - _trainee_employer_contact_fullName: Optional[str]
+                - _trainee_employer_contact_emailAddress: Optional[str]
+                - _trainee_employer_contact_contactNumber_areaCode: Optional[str]
+                - _trainee_employer_contact_contactNumber_countryCode: Optional[str]
+                - _trainee_employer_contact_contactNumber_phoneNumber: Optional[str]
+                - _trainee_fullName: Optional[str]
+                - _trainee_dateOfBirth: datetime.date
+                - _trainee_emailAddress: str
+                - _trainee_contactNumber_areaCode: Optional[str]
+                - _trainee_contactNumber_countryCode: Optional[str]
+                - _trainee_contactNumber_phoneNumber: Optional[str]
+                - _trainee_enrolmentDate: Optional[datetime.date]
+                - _trainee_sponsorshipType: SponsorshipType.value
+                - _trainingPartner_code: str
+                - _trainingPartner_uen: Optional[str]
+            }
+
+            class UpdateEnrolmentInfo {
+
+            }
+
+            class CancelEnrolmentInfo {
+
+            }
+
+            class SearchEnrolmentInfo {
+                - _lastUpdateDateTo: Optional[datetime.date]
+                - _lastUpdateDateFrom: Optional[datetime.date]
+                - _sortBy_field: Optional[EnrolmentSortField.value]
+                - _sortBy_order: Optional[SortOrder.value]
+                - _course_run_id: Optional[str]
+                - _course_referenceNumber: Optional[str]
+                - _course_status: Optional[EnrolmentCourseStatus.value]
+                - _trainee_id: Optional[str]
+                - _trainee_fees_feeCollectionStatus: Optional[CancellableCollectionStatus.value]
+                - _trainee_idType_type: Optional[IdTypeSummary.value]
+                - _trainee_employer_uen: Optional[str]
+                - _trainee_enrolmentDate: Optional[datetime.date]
+                - _trainee_sponsorshipType: Optional[Literal["EMPLOYER", "INDIVIDUAL"]]
+                - _trainingPartner_uen: Optional[str]
+                - _trainingPartner_code: Optional[str]
+                - _parameters_page: int
+                - _parameters_page_size: int
+            }
+
+            class UpdateEnrolmentFeeCollectionInfo {
+
+            }
+
+            UpdateEnrolmentInfo -up-|> CreateEnrolmentInfo
+            CancelEnrolmentInfo -up-|> UpdateEnrolmentInfo
+            UpdateEnrolmentFeeCollectionInfo -up-|> UpdateEnrolmentInfo
+
+            CreateEnrolmentInfo -up-|> AbstractRequestInfo
+            SearchEnrolmentInfo -up-|> AbstractRequestInfo
+        }
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+    
+    HttpRequest ..> Logger
+}
+
+pages .left.> core
+
+
+@enduml

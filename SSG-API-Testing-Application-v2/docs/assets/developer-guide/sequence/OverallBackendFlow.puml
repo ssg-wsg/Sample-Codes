@@ -1,0 +1,25 @@
+@startuml
+'Hide the boxes at the bottom of the bottom of the diagram
+hide footbox
+title Backend Flow
+autoactivate on
+
+!define SERVER_COLOUR #BA4040
+!define FRONTEND_COLOUR #AF5397
+!define BACKEND_COLOUR #5E7CC8
+
+
+participant "Backend" as Backend BACKEND_COLOUR
+participant "Model Classes" as ModelClasses BACKEND_COLOUR
+participant "Request Classes" as RequestClasses BACKEND_COLOUR
+
+[-> Backend : Frontend change invoke backend processing
+
+Backend -> ModelClasses : Call setters to set data
+return
+
+Backend -> RequestClasses : Initialise request classes and send requests
+return response from API
+
+return data to be reflected on frontend
+@enduml

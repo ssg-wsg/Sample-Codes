@@ -1,0 +1,154 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Assessment Classes Diagram
+
+package pages {
+    package 5_Assessments {
+
+    }
+}
+
+package utils {
+    package http_utils {
+        class HttpRequest {
+            + WRAP_LEVEL: int {static}
+            - _INDENT_LEVEL: int {static}
+
+            + __init__()
+            + __str__()
+            + with_endpoint(str, str)
+            + with_header(str, str)
+            + with_param(str, str)
+            + with_body(dict)
+            + with_api_version(str)
+            + get()
+            + post()
+            + post_encrypted()
+            + repr()
+        }
+    }
+}
+
+package core {
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+
+    package abc {
+        abstract AbstractRequest {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            - _prepare() {abstract}
+            + execute() {abstract}
+        }
+
+        abstract AbstractRequestInfo {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            + validate() {abstract}
+            + payload() {abstract}
+        }
+    }
+
+    package assessments {
+        class CreateAssessment {
+
+        }
+
+        class SearchAssessment {
+
+        }
+
+        class UpdateVoidAssessment {
+
+        }
+
+        class ViewAssessment {
+
+        }
+
+        CreateAssessment -up--|> AbstractRequest
+        SearchAssessment -up--|> AbstractRequest
+
+        UpdateVoidAssessment -up--|> AbstractRequest
+        ViewAssessment -up--|> AbstractRequest
+
+        CreateAssessment -up[hidden]-> UpdateVoidAssessment
+        SearchAssessment -up[hidden]-> UpdateVoidAssessment
+
+        CreateAssessment ..right.> HttpRequest
+        SearchAssessment ..right.> HttpRequest
+        UpdateVoidAssessment ..right.> HttpRequest
+        ViewAssessment ..right.> HttpRequest
+    }
+
+    package models {
+        package assessments {
+            class CreateAssessmentInfo {
+                - _grade: Optional[Grade]
+                - _score: Optional[int]
+                - _course_runId: str
+                - _course_referenceNumber: str
+                - _result: Results
+                - _trainee_id: str
+                - _trainee_idType: IdTypeSummary
+                - _trainee_fullName: str
+                - _skillCode: Optional[str]
+                - _assessmentDate: datetime.date
+                - _trainingPartner_code: str
+                - _trainingPartner_uen: Optional[str]
+                - _conferringInstitute_code: Optional[str]
+            }
+    
+            class UpdateVoidAssessmentInfo extends CreateAssessmentInfo {
+                - _action: AssessmentUpdateVoidActions
+                - _assessmentReferenceNumber: str
+    
+            }
+            
+            class SearchAssessmentInfo {
+                - _lastUpdateDateTo: Optional[datetime.date] 
+                - _lastUpdateDateFrom: Optional[datetime.date] 
+                - _sortBy_field: Optional[SortField] 
+                - _sortBy_order: Optional[SortOrder] 
+                - _parameters_page: int 
+                - _parameters_pageSize: int 
+                - _assessment_courseRunId: Optional[str] 
+                - _assessment_referenceNumber: Optional[str] 
+                - _assessment_traineeId: Optional[str] 
+                - _assessment_enrolement_referenceNumber: Optional[str] 
+                - _assessment_skillCode: Optional[str] 
+                - _trainingPartner_uen: Optional[str] 
+                - _trainingPartner_code: Optional[str] 
+            }
+        }
+
+        CreateAssessmentInfo -up-|> AbstractRequestInfo
+        SearchAssessmentInfo -up-|> AbstractRequestInfo
+    }
+
+    assessments -up[hidden]-> abc
+    models -up[hidden]-> abc
+}
+
+HttpRequest .right..> Logger
+5_Assessments ..right> core
+
+core --[hidden]--> utils
+abc -[hidden]-> system
+@enduml

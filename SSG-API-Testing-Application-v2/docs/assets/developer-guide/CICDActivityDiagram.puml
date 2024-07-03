@@ -9,11 +9,6 @@ fork
 
 if (Tests executed without exceptions) then (yes)
     :Upload Code Coverage report;
-    if (Code Coverage Report Uploaded Successfully) then (yes)
-    else (no)
-        stop
-    endif
-
 else (no)
     stop
 endif
@@ -27,11 +22,6 @@ fork again
 
 if (Tests executed without exceptions) then (yes)
     :Upload Code Coverage report;
-    if (Code Coverage Report Uploaded Successfully) then (yes)
-    else (no)
-        stop
-    endif
-
 else (no)
     stop
 endif
@@ -45,11 +35,6 @@ fork again
 
 if (Tests executed without exceptions) then (yes)
     :Upload Code Coverage report;
-    if (Code Coverage Report Uploaded Successfully) then (yes)
-    else (no)
-        stop
-    endif
-
 else (no)
     stop
 endif
