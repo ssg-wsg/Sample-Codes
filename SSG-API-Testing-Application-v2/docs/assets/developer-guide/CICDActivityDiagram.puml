@@ -1,0 +1,60 @@
+@startuml
+start
+fork
+:Runs on Ubuntu-latest;
+:Checkout Repository;
+:Set up Python 3.12;
+:Install Dependencies;
+:Execute Tests;
+
+if (Tests executed without exceptions) then (yes)
+    :Upload Code Coverage report;
+    if (Code Coverage Report Uploaded Successfully) then (yes)
+    else (no)
+        stop
+    endif
+
+else (no)
+    stop
+endif
+
+fork again
+:Runs on Windows-latest;
+:Checkout Repository;
+:Set up Python 3.12;
+:Install Dependencies;
+:Execute Tests;
+
+if (Tests executed without exceptions) then (yes)
+    :Upload Code Coverage report;
+    if (Code Coverage Report Uploaded Successfully) then (yes)
+    else (no)
+        stop
+    endif
+
+else (no)
+    stop
+endif
+
+fork again
+:Runs on macOS-latest;
+:Checkout Repository;
+:Set up Python 3.12;
+:Install Dependencies;
+:Execute Tests;
+
+if (Tests executed without exceptions) then (yes)
+    :Upload Code Coverage report;
+    if (Code Coverage Report Uploaded Successfully) then (yes)
+    else (no)
+        stop
+    endif
+
+else (no)
+    stop
+endif
+
+endfork
+stop
+
+@enduml

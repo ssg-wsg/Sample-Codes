@@ -1,0 +1,33 @@
+@startuml
+actor User
+
+package "SSG-API-Testing-Application-v2" {
+    package app {
+        package core as core {
+
+        }
+
+        package pages as pages {
+
+        }
+
+        package test as test {
+
+        }
+
+        package utils as utils {
+
+        }
+
+        test --> core
+        test --> utils
+
+        pages --> core
+        pages --> utils
+
+        core --> utils
+    }
+}
+
+User --right-> pages
+@enduml

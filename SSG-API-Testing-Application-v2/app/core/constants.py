@@ -1,7 +1,5 @@
 """
 Contains all constants and mappings that are used throughout multiple elements in the app
-
-Enums code is inspired by https://stackoverflow.com/questions/12680080/python-enums-with-attributes
 """
 
 from enum import Enum

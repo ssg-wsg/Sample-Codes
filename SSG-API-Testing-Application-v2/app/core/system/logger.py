@@ -93,13 +93,17 @@ class Logger:
 
         self.logger.error(message)
 
-    def close(self) -> None:
+    def close(self, close_handler: bool = True) -> None:
         """
         Closes any handlers attached to this logger instance and removes them from this logger.
 
         Taken from https://stackoverflow.com/questions/15435652/python-does-not-release-filehandles-to-logfile
+
+        :param close_handler Specify if the handler should be closed
         """
 
         for handler in self.logger.handlers:
             self.logger.removeHandler(handler)
-            handler.close()
+
+            if close_handler:
+                handler.close()
