@@ -58,11 +58,11 @@ jobs:
     name: Create Docker Image and Deploy to ECR
 
     steps:
-      - name: Install AWS CLI
+      - name: Update AWS CLI
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
-          sudo ./aws/install
+          sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
 
       - name: Configure AWS Credentials
         id: configure-credentials
