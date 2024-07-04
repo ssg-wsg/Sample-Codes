@@ -52,6 +52,7 @@ jobs:
           fail_ci_if_error: false
 
   deploy:
+    if: ${{ needs.test.result == 'success' }}
     runs-on: ubuntu-latest
     name: Create Docker Image and Deploy to ECR
 
