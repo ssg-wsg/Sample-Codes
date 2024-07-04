@@ -165,17 +165,17 @@ Using this API, you can:
 * View a Course Run
 * View Course Sessions
 
-### Enrollment
+### Enrolment
 
-This page contains APIs that are related to the enrollment of learners to your courses!
+This page contains APIs that are related to the enrolment of learners to your courses!
 
 Using this API, you can:
 
-* Create Enrollment
-* View Enrollment
-* Search Enrollment
-* Update Enrollment
-* Delete Enrollment
+* Create Enrolment
+* View Enrolment
+* Search Enrolment
+* Update Enrolment
+* Delete Enrolment
 
 ### Attendance
 

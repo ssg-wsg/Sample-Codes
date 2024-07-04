@@ -28,14 +28,15 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
       7. [Tests](#Tests)
    2. [AWS Architecture](#AWS-Architecture)
 5. [Implementation](#Implementation)
-6. [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD)
+6. [DevOps](#DevOps)
+7. [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD)
    1. [Logging](#Logging)
    2. [Housekeeping](#Housekeeping)
       1. [`start_scheduler()`](#start_scheduler)
       2. [`_clean_temp()`](#_clean_temp)
       3. [Extending tasks to perform](#Extending-tasks-to-perform)
    3. [CI/CD](#CICD)
-7. [Glossary](#Glossary)
+8. [Glossary](#Glossary)
 
 ## Acknowledgements
 
@@ -381,12 +382,43 @@ This application is also hosted on AWS. More information about the AWS cloud arc
 
 ### API 1
 
+## DevOps
 
-## Logging, Housekeeping and CI/CD
+### GitHub Setup
 
-To assist you in logging, removing unused credential files and automatically testing and deploying the Sample Application,
-we have put in place some helpful features to help you achieve just that!
 
+
+### CI/CD
+
+CI/CD represents Continuous Integration and Continuous Deployment. This is a process where code is automatically tested
+and deployed to a server when a new commit is pushed to the repository.
+
+For the Sample Application, the automation of unit testing, checkstyle and deployment is done in part using GitHub
+Actions.
+
+Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/test.yml) for a better understanding of the
+process.
+
+Here is a diagram representing the overall flow of processes implemented in the workflow file:
+
+![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
+
+The steps of the CI/CD pipeline is as such:
+
+1. Start the pipeline on all major OSes (Windows, MacOS, Linux)
+2. Checkout (clone) the repository
+3. Install Python `3.12` on the GitHub runner
+4. Install the Python dependencies
+5. Execute the unit tests
+6. Upload the code coverage reports to Codecov (if the `CODECOV_TOKEN` secret is present)
+
+
+## Logging and Housekeeping
+
+To assist you in logging and removing unused credential files for housekeeping, we have put in place some helpful
+features to help you achieve just that!
+
+These tools might come in useful when you are debugging the application, or when you are maintaining the application
 
 ### Logging
 
@@ -456,31 +488,6 @@ This (private) method does the following:
 
 If you wish to include more cron tasks to perform, feel free to define more methods within this file, and add them into
 the scheduler within `start_scheduler()`, defining the interval in which to execute the task.
-
-
-### CI/CD
-
-CI/CD represents Continuous Integration and Continuous Deployment. This is a process where code is automatically tested
-and deployed to a server when a new commit is pushed to the repository.
-
-For the Sample Application, the automation of unit testing, checkstyle and deployment is done in part using GitHub
-Actions.
-
-Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/test.yml) for a better understanding of the
-process.
-
-Here is a diagram representing the overall flow of processes implemented in the workflow file:
-
-![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
-
-The steps of the CI/CD pipeline is as such:
-
-1. Start the pipeline on all major OSes (Windows, MacOS, Linux)
-2. Checkout (clone) the repository
-3. Install Python `3.12` on the GitHub runner
-4. Install the Python dependencies
-5. Execute the unit tests
-6. Upload the code coverage reports to Codecov (if the `CODECOV_TOKEN` secret is present)
 
 
 ## Glossary
