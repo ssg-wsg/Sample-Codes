@@ -2,6 +2,7 @@
 # https://stackoverflow.com/questions/51028677/create-aws-ecr-repository-if-it-doesnt-exist,
 # https://github.com/aws-actions/amazon-ecr-login and
 # https://medium.com/@octavio/ecs-deployments-with-github-actions-dd34beed6528
+# https://stackoverflow.com/questions/75546117/github-action-how-to-edit-a-json-objects-with-github-repository-secrets
 
 name: Run Tests and Deploy to AWS
 
@@ -13,7 +14,7 @@ env:
   AWS_REGION: "ap-southeast-1"
   ECS_TASK_DEFINITION: "./revamped-application/deploy/task-definition.json"
   ECS_CONTAINER_NAME: "app"   # should be the same as containerDefinitions of task definition file
-  ECS_SERVICE_NAME: "ssg-wsg-app"
+  ECS_SERVICE_NAME: "arn:aws:ecs:ap-southeast-1:730335480348:service/SSG-ECS-App/ssg-wsg-app"
   ECS_CLUSTER_NAME: "arn:aws:ecs:ap-southeast-1:730335480348:cluster/SSG-ECS-App"
 
 jobs:
