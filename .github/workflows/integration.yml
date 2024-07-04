@@ -79,7 +79,7 @@ jobs:
       # we need to use the AWS CLI to create the ECR repository
       - name: Create ECR Repository
         id: create-ecr-repo
-        working-directory: ./SSG-API-Testing-Application-v2/app
+        working-directory: SSG-API-Testing-Application-v2/app
         run: aws ecr create-repository --repository-name ${{ env.ECR_REPO_NAME }} || true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -88,7 +88,7 @@ jobs:
 
       - name: Create and Push Docker Image
         id: create-and-push-docker-image
-        working-directory: ./SSG-API-Testing-Application-v2/app
+        working-directory: SSG-API-Testing-Application-v2/app
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPO_NAME }}
@@ -102,7 +102,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ./SSG-API-Testing-Application-v2/deploy/task-definition.json
+          task-definition: SSG-API-Testing-Application-v2/deploy/task-definition.json
           container-name: ${{ env.ECS_CONTAINER_NAME }}
           image: ${{ steps.create-and-push-docker-image.outputs.image }}
 
