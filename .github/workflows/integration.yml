@@ -79,7 +79,6 @@ jobs:
       # we need to use the AWS CLI to create the ECR repository
       - name: Create ECR Repository
         id: create-ecr-repo
-        working-directory: SSG-API-Testing-Application-v2/app
         run: aws ecr create-repository --repository-name ${{ env.ECR_REPO_NAME }} || true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
