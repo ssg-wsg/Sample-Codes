@@ -1,5 +1,5 @@
 {
-    "family": "SSG-WSG ECS Deployment Pipeline v1",
+    "family": "app-v1",
     "networkMode": "bridge",
     "containerDefinitions": [
         {
