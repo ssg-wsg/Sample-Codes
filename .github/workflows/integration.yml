@@ -9,13 +9,13 @@ name: Run Tests and Deploy to AWS
 on: [push, pull_request]
 
 env:
+  BOTO3_DEPENDENCY: "1.34.139"
   PYTHON_VERSION: "3.12"
   ECR_REPO_NAME: "ssg-sample-application"
   AWS_REGION: "ap-southeast-1"
-  ECS_TASK_DEFINITION: "./revamped-application/deploy/task-definition.json"
   ECS_CONTAINER_NAME: "app"   # should be the same as containerDefinitions of task definition file
-  ECS_SERVICE_NAME: "arn:aws:ecs:ap-southeast-1:730335480348:service/SSG-ECS-App/ssg-wsg-app"
-  ECS_CLUSTER_NAME: "arn:aws:ecs:ap-southeast-1:730335480348:cluster/SSG-ECS-App"
+  ECS_CLUSTER_ARN: "arn:aws:ecs:ap-southeast-1:730335480348:cluster/ssg-ecs-app"
+  SG_GROUP_NAME: "ssg-wsg-sg"
 
 jobs:
   test:
@@ -64,11 +64,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update AWS CLI
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        working-directory: ./SSG-API-Testing-Application-v2/app
+        run: pip install boto3==${{ env.BOTO3_DEPENDENCY }}
 
       - name: Configure AWS Credentials
         id: configure-credentials
@@ -82,15 +86,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # we need to use the AWS CLI to create the ECR repository
-      - name: Create ECR Repository
-        id: create-ecr-repo
-        run: aws ecr create-repository --repository-name ${{ env.ECR_REPO_NAME }} || true
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
-
       - name: Create and Push Docker Image
         id: create-and-push-docker-image
         working-directory: SSG-API-Testing-Application-v2/app
@@ -102,20 +97,3 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Create ECS Task Definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: SSG-API-Testing-Application-v2/deploy/task-definition.json
-          container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ steps.create-and-push-docker-image.outputs.image }}
-
-      - name: Deploy Task Definition
-        id: task-def-deploy
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE_NAME }}
-          cluster: ${{ env.ECS_CLUSTER_NAME }}
-          wait-for-service-stability: true
