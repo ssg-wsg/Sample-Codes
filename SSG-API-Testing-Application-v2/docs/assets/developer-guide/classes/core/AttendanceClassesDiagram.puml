@@ -1,0 +1,112 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Attendance Classes Diagram
+
+package pages {
+    package 4_Attendance {
+
+    }
+}
+
+
+package utils {
+    package http_utils {
+        class HttpRequest {
+            + WRAP_LEVEL: int {static}
+            - _INDENT_LEVEL: int {static}
+
+            + __init__()
+            + __str__()
+            + with_endpoint(str, str)
+            + with_header(str, str)
+            + with_param(str, str)
+            + with_body(dict)
+            + with_api_version(str)
+            + get()
+            + post()
+            + post_encrypted()
+            + repr()
+        }
+    }
+}
+
+package core {
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+
+    package abc {
+        abstract AbstractRequest {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            - _prepare() {abstract}
+            + execute() {abstract}
+        }
+
+        abstract AbstractRequestInfo {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            + validate() {abstract}
+            + payload() {abstract}
+        }
+    }
+
+    package attendance {
+        class CourseSessionAttendance {
+
+        }
+
+        class UploadCourseSessionAttendance {
+
+        }
+
+        CourseSessionAttendance -up--|> AbstractRequest
+        UploadCourseSessionAttendance -up|> AbstractRequest
+    }
+
+    package models {
+        package attendance {
+            class UploadAttendanceInfo {
+                - _sessionId: str
+                - _status_code: Attendance
+                - _trainee_id: str
+                - _trainee_name: str
+                - _trainee_email: Optional[str]
+                - _trainee_id_type: IdType
+                - _contactNumber_mobile: str
+                - _contactNumber_areacode: Optional[int]
+                - _contactNumber_countryCode: int
+                - _numberOfHours: Optional[float]
+                - _surveyLanguage_code: SurveyLanguage
+                - _referenceNumber: str
+                - _corppassId: str
+            }
+
+            UploadAttendanceInfo -up-|> AbstractRequestInfo
+        }
+    }
+
+    attendance -up[hidden]-> abc
+    models -up[hidden]-> abc
+}
+
+HttpRequest .up..> Logger
+4_Attendance ..right> core
+
+core --[hidden]--> utils
+@enduml

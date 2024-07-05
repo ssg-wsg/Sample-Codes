@@ -1,0 +1,66 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title En-Decryption Page Class Dependencies
+
+package 0_En-Decryption as page {
+
+}
+
+package core {
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+
+    package cipher {
+        class Cryptography {
+            + encrypt() {static}
+            + decrypt() {static}
+        }
+    }
+}
+
+package utils {
+    package streamlit_utils {
+        class "Static Context" as susc {
+            + init(): None {static}
+            + display_config(): None {static}
+            + http_code_handler(Union[int, str]): None {static}}
+            + validation_error_handler(list[str], list[str]): bool {static}
+            + does_not_have_keys(): bool {static}
+        }
+    }
+
+    package verify {
+        class Validators {
+            + _NRIC_PRODUCT {static}
+            + _S_T_CHECKDIGIT {static}
+            + _G_F_CHECKDIGIT {static}
+            + _M_CHECKDIGIT {static}
+
+            + verify_uen(str): bool {static}
+            + verify_aes_encryption_key(str): bool {static}
+            + verify_cert_private_key(str, str): bool {static}
+            + verify_nric(str): bool {static}
+        }
+    }
+}
+
+page ..> streamlit_utils
+page ..> Validators
+page ..> Logger
+page ...> Cryptography
+
+@enduml

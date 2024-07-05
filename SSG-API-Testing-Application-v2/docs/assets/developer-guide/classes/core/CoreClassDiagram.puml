@@ -1,0 +1,441 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title High-level core Class Diagram
+
+package core {
+    package constants {
+        enum "<<enumeration>>\nHttpMethod" {
+            GET
+            POST
+        }
+
+        enum "<<enumeration>>\nEndpoints" {
+            UAT
+            PRODUCTION
+            MOCK
+        }
+
+        enum "<<enumeration>>\nVacancy" {
+            AVAILABLE
+            FULL
+            LIMITED_VACANCY
+        }
+
+        enum "<<enumeration>>\nRole" {
+            TRAINER
+            ASSESSOR
+        }
+
+        enum "<<enumeration>>\nModeOfTraining" {
+            CLASSROOM
+            ASYNCHRONOUS_ELEARNING
+            IN_HOUSE
+            ON_THE_JOB
+            PRACTICAL_PRACTICUM
+            SUPERVISED_FIELD
+            TRAINEESHIP
+            ASSESSMENT
+            SYNCHRONOUS_LEARNING
+        }
+
+        enum "<<enumeration>>\nIdType" {
+            SINGAPORE_BLUE
+            SINGAPORE_PINK
+            FIN_WORK_PERMIT
+            FOREIGN_PASSPORT
+            OTHERS
+        }
+
+        enum "<<enumeration>>\nSalutations" {
+            MR
+            MS
+            MDM
+            MRS
+            DR
+            PROF
+        }
+
+        enum "<<enumeration>>\nMonth" {
+            JAN
+            FEB
+            MAR
+            APR
+            MAY
+            JUN
+            JUL
+            AUG
+            SEP
+            OCT
+            NOV
+            DEC
+        }
+
+        enum "<<enumeration>>\nGrade" {
+            A
+            B
+            C
+            D
+            E
+            F
+        }
+
+        enum "<<enumeration>>\nResults" {
+            PASS
+            FAIL
+            EXEMPT
+        }
+
+        enum "<<enumeration>>\nIdTypeSummary" {
+            NRIC
+            FIN
+            OTHERS
+        }
+
+        enum "<<enumeration>>\nAssessmentUpdateVoidActions" {
+            UPDATE
+            VOID
+        }
+
+        enum "<<enumeration>>\nAttendance" {
+            CONFIRMED
+            UNCONFIRMED
+            REJECTED
+            TP_VOIDED
+        }
+
+        enum "<<enumeration>>\nSortField" {
+            UPDATED_ON
+            CREATED_ON
+            ASSESSMENT_DATE
+        }
+
+        enum "<<enumeration>>\nSortOrder" {
+            ASCENDING
+            DESCENDING
+        }
+
+        enum "<<enumeration>>\nSurveyLanguage" {
+            ENGLISH
+            MANDARIN
+            MALAY
+            TAMIL
+        }
+
+        enum "<<enumeration>>\nCollectionStatus" {
+            PENDING_PAYMENT
+            PARTIAL_PAYMENT
+            FULL_PAYMENT
+        }
+
+        enum "<<enumeration>>\nCancellableCollectionStatus" {
+            PENDING_PAYMENT
+            PARTIAL_PAYMENT
+            FULL_PAYMENT
+            CANCELLED
+        }
+
+        enum "<<enumeration>>\nSponsorshipType" {
+            EMPLOYER
+            INDIVIDUAL
+        }
+
+        enum "<<enumeration>>\nEnrolmentSortField" {
+            UPDATED_ON
+            CREATED_ON
+        }
+
+        enum "<<enumeration>>\nEnrolmentStatus" {
+            CONFIRMED
+            REJECTED
+        }
+
+        enum "<<enumeration>>\nEnrolmentCourseStatus" {
+            CONFIRMED
+            CANCELLED
+        }
+
+        enum OptionalSelector {
+            NIL
+            YES
+            NO
+        }
+    }
+
+    package abc {
+        abstract AbstractRequest {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            - _prepare() {abstract}
+            + execute() {abstract}
+        }
+
+        abstract AbstractRequestInfo {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            + validate() {abstract}
+            + payload() {abstract}
+        }
+    }
+
+    package assessment {
+        class CreateAssessment {
+
+        }
+
+        class SearchAssessment {
+
+        }
+
+        class UpdateVoidAssessment {
+
+        }
+
+        class ViewAssessment {
+
+        }
+
+        CreateAssessment -up-|> AbstractRequest
+        SearchAssessment -up-|> AbstractRequest
+
+        UpdateVoidAssessment -up-|> AbstractRequest
+        ViewAssessment -up-|> AbstractRequest
+
+        CreateAssessment -up[hidden]-> UpdateVoidAssessment
+    }
+
+    package attendance {
+        class CourseSessionAttendance {
+
+        }
+
+        class UploadCourseSessionAttendance {
+
+        }
+
+        CourseSessionAttendance -up-|> AbstractRequest
+        UploadCourseSessionAttendance -up-|> AbstractRequest
+    }
+
+    package courses {
+        class AddCourseRun {
+
+        }
+
+        class DeleteCourseRun {
+
+        }
+
+        class EditCourseRun {
+
+        }
+
+        class ViewCourseRun {
+
+        }
+
+        class ViewCourseSessions {
+
+        }
+
+        AddCourseRun -down--|> AbstractRequest
+        DeleteCourseRun -down--|> AbstractRequest
+        AddCourseRun -down[hidden]|> DeleteCourseRun
+
+        EditCourseRun -down--|> AbstractRequest
+        ViewCourseRun -down--|> AbstractRequest
+        EditCourseRun -down[hidden]-|> ViewCourseRun
+
+        ViewCourseSessions -up|> AbstractRequest
+        AddCourseRun -up[hidden]-> EditCourseRun
+    }
+
+    package enrolment {
+        class CancelEnrolment {
+
+        }
+
+        class CreateEnrolment {
+
+        }
+
+        class SearchEnrolment {
+
+        }
+
+        class UpdateEnrolment {
+
+        }
+
+        class UpdateEnrolmentFeeCollection {
+
+        }
+
+        class ViewEnrolment {
+
+        }
+
+        CancelEnrolment -up---|> AbstractRequest
+        CreateEnrolment -up---|> AbstractRequest
+        CancelEnrolment -down[hidden]|> CreateEnrolment
+
+        SearchEnrolment -up---|> AbstractRequest
+        UpdateEnrolment -up---|> AbstractRequest
+        SearchEnrolment -down[hidden]-|> UpdateEnrolment
+
+        UpdateEnrolmentFeeCollection -up---|> AbstractRequest
+        ViewEnrolment -up--|> AbstractRequest
+        UpdateEnrolmentFeeCollection -down[hidden]-|> ViewEnrolment
+
+        ViewCourseSessions -up|> AbstractRequest
+        AddCourseRun -up[hidden]-> EditCourseRun
+    }
+
+    package models {
+        package assessments {
+            class CreateAssessmentInfo {
+
+            }
+
+            class UpdateVoidAssessmentInfo {
+
+            }
+
+            class SearchAssessmentInfo {
+
+            }
+
+            CreateAssessmentInfo -up-|> AbstractRequestInfo
+            UpdateVoidAssessmentInfo -up-|> CreateAssessmentInfo
+            SearchAssessmentInfo -up-|> AbstractRequestInfo
+        }
+
+        package attendance {
+            class UploadAttendanceInfo {
+
+            }
+
+            UploadAttendanceInfo -up-|> AbstractRequestInfo
+        }
+
+        package "course_runs" {
+            class LinkedSSECEQA {
+
+            }
+
+            class RunSessionEditInfo {
+
+            }
+
+            class RunSessionAddInfo{
+
+            }
+
+            class RunTrainerEditInfo {
+
+            }
+
+            class RunTrainerAddInfo {
+
+            }
+
+            class EditRunInfo {
+
+            }
+
+            class DeleteRunInfo {
+
+            }
+
+            class AddRunIndividualInfo {
+
+            }
+
+            class AddRunInfo {
+
+            }
+
+            AddRunInfo --up-|> EditRunInfo
+            AddRunIndividualInfo --up--|> EditRunInfo
+            DeleteRunInfo -up-|> EditRunInfo
+            EditRunInfo -up-|> AbstractRequestInfo
+
+            RunTrainerAddInfo -up-|> RunTrainerEditInfo
+            RunTrainerEditInfo -up-|> AbstractRequestInfo
+
+            RunSessionAddInfo -up-|> RunSessionEditInfo
+            RunSessionEditInfo -up-|> AbstractRequestInfo
+        }
+
+        package enrolment {
+            class CreateEnrolmentInfo {
+
+            }
+
+            class UpdateEnrolmentInfo {
+
+            }
+
+            class CancelEnrolmentInfo {
+
+            }
+
+            class SearchEnrolmentInfo {
+
+            }
+
+            class UpdateEnrolmentFeeCollectionInfo {
+
+            }
+
+            UpdateEnrolmentInfo -up-|> CreateEnrolmentInfo
+            CancelEnrolmentInfo -up-|> UpdateEnrolmentInfo
+            UpdateEnrolmentFeeCollectionInfo -up-|> UpdateEnrolmentInfo
+
+            CreateEnrolmentInfo -up-|> AbstractRequestInfo
+            SearchEnrolmentInfo -up-|> AbstractRequestInfo
+        }
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+
+        package cleaner {
+            class "Static Context" {
+                + start_schedule() {static}
+                - _clean_temp() {static}
+            }
+        }
+    }
+
+    package cipher {
+        class Cryptography {
+            + encrypt() {static}
+            + decrypt() {static}
+        }
+    }
+
+    assessment -up[hidden]-> abc
+    attendance -up[hidden]-> abc
+    courses -up[hidden]-> abc
+    enrolment -up[hidden]-> abc
+    models -up[hidden]-> abc
+
+    constants -up[hidden]-> assessment
+    constants -up[hidden]-> enrolment
+}
+@enduml

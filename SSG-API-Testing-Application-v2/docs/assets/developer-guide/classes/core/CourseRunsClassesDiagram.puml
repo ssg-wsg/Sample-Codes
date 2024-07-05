@@ -1,0 +1,217 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Course Runs Classes
+
+package pages {
+    package 2_Courses {
+
+    }
+}
+
+package utils {
+    package http_utils {
+        class HttpRequest {
+            + WRAP_LEVEL: int {static}
+            - _INDENT_LEVEL: int {static}
+
+            + __init__()
+            + __str__()
+            + with_endpoint(str, str)
+            + with_header(str, str)
+            + with_param(str, str)
+            + with_body(dict)
+            + with_api_version(str)
+            + get()
+            + post()
+            + post_encrypted()
+            + repr()
+        }
+    }
+}
+
+package core {
+    package abc {
+        abstract AbstractRequest {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            - _prepare() {abstract}
+            + execute() {abstract}
+        }
+
+        abstract AbstractRequestInfo {
+            + __init__() {abstract}
+            + __repr__() {abstract}
+            + __str__() {abstract}
+            + validate() {abstract}
+            + payload() {abstract}
+        }
+    }
+
+    package courses {
+        class AddCourseRun {
+
+        }
+
+        class DeleteCourseRun {
+
+        }
+
+        class EditCourseRun {
+
+        }
+
+        class ViewCourseRun {
+
+        }
+
+        class ViewCourseSessions {
+
+        }
+
+        AddCourseRun -up---|> AbstractRequest
+        DeleteCourseRun -up---|> AbstractRequest
+        EditCourseRun -up---|> AbstractRequest
+        ViewCourseRun -up---|> AbstractRequest
+        ViewCourseSessions -up---|> AbstractRequest
+
+        AddCourseRun ..|> HttpRequest
+        DeleteCourseRun ..|> HttpRequest
+        EditCourseRun ..|> HttpRequest
+        ViewCourseRun ..|> HttpRequest
+        ViewCourseSessions ..|> HttpRequest
+    }
+
+
+    package models {
+        package course_runs {
+            class LinkedSSECEQA {
+                + VALID_SSECEQA_MAPPINGS: dict {static}
+            }
+
+            class RunSessionEditInfo {
+                - {field} _sessionId: Annotated[Optional[str], "string($varchar(300))"]
+                - {field} _startDate: Annotated[Optional[datetime.date], "Formatted as YYYYMMDD or YYYY-MM-DD"]
+                - {field} _endDate: Annotated[Optional[datetime.date], "Formatted as YYYYMMDD or YYYY-MM-DD"]
+                - {field} _startTime: Annotated[Optional[datetime.time], "Formatted as HH:mm:ss or HH:mm"]
+                - {field} _endTime: Annotated[Optional[datetime.time], "Formatted as HH:mm:ss or HH:mm"]
+                - {field} _modeOfTraining: Annotated[Optional[ModeOfTraining], "string($varchar(4))"]
+                - {field} _venue_block: Annotated[Optional[str], "string($varchar(10))"]
+                - {field} _venue_street: Annotated[Optional[str], "string($varchar(32))"]
+                - {field} _venue_floor: Annotated[str, "string($varchar(3))"]
+                - {field} _venue_unit: Annotated[str, "string($varchar(5))"]
+                - {field} _venue_building: Annotated[Optional[str], "string($varchar(66))"]
+                - {field} _venue_postalCode: Annotated[str, "string($varchar(6))"]
+                - {field} _venue_room: Annotated[str, "string($varchar(255))"]
+                - {field} _venue_wheelChairAccess: OptionalSelector
+                - {field} _venue_primaryVenue: OptionalSelector
+            }
+
+            class RunSessionAddInfo{
+
+            }
+
+            class RunTrainerEditInfo {
+                - {field} _trainerType_code: Annotated[Literal["1", "2"], "string($varchar(1))"]
+                - {field} _trainerType_description: Annotated[str, "string($varchar(128))"]
+                - {field} _indexNumber: Optional[int]
+                - {field} _id: Annotated[Optional[str], "string($uniqueidentifier)"]
+                - {field} _name: Annotated[str, "string($varchar(66))"]
+                - {field} _email: Annotated[str, "string($varchar(320))"]
+                - {field} _idNumber: Annotated[str, "string($varchar(50))"]
+                - {field} _idType_code: Annotated[IdType.value[0], "string($varchar(2))"]
+                - {field} _idType_description: Annotated[IdType.value[1], "string($varchar(128))"]
+                - {field} _roles: list[Role]
+                - {field} _inTrainingProviderProfile: OptionalSelector
+                - {field} _domainAreaOfPractice: Annotated[Optional[str], "string($varchar(1000))"]
+                - {field} _experience: Annotated[Optional[str], "string($varchar(1000))"]
+                - {field} _linkedInURL: Annotated[Optional[str], "string($varchar(255))"]
+                - {field} _salutationId: Optional[Salutations]
+                - {field} _photo_name: Annotated[Optional[str], "string($varchar(255))"]
+                - {field} _photo_content: Annotated[Optional[UploadedFile], "string($nvarbinary(max))"]
+                - {field} _linkedSsecEQAs: Optional[list[dict]]
+            }
+
+            class RunTrainerAddInfo {
+
+            }
+
+            class EditRunInfo {
+                - {field} _crid: str
+                - {field} _sequenceNumber: Optional[int]
+                - {field} _registrationDates_opening: Annotated[datetime.date, "Number formatted as YYYYMMDD"]
+                - {field} _registrationDates_closing: Annotated[datetime.date, "Number formatted as YYYYMMDD"]
+                - {field} _courseDates_start: Annotated[datetime.date, "Number formatted as YYYYMMDD"]
+                - {field} _courseDates_end: Annotated[datetime.date, "String formatted as YYYYMMDD"]
+                - {field} _scheduleInfoType_code: Annotated[str, "string($varchar(2))"]
+                - {field} _scheduleInfoType_description: Annotated[Optional[str], "string($varchar(32))"]
+                - {field} _scheduleInfo: Annotated[Optional[str], "string($nvarchar(max))"]
+                - {field} _venue_block: Annotated[Optional[str], "string($varchar(10))"]
+                - {field} _venue_street: Annotated[Optional[str], "string($varchar(32))"]
+                - {field} _venue_floor: Annotated[str, "string($varchar(3))"]
+                - {field} _venue_unit: Annotated[str, "string($varchar(5))"]
+                - {field} _venue_building: Annotated[Optional[str], "string($varchar(66))"]
+                - {field} _venue_postalCode: Annotated[str, "string($varchar(6))"]
+                - {field} _venue_room: Annotated[str, "string($varchar(255))"]
+                - {field} _venue_wheelChairAccess: OptionalSelector
+                - {field} _intakeSize: Optional[int]
+                - {field} _threshold: Optional[int]
+                - {field} _registeredUserCount: Optional[int]
+                - {field} _modeOfTraining: Optional[ModeOfTraining]
+                - {field} _courseAdminEmail: Annotated[Optional[str], "string($varchar(255))"]
+                - {field} _courseVacancy_code: Annotated[str, "string($varchar(1))"]
+                - {field} _courseVacancy_description: Annotated[Optional[str], "string($varchar(128))"]
+                - {field} _file_Name: Annotated[Optional[str], "string($varchar(255))"]
+                - {field} _file_content: Optional[UploadedFile]
+                - {field} _sessions: Optional[list[RunSessionEditInfo]]
+                - {field} _linkCourseRunTrainer: Optional[list[RunTrainerEditInfo]]
+            }
+
+            class DeleteRunInfo {
+
+            }
+
+            class AddRunIndividualInfo {
+
+            }
+
+            class AddRunInfo {
+                - {field} _runs: list[AddRunIndividualInfo]
+            }
+
+            EditRunInfo ---[hidden]> RunTrainerEditInfo
+
+            AddRunInfo --up-|> EditRunInfo
+            AddRunIndividualInfo --up--|> EditRunInfo
+            DeleteRunInfo -up--|> EditRunInfo
+            EditRunInfo -up--|> AbstractRequestInfo
+
+            RunTrainerAddInfo -up--|> RunTrainerEditInfo
+            RunTrainerEditInfo -up--|> AbstractRequestInfo
+
+            RunSessionAddInfo -up-|> RunSessionEditInfo
+            RunSessionEditInfo -up-|> AbstractRequestInfo
+        }
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+}
+
+HttpRequest ..> Logger
+2_Courses .left.> core
+@enduml

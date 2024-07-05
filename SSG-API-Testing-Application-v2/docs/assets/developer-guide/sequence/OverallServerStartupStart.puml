@@ -1,0 +1,43 @@
+@startuml
+hide footbox
+title start()
+autoactivate on
+
+!define EXTERNAL_COLOUR #FFD700
+!define SERVER_COLOUR #BA4040
+
+box Server
+    participant "server:Server" as Server SERVER_COLOUR
+    [-> Server : start()
+    Server -> Server : _create_app()
+    return tornado.web.Application instance as app
+
+    participant "Server Package" as ServerPackage EXTERNAL_COLOUR
+    Server -> ServerPackage : start_listening(app)
+
+    participant "HttpServer" as HttpServer EXTERNAL_COLOUR
+    create HttpServer
+    ServerPackage -> HttpServer : start()
+    return
+
+    alt server_address_is_unix_socket()
+        ServerPackage -> ServerPackage: start_listening_unix_socket()
+        return
+    else
+        ServerPackage -> ServerPackage: start_listening_tcp_socket()
+        return
+    end
+    return
+
+    participant ":Runtime" as Runtime SERVER_COLOUR
+    Server -> Runtime : start()
+
+    participant "async_objs:AsyncObjects" as AsyncObjects EXTERNAL_COLOUR
+    create AsyncObjects
+    Runtime -> AsyncObjects
+    return
+
+    return await async_objs
+    return
+end box
+@enduml

@@ -1,0 +1,132 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Assessments Page Class Dependencies
+
+package "5_Assessments" as page {
+
+}
+
+package core {
+    package constants {
+        enum "<<enumeration>>\nGrade" {
+            A
+            B
+            C
+            D
+            E
+            F
+        }
+
+        enum "<<enumeration>>\nResults" {
+            PASS
+            FAIL
+            EXEMPT
+        }
+
+        enum "<<enumeration>>\nIdTypeSummary" {
+            NRIC
+            FIN
+            OTHERS
+        }
+
+        enum "<<enumeration>>\nAssessmentUpdateVoidActions" {
+            UPDATE
+            VOID
+        }
+
+        enum "<<enumeration>>\nSortField" {
+            UPDATED_ON
+            CREATED_ON
+            ASSESSMENT_DATE
+        }
+
+        enum "<<enumeration>>\nSortOrder" {
+            ASCENDING
+            DESCENDING
+        }
+    }
+
+    package assessments {
+        class CreateAssessment {
+
+        }
+
+        class SearchAssessment {
+
+        }
+
+        class UpdateVoidAssessment {
+
+        }
+
+        class ViewAssessment {
+
+        }
+
+        CreateAssessment -up[hidden]-> UpdateVoidAssessment
+    }
+
+    package models {
+        package assessments {
+            class CreateAssessmentInfo {
+
+            }
+
+            class UpdateVoidAssessmentInfo {
+
+            }
+
+            class SearchAssessmentInfo {
+
+            }
+
+            UpdateVoidAssessmentInfo -up-|> CreateAssessmentInfo
+        }
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+}
+
+package utils {
+    package http_utils {
+        class "Static Context" as husc {
+            + handle_request(AbstractRequest, bool): None {static}
+            + handle_response(Callable[[], requests.Response], bool]: None {static}
+        }
+    }
+
+    package streamlit_utils {
+        class "Static Context" as susc {
+            + init(): None {static}
+            + display_config(): None {static}
+            + http_code_handler(Union[int, str]): None {static}}
+            + validation_error_handler(list[str], list[str]): bool {static}
+            + does_not_have_keys(): bool {static}
+        }
+    }
+}
+
+utils ..up[hidden]...> core
+
+page ...> core.assessments
+page ...> core.models
+page ...> Logger
+page ...> husc
+page ...> susc
+page ...> constants
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title High-level Pages Package Diagram
+
+package Home {
+
+}
+
+package pages {
+
+}
+
+package core {
+
+}
+
+package utils {
+
+}
+
+pages ..> utils
+pages ..> core
+
+Home ..> utils
+Home ..> core
+
+@enduml

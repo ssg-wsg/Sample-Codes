@@ -1,0 +1,22 @@
+@startuml
+actor User
+
+package "SSG-API-Testing-Application-v2" {
+    package app {
+        package #lightblue core as core
+        package #lightgreen pages as pages
+        package #lightyellow test as test
+        package #orange utils as utils
+
+        test --> core
+        test --> utils
+
+        pages <--> core
+        pages <--> utils
+
+        core --> utils
+    }
+}
+
+User --right-> pages
+@enduml

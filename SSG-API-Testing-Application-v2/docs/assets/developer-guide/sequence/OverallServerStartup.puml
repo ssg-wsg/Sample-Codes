@@ -1,0 +1,98 @@
+@startuml
+'Hide the boxes at the bottom of the bottom of the diagram
+hide footbox
+title Tornado Server Setup
+autoactivate on
+
+!define EXTERNAL_COLOUR #FFD700
+!define SERVER_COLOUR #BA4040
+
+actor User as User
+
+box Server
+    participant "Python Runtime" as PythonRuntime EXTERNAL_COLOUR
+
+    User -> PythonRuntime : Invoke run() under bootstrap.py
+    create "server:Server" as Server SERVER_COLOUR
+
+    PythonRuntime -> Server
+    create ":MemoryMediaFileStorage" as MemoryMediaFileStorage SERVER_COLOUR
+    Server -> MemoryMediaFileStorage
+    return media_file_storage
+
+    participant ":MediaFileHandler" as MediaFileHandler SERVER_COLOUR
+    Server -> MediaFileHandler : initialize_storage(media_file_storage)
+    return
+
+    create "uploaded_file_mgr:MemoryUploadedFileManager" as MemoryUploadedFileManager SERVER_COLOUR
+    Server -> MemoryUploadedFileManager
+    return uploaded_file_mgr
+
+    create ":RuntimeConfig" as RuntimeConfig SERVER_COLOUR
+    Server -> RuntimeConfig
+    return anonymous instance as parameter
+
+    create ":Runtime" as Runtime SERVER_COLOUR
+    Server -> Runtime : Creates new instance using RuntimeConfig
+
+    create ":ForwardMsgCache" as ForwardMsgCache SERVER_COLOUR
+    Runtime -> ForwardMsgCache
+    return
+
+    create ":MediaFileManager" as MediaFileManager SERVER_COLOUR
+    Runtime -> MediaFileManager
+    return
+
+    create ":ScriptCache" as ScriptCache SERVER_COLOUR
+    Runtime -> ScriptCache
+    return
+
+    Runtime -> RuntimeConfig : session_manager_class()
+    return
+
+    create ":StatsManager" as StatsManager SERVER_COLOUR
+    Runtime -> StatsManager
+    return
+
+    Runtime -> StatsManager : register_provider(get_data_cache_stats_provider())
+    return
+
+    Runtime -> StatsManager : register_provider(get_resource_cache_stats_provider())
+    return
+
+    Runtime -> StatsManager : register_provider(self._message_cache)
+    return
+
+    Runtime -> StatsManager : register_provider(self._uploaded_file_mgr)
+    return
+
+    Runtime -> StatsManager : register_provider()
+    create ":SessionStateStatProvider" as SessionStateStatProvider SERVER_COLOUR
+    StatsManager -> SessionStateStatProvider
+    return
+    return
+    return
+
+    Server -> StatsManager : register_provider(media_file_storage)
+    return
+
+    return
+
+    par spawn async process
+        PythonRuntime -> PythonRuntime : run_server()
+
+        PythonRuntime -> Server : await start()
+        ref over Server : start()
+        return
+
+        PythonRuntime -> PythonRuntime : _on_server_start()
+        return
+
+        PythonRuntime -> PythonRuntime : _set_up_signal_handler(server)
+        return
+        return await server.stopped
+    end par
+
+    return
+end box
+@enduml

@@ -1,0 +1,177 @@
+@startuml
+skinparam linetype polyline
+skinparam linetype ortho
+
+title Enrolment Page Class Dependencies
+
+package "3_Enrolment" as page {
+
+}
+
+package core {
+    package constants {
+        enum "<<enumeration>>\nIdTypeSummary" {
+            NRIC
+            FIN
+            OTHERS
+        }
+
+        enum "<<enumeration>>\nSortOrder" {
+            ASCENDING
+            DESCENDING
+        }
+
+        enum "<<enumeration>>\nCollectionStatus" {
+            PENDING_PAYMENT
+            PARTIAL_PAYMENT
+            FULL_PAYMENT
+        }
+
+        enum "<<enumeration>>\nCancellableCollectionStatus" {
+            PENDING_PAYMENT
+            PARTIAL_PAYMENT
+            FULL_PAYMENT
+            CANCELLED
+        }
+
+        enum "<<enumeration>>\nSponsorshipType" {
+            EMPLOYER
+            INDIVIDUAL
+        }
+
+        enum "<<enumeration>>\nEnrolmentSortField" {
+            UPDATED_ON
+            CREATED_ON
+        }
+
+        enum "<<enumeration>>\nEnrolmentStatus" {
+            CONFIRMED
+            REJECTED
+        }
+
+        enum "<<enumeration>>\nEnrolmentCourseStatus" {
+            CONFIRMED
+            CANCELLED
+        }
+    }
+
+    package enrolment {
+        class CancelEnrolment {
+
+        }
+
+        class CreateEnrolment {
+
+        }
+
+        class SearchEnrolment {
+
+        }
+
+        class UpdateEnrolment {
+
+        }
+
+        class UpdateEnrolmentFeeCollection {
+
+        }
+
+        class ViewEnrolment {
+
+        }
+
+        CancelEnrolment -down[hidden]|> CreateEnrolment
+        SearchEnrolment -down[hidden]-|> UpdateEnrolment
+        UpdateEnrolmentFeeCollection -down[hidden]-|> ViewEnrolment
+    }
+
+    package models {
+        package enrolment {
+            class CreateEnrolmentInfo {
+
+            }
+
+            class UpdateEnrolmentInfo {
+
+            }
+
+            class CancelEnrolmentInfo {
+
+            }
+
+            class SearchEnrolmentInfo {
+
+            }
+
+            class UpdateEnrolmentFeeCollectionInfo {
+
+            }
+
+            UpdateEnrolmentInfo -up-|> CreateEnrolmentInfo
+            CancelEnrolmentInfo -up-|> UpdateEnrolmentInfo
+            UpdateEnrolmentFeeCollectionInfo -up-|> UpdateEnrolmentInfo
+        }
+
+    }
+
+    package system {
+        class Logger {
+            + LOG_DIR {static}
+            + LOG_FILE {static}
+            + STREAM_HANDLER {static}
+            + FILE_HANDLER {static}
+            + FORMATTER {static}
+            + __init__(str) {static}
+            + debug(str)
+            + info(str)
+            + warning(str)
+            + error(str)
+        }
+    }
+}
+
+package utils {
+    package http_utils {
+        class "Static Context" as husc {
+            + handle_request(AbstractRequest, bool): None {static}
+            + handle_response(Callable[[], requests.Response], bool]: None {static}
+        }
+    }
+
+    package streamlit_utils {
+        class "Static Context" as susc {
+            + init(): None {static}
+            + display_config(): None {static}
+            + http_code_handler(Union[int, str]): None {static}}
+            + validation_error_handler(list[str], list[str]): bool {static}
+            + does_not_have_keys(): bool {static}
+        }
+    }
+
+    package verify {
+        class Validators {
+            + _NRIC_PRODUCT {static}
+            + _S_T_CHECKDIGIT {static}
+            + _G_F_CHECKDIGIT {static}
+            + _M_CHECKDIGIT {static}
+
+            + verify_uen(str): bool {static}
+            + verify_aes_encryption_key(str): bool {static}
+            + verify_cert_private_key(str, str): bool {static}
+            + verify_nric(str): bool {static}
+        }
+    }
+
+    verify --up[hidden]-> http_utils
+}
+
+utils ..up[hidden]..> core
+
+page ..> core.enrolment
+page ..> core.models
+page ..> Logger
+page ..> husc
+page ..> susc
+page ..> verify
+page ..> constants
+@enduml
