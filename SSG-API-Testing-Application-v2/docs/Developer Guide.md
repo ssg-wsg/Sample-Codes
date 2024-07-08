@@ -490,5 +490,30 @@ If you wish to include more cron tasks to perform, feel free to define more meth
 the scheduler within `start_scheduler()`, defining the interval in which to execute the task.
 
 
+### CI/CD
+
+CI/CD represents Continuous Integration and Continuous Deployment. This is a process where code is automatically tested
+and deployed to a server when a new commit is pushed to the repository.
+
+For the Sample Application, the automation of unit testing, checkstyle and deployment is done in part using GitHub
+Actions.
+
+Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/test.yml) for a better understanding of the
+process.
+
+Here is a diagram representing the overall flow of processes implemented in the workflow file:
+
+![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
+
+The steps of the CI/CD pipeline is as such:
+
+1. Start the pipeline on all major OSes (Windows, MacOS, Linux)
+2. Checkout (clone) the repository
+3. Install Python `3.12` on the GitHub runner
+4. Install the Python dependencies
+5. Execute the unit tests
+6. Upload the code coverage reports to Codecov (if the `CODECOV_TOKEN` secret is present)
+
+
 ## Glossary
 
