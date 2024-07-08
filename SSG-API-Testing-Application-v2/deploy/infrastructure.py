@@ -560,6 +560,7 @@ class Infrastructure:
                             }
                         }
                     ],
+                    "KeyName": "SSG-WSG Sample Application",
                     "ImageId": ECS_IMAGE_AMI,  # CHANGE THIS TO YOUR AMI ID,
                     "InstanceType": "t2.micro",
                     "CreditSpecification": {
