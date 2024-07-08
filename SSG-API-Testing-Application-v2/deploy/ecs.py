@@ -162,18 +162,6 @@ class ECS:
                 taskDefinition=self.ecs_task_definition_arn,
                 desiredCount=1,
                 launchType="EC2",
-                networkConfiguration={
-                    "awsvpcConfiguration": {
-                        "subnets": [
-                            os.getenv("SUBNET_ID_1"),
-                            os.getenv("SUBNET_ID_2"),
-                            os.getenv("SUBNET_ID_3")
-                        ],
-                        "securityGroups": [
-                            os.getenv("SECURITY_GROUP_ID")
-                        ],
-                    }
-                },
                 schedulingStrategy="REPLICA",
                 deploymentController={
                     "type": "ECS"
