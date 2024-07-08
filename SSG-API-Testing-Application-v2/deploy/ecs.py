@@ -119,11 +119,6 @@ class ECS:
                         }
                     ],
                     "essential": True,
-                    "disableNetworking": False,
-                    "privileged": True,
-                    "readonlyRootFilesystem": False,
-                    "interactive": True,
-                    "pseudoTerminal": True
                 }
             ],
             requiresCompatibilities=[
