@@ -103,7 +103,7 @@ class ECS:
 
         task_definition = self.ecs.register_task_definition(
             family=ECS_TASK_DEFINITION_FAMILY,
-            networkMode="awsvpc",
+            networkMode="host",
             containerDefinitions=[
                 {
                     "memory": ECS_TASK_MEMORY,
@@ -118,12 +118,6 @@ class ECS:
                             "appProtocol": "http"
                         }
                     ],
-                    "healthCheck": {
-                        "command": ["CMD-SHELL", "curl -f http://localhost:8502/ || exit 1"],
-                        "interval": 60,
-                        "timeout": 15,
-                        "retries": 3
-                    },
                     "essential": True,
                     "disableNetworking": False,
                     "privileged": True,
