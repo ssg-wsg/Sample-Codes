@@ -156,6 +156,8 @@ class ECS:
             # service exists, so we update it instead
             ECS.LOGGER.warning(f"ECS service with name {ECS_SERVICE_NAME} already exists! Updating existing service...")
             self.ecs.update_service(
+                cluster=ECS_CLUSTER_NAME,
+                service=ECS_SERVICE_NAME,
                 taskDefinition=self.ecs_task_definition_arn,
             )
         else:
