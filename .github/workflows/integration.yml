@@ -83,9 +83,9 @@ jobs:
         run: terraform init
 
       - name: View Backend Plan
-        id: init-backend
+        id: plan-backend
         working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
-        run: terraform init
+        run: terraform plan
 
       - name: Apply Terraform Plan
         id: apply-backend
