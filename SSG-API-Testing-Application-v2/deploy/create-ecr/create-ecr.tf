@@ -6,11 +6,11 @@ module "constants" {
 # Specify dependencies
 terraform {
   backend "s3" {
-    bucket = "ssg-tf-bucket"              # module.constants.TF_BUCKET_NAME
-    key = "ecr/ecr.tfstate"               # module.constants.TF_ECR_BUCKET_FILE_KEY
-    region = "ap-southeast-1"             # module.constants.AWS_REGION
-    dynamodb_table = "ssg-tf-state-lock"  # module.constants.TF_DYNAMODB_TABLE_NAME
-    encrypt = true
+    bucket         = "ssg-tf-bucket"     # module.constants.TF_BUCKET_NAME
+    key            = "ecr/ecr.tfstate"   # module.constants.TF_ECR_BUCKET_FILE_KEY
+    region         = "ap-southeast-1"    # module.constants.AWS_REGION
+    dynamodb_table = "ssg-tf-state-lock" # module.constants.TF_DYNAMODB_TABLE_NAME
+    encrypt        = true
   }
 
   required_providers {
@@ -23,9 +23,9 @@ terraform {
 
 # Create ECS Service
 resource "aws_ecr_repository" "app" {
-  name = module.constants.ECR_REPO_NAME
+  name                 = module.constants.ECR_REPO_NAME
   image_tag_mutability = "MUTABLE"
-  force_delete = true
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = false

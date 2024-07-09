@@ -11,11 +11,11 @@ module "constants" {
 # Specify dependencies
 terraform {
   backend "s3" {
-    bucket = "ssg-tf-bucket"              # module.constants.TF_BUCKET_NAME
-    key = "main/main.tfstate"             # module.constants.TF_MAIN_BUCKET_FILE_KEY
-    region = "ap-southeast-1"             # module.constants.AWS_REGION
-    dynamodb_table = "ssg-tf-state-lock"  # module.constants.TF_DYNAMODB_TABLE_NAME
-    encrypt = true
+    bucket         = "ssg-tf-bucket"     # module.constants.TF_BUCKET_NAME
+    key            = "main/main.tfstate" # module.constants.TF_MAIN_BUCKET_FILE_KEY
+    region         = "ap-southeast-1"    # module.constants.AWS_REGION
+    dynamodb_table = "ssg-tf-state-lock" # module.constants.TF_DYNAMODB_TABLE_NAME
+    encrypt        = true
   }
 
   required_providers {
@@ -27,7 +27,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = module.constants.AWS_REGION
+  region = module.constants.AWS_REGION
 }
 
 # Create VPC
@@ -37,12 +37,12 @@ data "aws_availability_zones" "available" {
 
 locals {
   azs_count = 3
-  azs_name = data.aws_availability_zones.available.names
+  azs_name  = data.aws_availability_zones.available.names
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = module.constants.CIDR_BLOCK
-  enable_dns_support = true
+  cidr_block           = module.constants.CIDR_BLOCK
+  enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
     Name = "ssg-vpc"
@@ -50,24 +50,24 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "public" {
-    count = local.azs_count
-    vpc_id = aws_vpc.main.id
-    cidr_block = element([module.constants.SUBNET_CIDR_ONE,
-      module.constants.SUBNET_CIDR_TWO,
-      module.constants.SUBNET_CIDR_THREE], count.index)
-    availability_zone = element(local.azs_name, count.index)
-    map_public_ip_on_launch = true
-    tags = {
-        Name = "ssg-public-subnet-${count.index + 1}"
-    }
+  count  = local.azs_count
+  vpc_id = aws_vpc.main.id
+  cidr_block = element([module.constants.SUBNET_CIDR_ONE,
+    module.constants.SUBNET_CIDR_TWO,
+  module.constants.SUBNET_CIDR_THREE], count.index)
+  availability_zone       = element(local.azs_name, count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "ssg-public-subnet-${count.index + 1}"
+  }
 }
 
 # Create IGW
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-    tags = {
-        Name = module.constants.INTERNET_GATEWAY_NAME
-    }
+  tags = {
+    Name = module.constants.INTERNET_GATEWAY_NAME
+  }
 }
 
 # avoid creating Elastic IP for AZs, incurs cost
@@ -92,8 +92,8 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = local.azs_count
-  subnet_id = aws_subnet.public[count.index].id
+  count          = local.azs_count
+  subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
@@ -106,10 +106,10 @@ resource "aws_ecs_cluster" "main" {
 data "aws_iam_policy_document" "ecs_node_doc" {
   statement {
     actions = ["sts:AssumeRole"]
-    effect = "Allow"
+    effect  = "Allow"
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["ecs.amazonaws.com"]
     }
   }
@@ -127,21 +127,21 @@ resource "aws_iam_role_policy_attachment" "ecs_node_role_policy" {
 
 resource "aws_iam_instance_profile" "ecs_node" {
   name_prefix = module.constants.IAM_INSTANCE_PROFILE
-  path = "/ecs/instance/"
-  role = aws_iam_role.ecs_node_role.name
+  path        = "/ecs/instance/"
+  role        = aws_iam_role.ecs_node_role.name
 }
 
 # Create Security Group for ECS
 resource "aws_security_group" "ecs_node_sg" {
   name_prefix = module.constants.SECURITY_GROUP_NAME
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   # SG permits egress from any port to any IP address
   egress {
-    from_port = 0
-    to_port = 65535
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port        = 0
+    to_port          = 65535
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
 }
@@ -152,9 +152,9 @@ data "aws_ssm_parameter" "ecs_node_ami" {
 }
 
 resource "aws_launch_template" "ec2" {
-  name_prefix = module.constants.ECS_LAUNCH_TEMPLATE_NAME
-  image_id = data.aws_ssm_parameter.ecs_node_ami.value
-  instance_type = module.constants.ECS_LAUNCH_TEMPLATE_INSTANCE_TYPE
+  name_prefix            = module.constants.ECS_LAUNCH_TEMPLATE_NAME
+  image_id               = data.aws_ssm_parameter.ecs_node_ami.value
+  instance_type          = module.constants.ECS_LAUNCH_TEMPLATE_INSTANCE_TYPE
   vpc_security_group_ids = [aws_security_group.ecs_node_sg.id]
 
   iam_instance_profile {
@@ -174,28 +174,28 @@ resource "aws_launch_template" "ec2" {
 
 # Create ASG
 resource "aws_autoscaling_group" "ecs-asg" {
-  name = module.constants.ECS_ASG_NAME
-  vpc_zone_identifier = aws_subnet.public[*].id
-  min_size = module.constants.MIN_ASG_SIZE
-  max_size = module.constants.MAX_ASG_SIZE
+  name                      = module.constants.ECS_ASG_NAME
+  vpc_zone_identifier       = aws_subnet.public[*].id
+  min_size                  = module.constants.MIN_ASG_SIZE
+  max_size                  = module.constants.MAX_ASG_SIZE
   health_check_grace_period = 0
-  health_check_type = "EC2"
-  protect_from_scale_in = false
+  health_check_type         = "EC2"
+  protect_from_scale_in     = false
 
   launch_template {
-    id = aws_launch_template.ec2.id
+    id      = aws_launch_template.ec2.id
     version = "$Latest"
   }
 
   tag {
-    key = "Name"
-    value = module.constants.ECS_CLUSTER_NAME
+    key                 = "Name"
+    value               = module.constants.ECS_CLUSTER_NAME
     propagate_at_launch = true
   }
 
   tag {
-    key = "AmazonECSManaged"
-    value = ""
+    key                 = "AmazonECSManaged"
+    value               = ""
     propagate_at_launch = true
   }
 }
@@ -205,14 +205,14 @@ resource "aws_ecs_capacity_provider" "main" {
   name = module.constants.ECS_CAPACITY_PROVIDER_NAME
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.ecs-asg.arn
+    auto_scaling_group_arn         = aws_autoscaling_group.ecs-asg.arn
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = module.constants.MIN_ASG_SIZE
       minimum_scaling_step_size = module.constants.MIN_ASG_SIZE
-      status = "ENABLED"
-      target_capacity = module.constants.MIN_ASG_SIZE
+      status                    = "ENABLED"
+      target_capacity           = module.constants.MIN_ASG_SIZE
     }
   }
 }
@@ -225,8 +225,8 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.main.name
-    base = module.constants.MIN_ASG_SIZE
-    weight = 1
+    base              = module.constants.MIN_ASG_SIZE
+    weight            = 1
   }
 }
 
@@ -267,13 +267,13 @@ resource "aws_ecs_task_definition" "app" {
   memory             = module.constants.ECS_TASK_MEMORY
 
   container_definitions = jsonencode([{
-    name         = module.constants.ECS_CONTAINER_NAME,
-    image        = "${var.REPO_URL}:latest",
-    essential    = true,
+    name      = module.constants.ECS_CONTAINER_NAME,
+    image     = "${var.REPO_URL}:latest",
+    essential = true,
     portMappings = [
       {
         containerPort = module.constants.CONTAINER_APPLICATION_PORT,
-        hostPort = 80
+        hostPort      = 80
       }
     ]
   }])
@@ -311,8 +311,8 @@ resource "aws_ecs_service" "app" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
-    container_name = module.constants.ECS_CONTAINER_NAME
-    container_port = 80
+    container_name   = module.constants.ECS_CONTAINER_NAME
+    container_port   = 80
   }
 }
 
@@ -332,10 +332,10 @@ resource "aws_security_group" "ecs_task" {
 
   # Permit egress from any port within the VPC
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [module.constants.IPV4_ALL_CIDR]
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
     ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
   }
 }
@@ -346,59 +346,59 @@ resource "aws_security_group" "http_access" {
   description = "Allow HTTP/S access"
   vpc_id      = aws_vpc.main.id
 
-  dynamic ingress {
+  dynamic "ingress" {
     for_each = [80, 443]
     content {
-      protocol = "tcp"
-      from_port = ingress.value
-      to_port = ingress.value
-      cidr_blocks = [module.constants.IPV4_ALL_CIDR]
+      protocol         = "tcp"
+      from_port        = ingress.value
+      to_port          = ingress.value
+      cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
       ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
     }
   }
 
   egress {
-    protocol = "-1"
-    from_port = 0
-    to_port = 0
-    cidr_blocks = [module.constants.IPV4_ALL_CIDR]
+    protocol         = "-1"
+    from_port        = 0
+    to_port          = 0
+    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
     ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
   }
 }
 
 resource "aws_lb" "main" {
-  name = module.constants.ALB_NAME
+  name               = module.constants.ALB_NAME
   load_balancer_type = "application"
-  subnets = aws_subnet.public[*].id
-  security_groups = [aws_security_group.http_access.id]
+  subnets            = aws_subnet.public[*].id
+  security_groups    = [aws_security_group.http_access.id]
 }
 
 resource "aws_lb_target_group" "app" {
   name_prefix = module.constants.TARGET_GROUP_NAME
-  vpc_id = aws_vpc.main.id
-  protocol = "HTTP"
-  port = 80
+  vpc_id      = aws_vpc.main.id
+  protocol    = "HTTP"
+  port        = 80
   target_type = "ip"
 
   health_check {
-    enabled = true
-    path = "/"
-    port = 80
-    matcher = 200
-    interval = 10
-    timeout = 5
-    healthy_threshold = 1
+    enabled             = true
+    path                = "/"
+    port                = 80
+    matcher             = 200
+    interval            = 10
+    timeout             = 5
+    healthy_threshold   = 1
     unhealthy_threshold = 0
   }
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.id
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.app.id
   }
 }
