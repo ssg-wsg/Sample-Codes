@@ -1,5 +1,5 @@
 [server]
-port = 8502
+port = 80
 maxUploadSize = 5
 
 [theme]
@@ -7,7 +7,7 @@ base="dark"
 primaryColor = "#BA4040"
 
 [browser]
-serverPort = 8502
+serverPort = 80
 gatherUsageStats = false
 
 [logger]

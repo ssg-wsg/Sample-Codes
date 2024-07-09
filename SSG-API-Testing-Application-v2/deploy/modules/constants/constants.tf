@@ -112,7 +112,7 @@ output "ECS_TASK_CPU" {
 }
 
 output "CONTAINER_APPLICATION_PORT" {
-  value = 8502
+  value = 80
 }
 
 output "ECS_CONTAINER_NAME" {
