@@ -52,10 +52,63 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+  verify:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    name: Verify Terraform Scripts
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Verify Terraform Script [Create Backend]
+        id: create-backend-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform fmt -check
+
+      - name: Verify Terraform Script [Create ECR Repository]
+        id: create-ecr-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: terraform fmt -check
+
+      - name: Verify Terraform Script [Main Infrastructure]
+        id: create-main-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
+        run: terraform fmt -check
+
+      - name: Plan for Backend Infrastructure
+        if: ${{ steps.create-backend-verify.outcome == 'success' }}
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform plan
+
+      - name: Plan for ECR Repository
+        if: ${{ steps.create-ecr-verify.outcome == 'success' }}
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform plan
+
+      - name: Plan for Main Infrastructure Setup and Deployment
+        if: ${{ steps.create-main-verify.outcome == 'success' }}
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform plan
+
   # Deploy to AWS only if the PR is approved
   deploy:
     needs:
       - test
+      - verify
 #    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     name: Create Docker Image and Deploy to ECR
@@ -63,29 +116,28 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
 
-      - name: Install dependencies
-        working-directory: ./SSG-API-Testing-Application-v2/app
-        run: pip install boto3==${{ env.BOTO3_DEPENDENCY }} prettytable
-
-      - name: Load Constants and Environment Variables
-        working-directory: ./SSG-API-Testing-Application-v2/deploy
-        run: python constants.py
-
-      - name: Build or Ensure Base Cloud Infrastructure
-        working-directory: ./SSG-API-Testing-Application-v2/deploy
+      - name: Set up S3 Bucket for Terraform State
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: python infrastructure.py
+        run: terraform apply -auto-approve
+
+      - name: Create ECR Repository
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        id: ecr-url
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            TF_VAR_ECR_REPO_NAME: ${{ env.ECR_REPO_NAME }}
+        run: |
+          terraform apply -auto-approve
+          APP_URL=$(fromJson(terraform output -json).app_url.value)
+          echo "app_url=$APP_URL > $GITHUB_OUTPUT 
 
       - name: Configure AWS Credentials
         id: configure-credentials
@@ -103,19 +155,19 @@ jobs:
         id: create-and-push-docker-image
         working-directory: SSG-API-Testing-Application-v2/app
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ env.ECR_REPO_NAME }}
+          REGISTRY_REPOSITORY: ${{ steps.ecr-url.outputs.app_url }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $REGISTRY_REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY_REPOSITORY:$IMAGE_TAG
+          echo "image=$REGISTRY_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Set up ECS Cluster
-        working-directory: ./SSG-API-Testing-Application-v2/deploy
+      - name: Create Main Infrastructure
+        id: main-infra
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ECS_IMAGE: ${{ steps.create-and-push-docker-image.outputs.image }}
-        run: |
-          python ecs.py
+          TF_VAR_ECR_REPO_URL: ${{ steps.ecr-url.outputs.app_url }}
+          TF_VAR_IMAGE_TAG: ${{ github.sha }}
+        run: terraform apply -auto-approve
