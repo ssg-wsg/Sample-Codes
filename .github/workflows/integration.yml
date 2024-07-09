@@ -14,8 +14,10 @@ on:
   push:
 
 env:
-  BOTO3_DEPENDENCY: "1.34.139"
-  PYTHON_VERSION: "3.12"
+  TF_CLOUD_ORGANIZATION: "ssg-wsg"
+  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+  TF_WORKSPACE: ""
+  TF_BUCKET_NAME: "ssg-tf-bucket"
 
 jobs:
   test:
@@ -52,6 +54,44 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+  setup:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    name: Setup Terraform Backend
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Verify Terraform Script
+        id: create-backend-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform fmt -check
+
+      - name: Validate Terraform Script
+        id: create-backend-validate
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform validate
+
+      - name: Initialise Backend
+        id: init-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform init
+
+      - name: View Backend Plan
+        id: init-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform init
+      
+      - name: Apply Terraform Plan
+        id: apply-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
+        run: terraform apply -auto-approve
+
   verify:
     needs:
       - test
@@ -80,13 +120,15 @@ jobs:
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: terraform fmt -check
 
+      - name: Validate Backend
+
       - name: Plan for Backend Infrastructure
         if: ${{ steps.create-backend-verify.outcome == 'success' }}
         working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform plan
+        run: terraform init && terraform plan
 
       - name: Plan for ECR Repository
         if: ${{ steps.create-ecr-verify.outcome == 'success' }}
@@ -94,7 +136,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform plan
+        run: terraform init && terraform plan
 
       - name: Plan for Main Infrastructure Setup and Deployment
         if: ${{ steps.create-main-verify.outcome == 'success' }}
@@ -102,7 +144,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform plan
+        run: terraform init && terraform plan
 
   # Deploy to AWS only if the PR is approved
   deploy:
@@ -125,7 +167,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform apply -auto-approve
+        run: terraform init && terraform apply -auto-approve
 
       - name: Create ECR Repository
         working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
@@ -135,7 +177,7 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             TF_VAR_ECR_REPO_NAME: ${{ env.ECR_REPO_NAME }}
         run: |
-          terraform apply -auto-approve
+          terraform init && terraform apply -auto-approve
           APP_URL=$(fromJson(terraform output -json).app_url.value)
           echo "app_url=$APP_URL > $GITHUB_OUTPUT 
 
@@ -170,4 +212,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_ECR_REPO_URL: ${{ steps.ecr-url.outputs.app_url }}
           TF_VAR_IMAGE_TAG: ${{ github.sha }}
-        run: terraform apply -auto-approve
+        run: terraform init && terraform apply -auto-approve
