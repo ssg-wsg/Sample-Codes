@@ -204,7 +204,7 @@ jobs:
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: terraform fmt -check
 
-      - name: Initialise Backend
+      - name: Initialise Main Infrastructure
         id: init-main
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: |
@@ -215,7 +215,7 @@ jobs:
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: terraform validate
 
-      - name: View Backend Plan
+      - name: View Main Infrastructure Plan
         id: plan-main
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         env:

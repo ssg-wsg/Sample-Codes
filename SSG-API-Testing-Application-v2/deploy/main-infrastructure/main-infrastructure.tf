@@ -273,7 +273,7 @@ resource "aws_ecs_task_definition" "app" {
     portMappings = [
       {
         containerPort = module.constants.CONTAINER_APPLICATION_PORT,
-        hostPort      = 80
+        hostPort      = module.constants.CONTAINER_APPLICATION_PORT
       }
     ]
   }])
