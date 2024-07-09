@@ -14,3 +14,8 @@ secrets
 # ignore coverage files
 SSG-API-Testing-Application-v2/app/coverage.xml
 SSG-API-Testing-Application-v2/app/.coverage
+
+# Ignore terraform files
+.terraform
+.terraform.*
+terraform.*

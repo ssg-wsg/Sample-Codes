@@ -21,6 +21,11 @@ terraform {
   }
 }
 
+# Define AWS as a provider
+provider "aws" {
+  region = module.constants.AWS_REGION
+}
+
 # Create ECS Service
 resource "aws_ecr_repository" "app" {
   name                 = module.constants.ECR_REPO_NAME

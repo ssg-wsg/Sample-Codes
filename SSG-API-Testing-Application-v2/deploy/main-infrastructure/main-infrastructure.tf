@@ -387,8 +387,8 @@ resource "aws_lb_target_group" "app" {
     matcher             = 200
     interval            = 10
     timeout             = 5
-    healthy_threshold   = 1
-    unhealthy_threshold = 0
+    healthy_threshold   = 8
+    unhealthy_threshold = 2
   }
 }
 
