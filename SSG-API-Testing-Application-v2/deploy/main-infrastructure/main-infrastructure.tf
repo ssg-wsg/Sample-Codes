@@ -312,7 +312,7 @@ resource "aws_ecs_service" "app" {
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
     container_name   = module.constants.ECS_CONTAINER_NAME
-    container_port   = 80
+    container_port   = module.constants.CONTAINER_APPLICATION_PORT
   }
 }
 
@@ -377,13 +377,13 @@ resource "aws_lb_target_group" "app" {
   name_prefix = module.constants.TARGET_GROUP_NAME
   vpc_id      = aws_vpc.main.id
   protocol    = "HTTP"
-  port        = 80
+  port        = module.constants.CONTAINER_APPLICATION_PORT
   target_type = "ip"
 
   health_check {
     enabled             = true
     path                = "/"
-    port                = 80
+    port                = module.constants.CONTAINER_APPLICATION_PORT
     matcher             = 200
     interval            = 10
     timeout             = 5
