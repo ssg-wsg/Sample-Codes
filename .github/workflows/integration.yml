@@ -86,7 +86,7 @@ jobs:
         id: init-backend
         working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         run: terraform init
-      
+
       - name: Apply Terraform Plan
         id: apply-backend
         working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
@@ -119,8 +119,6 @@ jobs:
         id: create-main-verify
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: terraform fmt -check
-
-      - name: Validate Backend
 
       - name: Plan for Backend Infrastructure
         if: ${{ steps.create-backend-verify.outcome == 'success' }}
