@@ -56,7 +56,7 @@ output "ALB_NAME" {
 }
 
 output "TARGET_GROUP_NAME" {
-  value = "ssg-tg-"
+  value = "tg-"
 }
 
 output "ECS_SECURITY_GROUP_NAME" {
