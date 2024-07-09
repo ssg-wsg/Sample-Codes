@@ -138,10 +138,10 @@ resource "aws_security_group" "ecs_node_sg" {
 
   # SG permit ingress form any port
   ingress {
-    from_port = 0
-    to_port = 65535
-    protocol = "tcp"
-    cidr_blocks = [module.constants.IPV4_ALL_CIDR]
+    from_port        = 0
+    to_port          = 65535
+    protocol         = "tcp"
+    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
     ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
   }
 
