@@ -136,6 +136,15 @@ resource "aws_security_group" "ecs_node_sg" {
   name_prefix = module.constants.SECURITY_GROUP_NAME
   vpc_id      = aws_vpc.main.id
 
+  # SG permit ingress form any port
+  ingress {
+    from_port = 0
+    to_port = 65535
+    protocol = "tcp"
+    cidr_blocks = [module.constants.IPV4_ALL_CIDR]
+    ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
+  }
+
   # SG permits egress from any port to any IP address
   egress {
     from_port        = 0
