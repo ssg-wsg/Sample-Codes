@@ -193,7 +193,7 @@ resource "aws_autoscaling_group" "ecs" {
 
 # Create Capacity Provider
 resource "aws_ecs_capacity_provider" "main" {
-  name = "ecs-ec2"
+  name = "ssg-ecs-ec2"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ecs.arn
