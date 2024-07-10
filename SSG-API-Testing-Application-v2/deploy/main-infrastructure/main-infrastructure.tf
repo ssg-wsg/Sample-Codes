@@ -63,13 +63,13 @@ resource "aws_internet_gateway" "main" {
 }
 
 # Elastic IPs
-resource "aws_eip" "main" {
-  count      = local.azs_count
-  depends_on = [aws_internet_gateway.main]
-  tags = {
-    Name = "eip-${local.azs_name[count.index]}"
-  }
-}
+# resource "aws_eip" "main" {
+#   count      = local.azs_count
+#   depends_on = [aws_internet_gateway.main]
+#   tags = {
+#     Name = "eip-${local.azs_name[count.index]}"
+#   }
+# }
 
 # Public routing table
 resource "aws_route_table" "public" {
