@@ -131,8 +131,8 @@ resource "aws_security_group" "ecs_node_sg" {
 
   egress {
     from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -294,8 +294,8 @@ resource "aws_ecs_task_definition" "app" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_exec_role.arn
   network_mode       = "awsvpc"
-  cpu                = 256
-  memory             = 256
+  cpu                = 512
+  memory             = 512
 
   container_definitions = jsonencode([
     {
@@ -416,10 +416,9 @@ resource "aws_lb_target_group" "app" {
   health_check {
     enabled             = true
     path                = "/"
-    port                = 80
-    matcher             = "200,301,302"
-    interval            = 10
-    timeout             = 5
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    interval            = 30
     healthy_threshold   = 2
     unhealthy_threshold = 3
   }

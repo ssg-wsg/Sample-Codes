@@ -130,6 +130,11 @@ jobs:
         run: |
           terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
 
+      - name: Tear Down Infrastructure
+        id: destroy-main
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
+        run: terraform destroy -auto-approve
+
       - name: Validate Terraform Script
         id: create-main-validate
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
