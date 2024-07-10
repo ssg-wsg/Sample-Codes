@@ -63,13 +63,13 @@ resource "aws_internet_gateway" "main" {
 }
 
 # Elastic IPs
-# resource "aws_eip" "main" {
-#   count      = local.azs_count
-#   depends_on = [aws_internet_gateway.main]
-#   tags = {
-#     Name = "eip-${local.azs_name[count.index]}"
-#   }
-# }
+resource "aws_eip" "main" {
+  count      = local.azs_count
+  depends_on = [aws_internet_gateway.main]
+  tags = {
+    Name = "eip-${local.azs_name[count.index]}"
+  }
+}
 
 # Public routing table
 resource "aws_route_table" "public" {
@@ -284,7 +284,7 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_role_policy" {
 
 # Set up CloudWatch Logs
 resource "aws_cloudwatch_log_group" "ecs" {
-  name              = "/ecs/demo"
+  name              = "/ecs/app"
   retention_in_days = 7
 }
 
