@@ -34,49 +34,33 @@ locals {
   azs_name  = data.aws_availability_zones.available.names
 }
 
-resource "aws_default_vpc" "main" {
-
+resource "aws_vpc" "main" {
+  cidr_block           = module.constants.CIDR_BLOCK
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+  tags = {
+    Name = "vpc"
+  }
 }
 
-resource "aws_default_subnet" "subnet_1" {
-  availability_zone       = "ap-southeast-1a"
+resource "aws_subnet" "public" {
+  count                   = local.azs_count
+  vpc_id                  = aws_vpc.main.id
+  availability_zone       = local.azs_name[count.index]
+  cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 10 + count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "public-${local.azs_name[count.index]}"
+  }
 }
 
-resource "aws_default_subnet" "subnet_2" {
-  availability_zone       = "ap-southeast-1b"
+# Create IGW
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "igw"
+  }
 }
-
-resource "aws_default_subnet" "subnet_3" {
-  availability_zone       = "ap-southeast-1c"
-}
-
-# resource "aws_vpc" "main" {
-#   cidr_block           = module.constants.CIDR_BLOCK
-#   enable_dns_hostnames = true
-#   enable_dns_support   = true
-#   tags = {
-#     Name = "vpc"
-#   }
-# }
-#
-# resource "aws_subnet" "public" {
-#   count                   = local.azs_count
-#   vpc_id                  = aws_vpc.main.id
-#   availability_zone       = local.azs_name[count.index]
-#   cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 10 + count.index)
-#   map_public_ip_on_launch = true
-#   tags = {
-#     Name = "public-${local.azs_name[count.index]}"
-#   }
-# }
-#
-# # Create IGW
-# resource "aws_internet_gateway" "main" {
-#   vpc_id = aws_vpc.main.id
-#   tags = {
-#     Name = "igw"
-#   }
-# }
 
 # Elastic IPs
 # resource "aws_eip" "main" {
@@ -88,23 +72,23 @@ resource "aws_default_subnet" "subnet_3" {
 # }
 
 # Public routing table
-# resource "aws_route_table" "public" {
-#   vpc_id = aws_vpc.main.id
-#   tags = {
-#     Name = "rt-public"
-#   }
-#
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.main.id
-#   }
-# }
-#
-# resource "aws_route_table_association" "public" {
-#   count          = local.azs_count
-#   subnet_id      = aws_subnet.public[count.index].id
-#   route_table_id = aws_route_table.public.id
-# }
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+  tags = {
+    Name = "rt-public"
+  }
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  count          = local.azs_count
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
+}
 
 # Create ECS Cluster
 resource "aws_ecs_cluster" "main" {
@@ -143,7 +127,7 @@ resource "aws_iam_instance_profile" "ecs_node" {
 # Create SG for ECS nodes
 resource "aws_security_group" "ecs_node_sg" {
   name_prefix = "ecs-node-sg"
-  vpc_id      = aws_default_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   egress {
     from_port   = 0
@@ -182,11 +166,7 @@ resource "aws_launch_template" "ecs_ec2" {
 # Create ASG
 resource "aws_autoscaling_group" "ecs" {
   name_prefix               = "ecs-asg-"
-  vpc_zone_identifier       = [
-    aws_default_subnet.subnet_1.id,
-    aws_default_subnet.subnet_2.id,
-    aws_default_subnet.subnet_3.id
-  ]
+  vpc_zone_identifier       = aws_subnet.public[*].id
   min_size                  = 1
   max_size                  = 1
   health_check_grace_period = 0
@@ -344,13 +324,13 @@ resource "aws_ecs_task_definition" "app" {
 # ECS Service Definition
 resource "aws_security_group" "ecs_task" {
   name_prefix = "ecs-task-sg-"
-  vpc_id      = aws_default_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [aws_default_vpc.main.cidr_block]
+    cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
   egress {
@@ -369,11 +349,7 @@ resource "aws_ecs_service" "app" {
   depends_on      = [aws_lb_target_group.app]
 
   network_configuration {
-    subnets         = [
-      aws_default_subnet.subnet_1.id,
-      aws_default_subnet.subnet_2.id,
-      aws_default_subnet.subnet_3.id
-    ]
+    subnets         = aws_subnet.public[*].id
     security_groups = [aws_security_group.ecs_task.id]
   }
 
@@ -403,7 +379,7 @@ resource "aws_ecs_service" "app" {
 resource "aws_security_group" "http" {
   name_prefix = "http-sg-"
   description = "Allow all HTTP/HTTPS traffic"
-  vpc_id      = aws_default_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   dynamic "ingress" {
     for_each = [80, 443]
@@ -426,17 +402,13 @@ resource "aws_security_group" "http" {
 resource "aws_lb" "main" {
   name               = "alb"
   load_balancer_type = "application"
-  subnets            = [
-    aws_default_subnet.subnet_1.id,
-    aws_default_subnet.subnet_2.id,
-    aws_default_subnet.subnet_3.id
-  ]
+  subnets            = aws_subnet.public[*].id
   security_groups    = [aws_security_group.http.id]
 }
 
 resource "aws_lb_target_group" "app" {
   name_prefix = "app-"
-  vpc_id      = aws_default_vpc.main.id
+  vpc_id      = aws_vpc.main.id
   protocol    = "HTTP"
   port        = 80
   target_type = "ip"
