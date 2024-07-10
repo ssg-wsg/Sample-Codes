@@ -1,9 +1,3 @@
-# define ENV variables
-variable "REPO_URL" {
-  description = "The URL of the Docker repository to be created by ECR"
-  type        = string
-}
-
 module "constants" {
   source = "../modules/constants"
 }
@@ -11,10 +5,10 @@ module "constants" {
 # Specify dependencies
 terraform {
   backend "s3" {
-    bucket         = "ssg-tf-bucket"     # module.constants.TF_BUCKET_NAME
-    key            = "main/main.tfstate" # module.constants.TF_MAIN_BUCKET_FILE_KEY
-    region         = "ap-southeast-1"    # module.constants.AWS_REGION
-    dynamodb_table = "ssg-tf-state-lock" # module.constants.TF_DYNAMODB_TABLE_NAME
+    bucket         = "ssg-tf-bucket"           # module.constants.TF_BUCKET_NAME
+    key            = "main/main_infra.tfstate" # module.constants.TF_MAIN_BUCKET_FILE_KEY
+    region         = "ap-southeast-1"          # module.constants.AWS_REGION
+    dynamodb_table = "ssg-tf-state-lock"       # module.constants.TF_DYNAMODB_TABLE_NAME
     encrypt        = true
   }
 
@@ -27,10 +21,10 @@ terraform {
 }
 
 provider "aws" {
-  region = module.constants.AWS_REGION
+  region     = module.constants.AWS_REGION
 }
 
-# Create VPC
+# Create VPCs
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -42,23 +36,21 @@ locals {
 
 resource "aws_vpc" "main" {
   cidr_block           = module.constants.CIDR_BLOCK
-  enable_dns_support   = true
   enable_dns_hostnames = true
+  enable_dns_support   = true
   tags = {
-    Name = "ssg-vpc"
+    Name = "vpc"
   }
 }
 
 resource "aws_subnet" "public" {
-  count  = local.azs_count
-  vpc_id = aws_vpc.main.id
-  cidr_block = element([module.constants.SUBNET_CIDR_ONE,
-    module.constants.SUBNET_CIDR_TWO,
-  module.constants.SUBNET_CIDR_THREE], count.index)
-  availability_zone       = element(local.azs_name, count.index)
+  count                   = local.azs_count
+  vpc_id                  = aws_vpc.main.id
+  availability_zone       = local.azs_name[count.index]
+  cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 10 + count.index)
   map_public_ip_on_launch = true
   tags = {
-    Name = "ssg-public-subnet-${count.index + 1}"
+    Name = "public-${local.azs_name[count.index]}"
   }
 }
 
@@ -66,27 +58,28 @@ resource "aws_subnet" "public" {
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = module.constants.INTERNET_GATEWAY_NAME
+    Name = "igw"
   }
 }
 
-# avoid creating Elastic IP for AZs, incurs cost
-# resource "aws-eip" "main" {
-#   count = local.azs_count
-#   depends_on = [aws_internet_gateway.main]
-#   tags = {
-#     Name = "ssg-eip-${count.index + 1}"
-#   }
-# }
+# Elastic IPs
+resource "aws_eip" "main" {
+  count      = local.azs_count
+  depends_on = [aws_internet_gateway.main]
+  tags = {
+    Name = "eip-${local.azs_name[count.index]}"
+  }
+}
 
-# Create Public Routing Tables
+# Public routing table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = module.constants.ROUTE_TABLE_NAME
+    Name = "rt-public"
   }
+
   route {
-    cidr_block = module.constants.IPV4_ALL_CIDR
+    cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
 }
@@ -99,24 +92,24 @@ resource "aws_route_table_association" "public" {
 
 # Create ECS Cluster
 resource "aws_ecs_cluster" "main" {
-  name = module.constants.ECS_CLUSTER_NAME
+  name = "cluster"
 }
 
-# Create ECS Role
+# Create IAM roles
 data "aws_iam_policy_document" "ecs_node_doc" {
   statement {
     actions = ["sts:AssumeRole"]
     effect  = "Allow"
 
     principals {
+      identifiers = ["ec2.amazonaws.com"]
       type        = "Service"
-      identifiers = ["ecs.amazonaws.com"]
     }
   }
 }
 
 resource "aws_iam_role" "ecs_node_role" {
-  name_prefix        = module.constants.IAM_ROLE_NAME
+  name_prefix        = "ecs-node-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_node_doc.json
 }
 
@@ -126,44 +119,33 @@ resource "aws_iam_role_policy_attachment" "ecs_node_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "ecs_node" {
-  name_prefix = module.constants.IAM_INSTANCE_PROFILE
+  name_prefix = "ecs-node-profile"
   path        = "/ecs/instance/"
   role        = aws_iam_role.ecs_node_role.name
 }
 
-# Create Security Group for ECS
+# Create SG for ECS nodes
 resource "aws_security_group" "ecs_node_sg" {
-  name_prefix = module.constants.SECURITY_GROUP_NAME
+  name_prefix = "ecs-node-sg"
   vpc_id      = aws_vpc.main.id
 
-  # SG permit ingress form any port
-  ingress {
-    from_port        = 0
-    to_port          = 65535
-    protocol         = "tcp"
-    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
-    ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
-  }
-
-  # SG permits egress from any port to any IP address
   egress {
-    from_port        = 0
-    to_port          = 65535
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-# Create Launch Template
+# Create the launch template
 data "aws_ssm_parameter" "ecs_node_ami" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 
-resource "aws_launch_template" "ec2" {
-  name_prefix            = module.constants.ECS_LAUNCH_TEMPLATE_NAME
+resource "aws_launch_template" "ecs_ec2" {
+  name_prefix            = "ecs-ec2-"
   image_id               = data.aws_ssm_parameter.ecs_node_ami.value
-  instance_type          = module.constants.ECS_LAUNCH_TEMPLATE_INSTANCE_TYPE
+  instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.ecs_node_sg.id]
 
   iam_instance_profile {
@@ -171,34 +153,34 @@ resource "aws_launch_template" "ec2" {
   }
 
   monitoring {
-    enabled = false
+    enabled = true
   }
 
   user_data = base64encode(<<-EOF
-    #!/bin/bash
-    echo ECS_CLUSTER=${module.constants.ECS_CLUSTER_NAME} >> /etc/ecs/ecs.config;
+      #!/bin/bash
+      echo ECS_CLUSTER=${aws_ecs_cluster.main.name} >> /etc/ecs/ecs.config
     EOF
   )
 }
 
 # Create ASG
-resource "aws_autoscaling_group" "ecs-asg" {
-  name                      = module.constants.ECS_ASG_NAME
+resource "aws_autoscaling_group" "ecs" {
+  name_prefix               = "ecs-asg-"
   vpc_zone_identifier       = aws_subnet.public[*].id
-  min_size                  = module.constants.MIN_ASG_SIZE
-  max_size                  = module.constants.MAX_ASG_SIZE
+  min_size                  = 1
+  max_size                  = 1
   health_check_grace_period = 0
   health_check_type         = "EC2"
   protect_from_scale_in     = false
 
   launch_template {
-    id      = aws_launch_template.ec2.id
+    id      = aws_launch_template.ecs_ec2.id
     version = "$Latest"
   }
 
   tag {
     key                 = "Name"
-    value               = module.constants.ECS_CLUSTER_NAME
+    value               = "cluster"
     propagate_at_launch = true
   }
 
@@ -209,106 +191,176 @@ resource "aws_autoscaling_group" "ecs-asg" {
   }
 }
 
-# Create a Capacity Provider
+# Create Capacity Provider
 resource "aws_ecs_capacity_provider" "main" {
-  name = module.constants.ECS_CAPACITY_PROVIDER_NAME
+  name = "ecs-ec2"
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.ecs-asg.arn
+    auto_scaling_group_arn = aws_autoscaling_group.ecs.arn
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
-      maximum_scaling_step_size = module.constants.MIN_ASG_SIZE
-      minimum_scaling_step_size = module.constants.MIN_ASG_SIZE
-      status                    = "ENABLED"
-      target_capacity           = module.constants.MIN_ASG_SIZE
+      maximum_scaling_step_size = 1
+      minimum_scaling_step_size = 1
+      status = "ENABLED"
+      target_capacity = 100
     }
   }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "main" {
   cluster_name = aws_ecs_cluster.main.name
-  capacity_providers = [
-    aws_ecs_capacity_provider.main.name
-  ]
+  capacity_providers = [aws_ecs_capacity_provider.main.name]
 
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.main.name
-    base              = module.constants.MIN_ASG_SIZE
-    weight            = 1
+    base = 1
+    weight = 100
   }
 }
 
-# Create ECS Task Role
+# Create ECS Service
+resource "aws_ecr_repository" "app" {
+  name = "app"
+  image_tag_mutability = "MUTABLE"
+  force_delete = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+locals {
+  repo_url = aws_ecr_repository.app.repository_url
+}
+
+resource "null_resource" "image" {
+  triggers = {
+    hash = md5(join("-", [for x in fileset("", "./{*.py, Dockerfile}") : filemd5(x)]))
+  }
+
+  provisioner "local-exec" {
+    command = <<EOF
+      aws ecr get-login-password | docker login --username AWS --password-stdin ${local.repo_url}
+      docker build --platform linux/amd64 -t ${local.repo_url}:latest ../../app/
+      docker push ${local.repo_url}:latest
+    EOF
+  }
+}
+
+data "aws_ecr_image" "latest" {
+  repository_name = aws_ecr_repository.app.name
+  image_tag       = "latest"
+  depends_on      = [null_resource.image]
+}
+
+# Create IAM roles
 data "aws_iam_policy_document" "ecs_task_doc" {
   statement {
     actions = ["sts:AssumeRole"]
-    effect  = "Allow"
+    effect = "Allow"
 
     principals {
-      type        = "Service"
       identifiers = ["ecs-tasks.amazonaws.com"]
+      type        = "Service"
     }
   }
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name_prefix        = "demo-ecs-task-role"
+  name_prefix = "ecs-task-role-"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_doc.json
 }
 
 resource "aws_iam_role" "ecs_exec_role" {
-  name_prefix        = "demo-ecs-exec-role"
+  name_prefix = "ecs-exec-role-"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_doc.json
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_exec_role_policy" {
-  role       = aws_iam_role.ecs_exec_role.name
+  role = aws_iam_role.ecs_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_ecs_task_definition" "app" {
-  family             = module.constants.ECS_TASK_DEFINITION_FAMILY
-  task_role_arn      = aws_iam_role.ecs_task_role.arn
-  execution_role_arn = aws_iam_role.ecs_exec_role.arn
-  network_mode       = "awsvpc"
-  cpu                = module.constants.ECS_TASK_CPU
-  memory             = module.constants.ECS_TASK_MEMORY
-
-  container_definitions = jsonencode([{
-    name      = module.constants.ECS_CONTAINER_NAME,
-    image     = "${var.REPO_URL}:latest",
-    essential = true,
-    portMappings = [
-      {
-        containerPort = module.constants.CONTAINER_APPLICATION_PORT,
-        hostPort      = module.constants.CONTAINER_APPLICATION_PORT
-      }
-    ]
-  }])
+# Set up CloudWatch Logs
+resource "aws_cloudwatch_log_group" "ecs" {
+  name = "/ecs/demo"
+  retention_in_days = 7
 }
 
+# ECS Task Definition
+resource "aws_ecs_task_definition" "app" {
+  family = "ssg-app"
+  task_role_arn = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = aws_iam_role.ecs_exec_role.arn
+  network_mode = "awsvpc"
+  cpu = 256
+  memory = 256
 
-# Create ECS Service
+  container_definitions = jsonencode([
+    {
+      name = "app"
+      image = "${aws_ecr_repository.app.repository_url}:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort = 80
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group" = aws_cloudwatch_log_group.ecs.name
+          "awslogs-region" = "ap-southeast-1"
+          "awslogs-stream-prefix" = "app"
+        }
+      }
+    }
+  ])
+}
+
+# ECS Service Definition
+resource "aws_security_group" "ecs_task" {
+  name_prefix = "ecs-task-sg-"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_ecs_service" "app" {
-  name            = module.constants.ECS_SERVICE_NAME
-  cluster         = aws_ecs_cluster.main.id
+  name = "app"
+  cluster = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = module.constants.MIN_ASG_SIZE
+  desired_count = 1
+  depends_on = [aws_lb_target_group.app]
 
   network_configuration {
+    subnets = aws_subnet.public[*].id
     security_groups = [aws_security_group.ecs_task.id]
-    subnets         = aws_subnet.public[*].id
   }
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.main.name
-    base              = module.constants.MIN_ASG_SIZE
-    weight            = 100
+    base = 1
+    weight = 100
   }
 
   ordered_placement_strategy {
-    type  = "spread"
+    type = "spread"
     field = "attribute:ecs.availability-zone"
   }
 
@@ -316,102 +368,119 @@ resource "aws_ecs_service" "app" {
     ignore_changes = [desired_count]
   }
 
-  depends_on = [aws_lb_target_group.app]
-
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
-    container_name   = module.constants.ECS_CONTAINER_NAME
-    container_port   = module.constants.CONTAINER_APPLICATION_PORT
+    container_name = "app"
+    container_port = 80
   }
 }
 
-# Create ECS Security Group
-resource "aws_security_group" "ecs_task" {
-  name_prefix = module.constants.ECS_SECURITY_GROUP_NAME
-  description = "Allow all traffic within the VPC"
-  vpc_id      = aws_vpc.main.id
-
-  # Permit ingress from any port within the VPC
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-  }
-
-  # Permit egress from any port within the VPC
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
-    ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
-  }
-}
-
-# Need an ALB to reach the ECS Service
-resource "aws_security_group" "http_access" {
-  name_prefix = module.constants.SECURITY_GROUP_NAME
-  description = "Allow HTTP/S access"
-  vpc_id      = aws_vpc.main.id
+# Create ALB
+resource "aws_security_group" "http" {
+  name_prefix = "http-sg-"
+  description = "Allow all HTTP/HTTPS traffic"
+  vpc_id = aws_vpc.main.id
 
   dynamic "ingress" {
     for_each = [80, 443]
     content {
-      protocol         = "tcp"
-      from_port        = ingress.value
-      to_port          = ingress.value
-      cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
-      ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
+      protocol = "tcp"
+      from_port = ingress.value
+      to_port = ingress.value
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
   egress {
-    protocol         = "-1"
-    from_port        = 0
-    to_port          = 0
-    cidr_blocks      = [module.constants.IPV4_ALL_CIDR]
-    ipv6_cidr_blocks = [module.constants.IPV6_ALL_CIDR]
+    protocol = "-1"
+    from_port = 0
+    to_port = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_lb" "main" {
-  name               = module.constants.ALB_NAME
+  name = "alb"
   load_balancer_type = "application"
-  subnets            = aws_subnet.public[*].id
-  security_groups    = [aws_security_group.http_access.id]
+  subnets = aws_subnet.public[*].id
+  security_groups = [aws_security_group.http.id]
 }
 
 resource "aws_lb_target_group" "app" {
-  name_prefix = module.constants.TARGET_GROUP_NAME
-  vpc_id      = aws_vpc.main.id
-  protocol    = "HTTP"
-  port        = module.constants.CONTAINER_APPLICATION_PORT
+  name_prefix = "app-"
+  vpc_id = aws_vpc.main.id
+  protocol = "HTTP"
+  port = 80
   target_type = "ip"
 
   health_check {
-    enabled             = true
-    path                = "/"
-    port                = module.constants.CONTAINER_APPLICATION_PORT
-    matcher             = 200
-    interval            = 10
-    timeout             = 5
-    healthy_threshold   = 8
-    unhealthy_threshold = 2
+    enabled = true
+    path = "/"
+    port = 80
+    matcher = "200,301,302"
+    interval = 10
+    timeout = 5
+    healthy_threshold = 2
+    unhealthy_threshold = 3
   }
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.id
-  port              = 80
-  protocol          = "HTTP"
+  port = 80
+  protocol = "HTTP"
 
   default_action {
-    type             = "forward"
+    type = "forward"
     target_group_arn = aws_lb_target_group.app.id
   }
 }
 
 output "alb_url" {
   value = aws_lb.main.dns_name
+}
+
+# Connect ECS Service Autoscaling
+resource "aws_appautoscaling_target" "ecs_target" {
+  service_namespace = "ecs"
+  scalable_dimension = "ecs:service:DesiredCount"
+  resource_id = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
+  min_capacity = 1
+  max_capacity = 1
+}
+
+resource "aws_appautoscaling_policy" "ecs_target_cpu" {
+  name = "application-scaling-policy-cpu"
+  policy_type = "TargetTrackingScaling"
+  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
+  resource_id = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = 80
+    scale_in_cooldown = 300
+    scale_out_cooldown = 300
+  }
+}
+
+resource "aws_appautoscaling_policy" "ecs_target_memory" {
+  name = "applicaiton-scaling-policy-memory"
+  policy_type = "TargetTrackingScaling"
+  resource_id = aws_appautoscaling_target.ecs_target.resource_id
+  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
+
+    target_value = 80
+    scale_in_cooldown = 300
+    scale_out_cooldown = 300
+  }
 }
