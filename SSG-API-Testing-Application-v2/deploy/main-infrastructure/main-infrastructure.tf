@@ -358,7 +358,6 @@ resource "aws_ecs_service" "app" {
   network_configuration {
     subnets         = aws_subnet.public[*].id
     security_groups = [aws_security_group.ecs_task.id]
-    assign_public_ip = true
   }
 
   capacity_provider_strategy {
