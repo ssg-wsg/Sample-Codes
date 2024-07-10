@@ -31,7 +31,7 @@ end note
 [-> Server : Start the server
 ref over Server
     Server starts and listens to
-    connections on port 8502
+    connections on port 80
 end ref
 
 User -> Server : User makes HTTP/S connection to application

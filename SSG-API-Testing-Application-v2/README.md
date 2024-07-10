@@ -134,7 +134,7 @@ The application is also run over HTTP; take care not to connect to the applicati
 
 ## Features
 
-There are 7 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
+There are 6 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
 as well as the SkillsFuture Credit API.
 
 The pages are all found within the [pages](app/pages) folder.
@@ -145,13 +145,6 @@ This page allows you to quickly encrypt and decrypt your text using the same alg
 
 This allows you to quickly convert encrypted responses from the API into plaintext, or generate encrypted payloads
 to send to the API!
-
-### Demo Code - Authentication
-
-This page contains sample code which you can use in your application to get started with authentication.
-
-This page also provides you with a quick and simple way to test if your credentials work, allowing you to do a 
-quick sanity check on the veracity of your credentials.
 
 ### Courses
 

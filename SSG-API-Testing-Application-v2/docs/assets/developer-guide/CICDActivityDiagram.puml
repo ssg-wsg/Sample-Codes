@@ -40,6 +40,25 @@ else (no)
 endif
 
 endfork
+
+:Begin process for setting up Terraform backend;
+:Runs on Ubuntu-latest;
+:Checkout Repository;
+:Set up Terraform;
+:Verify Terraform script;
+:Initialise Terraform backend;
+:Validate Terraform script;
+:Apply Terraform script;
+
+:Begin process for setting up main infrastructure;
+:Runs on Ubuntu-latest;
+:Checkout Repository;
+:Set up Terraform;
+:Verify Terraform script;
+:Initialise Terraform backend;
+:Validate Terraform script;
+:Apply Terraform script;
 stop
+
 
 @enduml

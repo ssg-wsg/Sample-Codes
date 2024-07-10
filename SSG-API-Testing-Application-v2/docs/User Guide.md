@@ -30,9 +30,6 @@ Here is a quick summary of what the SSG Sample Application does:
   - [En-Decryption](#En-Decryption)
     - [Encryption Mode](#Encryption-Mode)
     - [Decryption Mode](#Decryption-Mode)
-  - [Demo Code](#Demo-Code)
-    - [Open Authentication](#Open-Authentication)
-    - [Certificate Authentication](#Certificate-Authentication)
   - [Courses](#Courses)
     - [Course Run by Run Id](#Course-Run-by-Run-Id)
     - [Add Course Runs](#Add-Course-Runs)
@@ -252,43 +249,6 @@ To decrypt your message, unselect the “Encrypt Mode” toggle. The fields will
 Enter the ciphertext on the left column. The decrypted plaintext will then be shown in the right column.
 
 ![En-Decryption Encrypt Mode with Text](assets/user-guide/en-decryption/en-decryption-decrypt-text.png)
-
-### Demo Code
-
-To aid you in authenticating with the SSG APIs, some sample codes written in Python, Java, and NodeJS have been
-provided for your reference.
-
-#### Open Authentication
-
-This section contains the sample codes for authenticating with the SSG APIs using OAuth 2.0.
-
-The “Sample Code” subsection contains 3 tabs, with each tab containing sample codes written in the language
-as specified by the tab name.
-
-![Open Authentication Code](assets/user-guide/demo-code/open-auth-code.png)
-
-To help you test out the API, key in the URL endpoint, the Client OAuth 2.0 ID and OAuth 2.0 Client Secret Key in
-the fields under “Try this API out” to try to authenticate to the endpoint with your credentials.
-
-![Open Authentication API](assets/user-guide/demo-code/open-auth-api.png)
-
-Once you have keyed in your details, click on the “Request!” button to start a request with your credentials. 
-
-#### Certificate Authentication
-
-This section contains the sample codes for authenticating with the SSG APIs using SSL Certificates and Private Keys.
-
-The “Sample Code” subsection contains 3 tabs, with each tab containing sample codes written in the language as
-specified by the tab name.
-
-![Certificate Authentication Code](assets/user-guide/demo-code/cert-auth-code.png)
-
-To help you test out the API, key in the URL endpoint, Certificate Key and Secret Key in the fields under
-“Try this API out” to try to authenticate to the endpoint with your credentials.
-
-![Certificate Authentication API](assets/user-guide/demo-code/cert-auth-api.png)
-
-Once you have keyed in your details, click on the “Request!” button to start a request with your credentials. 
 
 ### Courses
 
