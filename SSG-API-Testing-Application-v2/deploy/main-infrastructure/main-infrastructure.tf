@@ -21,7 +21,7 @@ terraform {
 }
 
 provider "aws" {
-  region     = module.constants.AWS_REGION
+  region = module.constants.AWS_REGION
 }
 
 # Create VPCs
@@ -196,34 +196,34 @@ resource "aws_ecs_capacity_provider" "main" {
   name = "ecs-ec2"
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.ecs.arn
+    auto_scaling_group_arn         = aws_autoscaling_group.ecs.arn
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 1
       minimum_scaling_step_size = 1
-      status = "ENABLED"
-      target_capacity = 100
+      status                    = "ENABLED"
+      target_capacity           = 100
     }
   }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "main" {
-  cluster_name = aws_ecs_cluster.main.name
+  cluster_name       = aws_ecs_cluster.main.name
   capacity_providers = [aws_ecs_capacity_provider.main.name]
 
   default_capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.main.name
-    base = 1
-    weight = 100
+    base              = 1
+    weight            = 100
   }
 }
 
 # Create ECS Service
 resource "aws_ecr_repository" "app" {
-  name = "app"
+  name                 = "app"
   image_tag_mutability = "MUTABLE"
-  force_delete = true
+  force_delete         = true
 
   image_scanning_configuration {
     scan_on_push = true
@@ -258,7 +258,7 @@ data "aws_ecr_image" "latest" {
 data "aws_iam_policy_document" "ecs_task_doc" {
   statement {
     actions = ["sts:AssumeRole"]
-    effect = "Allow"
+    effect  = "Allow"
 
     principals {
       identifiers = ["ecs-tasks.amazonaws.com"]
@@ -268,52 +268,52 @@ data "aws_iam_policy_document" "ecs_task_doc" {
 }
 
 resource "aws_iam_role" "ecs_task_role" {
-  name_prefix = "ecs-task-role-"
+  name_prefix        = "ecs-task-role-"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_doc.json
 }
 
 resource "aws_iam_role" "ecs_exec_role" {
-  name_prefix = "ecs-exec-role-"
+  name_prefix        = "ecs-exec-role-"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_doc.json
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_exec_role_policy" {
-  role = aws_iam_role.ecs_exec_role.name
+  role       = aws_iam_role.ecs_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Set up CloudWatch Logs
 resource "aws_cloudwatch_log_group" "ecs" {
-  name = "/ecs/demo"
+  name              = "/ecs/demo"
   retention_in_days = 7
 }
 
 # ECS Task Definition
 resource "aws_ecs_task_definition" "app" {
-  family = "ssg-app"
-  task_role_arn = aws_iam_role.ecs_task_role.arn
+  family             = "ssg-app"
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_exec_role.arn
-  network_mode = "awsvpc"
-  cpu = 256
-  memory = 256
+  network_mode       = "awsvpc"
+  cpu                = 256
+  memory             = 256
 
   container_definitions = jsonencode([
     {
-      name = "app"
-      image = "${aws_ecr_repository.app.repository_url}:latest"
+      name      = "app"
+      image     = "${aws_ecr_repository.app.repository_url}:latest"
       essential = true
       portMappings = [
         {
           containerPort = 80
-          hostPort = 80
+          hostPort      = 80
         }
       ]
 
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group" = aws_cloudwatch_log_group.ecs.name
-          "awslogs-region" = "ap-southeast-1"
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
+          "awslogs-region"        = "ap-southeast-1"
           "awslogs-stream-prefix" = "app"
         }
       }
@@ -324,43 +324,43 @@ resource "aws_ecs_task_definition" "app" {
 # ECS Service Definition
 resource "aws_security_group" "ecs_task" {
   name_prefix = "ecs-task-sg-"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_ecs_service" "app" {
-  name = "app"
-  cluster = aws_ecs_cluster.main.id
+  name            = "app"
+  cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count = 1
-  depends_on = [aws_lb_target_group.app]
+  desired_count   = 1
+  depends_on      = [aws_lb_target_group.app]
 
   network_configuration {
-    subnets = aws_subnet.public[*].id
+    subnets         = aws_subnet.public[*].id
     security_groups = [aws_security_group.ecs_task.id]
   }
 
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.main.name
-    base = 1
-    weight = 100
+    base              = 1
+    weight            = 100
   }
 
   ordered_placement_strategy {
-    type = "spread"
+    type  = "spread"
     field = "attribute:ecs.availability-zone"
   }
 
@@ -370,8 +370,8 @@ resource "aws_ecs_service" "app" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
-    container_name = "app"
-    container_port = 80
+    container_name   = "app"
+    container_port   = 80
   }
 }
 
@@ -379,59 +379,59 @@ resource "aws_ecs_service" "app" {
 resource "aws_security_group" "http" {
   name_prefix = "http-sg-"
   description = "Allow all HTTP/HTTPS traffic"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
 
   dynamic "ingress" {
     for_each = [80, 443]
     content {
-      protocol = "tcp"
-      from_port = ingress.value
-      to_port = ingress.value
+      protocol    = "tcp"
+      from_port   = ingress.value
+      to_port     = ingress.value
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
 
   egress {
-    protocol = "-1"
-    from_port = 0
-    to_port = 0
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_lb" "main" {
-  name = "alb"
+  name               = "alb"
   load_balancer_type = "application"
-  subnets = aws_subnet.public[*].id
-  security_groups = [aws_security_group.http.id]
+  subnets            = aws_subnet.public[*].id
+  security_groups    = [aws_security_group.http.id]
 }
 
 resource "aws_lb_target_group" "app" {
   name_prefix = "app-"
-  vpc_id = aws_vpc.main.id
-  protocol = "HTTP"
-  port = 80
+  vpc_id      = aws_vpc.main.id
+  protocol    = "HTTP"
+  port        = 80
   target_type = "ip"
 
   health_check {
-    enabled = true
-    path = "/"
-    port = 80
-    matcher = "200,301,302"
-    interval = 10
-    timeout = 5
-    healthy_threshold = 2
+    enabled             = true
+    path                = "/"
+    port                = 80
+    matcher             = "200,301,302"
+    interval            = 10
+    timeout             = 5
+    healthy_threshold   = 2
     unhealthy_threshold = 3
   }
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.id
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.app.id
   }
 }
@@ -442,18 +442,18 @@ output "alb_url" {
 
 # Connect ECS Service Autoscaling
 resource "aws_appautoscaling_target" "ecs_target" {
-  service_namespace = "ecs"
+  service_namespace  = "ecs"
   scalable_dimension = "ecs:service:DesiredCount"
-  resource_id = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
-  min_capacity = 1
-  max_capacity = 1
+  resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.app.name}"
+  min_capacity       = 1
+  max_capacity       = 1
 }
 
 resource "aws_appautoscaling_policy" "ecs_target_cpu" {
-  name = "application-scaling-policy-cpu"
-  policy_type = "TargetTrackingScaling"
-  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
-  resource_id = aws_appautoscaling_target.ecs_target.resource_id
+  name               = "application-scaling-policy-cpu"
+  policy_type        = "TargetTrackingScaling"
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
 
   target_tracking_scaling_policy_configuration {
@@ -461,17 +461,17 @@ resource "aws_appautoscaling_policy" "ecs_target_cpu" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
 
-    target_value = 80
-    scale_in_cooldown = 300
+    target_value       = 80
+    scale_in_cooldown  = 300
     scale_out_cooldown = 300
   }
 }
 
 resource "aws_appautoscaling_policy" "ecs_target_memory" {
-  name = "applicaiton-scaling-policy-memory"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.ecs_target.resource_id
-  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
+  name               = "applicaiton-scaling-policy-memory"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
 
   target_tracking_scaling_policy_configuration {
@@ -479,8 +479,8 @@ resource "aws_appautoscaling_policy" "ecs_target_memory" {
       predefined_metric_type = "ECSServiceAverageMemoryUtilization"
     }
 
-    target_value = 80
-    scale_in_cooldown = 300
+    target_value       = 80
+    scale_in_cooldown  = 300
     scale_out_cooldown = 300
   }
 }
