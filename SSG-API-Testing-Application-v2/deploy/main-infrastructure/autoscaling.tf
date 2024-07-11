@@ -9,11 +9,11 @@ resource "aws_appautoscaling_target" "ecs_target" {
 
 # Target Tracking on ECS Cluster CPU Utilization
 resource "aws_appautoscaling_policy" "ecs_cpu_policy" {
-  name = "${module.constants.namespace}-ecs-cpu-policy"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.ecs_target.resource_id
+  name               = "${module.constants.namespace}-ecs-cpu-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     target_value = module.constants.cpu_target_tracking_desired_value
@@ -26,11 +26,11 @@ resource "aws_appautoscaling_policy" "ecs_cpu_policy" {
 
 # Target Tracking on ECS Cluster Memory Utilization
 resource "aws_appautoscaling_policy" "ecs_memory_policy" {
-  name = "${module.constants.namespace}_memoryTargetTracking"
-  policy_type = "TargetTrackingScaling"
-  resource_id = aws_appautoscaling_target.ecs_target.resource_id
+  name               = "${module.constants.namespace}_memoryTargetTracking"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
-  service_namespace = aws_appautoscaling_target.ecs_target.service_namespace
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     target_value = module.constants.memory_target_tracking_desired_value
@@ -43,12 +43,12 @@ resource "aws_appautoscaling_policy" "ecs_memory_policy" {
 
 # Create ASG
 resource "aws_autoscaling_group" "ecs_autoscaling_group" {
-  name = "${module.constants.namespace}-asg"
-  max_size = module.constants.autoscaling_max_size
-  min_size = module.constants.autoscaling_min_size
-  vpc_zone_identifier = aws_subnet.private.*.id
-  health_check_type = "EC2"
-  protect_from_scale_in = true  # must be true as managed_termination_protection is enabled in capacity provider
+  name                  = "${module.constants.namespace}-asg"
+  max_size              = module.constants.autoscaling_max_size
+  min_size              = module.constants.autoscaling_min_size
+  vpc_zone_identifier   = aws_subnet.private.*.id
+  health_check_type     = "EC2"
+  protect_from_scale_in = true # must be true as managed_termination_protection is enabled in capacity provider
 
   enabled_metrics = [
     "GroupMinSize",
@@ -62,7 +62,7 @@ resource "aws_autoscaling_group" "ecs_autoscaling_group" {
   ]
 
   launch_template {
-    id = aws_launch_template.ecs_launch_template.id
+    id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
 
@@ -75,8 +75,8 @@ resource "aws_autoscaling_group" "ecs_autoscaling_group" {
   }
 
   tag {
-    key = "Name"
-    value = "${module.constants.namespace}-asg"
+    key                 = "Name"
+    value               = "${module.constants.namespace}-asg"
     propagate_at_launch = true
   }
 }

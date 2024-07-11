@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "default" {
   family             = "${module.constants.namespace}_ecs_task_definition"
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn      = aws_iam_role.ecs_task_iam_role.arn
-  depends_on = [null_resource.image]
+  depends_on         = [null_resource.image]
 
   container_definitions = jsonencode([
     {
