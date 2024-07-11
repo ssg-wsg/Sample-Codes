@@ -1,28 +1,5 @@
-module "constants" {
-  source = "../modules/constants"
-}
-
 # Specify dependencies
-terraform {
-  backend "s3" {
-    bucket         = "ssg-tf-bucket"           # module.constants.TF_BUCKET_NAME
-    key            = "main/main_infra.tfstate" # module.constants.TF_MAIN_BUCKET_FILE_KEY
-    region         = "ap-southeast-1"          # module.constants.AWS_REGION
-    dynamodb_table = "ssg-tf-state-lock"       # module.constants.TF_DYNAMODB_TABLE_NAME
-    encrypt        = true
-  }
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws",
-      version = "5.17.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = module.constants.AWS_REGION
-}
 
 # Create VPCs
 data "aws_availability_zones" "available" {
@@ -35,7 +12,7 @@ locals {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block           = module.constants.CIDR_BLOCK
+  cidr_block           = "172.16.0.0/16"      # module.constants.VPC_CIDR
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {

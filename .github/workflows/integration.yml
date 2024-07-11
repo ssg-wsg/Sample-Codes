@@ -14,11 +14,6 @@ on:
   push:
 
 env:
-  AWS_REGION: "ap-southeast-1"
-  TF_CLOUD_ORGANIZATION: "ssg-wsg"
-  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-  TF_WORKSPACE: ""
-  TF_BUCKET_NAME: "ssg-tf-bucket"
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -124,16 +119,11 @@ jobs:
           terraform fmt
           terraform fmt -check
 
-      - name: Initialise Main Infrastructure
+      - name: Initialise Backend
         id: init-main
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: |
           terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
-
-      - name: Tear Down Infrastructure
-        id: destroy-main
-        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
-        run: terraform destroy -auto-approve
 
       - name: Validate Terraform Script
         id: create-main-validate
@@ -155,3 +145,14 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform apply -auto-approve
+
+      # if rollback fails, you may need to manually delete the infrastructure using the AWS console
+      # Inspired by: https://github.com/orgs/community/discussions/26097
+      - name: Rollback and Destroy Infrastructure
+        if: failure() && steps.apply-main.outcome == 'failure'
+        continue-on-error: true
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform destroy -auto-approve
