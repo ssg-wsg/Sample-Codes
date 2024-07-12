@@ -5,18 +5,35 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
 ## Table of Contents
 
 1. [Usage of the Guide](#usage-of-the-guide)
-2. [Docker](#docker)
+2. [AWS](#aws)
+    1. [Preparation](#preparation)
+3. [Codecov](#codecov)
+4. [GitHub](#github)
+    1. [GitHub Actions](#github-actions)
+        1. [Workflows](#workflows)
+    2. [Preparation](#preparation-1)
+5. [Docker](#docker)
     1. [Images and Dockerfiles](#images-and-dockerfiles)
-3. [Cloud Architecture](#cloud-architecture)
-   1. [Services](#services)
-      1. [EC2](#ec2)
-      2. [ECS](#ecs)
-      3. [Fargate](#fargate)
-      4. [ECR](#ecr)
-      5. [Task Definition](#task-definition)
-   2. [Production Architecture](#production-architecture)
-   3. [CI/CD Pipelines](#ci/cd-pipelines)
-4. 
+    2. [Docker Commands](#docker-commands)
+        1. [`docker build`](#docker-build)
+        2. [`docker run`](#docker-run)
+6. [Terraform](#terraform)
+    1. [Install Terraform](#install-terraform)
+    2. [Terraform Configuration](#terraform-configuration)
+        1. [`create-backend`](#create-backend)
+        2. [`main-infrastructure`](#main-infrastructure)
+    3. [Terraform Modules](#terraform-modules)
+    4. [Terraform Plan](#terraform-plan)
+    5. [Terraform Apply](#terraform-apply)
+    6. [Terraform Destroy](#terraform-destroy)
+7. [Cloud Architecture](#cloud-architecture)
+    1. [Services](#services)
+        1. [EC2](#ec2)
+        2. [ECR](#ecr)
+        3. [ECS](#ecs)
+        4. [Fargate](#fargate)
+        5. [Elastic Load Balancer](#elastic-load-balancer)
+    2. [Production Architecture](#production-architecture)
 
 ## Usage of the Guide
 
@@ -38,11 +55,153 @@ Text in **yellow** callout boxes are warnings that you should take note of to en
 > [!WARNING]
 > This is a warning!
 
-Text in **red** callout boxes are potential errors which you may encounter while performing an action in the 
+Text in **red** callout boxes are potential errors which you may encounter while performing an action in the
 Sample Application:
 
 > [!CAUTION]
 > This is a potential error!
+
+## AWS
+
+Amazon Web Services (AWS) is a cloud computing platform that provides a wide range of cloud services, including
+computing power, storage, databases, machine learning, and more.
+
+For the Sample Application, we will be deploying it on AWS to take advantage of the scalability, reliability, and
+security that AWS provides.
+
+### Preparation
+
+Before you are able to deploy the Sample Application to AWS, follow the steps below to prepare your AWS account:
+
+1. Create an AWS account if you do not already have one. Follow the instructions provided in
+   this [forum post](https://repost.aws/knowledge-center/create-and-activate-aws-account)
+   for more information on how you can create an AWS account.
+2. Create an IAM user with the necessary permissions to deploy the Sample Application. Follow the instructions provided
+   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create a IAM user. Make
+   sure to attach
+   the [AdministratorAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html)
+   policy to the IAM user to ensure that the user has the necessary permissions to deploy the Sample Application.
+    1. This is important as you are highly advised against using the root account to make changes to your AWS resources.
+
+> [!WARNING]
+> Even though you are also recommended to keep permissions as minimal as possible, for the purposes of this guide, you
+> are advised to attach the `AdministratorAccess` policy to the IAM user to ensure that you have the necessary
+> permissions to deploy the Sample Application.
+
+3. Create an Access Key and Secret Key for the IAM user. Follow the instructions in
+   the [AWS documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html)
+   to create an Access Key and Secret Key for the IAM user.
+
+> [!CAUTION]
+> Make sure NOT to check the key files or any other files containing your keys into version control or share them
+> with anyone! This is to prevent unauthorised access to your AWS resources.
+
+After obtaining your secret key and access key, you are then ready to move on to the next step of the preparation
+process on GitHub. Refer to the [GitHub section](#GitHub) for more information on what you need to do for the next step.
+
+## Codecov
+
+Codecov is a code coverage tool that helps you to measure the effectiveness of your tests by showing you which parts of
+your code are being tested and which parts are not.
+
+For the Sample Application, we will be using Codecov to measure the code coverage of the tests that are run on the
+application.
+
+To use Codecov, you will need to create an account on Codecov and link your GitHub repository to Codecov. Follow
+[this guide](https://docs.codecov.com/docs/quick-start) to get started with Codecov.
+
+Make sure to save the Repository Upload Token, as it will be used in next section to configure the GitHub Actions
+workflows.
+
+## GitHub
+
+GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on
+projects from anywhere.
+
+For the Sample Application, we will be using GitHub to host the codebase and to automate the deployment process using
+GitHub Actions.
+
+In addition to GitHub, we will also be using GitHub Actions to automate the testing and deployment processes to AWS.
+
+GitHub Actions is a Continuous Integration/Continuous Deployment tool that allows you to automate your software
+development workflows. You can use GitHub Actions to build, test, and deploy your code right from GitHub.
+
+### GitHub Actions
+
+GitHub Actions allow you to specify workflows that are triggered by events in your GitHub repository by using YML files
+that declare the resources, actions and triggers that are used to trigger a workflow.
+
+GitHub Actions workflows are stored in the `.github/workflows` directory in the root of the repository.
+
+> [!NOTE]
+> Workflows can be automatically triggered by events such as a push (commit) to the repository, a pull request, or
+> a new release. Workflows can also be **manually triggered** by using the `workflow_dispatch` event.
+>
+> For `workflow_dispatch` events, you can trigger a workflow by going to the Actions tab in your repository, selecting
+> the workflow that you want to run, and clicking the `Run workflow` button.
+>
+> Note that `workflow_dispatch` workflows can be triggered manually only if the workflow YML file exists in the
+> `main`/`master` branch of the repository!
+
+#### Workflows
+
+Workflows are declared within a YML file. Sections within the YML file determines the actions, as well as the sequence,
+to take when the workflow is triggered.
+
+Most importantly, there are a few declarations that you should be aware of when creating a workflow:
+
+* `on`: This declaration specifies the event that triggers the workflow. For example, a push to the repository, a pull
+  request, or a new release.
+* `env`: This declaration specifies the environment variables that are used in the workflow. Environment variables can
+  either be
+  secrets (which should never be exposed to the workflow in plaintext) or global variables that we want to keep
+  consistent across
+  the workflow.
+* `jobs`: This declaration specifies the jobs that are run in the workflow. Jobs are a high-level collection of steps to
+  take to complete a task.
+    * Jobs are run in parallel by default, but you can specify dependencies between jobs to run them in sequence.
+      under the [GitHub Actions Marketplace](https://github.com/marketplace?type=actions).
+* `steps`: This declaration specifies the steps that are run in the job. Steps are a collection of tasks that are run in
+  sequence to complete the job.
+* `strategy`, `matrix`: These declarations specify the matrix of configurations that are used to run the workflow. This
+  is
+  useful when you want to run the same workflow with different configurations in parallel.
+* `runs-on`: This declaration specifies the runner that the job runs on. The runner is the environment that the job runs
+  on, such as `ubuntu-latest`, `windows-latest`, or `macos-latest`, each corresponding to an environment with the
+  respective
+  OS installed.
+* `uses`: This declaration specifies external extensions that are used in the workflow. External extensions can be
+  actions, or other workflows that are stored in a different repository. A catalogue of external extensions can be found
+* `needs`: This declaration specifies the dependencies between jobs. If a job depends on another job, the dependent job
+  will only run if the job it depends on is successful.
+* `working-directory`: This declaration specifies the working directory of the job. This is useful when you want to run
+  the job in a different directory from the default working directory.
+* `run`: This declaration specifies the shell commands that are run in the step. The shell commands are run in the
+  environment specified by the `runs-on` declaration.
+
+Refer to
+the [documentation by GitHub](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
+for more information on the different GitHub Actions workflow syntaxes that are available.
+
+To better understand the workflows that are used in the Sample Application, refer to the YML files under the
+[`.github/workflows`](../../.github/workflows) directory and the CI/CD documentation under the
+[Developer Guide](Developer%20Guide.md#cicd).
+
+### Preparation
+
+> [!WARNING]
+> Make sure to complete the preparation steps under the AWS and Codecov section before proceeding with the steps below!
+
+Before you are able to deploy the application to AWS, you need to set up GitHub Actions.
+
+Follow [this guide](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) to add the
+following GitHub Actions Secrets to the repository:
+
+1. `AWS_ACCESS_KEY_ID`: The Access Key ID of the IAM user that you created in the AWS preparation step.
+2. `AWS_SECRET_ACCESS_KEY`: The Secret Access Key of the IAM user that you created in the AWS preparation step.
+3. `AWS_REGION`: The AWS region that you want to deploy the application to. This should correspond to the region that
+   is used under the [`deploy` directory](../deploy).
+4. `CODECOV_TOKEN`: The Repository Upload Token that you obtained from Codecov.
 
 ## Docker
 
@@ -53,8 +212,8 @@ and torn down in a predictable and consistent manner.
 
 ### Images and Dockerfiles
 
-Docker **Images** are the building blocks of Docker containers. A Docker image is a lightweight, standalone, 
-executable package of software that includes everything needed to run a piece of software, including the code, 
+Docker **Images** are the building blocks of Docker containers. A Docker image is a lightweight, standalone,
+executable package of software that includes everything needed to run a piece of software, including the code,
 runtime and dependencies.
 
 A **Dockerfile** is a text file that contain a set of instructions that are used to create a Docker image.
@@ -74,9 +233,9 @@ RUN ...
 
 * `FROM`: The base image that the Docker image is built on.
 * `WORKDIR`: The working directory of the Docker container. This should mirror the name of the folder that the
-   application code is stored in.
-* `EXPOSE`: The port that is exposed (accessible) from outside the container. This depends on the port that you set in 
-   your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `8502`.
+  application code is stored in.
+* `EXPOSE`: The port that is exposed (accessible) from outside the container. This depends on the port that you set in
+  your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `8502`.
 * `COPY`: Copies the application code from your device into the Docker container.
 * `RUN`: This clause is used to specify a command that is executed when the container is started.
 
@@ -85,7 +244,7 @@ A completed Dockerfile with minimal configurations required to run the applicati
 ```dockerfilesp
 FROM python:3.12
 WORKDIR /app
-EXPOSE 8502
+EXPOSE 80
 
 COPY .. .
 
@@ -94,37 +253,216 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 This is the Dockerfile that is used to build the Docker image for the Sample Application.
 
+### Docker Commands
+
+There are only 2 main commands which you need to be aware of when using Docker:
+
+1. `docker build`: This command is used to build a Docker image from a Dockerfile.
+2. `docker run`: This command is used to run a Docker container from a Docker image.
+
+#### `docker build`
+
+To build a Docker image from a Dockerfile, you can run the following command:
+
+```shell
+docker build -t [IMAGE_NAME] .
+```
+
+This command builds a Docker image from the Dockerfile in the current directory and tags the image with the specified
+image name.
+
+> [!NOTE]
+> Images are usually tagged with a version number to indicate the version of the image. For example, `my-image:1.0.0` or
+> `my-image:latest`, where `my-image` is the name of the image and `1.0.0` and `latest` are the version numbers.
+
+> [!WARNING]
+> Replace `[IMAGE_NAME]` in whole with the name of the Docker image that you want to build.
+
+> [!CAUTION]
+> Make sure that the Docker daemon is active and running before running the `docker build` command. Failure to do so may
+> result in errors!
+
+#### `docker run`
+
+To run a Docker container from a Docker image, you can run the following command:
+
+```shell
+docker run -p [HOST_PORT]:[CONTAINER_PORT] [IMAGE_NAME]
+```
+
+This command runs a Docker container from the specified Docker image and maps the host port to the container port.
+
+> [!NOTE]
+> The host port is the port that is exposed on the host machine, while the container port is the port that is exposed
+> in the Docker container.
+
+> [!WARNING]
+> Replace `[HOST_PORT]`, `[CONTAINER_PORT]` and `[IMAGE_NAME]` in whole with the host port, container port and image
+> name as specified above in `docker build` respectively.
+
+> [!CAUTION]
+> Make sure that the Docker daemon is active and running before running the `docker run` command. Failure to do so may
+> result in errors!
+
+## Terraform
+
+Terraform is an open-source infrastructure as code tool that allows you to define and provision infrastructure using a
+high-level configuration language.
+
+Terraform allows you to define the infrastructure that you want to create in configuration files, and then use the
+Terraform CLI to create, update, and destroy the infrastructure.
+
+Terraform is used in the deployment of the Sample Application to create the necessary infrastructure in AWS to host the
+application. In particular, Terraform is used in conjunction with GitHub Actions to automatically provision the
+necessary resources and configure the provisioned resources.
+
+
+> [!NOTE]
+> Refer to the GitHub Actions [workflow file](../../.github/workflows/integration.yml) to see how Terraform is used in
+> conjunction with GitHub Actions to deploy the Sample Application.
+
+### Install Terraform
+
+To install the Terraform CLI on your machine, follow the instructions provided in
+the [official Terraform documentation](https://developer.hashicorp.com/terraform/install).
+
+> [!NOTE]
+> This step is not necessary as GitHub Actions can be used to run Terraform commands in an environment that is already
+> configured for you.
+
+### Terraform Configuration
+
+Before you can use Terraform to deploy the Sample Application, you will need to initialise Terraform and retrieve the
+required backend configurations.
+
+To do so, you need to run the following command in the directories contained within the `deploy/` directory:
+
+```shell
+terraform init
+```
+
+Each directory contains the necessary Terraform code needed to deploy component(s) of the Sample Application to AWS.
+
+> [!TIP]
+> If you have already done this step previously and are repeating it, you can run the Terraform command with
+> the `-reconfigure` flag to force Terraform to reconfigure the backend configurations!
+
+#### `create-backend`
+
+Terraform allows you to save the state of your infrastructure in a remote backend, such as an Amazon S3 bucket, and use
+NoSQL databases like Amazon DynamoDB to lock the state to prevent concurrent modifications.
+
+For the Sample Application, we will deploy the S3 bucket and DynamoDB table to store the Terraform state and lock the
+state respectively.
+
+> [!CAUTION]
+> If you are deploying the application locally rather than via GitHub Actions, make sure to initialise the Terraform
+> code within this folder before attempting to initialise the main infrastructure.
+>
+> Failure to do so may result in the deployment of the main infrastructure to fail!
+
+#### `main-infrastructure`
+
+> [!CAUTION]
+> Make sure to initialise the necessary AWS resources under `create-backend` first, before initialising the main
+> infrastructure contained in this directory!
+
+This directory contains the Terraform code that is used to deploy the main infrastructure of the Sample Application to
+AWS.
+
+You may freely change and edit the Terraform code to suit your needs, but make sure to test the changes before
+deploying them to production!
+
+More information on the overall architecture of the Sample Application can be found below under
+[Cloud Architecture](#cloud-architecture).
+
+> [!TIP]
+> Terraform does not care about how you structure your code within the same directory. You can split your code into
+> multiple files and Terraform will treat them as a single configuration!
+>
+> For the Sample Application, we have split the Terraform code into multiple files to make it easier to manage and
+> maintain the different components of the Sample Application!
+
+### Terraform Modules
+
+Terraform modules are reusable, composable units of Terraform configuration that are used to define a set of resources.
+
+Terraform modules are used in the deployment process to store global configuration variables used throughout the
+process.
+
+The constants can be found under the `deploy/modules/constants/` directory in
+the [`constants.tf`](../deploy/modules/constants/constants.tf) file.
+
+### Terraform Plan
+
+After initialising Terraform, you can run the following command to generate a Terraform plan:
+
+```shell
+terraform plan
+```
+
+This command will generate a plan that shows you what Terraform will do when you apply the configuration.
+
+> [!NOTE]
+> This step is not necessary if you are sure that your infrastructure is correctly configured or if you are
+> redeploying/verifying the infrastructure (due to a change in the code which triggers a GitHub Actions workflow
+> or otherwise).
+
+### Terraform Apply
+
+After generating the Terraform plan, you can run the following command to apply the configuration:
+
+```shell
+terraform apply
+```
+
+This command will apply the configuration and create the necessary infrastructure in AWS.
+
+### Terraform Destroy
+
+If you want to destroy the infrastructure that you have created, you can run the following command:
+
+```shell
+terraform destroy
+```
+
 ## Cloud Architecture
 
-Now that you understand the main tool that we will be using in the deployment to of the Sample Application to AWS,
+Now that you understand the main tools that we will be using in the deployment to of the Sample Application to AWS,
 let's next take a look at the AWS architecture that is used to serve the application.
 
 ### Services
 
 Let's take a look at the services that we will be using in the application.
 
-1. **Amazon Elastic Compute Cloud (EC2)**: EC2 is a web service that provides secure, resizable compute capacity in the
-   cloud. It is designed to make web-scale cloud computing easier for developers.
-2. **Amazon Elastic Container Service (ECS)**: ECS is a fully managed container orchestration service that allows you to
-   easily run, stop, and manage Docker containers on a cluster.
-3. **Amazon Elastic Container Registry (ECR)**: ECR is a fully managed Docker container registry that makes it easy for
-   developers to store, manage, and deploy Docker container images.
-4. **Amazon Fargate**: Fargate is a serverless compute engine for containers that works with both ECS and EKS. Fargate
-   removes the need to provision and manage servers, lets you specify and pay for resources per application, and improves
-   security through application isolation by design.
-5. **Amazon Application Load Balancer (ALB)**: ALB is a load balancer that operates at the application layer and allows
-   you to define routing rules based on content across multiple services or containers running on one or more EC2
-   instances.
-6. **Amazon Virtual Private Cloud (VPC)**: VPC is a service that lets you launch AWS resources in a virtual network that
+1. **Amazon Virtual Private Cloud (VPC)**: VPC is a service that lets you launch AWS resources in a virtual network that
    you define. You have complete control over your virtual networking environment, including selection of your own IP
    address range, creation of subnets, and configuration of route tables and network gateways.
-7. **Amazon Route 53**: Route 53 is a scalable Domain Name System (DNS) web service designed to route end users to
-   Internet applications by translating human-readable names into numeric IP addresses.
+2. **Subnets**: Subnets are segments of a VPC's IP address range that you can use to group resources based on security
+   and operational needs.
+3. **Amazon Elastic Compute Cloud (EC2)**: EC2 is a web service that provides secure, resizable compute capacity in the
+   cloud. It is designed to make web-scale cloud computing easier for developers.
+4. **Amazon Elastic Container Service (ECS)**: ECS is a fully managed container orchestration service that allows you to
+   easily run, stop, and manage Docker containers on a cluster.
+5. **Amazon Elastic Container Registry (ECR)**: ECR is a fully managed Docker container registry that makes it easy for
+   developers to store, manage, and deploy Docker container images.
+6. **Amazon Fargate**: Fargate is a serverless compute engine for containers that works with both ECS and EKS. Fargate
+   removes the need to provision and manage servers, lets you specify and pay for resources per application, and
+   improves
+   security through application isolation by design. **This is a planned enhancement to the Sample Application.**
+7. **Amazon Application Load Balancer (ALB)**: ALB is a load balancer that operates at the application layer and allows
+   you to define routing rules based on content across multiple services or containers running on one or more EC2
+   instances.
 8. **Amazon CloudWatch**: CloudWatch is a monitoring and observability service built for DevOps engineers, developers,
    site reliability engineers (SREs), and IT managers. CloudWatch provides you with data and actionable insights to
    monitor your applications, respond to system-wide performance changes, optimize resource utilization, and get a
    unified view of operational health.
-9. **ECS Task Definition**: A JSON file containing instructions for the task that the ECS Cluster is to perform.
+9. **Amazon Simple Storage Service (S3)**: S3 is an object storage service that offers industry-leading scalability,
+   data availability, security, and performance. S3 is designed for 99.999999999% (11 9's) of durability, and stores
+   data for millions of applications for companies all around the world.
+10. **Amazon DynamoDB**: DynamoDB is a key-value and document database that delivers single-digit millisecond
+    performance at any scale. It's a fully managed, multi-region, multi-master database with built-in security, backup
+    and restore, and in-memory caching for internet-scale applications.
 
 Let's zoom into the few services that we will actively be using and managing in the application.
 
@@ -139,6 +477,17 @@ by the developer.
 However, as we move towards a more cloud-native solution, we will be using ECS in conjunction with Fargate to manage the
 orchestration and deployment of the application through Docker containers instead, rather than using bare EC2 instances
 to host the application.
+
+#### ECR
+
+ECR is a scalable private container registry (something like GitHub for Docker images!) that allows you to store,
+manage, and deploy Docker container images.
+
+ECR has integrations with ECS that allows you to easily push and pull Docker images from the registry to the ECS, and
+trigger upstream changes to ECS services when a new image is pushed to the registry.
+
+This allows you to create complex Continuous Deployment pipelines that automatically deploy new versions of the
+application to production when a new image is ready.
 
 #### ECS
 
@@ -166,123 +515,22 @@ running on.
 This is especially useful for the Sample Application, since the infrastructural security of the application can be
 managed by AWS instead, offloading the responsibility of keeping our system updated and patched to AWS.
 
-#### ECR
+#### Elastic Load Balancer
 
-ECR is a scalable private container registry (something like GitHub for Docker images!) that allows you to store,
-manage, and deploy Docker container images.
+The Elastic Load Balancer (ELB) is a service that automatically distributes incoming application traffic across
+multiple targets, such as EC2 instances, containers, and IP addresses.
 
-ECR has integrations with ECS that allows you to easily push and pull Docker images from the registry to the ECS, and
-trigger upstream changes to ECS services when a new image is pushed to the registry.
+ELB is used to distribute incoming traffic across multiple instances of the application to ensure that the application
+is highly available and fault-tolerant.
 
-This allows you to create complex Continuous Deployment pipelines that automatically deploy new versions of the
-application to production when a new image is ready.
-
-#### Task Definition
-
-The Task Definition is a JSON file that contains the configurations for the task that is to be run on ECS.
-
-The Task Definition file we are using for deployment can be found [here](../deploy/task-definition.json).
-
-Within this file, we define the following:
-
-* `family`: The version of the task definition.
-* `networkMode`: The networking mode to use for the containers in the task.
-* `containerDefinitions`: An array of container definitions that are used in the task.
-  * `name`: The name of the container.
-  * `image`: The Docker image to use for the container.
-  * `portMappings`: The port mappings to use for the container.
-    * `containerPort`: The port to expose on the container.
-    * `hostPort`: The port to map the exposed port to.
-    * `protocol`: The protocol to use for the port mapping.
-    * `appProtocol`: The application protocol to use for the port mapping.
-  * `essential`: Specify if health of the stack is dependent on this container.
-  * `entryPoint`: The entry point command to use for the container.
-  * `dependsOn`: The dependencies of the container.
-    * `containerName`: The name of the container to depend on.
-    * `condition`: The condition to use for the dependency.
-  * `disableNetworking`: Whether networking is disabled for the container.
-  * `priviledged`: Whether the container has privilege to execute privileged tasks.
-  * `readonlyRootFilesystem`: Whether the container has a read-only root filesystem.
-  * `interactive`: `-i` flag for Docker
-  * `psudoTerminal`: `-t` flag for Docker
-* `requiresCompatabilities`: The compute compatibilities that the task requires.
-* `cpu`: The CPU requirements of the task.
-* `memory`: The memory requirements of the task.
-* `runtimePlatform`: The runtime platform to use for the task.
-  * `cpuArchitecture`: The CPU architecture to use for the task.
-  * `operatingSystemFamily`: The operating system family to use for the task.
-
-Your file should look something like:
-
-```json
-{
-    "family": "SSG-WSG ECS Deployment Pipeline v1",
-    "networkMode": "bridge",
-    "containerDefinitions": [
-        {
-            "name": "app",
-            "image": "",
-            "portMappings": [
-                {
-                    "containerPort": 8502,
-                    "hostPort": 80,
-                    "protocol": "tcp",
-                    "appProtocol": "http"
-                }
-            ],
-            "essential": true,
-            "dependsOn": [
-                {
-                    "containerName": "",
-                    "condition": "START"
-                }
-            ],
-            "disableNetworking": false,
-            "privileged": true,
-            "readonlyRootFilesystem": false,
-            "interactive": true,
-            "pseudoTerminal": true
-        }
-    ],
-    "requiresCompatibilities": [
-        "EC2"
-    ],
-    "cpu": "1024",
-    "memory": "1024",
-    "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
-        "operatingSystemFamily": "LINUX"
-    }
-}
-```
-
-This file will be used by GitHub CI/CD to trigger a Task Definition action on AWS to deploy the application to either
-EC2 Cluster or Fargate.
-
+ELB is used to route traffic to the application, and to ensure that the application is running and healthy.
 
 ### Production Architecture
 
-The second level of deployment is slightly more complicated - deploying the application on an ECS cluster within one
-Availability Zone.
+The following architectural diagram shows the AWS, GitHub and Terraform services that are used in the deployment of the
+Sample Application:
 
-![second level](assets/deployment-guide/level-2.png)
+![infrastructure diagram](assets/deployment-guide/Infrastructure.png)
 
-The workflow for this level is as follows:
-
-1. Developer commits/pushes code to the Sample-Codes repository
-2. GitHub Actions CI/CD pipeline is triggered
-3. CI/CD creates an ECS cluster within an Availability Zone
-4. CI/CD creates a Docker image of the application
-5. CI/CD pushes the Docker image to ECR
-6. CI/CD creates an ECS task definition and service
-7. ECS executes the task as provided by the task definition and launches the application
-8. The application is now live and can be accessed by users
-
-This deployment requires you to have access to an AWS account, as well as permissions to create and manage ECS clusters.
-
-> [!WARNING]
-> The Docker container images that you define should expose port `8502` to allow connections to the application!
-
-## CI/CD Pipelines
-
-
+The diagram also shows the workflows between the different services, and how they interact with each other to deploy the
+Sample Application to AWS.

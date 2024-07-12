@@ -437,20 +437,22 @@ This application is also hosted on AWS. More information about the AWS cloud arc
 Since Streamlit uses a rather declarative approach to UI/UX development, the following section will focus on how the
 encryption/decryption processes, 15 mandated APIs, SkillsFuture Credit Pay APIs are implemented in the application.
 
-The UI and UI logic should be self-explanatory enough as you read the code and will hence not be covered in this section. 
+The UI and UI logic should be self-explanatory enough as you read the code and will hence not be covered in this
+section.
 
 ### Encryption and Decryption
 
-The En-Decryption page uses the following classes/methods from the `core` and `utils` component to encrypt and decrypt text:
+The En-Decryption page uses the following classes/methods from the `core` and `utils` component to encrypt and decrypt
+text:
 
 * `core.cipher.encrypt_decrypt.Cryptography`
-  * Provides encryption and decryption capabilities
+    * Provides encryption and decryption capabilities
 * `core.system.logger.Logger`
-  * Provides logging capabilities
+    * Provides logging capabilities
 * `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`
-  * Provides Streamlit-specific capabilities
+    * Provides Streamlit-specific capabilities
 * `utils.verify.Validators`
-  * Provides validation capabilities for AES-256 keys
+    * Provides validation capabilities for AES-256 keys
 
 Together, they provide users with the ability to use their AES-256 keys to encrypt and decrypt text.
 
@@ -461,79 +463,53 @@ To find out more about the algorithms and processes used for encryption and decr
 
 #### Course Run by Run Id
 
-
-
 #### Add Course Runs
-
 
 #### Edit or Delete Course Runs
 
-
 #### View Course Sessions
-
 
 ### Enrolment
 
-
 #### Create Enrolment
-
 
 #### Update Enrolment
 
-
 #### Cancel Enrolment
-
 
 #### Search Enrolment
 
-
 #### View Enrolment
-
 
 #### Update Enrolment Fee Collection
 
-
 ### Attendance
-
 
 #### Course Session Attendance
 
-
 #### Upload Course Session Attendance
-
 
 ### Assessment
 
-
 #### Create Assessment
-
 
 #### Update or Void Assessment
 
-
 #### Find Assessment
-
 
 #### View Assessment
 
-
 ### SkillsFuture Credit Pay
-
 
 #### SF Credit Claims Payment Request Encryption
 
-
 #### SF Credit Claims Payment Request Decryption
-
 
 #### Upload Supporting Documents
 
-
 #### View Claim Details
 
-
 #### Cancel Claim
-
 
 ## DevOps
 
@@ -596,7 +572,7 @@ website to find out more about how you can add secrets to your repository.
 
 > [!INFO]
 > More information about what the tokens do and how you need to configure your AWS and Codecov account
-> can be found in the [Deployment Guide](Deployment%20Guide.md)!
+> can be found in the [Deployment Guide](Deployment%20Guide.md#github)!
 
 ### CI/CD
 
@@ -720,3 +696,6 @@ the scheduler within `start_scheduler()`, defining the interval in which to exec
 
 ## Glossary
 
+| Term | Definition |
+|------|------------|
+|      |            |
