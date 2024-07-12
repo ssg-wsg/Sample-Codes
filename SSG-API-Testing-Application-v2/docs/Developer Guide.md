@@ -574,6 +574,25 @@ website to find out more about how you can add secrets to your repository.
 > More information about what the tokens do and how you need to configure your AWS and Codecov account
 > can be found in the [Deployment Guide](Deployment%20Guide.md#github)!
 
+#### GitHub Code Scanning and Dependency Analysis
+
+For added security, you might want to enable Code Scanning and Dependency Analysis on your GitHub repository.
+
+To do so, follow the steps below:
+
+1. Click on the `Settings` tab in your forked GitHub repository
+2. Click on the `Code security and analysis` tab on the left
+3. Enable the following settings:
+    1. Private vulnerability reporting
+    2. Dependency graph
+    3. Dependabot alerts
+    4. Dependabot security updates
+    5. Grouped security updates
+    6. Dependabot version updates
+    7. Dependabot on Actions runners
+    8. Code Scanning > CodeQL analysis
+        1. Set up basic CodeQL analysis
+
 ### CI/CD
 
 CI/CD represents Continuous Integration and Continuous Deployment. This is a process where code is automatically tested

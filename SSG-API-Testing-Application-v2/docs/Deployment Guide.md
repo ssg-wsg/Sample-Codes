@@ -330,22 +330,17 @@ the [official Terraform documentation](https://developer.hashicorp.com/terraform
 > This step is not necessary as GitHub Actions can be used to run Terraform commands in an environment that is already
 > configured for you.
 
-### Terraform Configuration
+### Organisation of Terraform Code
 
-Before you can use Terraform to deploy the Sample Application, you will need to initialise Terraform and retrieve the
-required backend configurations.
+The Terraform code for the Sample Application is organised into two main directories: `create-backend` and
+`main-infrastructure`.
 
-To do so, you need to run the following command in the directories contained within the `deploy/` directory:
+The `create-backend` directory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
+that are used to store the Terraform state and lock the state respectively.
 
-```shell
-terraform init
-```
-
-Each directory contains the necessary Terraform code needed to deploy component(s) of the Sample Application to AWS.
-
-> [!TIP]
-> If you have already done this step previously and are repeating it, you can run the Terraform command with
-> the `-reconfigure` flag to force Terraform to reconfigure the backend configurations!
+The `main-infrastructure` directory contains the Terraform code that is used to provision the main infrastructure of the
+Sample Application, such as the VPC, subnets, security groups, and other resources that are required to host the
+application.
 
 #### `create-backend`
 
@@ -354,6 +349,10 @@ NoSQL databases like Amazon DynamoDB to lock the state to prevent concurrent mod
 
 For the Sample Application, we will deploy the S3 bucket and DynamoDB table to store the Terraform state and lock the
 state respectively.
+
+The Terraform code used to provision these resources can be found in the [`create-backend`](../deploy/create-backend)
+directory.
+
 
 > [!CAUTION]
 > If you are deploying the application locally rather than via GitHub Actions, make sure to initialise the Terraform
@@ -382,6 +381,23 @@ More information on the overall architecture of the Sample Application can be fo
 >
 > For the Sample Application, we have split the Terraform code into multiple files to make it easier to manage and
 > maintain the different components of the Sample Application!
+
+### Terraform Configuration
+
+Before you can use Terraform to deploy the Sample Application, you will need to initialise Terraform and retrieve the
+required backend configurations.
+
+To do so, you need to run the following command in the directories contained within the `deploy/` directory:
+
+```shell
+terraform init
+```
+
+Each directory contains the necessary Terraform code needed to deploy component(s) of the Sample Application to AWS.
+
+> [!TIP]
+> If you have already done this step previously and are repeating it, you can run the Terraform command with
+> the `-reconfigure` flag to force Terraform to reconfigure the backend configurations!
 
 ### Terraform Modules
 
@@ -534,3 +550,33 @@ Sample Application:
 
 The diagram also shows the workflows between the different services, and how they interact with each other to deploy the
 Sample Application to AWS.
+
+This architecture is implemented within the Terraform code.
+
+You can also notice that there is a distinct split in the processes needed to deploy the application, with the
+`create-backend` directory handling the creation of the S3 bucket and DynamoDB table, and the `main-infrastructure`
+directory handling the creation of the main infrastructure of the Sample Application. GitHub and Terraform is also
+involved in the deployment process, with GitHub Actions being used to test and deploy the application, and Terraform
+being used as an infrastructure as code tool to automatically check the status of AWS resources and deploy the
+application.
+
+The following is a rough process of what happens when you deploy the application to AWS:
+
+1. On a push to the repository, GitHub Actions is triggered.
+2. GitHub Actions trigger unit tests, linting and code coverage checks.
+3. GitHub Actions then uses Terraform to check the status of the Terraform remote backend, provisioning the resources
+   as needed if it is missing in the target AWS environment
+4. GitHub Actions finally uses Terraform to check the status of the main infrastructure and provision resources if it
+   is missing in the AWS environment or if Terraform files have changed
+5. For networking,
+    1. A VPC, its associated public and private Subnets, public and private Route Tables, Internet Gateway, NAT Gateway,
+       Elastic IP and Security Groups are created.
+    2. An Application Load Balancer is created to route traffic to the ECS Service
+6. For ECS,
+    1. A private ECR Repository is created to store Docker images of the Sample Application
+    2. An ECS Service, ECS Cluster, Capacity Provider, Task Definition and EC2 Launch Templates are then created, along
+       with the associated ECS and EC2 Roles and Policies
+7. For compute (EC2),
+    1. An Auto Scaling Group and EC2 Container Instances are created
+    2. The ECS Service is then linked to the Auto Scaling Group to ensure that the ECS Service is running on the EC2
+       Container Instances through the Capacity Provider

@@ -40,7 +40,7 @@ repository where the code is hosted on.
 There are 2 methods to obtain the files: directly downloading the code via the Web UI, or using `git` to clone the
 repository where the Sample Code is stored.
 
-#### Method 1: Downloading the Code via Web UI
+### Method 1: Downloading the Code via Web UI
 
 To obtain the code directly off of GitHub's UI, follow the steps below:
 
@@ -54,7 +54,7 @@ To obtain the code directly off of GitHub's UI, follow the steps below:
 4. Extract the contents of the zipped file to a directory (folder) of your choice. Make sure to choose a location that
    is convenient for you as you will require it for the following sections.
 
-#### Method 2: Downloading the Code via `git`
+### Method 2: Downloading the Code via `git`
 
 > [!WARNING]
 > This method requires you to have `git` installed in your environment.
