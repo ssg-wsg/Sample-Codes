@@ -37,3 +37,25 @@ resource "aws_main_route_table_association" "public_main" {
   vpc_id         = aws_vpc.default.id
   route_table_id = aws_route_table.public.id
 }
+
+# NAT gateway required for public internet access
+# Create EIP for each AZ
+resource "aws_eip" "nat_gateway" {
+  count  = module.constants.az_count
+  domain = "vpc"
+
+  tags = {
+    Name = "${module.constants.namespace}_eip_${count.index}"
+  }
+}
+
+# Create one NAT per AZ
+resource "aws_nat_gateway" "nat_gateway" {
+  count         = module.constants.az_count
+  subnet_id     = aws_subnet.public[count.index].id
+  allocation_id = aws_eip.nat_gateway[count.index].id
+
+  tags = {
+    Name = "${module.constants.namespace}_privateSubnet_${count.index}"
+  }
+}

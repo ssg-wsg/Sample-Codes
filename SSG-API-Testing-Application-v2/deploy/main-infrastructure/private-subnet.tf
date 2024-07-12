@@ -1,27 +1,4 @@
 # Create private subnet with NAT gateway
-# NAT gateway required for public internet access
-# Create EIP for each AZ
-resource "aws_eip" "nat_gateway" {
-  count  = module.constants.az_count
-  domain = "vpc"
-
-  tags = {
-    Name = "${module.constants.namespace}_eip_${count.index}"
-  }
-}
-
-# Create one NAT per AZ
-resource "aws_nat_gateway" "nat_gateway" {
-  count         = module.constants.az_count
-  subnet_id     = aws_subnet.public[count.index].id
-  allocation_id = aws_eip.nat_gateway[count.index].id
-
-  tags = {
-    Name = "${module.constants.namespace}_privateSubnet_${count.index}"
-  }
-}
-
-# Create private subnets
 resource "aws_subnet" "private" {
   count             = module.constants.az_count
   cidr_block        = cidrsubnet(module.constants.cidr, 8, count.index)
