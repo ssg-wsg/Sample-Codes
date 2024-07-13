@@ -8,4 +8,4 @@ apscheduler==3.10.4
 certifi==2024.7.4
 pyOpenSSL==24.1.0
 coverage==7.5.3
-email-validator==2.1.2
+email-validator==2.2.0
