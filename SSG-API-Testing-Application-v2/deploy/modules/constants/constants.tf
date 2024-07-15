@@ -1,4 +1,8 @@
 # pattern taken from https://stackoverflow.com/questions/59584420/how-to-define-global-variables-in-terraform
+output "aws_region" {
+  value = "ap-southeast-1"
+}
+
 output "namespace" {
   value = "ssg"
 }

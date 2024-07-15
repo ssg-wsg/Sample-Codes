@@ -4,12 +4,12 @@ module "constants" {
 }
 
 provider "aws" {
-  region = "ap-southeast-1" # module.constants.AWS_REGION
+  region = "ap-southeast-1"
 }
 
 # Provision a S3 bucket to store the Terraform state
 resource "aws_s3_bucket" "tf_state" {
-  bucket = "ssg-tf-bucket" # module.constants.TF_BUCKET_NAME
+  bucket = "ssg-tf-bucket"
   lifecycle {
     prevent_destroy = true
   }
