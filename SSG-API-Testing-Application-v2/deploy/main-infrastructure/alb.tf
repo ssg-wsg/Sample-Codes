@@ -6,13 +6,27 @@ resource "aws_alb" "alb" {
 }
 
 # Create HTTP listener
-resource "aws_alb_listener" "alb_default_listener_https" {
+resource "aws_alb_listener" "alb_default_listener_http" {
   load_balancer_arn = aws_alb.alb.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
+    target_group_arn = aws_alb_target_group.service_target_group.arn
+  }
+}
+
+# Create HTTPS listener
+resource "aws_alb_listener" "alb_default_listener_https" {
+  load_balancer_arn = aws_alb.alb.arn
+  port              = 443
+  protocol = "HTTPS"
+  certificate_arn = aws_acm_certificate.cert.arn
+  ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  default_action {
+    type = "forward"
     target_group_arn = aws_alb_target_group.service_target_group.arn
   }
 }

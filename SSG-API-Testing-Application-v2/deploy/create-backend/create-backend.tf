@@ -1,4 +1,13 @@
 # adapted from https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa
+terraform {
+  cloud {
+    organization = "ssg-wsg"
+
+    workspaces {
+      name = "Sample-Codes"
+    }
+  }
+}
 
 module "constants" {
   source = "../modules/constants"
