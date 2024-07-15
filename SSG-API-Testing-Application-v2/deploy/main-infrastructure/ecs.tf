@@ -53,7 +53,7 @@ resource "aws_ecs_task_definition" "default" {
   container_definitions = jsonencode([
     {
       name      = module.constants.service_name
-      image     = "${aws_ecr_repository.ecr.repository_url}:${local.hash}"
+      image     = "${data.aws_ecr_repository.ecr.repository_url}:${local.hash}"
       cpu       = module.constants.cpu
       memory    = module.constants.memory
       essential = true
