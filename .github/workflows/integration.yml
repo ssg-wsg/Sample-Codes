@@ -14,6 +14,7 @@ on:
   push:
 
 env:
+  PYTHON_VERSION: "3.12"
   AWS_REGION: "ap-southeast-1"
   TF_CLOUD_ORGANIZATION: "ssg-wsg"
   TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
