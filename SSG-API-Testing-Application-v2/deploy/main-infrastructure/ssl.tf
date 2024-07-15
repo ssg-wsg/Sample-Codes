@@ -10,7 +10,7 @@ resource "tls_private_key" "private_key" {
 
 resource "tls_self_signed_cert" "cert" {
   key_algorithm = tls_private_key.private_key.algorithm
-  private_key_pem = SSL_PRIVATE_KEY
+  private_key_pem = var.SSL_PRIVATE_KEY
 
   validity_period_hours = 8760  # cert is valid for a year
   allowed_uses = [
