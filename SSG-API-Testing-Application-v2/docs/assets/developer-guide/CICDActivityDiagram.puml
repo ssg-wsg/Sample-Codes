@@ -50,6 +50,15 @@ endfork
 :Validate Terraform script;
 :Apply Terraform script;
 
+:Begin process for setting up ECR Repository;
+:Runs on Ubuntu-latest;
+:Checkout Repository;
+:Set up Terraform;
+:Verify Terraform script;
+:Initialise Terraform backend;
+:Validate Terraform script;
+:Apply Terraform script;
+
 :Begin process for setting up main infrastructure;
 :Runs on Ubuntu-latest;
 :Checkout Repository;
@@ -58,7 +67,13 @@ endfork
 :Initialise Terraform backend;
 :Validate Terraform script;
 :Apply Terraform script;
-stop
 
+if (fail) then (yes))
+    :Destory Infrastructure;
+else (no)
+    stop
+endif
+
+stop
 
 @enduml

@@ -77,8 +77,7 @@ Before you can deploy the Sample Application to AWS, follow the steps below to p
    this [forum post](https://repost.aws/knowledge-center/create-and-activate-aws-account)
    for more information on how you can create an AWS account.
 2. Create an IAM user with the necessary permissions to deploy the Sample Application. Follow the instructions provided
-   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create an IAM user. Make
-   sure to attach
+   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create an IAM user. Make sure to attach
    the [AdministratorAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html)
    policy to the IAM user to ensure the user has the necessary permissions to deploy the Sample Application.
     1. This is important as you are highly advised against using the root account to change your AWS resources.
@@ -464,8 +463,8 @@ Let's take a look at the services that we will be using in the application.
    developers to store, manage, and deploy Docker container images.
 6. **Amazon Fargate**: Fargate is a serverless compute engine for containers that works with both ECS and EKS. Fargate
    removes the need to provision and manage servers, lets you specify and pay for resources per application, and
-   improves
-   security through application isolation by design. **This is a planned enhancement to the Sample Application.**
+   improves security through application isolation by design.
+   **This is a planned enhancement to the Sample Application.**
 7. **Amazon Application Load Balancer (ALB)**: ALB is a load balancer that operates at the application layer and allows
    you to define routing rules based on content across multiple services or containers running on one or more EC2
    instances.
@@ -518,6 +517,9 @@ according to the configurations specified in the task definition.
 You will be using this service mostly throughout the deployment process.
 
 #### Fargate
+
+> [!NOTE]
+> Fargate is a planned enhancement to the Sample Application!
 
 Fargate is a serverless compute engine for containers that allows you to run containers without having to manage the
 underlying infrastructure.

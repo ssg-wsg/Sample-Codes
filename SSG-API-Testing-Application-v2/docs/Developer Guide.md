@@ -43,6 +43,10 @@ Code from the application is reused from multiple sources:
 
 * ChatGPT
     * https://chatgpt.com/share/27060ade-b2e2-4b83-9a5b-238d23e0656a
+* GitHub
+    * https://github.com/aws-actions/amazon-ecr-login
+* Medium
+    * https://medium.com/@octavio/ecs-deployments-with-github-actions-dd34beed6528
 * nric.biz
     * https://nric.biz/
 * Protecto.ai
@@ -63,6 +67,9 @@ Code from the application is reused from multiple sources:
     * https://stackoverflow.com/questions/4330812/how-do-i-clear-a-stringio-object
     * https://stackoverflow.com/questions/6793575/estimating-the-size-of-binary-data-encoded-as-a-b64-string-in-python
     * https://stackoverflow.com/questions/19922790/how-to-check-for-python-the-key-associated-with-the-certificate-or-not
+    * https://stackoverflow.com/questions/59166099/github-action-aws-cli
+    * https://stackoverflow.com/questions/51028677/create-aws-ecr-repository-if-it-doesnt-exist
+    * https://stackoverflow.com/questions/75546117/github-action-how-to-edit-a-json-objects-with-github-repository-secrets
 * SingStat
     * https://www.singstat.gov.sg/-/media/files/standards_and_classifications/educational_classification/classification-of-lea-eqa-and-fos-ssec-2020.ashx
 * Squash.io
@@ -72,7 +79,7 @@ Code from the application is reused from multiple sources:
 * SAP
     * https://userapps.support.sap.com/sap/support/knowledge/en/2572734
 * uen.gov.sg
-    * https://www.uen.gov.sg/ueninternet/faces/pages/admin/aboutUEN.jspx.
+    * https://www.uen.gov.sg/ueninternet/faces/pages/admin/aboutUEN.jspx
 
 This guide's structure is also heavily inspired
 by https://github.com/AY2324S1-CS2103T-T17-1/tp/blob/master/docs/DeveloperGuide.md.
@@ -84,7 +91,8 @@ application, and how you can maintain or develop them.
 
 ### Notation
 
-Some special notation will be used throughout the Developer Guide. Do make sure to familiarise yourself with the notation
+Some special notation will be used throughout the Developer Guide. Do make sure to familiarise yourself with the
+notation
 below to avoid misunderstandings and confusion regarding the content of the guide!
 
 Text in **green** callout boxes are some tips and tricks that you should be aware of:
@@ -258,7 +266,7 @@ The 6 non-Home pages in the application are contained in this component:
 * [`Assessments`](#Assessments)
 * [`SkillsFuture Credit Pay`](#SkillsFuture-Credit-Pay)
 
-Each page of the application either showcases a certain functionality required for the application or utilises a 
+Each page of the application either showcases a certain functionality required for the application or utilises a
 particular set of SSG APIs.
 
 More information about the APIs is provided on
@@ -440,6 +448,17 @@ encryption/decryption processes, 15 mandated APIs, SkillsFuture Credit Pay APIs 
 The UI and UI logic should be self-explanatory enough as you read the code and will hence not be covered in this
 section.
 
+> [!NOTE]
+> More details about this API can be found at the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
+
+> [!NOTE]
+> When an API is declared as "Request Encrypted", it means that you need to encrypt the payload with your AES-256
+> key before sending it to the API.
+> 
+> When an API is declared as "Response Encrypted", it means that the payload returned by the API is encrypted with
+> your AES-256 key, and you need to decrypt it before using the data. You can use the same key for both encryption and
+> decryption as AES-256 is a symmetric encryption algorithm.
+
 ### Encryption and Decryption
 
 The En-Decryption page uses the following classes/methods from the `core` and `utils` components to encrypt and decrypt
@@ -461,55 +480,281 @@ To find out more about the algorithms and processes used for encryption and decr
 
 ### Courses
 
+[[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/6kYpfJEWVb7NyYVVHvUmHi/group/374zmR5D0tQeS87eA1hrLV)
+
+The Courses page uses the following classes/methods from the `core` and `utils` components to interact with the Courses
+API:
+
+* `core.courses.delete_course_run`, `core.courses.view_course_run`, `core.courses.edit_course_run`,
+  `core.courses.add_course_run`, `core.courses.view_course_sessions`
+  * Provides the ability to interact with the Courses API
+* `core.models.course_runs.*`
+  * Provides the data models for the Courses API
+* `core.system.logger.Logger`
+    * Provides logging capabilities
+* `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
+  `utils.streamlit_utils.does_not_have_keys`
+    * Provides Streamlit-specific capabilities
+* `utils.http_utils.handle_request`, `utils.http_utils.handle_request`
+    * Handles the HTTP requests sent and responses received
+* `utils.verify.Validators`
+    * Provides validation capabilities for AES-256 keys
+
 #### Course Run by Run Id
+
+|   **Data Field**    |                 **Value**                 |
+|:-------------------:|:-----------------------------------------:|
+|    API Reference    | Training Providers > Course Run by Run Id |
+|    Request Type     |                    GET                    |
+|  Request Encrypted  |                    No                     |
+| Response Encrypted  |                    No                     |
+
+This API is implemented under the "View Course Run" tab.
+
+The user must input a valid Course Run ID to view the details of the course run.
 
 #### Add Course Runs
 
+|   **Data Field**    |                 **Value**                 |
+|:-------------------:|:-----------------------------------------:|
+|    API Reference    | Training Providers > Add Course Run (New) |
+|    Request Type     |                   POST                    |
+|  Request Encrypted  |                    Yes                    |
+| Response Encrypted  |                    No                     |
+
+This API is implemented under the "Add Course Run" tab.
+
+Users must use this API to get a new Course Run ID for testing with the other APIs.
+
 #### Edit or Delete Course Runs
+
+|   **Data Field**   |                 **Value**                  |
+|:------------------:|:------------------------------------------:|
+|   API Reference    | Training Providers > Edit Course Run (New) |
+|    Request Type    |                    POST                    |
+| Request Encrypted  |                    Yes                     |
+| Response Encrypted |                     No                     |
+
+
+This API is implemented under the "Edit/Delete Course Runs" tab.
+
+Users must use this API to edit or delete a Course Run.
 
 #### View Course Sessions
 
+|   **Data Field**   |              **Value**               |
+|:------------------:|:------------------------------------:|
+|   API Reference    | Training Providers > Course Sessions |
+|    Request Type    |                 GET                  |
+| Request Encrypted  |                 Yes                  |
+| Response Encrypted |                  No                  |
+
+This API is implemented under the "View Course Sessions" tab.
+
+Users must use this API to view the course sessions for a particular Course Run.
+
 ### Enrolment
+
+[[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/7KU1xrpxljJZnsIkJP6QNF/group/adg1EGw5xjv6Fs40BTrK8)
+
+The Enrolment Page uses the following classes/methods from the `core` and `utils` components to interact with the
+Enrolment API:
+
+* `core.enrolment.create_enrolment`, `core.enrolment.view_enrolment`, `core.enrolment.update_enrolment`,
+  `core.enrolment.cancel_enrolment`, `core.enrolment.search_enrolment`, `core.enrolment.update_enrolment_fee_collection`
+  * Provides the ability to interact with the Enrolment API
+* `core.models.enrolment.*`
+  * Provides the data models for the Enrolment API
+* `core.system.logger.Logger`
+    * Provides logging capabilities
+* `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
+    * Provides Streamlit-specific capabilities
+* `utils.http_utils.handle_request`, `utils.http_utils.handle_request`
+    * Handles the HTTP requests sent and responses received
+* `utils.verify.Validators`
+    * Provides validation capabilities for AES-256 keys
 
 #### Create Enrolment
 
+|   **Data Field**   |           **Value**           |
+|:------------------:|:-----------------------------:|
+|   API Reference    | Enrolments > Create Enrolment |
+|    Request Type    |             POST              |
+| Request Encrypted  |              Yes              |
+| Response Encrypted |              Yes              |
+
 #### Update Enrolment
+
+|   **Data Field**   |                **Value**                |
+|:------------------:|:---------------------------------------:|
+|   API Reference    | Enrolments > Update or Cancel Enrolment |
+|    Request Type    |                  POST                   |
+| Request Encrypted  |                   Yes                   |
+| Response Encrypted |                   Yes                   |
 
 #### Cancel Enrolment
 
+|   **Data Field**   |                **Value**                |
+|:------------------:|:---------------------------------------:|
+|   API Reference    | Enrolments > Update or Cancel Enrolment |
+|    Request Type    |                  POST                   |
+| Request Encrypted  |                   Yes                   |
+| Response Encrypted |                   Yes                   |
+
 #### Search Enrolment
+
+|   **Data Field**   |           **Value**           |
+|:------------------:|:-----------------------------:|
+|   API Reference    | Enrolments > Search Enrolment |
+|    Request Type    |             POST              |
+| Request Encrypted  |              Yes              |
+| Response Encrypted |              Yes              |
 
 #### View Enrolment
 
+|   **Data Field**   |                 **Value**                 |
+|:------------------:|:-----------------------------------------:|
+|   API Reference    |        Enrolments > View Enrolment        |
+|    Request Type    |                    GET                    |
+| Request Encrypted  | Yes (GET Request is encrypted by SSL/TLS) |
+| Response Encrypted |                    Yes                    |
+
 #### Update Enrolment Fee Collection
+
+|   **Data Field**   |                  **Value**                   |
+|:------------------:|:--------------------------------------------:|
+|   API Reference    | Enrolments > Update Enrolment Fee Collection |
+|    Request Type    |                     POST                     |
+| Request Encrypted  |                     Yes                      |
+| Response Encrypted |                     Yes                      |
 
 ### Attendance
 
+[[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/6kYpfJEWVb7NyYVVHvUmHi/group/374zmR5D0tQeS87eA1hrLV)
+
+The Attendance Page uses the following classes/methods from the `core` and `utils` components to interact with the
+Attendance API:
+
+* `core.attendance.course_session_attendance`, `core.enrolment.attendance.upload_course_session_attendance`
+  * Provides the ability to interact with the Attendance API
+* `core.models.attendance.*`
+  * Provides the data models for the Enrolment API
+* `core.system.logger.Logger`
+    * Provides logging capabilities
+* `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
+  , `utils.streamlit_utils.does_not_have_keys`
+    * Provides Streamlit-specific capabilities
+* `utils.http_utils.handle_request`, `utils.http_utils.handle_request`
+    * Handles the HTTP requests sent and responses received
+* `utils.verify.Validators`
+    * Provides validation capabilities for AES-256 keys
+
 #### Course Session Attendance
+
+|   **Data Field**   |                   **Value**                    |
+|:------------------:|:----------------------------------------------:|
+|   API Reference    | Training Providers > Course Session Attendance |
+|    Request Type    |                      GET                       |
+| Request Encrypted  |                       No                       |
+| Response Encrypted |                      Yes                       |
 
 #### Upload Course Session Attendance
 
+|   **Data Field**   |                       **Value**                       |
+|:------------------:|:-----------------------------------------------------:|
+|   API Reference    | Training Providers > Upload Course Session Attendance |
+|    Request Type    |                         POST                          |
+| Request Encrypted  |                          Yes                          |
+| Response Encrypted |                          No                           |
+
 ### Assessment
+
+[[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/7KU1xrpxljJZnsIkJP6QNF/group/3540ZmPQma3rcanoBfNYff)
 
 #### Create Assessment
 
+|   **Data Field**   |            **Value**            |
+|:------------------:|:-------------------------------:|
+|   API Reference    | Assessments > Create Assessment |
+|    Request Type    |              POST               |
+| Request Encrypted  |               Yes               |
+| Response Encrypted |               Yes               |
+
 #### Update or Void Assessment
+
+|   **Data Field**   |                **Value**                |
+|:------------------:|:---------------------------------------:|
+|   API Reference    | Assessments > Update or Void Assessment |
+|    Request Type    |                  POST                   |
+| Request Encrypted  |                   Yes                   |
+| Response Encrypted |                   Yes                   |
 
 #### Find Assessment
 
+|   **Data Field**   |            **Value**            |
+|:------------------:|:-------------------------------:|
+|   API Reference    | Assessments > Search Assessment |
+|    Request Type    |              POST               |
+| Request Encrypted  |               Yes               |
+| Response Encrypted |               Yes               |
+
 #### View Assessment
+
+|   **Data Field**   |                **Value**                |
+|:------------------:|:---------------------------------------:|
+|   API Reference    |      Assessments > View Assessment      |
+|    Request Type    | GET (GET requests encrypted by SSL/TLS) |
+| Request Encrypted  |                   Yes                   |
+| Response Encrypted |                   Yes                   |
 
 ### SkillsFuture Credit Pay
 
+[[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/7KU1xrpxljJZnsIkJP6QNF/group/2RTLOUTuE3Dkgf7MOdn0Cm)
+
 #### SF Credit Claims Payment Request Encryption
+
+|   **Data Field**   |                      **Value**                       |
+|:------------------:|:----------------------------------------------------:|
+|   API Reference    | SkillsFuture Credit Pay > Payment Request Encryption |
+|    Request Type    |                         POST                         |
+| Request Encrypted  |                         Yes                          |
+| Response Encrypted |                         Yes                          |
 
 #### SF Credit Claims Payment Request Decryption
 
+|   **Data Field**   |                      **Value**                       |
+|:------------------:|:----------------------------------------------------:|
+|   API Reference    | SkillsFuture Credit Pay > Payment Request Decryption |
+|    Request Type    |                         POST                         |
+| Request Encrypted  |                         Yes                          |
+| Response Encrypted |                         Yes                          |
+
 #### Upload Supporting Documents
+
+|   **Data Field**   |                       **Value**                       |
+|:------------------:|:-----------------------------------------------------:|
+|   API Reference    | SkillsFuture Credit Pay > Upload Supporting Documents |
+|    Request Type    |                         POST                          |
+| Request Encrypted  |                          Yes                          |
+| Response Encrypted |                          Yes                          |
 
 #### View Claim Details
 
+|   **Data Field**   |                  **Value**                   |
+|:------------------:|:--------------------------------------------:|
+|   API Reference    | SkillsFuture Credit Pay > View Claim Details |
+|    Request Type    |                     GET                      |
+| Request Encrypted  |   Yes (GET requests encrypted by SSL/TLS)    |
+| Response Encrypted |                     Yes                      |
+
 #### Cancel Claim
+
+|   **Data Field**   |                **Value**                |
+|:------------------:|:---------------------------------------:|
+|   API Reference    | SkillsFuture Credit Pay > Cancel Claims |
+|    Request Type    |                  POST                   |
+| Request Encrypted  |                   Yes                   |
+| Response Encrypted |                   Yes                   |
 
 ## DevOps
 
@@ -564,6 +809,7 @@ To set up a GitHub repository, follow the steps below:
 For CI/CD to work, make sure to add the following secrets to your repository:
 
 * `CODECOV_TOKEN`: The token used to upload code coverage reports to Codecov
+* `AWS_REGION`: The AWS Region to deploy the application to (this is not a secret, but it is used in GitHub Actions)
 * `AWS_ACCESS_KEY_ID`: The Access Key ID for your AWS account
 * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key for your AWS account
 
@@ -623,15 +869,25 @@ The different stages of the CI/CD pipeline are as such:
     6. Validate the Terraform script to run
     7. View the plan for the Terraform deployment
     8. Apply the Terraform plan (this step is failable as the backend S3 bucket and DynamoDB tables may already exist)
-3. **Deploy**: Use Terraform to deploy the application to AWS
-    1. Start the pipeline on Ubuntu
-    2. Checkout (clone) the repository
-    3. Set up Terraform
-    4. Verify the Terraform script by formatting and then conducting a check again
-    5. Initialise Terraform backend
-    6. Validate the Terraform script to run
-    7. View the plan for the Terraform deployment
-    8. Apply the Terraform plan
+3. **ECR**: Set up the ECR Repository
+   1. Start the pipeline on Ubuntu
+   2. Checkout (clone) the repository
+   3. Set up Terraform
+   4. Verify the Terraform script by formatting and then conducting a check again
+   5. Initialise Terraform backend
+   6. Validate the Terraform script to run
+   7. View the plan for the Terraform deployment
+   8. Apply the Terraform plan (this step is failable as the repository may already exist)
+4. **Deploy**: Use Terraform to deploy the application to AWS
+   1. Start the pipeline on Ubuntu
+   2. Checkout (clone) the repository
+   3. Set up Terraform
+   4. Verify the Terraform script by formatting and then conducting a check again
+   5. Initialise Terraform backend
+   6. Validate the Terraform script to run
+   7. View the plan for the Terraform deployment
+   8. Apply the Terraform plan
+   9. If the application of the plan fails, destroy the resources created
 
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
