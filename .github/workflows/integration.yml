@@ -53,7 +53,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
-          files: ./SSG-API-Testing-Application-v2/coverage.xml
+          files: ./SSG-API-Testing-Application-v2/app/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
