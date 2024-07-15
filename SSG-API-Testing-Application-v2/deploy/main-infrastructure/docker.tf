@@ -1,6 +1,10 @@
 # Create the Docker Image and push to ECR
+data "aws_ecr_repository" "ecr" {
+  name = "${module.constants.namespace}/${module.constants.service_name}"
+}
+
 locals {
-  repo_url = aws_ecr_repository.ecr.repository_url
+  repo_url = data.aws_ecr_repository.ecr.repository_url
   hash     = md5(join("-", [for x in fileset("", "../../app/{*.py, Dockerfile}") : filemd5(x)]))
 }
 

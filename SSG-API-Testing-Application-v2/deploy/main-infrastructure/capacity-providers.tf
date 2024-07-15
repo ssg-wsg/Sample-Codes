@@ -12,8 +12,6 @@ resource "aws_ecs_capacity_provider" "cas" {
       target_capacity           = module.constants.target_capacity
     }
   }
-
-  depends_on = [aws_ecr_repository.ecr]
 }
 
 resource "aws_ecs_cluster_capacity_providers" "cas" {

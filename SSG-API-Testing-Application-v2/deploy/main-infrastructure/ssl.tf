@@ -11,6 +11,11 @@ resource "tls_private_key" "private_key" {
 resource "tls_self_signed_cert" "cert" {
   private_key_pem = var.SSL_PRIVATE_KEY
 
+  subject {
+    common_name = "api.testing.ssg"
+    organization = "wsg-ssg"
+  }
+
   validity_period_hours = 8760  # cert is valid for a year
   allowed_uses = [
     "key_encipherment",
