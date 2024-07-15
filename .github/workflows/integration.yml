@@ -17,6 +17,7 @@ env:
   PYTHON_VERSION: "3.12"
   AWS_REGION: "ap-southeast-1"
   TF_VAR_SSL_PRIVATE_KEY: ${{ secrets.SSL_PRIVATE_KEY }}
+  TF_VAR_SSL_PUBLIC_CERT: ${{ secrets.SSL_PUBLIC_CERT }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -186,6 +187,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
           TF_VAR_SSL_PRIVATE_KEY: ${{ secrets.SSL_PRIVATE_KEY }}
+          TF_VAR_SSL_PUBLIC_CERT: ${{ secrets.SSL_PUBLIC_CERT }}
         run: terraform plan
 
       - name: Apply Terraform Plan
@@ -196,6 +198,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
           TF_VAR_SSL_PRIVATE_KEY: ${{ secrets.SSL_PRIVATE_KEY }}
+          TF_VAR_SSL_PUBLIC_CERT: ${{ secrets.SSL_PUBLIC_CERT }}
         run: terraform apply -auto-approve
 
       # if rollback fails, you may need to manually delete the infrastructure using the AWS console
