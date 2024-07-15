@@ -5,7 +5,7 @@ variable "SSL_PRIVATE_KEY" {
 
 resource "tls_private_key" "private_key" {
   algorithm = "RSA"
-  rsa_bits = 2048
+  rsa_bits = 4096
 }
 
 resource "tls_self_signed_cert" "cert" {
