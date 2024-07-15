@@ -56,9 +56,6 @@ jobs:
   setup:
     needs:
       - test
-    permissions:
-      contents: read
-      pull-requests: write
     runs-on: ubuntu-latest
     name: Setup Terraform Backend
 
@@ -103,9 +100,56 @@ jobs:
         run: terraform apply -auto-approve
         continue-on-error: true  # possible errors are to do with the presence of the bucket
 
-  main-infra:
+  ecr:
     needs:
       - setup
+    runs-on: ubuntu-latest
+    name: Setup ECR Repository
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Verify Terraform Script
+        id: create-backend-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: |
+          terraform fmt
+          terraform fmt -check
+
+      - name: Initialise Backend
+        id: init-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: terraform init
+
+      - name: Validate Terraform Script
+        id: create-backend-validate
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: terraform validate
+
+      - name: View Backend Plan
+        id: plan-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform plan
+
+      - name: Apply Terraform Plan
+        id: apply-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform apply -auto-approve
+        continue-on-error: true  # possible errors are to do with the presence of the repo
+
+  main-infra:
+    needs:
+      - ecr
     runs-on: ubuntu-latest
     name: Create/Maintain Main Infrastructure
 
