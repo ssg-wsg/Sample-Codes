@@ -37,12 +37,12 @@ To install the application on your local environment, you would need the followi
 Before installing Python or Docker, you will need to first get a copy of the application source code from the GitHub
 repository where the code is hosted on.
 
-There are 2 methods to obtain the files: directly downloading the code via the Web UI, or using `git` to clone the
+There are 2 methods to obtain the files: directly downloading the code via the Web UI or using `git` to clone the
 repository where the Sample Code is stored.
 
 ### Method 1: Downloading the Code via Web UI
 
-To obtain the code directly off of GitHub's UI, follow the steps below:
+To obtain the code directly from GitHub's UI, follow the steps below:
 
 1. Head over to the [code repository](https://github.com/ssg-wsg/Sample-Codes) where the code is hosted
 2. Click on the green `Code` button. You should be able to see a dropdown with 2 tabs, titled `Local` and `Codespaces`
@@ -75,8 +75,8 @@ To obtain the code using `git`, follow the steps below:
 
 1. Open a new command prompt or terminal in a location that is convenient for you. You should take note that the
    location
-   where this command prompt is opened is where the source code files will be downloaded into!
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use `ls` command to *list* the
+   where this command prompt is opened is where the source code files will be downloaded!
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
        files in the directory (folder)
 2. Run the following command:
    ```shell
@@ -114,8 +114,8 @@ To install Python `3.12` on your system, follow the steps below:
    on how you can install Python `3.12` on your system
 
 > [!WARNING]
-> If you are using Linux, make sure explicitly specify the Python version when running the commands that require
-> the specification of Python version!
+> If you are using Linux, make sure to explicitly specify the Python version when running the commands that require
+> the specification of the Python version!
 
 > [!TIP]
 > To verify if you have successfully installed Python on your system, open up a command prompt or terminal and run
@@ -128,7 +128,7 @@ To install Python `3.12` on your system, follow the steps below:
 #### Python Libraries
 
 > [!TIP]
-> You are highly recommended to use package managers like pyenv or conda to manage your Python packages, as it helps to
+> You are highly recommended to use package managers like `pyenv` or `conda` to manage your Python packages, as it helps to
 > prevent dependency clashes between different Python projects on your system!
 >
 > Click on the respective links to learn more about [pyenv](https://github.com/pyenv/pyenv)
@@ -137,11 +137,11 @@ To install Python `3.12` on your system, follow the steps below:
 > Make sure to activate the environment where the required Python libraries are installed before
 > following the steps outlined below to avoid installing the libraries in the wrong location!
 
-The application leverages on several libraries to run. To install these libraries, follow the steps below:
+The application leverages several libraries to run. To install these libraries, follow the steps below:
 
 1. Open up a command prompt or terminal on your environment
 2. Navigate to the directory (folder) `SSG-API-Testing-Application-v2/app` where the `requirements.txt` file is located
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
        files in the directory (folder)
 3. Run the command:
     ```shell
@@ -175,16 +175,16 @@ To follow this method of installing the application, you need to have Docker ins
 
 If you do not have Docker installed in your environment, head over
 the [Docker Engine Installation Guide](https://docs.docker.com/engine/install/)
-and follow the instructions in the guide on how to install the Docker Engine on your environment.
+and follow the instructions in the guide on how to install the Docker Engine in your environment.
 
-The Docker Engine is required to build and run Docker containers on your environment.
+The Docker Engine is required to build and run Docker containers in your environment.
 
 ## Usage
 
 ### Running the Application in Python
 
 > [!WARNING]
-> If you are using any package managers like pyenv or conda, make sure to activate the environment where the
+> If you are using any package managers like `pyenv` or `conda`, make sure to activate the environment where the
 > required Python libraries are installed before running the application!
 
 To run the application in Python, follow the steps below:
@@ -193,7 +193,7 @@ To run the application in Python, follow the steps below:
    downloaded into
 2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
    directory (folder) should have a `requirements.txt` file present in it
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
        files in the directory (folder)
 3. Run the command:
    ```shell
@@ -213,7 +213,7 @@ To build and run the Docker container with the application running inside it, fo
    downloaded into
 2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
    directory (folder) should have a `Dockerfile` present in it
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
        files in the directory (folder)
 3. Run the following command to build the Docker container:
     ```shell
@@ -238,7 +238,7 @@ Once your build is successful, follow the steps below to run your container:
     2. The `-it` flag is used to run the Docker container in interactive mode
     3. The `-p` flag is used to map the port `8502` on the host machine to the port `8502` on the Docker container
     4. The `app` at the end of the command specifies the name of the Docker container to run. This should match the name
-       that you have tagged the Docker container with in the previous step
+       that you have tagged the Docker container within the previous step
 2. Open your web browser and navigate to `http://localhost:8502` to access the application running inside the Docker
    container
 

@@ -12,7 +12,7 @@ Here is a quick summary of what the SSG Sample Application does:
   enrolment fee collection status of a customer
 * Call the Attendance API to view course session attendance and upload course session attendance
 * Call the Assessment API to create, update/void, search and view assessment records
-* Call the SkillsFuture Credit Pay API to create, view and cancel claims, as well as uploading any supporting
+* Call the SkillsFuture Credit Pay API to create, view and cancel claims, as well as upload any supporting
   documents for claims
 
 ## Table of Contents
@@ -63,18 +63,18 @@ Here is a quick summary of what the SSG Sample Application does:
 ### About this Guide
 
 This document will help provide you with a step-by-step guide on how you can use the revamped Sample Application to
-test out the SSG APIs, the requirements needed to run the application, as well as the usage of the different APIs.
+test out the SSG APIs, the requirements needed to run the application, and the usage of the different APIs.
 
 This guide contains functionality for the base 15 mandated SSG APIs outlined in the TMS requirements, along with the
 5 new SkillsFuture Credit Pay APIs.
 
 ### Target User
 
-This guide is intended for users who are interested in using the Sample Application and testing out the SSG APIs.
+This guide is intended for users interested in using the Sample Application and testing the SSG APIs.
 
 ### System Requirements
 
-The Sample Application requires either Python `3.12` or Docker installed, and can run on any major platform
+The Sample Application requires either Python `3.12` or Docker installed and can run on any major platform
 (Windows, macOS, Linux) that supports Python `3.12`. An installed browser is optional, as this application can run in
 headless mode, but you are highly recommended to have a browser installed on your system (unless your system is used
 purely to host the application).
@@ -126,9 +126,9 @@ Let’s describe some terms we will use to describe the user interface.
 | Sidebar            | A tab on the left side of your screen that provides you with quick access to the other Pages of the Sample Application                                                                                                                                                                                                                                                                       |
 | Tooltip            | An icon that you can hover over for more details about a particular entry field                                                                                                                                                                                                                                                                                                              |
 | Fields             | A Field allows you to input or select data to pass into the Sample Application. There are 3 main types of fields used in the Sample Application:<br>- Selection fields (clicking on some UI elements to select it),<br>- Alphanumeric fields (allow you to key in numerical, textual or both types of data)<br>- File Upload fields (allows you to upload files into the Sample Application) |
-| Button             | Clickable UI elements that is usually used to start a process or transition to a different screen.                                                                                                                                                                                                                                                                                           |
+| Button             | Clickable UI elements that are usually used to start a process or transition to a different screen.                                                                                                                                                                                                                                                                                          |
 | Checkbox           | Clickable UI element that is used to hide an option until this element is selected                                                                                                                                                                                                                                                                                                           |
-| Number Input       | Input field that that permits the entry of numerical (integers and floating point numbers) values                                                                                                                                                                                                                                                                                            |
+| Number Input       | Input field that permits the entry of numerical (integers and floating point numbers) values                                                                                                                                                                                                                                                                                                 |
 | Selection Field    | Input field that permits the entry of a single value from a list of predetermined values                                                                                                                                                                                                                                                                                                     |
 | Text Input Field   | Input field that permits the entry of text (characters) values                                                                                                                                                                                                                                                                                                                               |
 | File Upload Field  | Input field that permits the uploading of a file to the application                                                                                                                                                                                                                                                                                                                          |
@@ -758,7 +758,7 @@ courses using the SSG APIs.
 5 SkillsFuture Credit Pay-related APIs implemented in the Sample Application are as such:
 
 1. [SF Credit Claims Payment Request Encryption](#SF-Credit-Claims-Payment-Request-Encryption)
-    1. This API is used to perform encryption on a request payload that will be send out in a Form POST to begin the
+    1. This API is used to perform encryption on a request payload that will be sent out in a Form POST to begin the
        claims
        process
 2. [SF Credit Claims Payment Request Decryption](#SF-Credit-Claims-Payment-Request-Decryption)
@@ -801,7 +801,7 @@ To access the SF Credit Claims Payment Request Encryption API, follow the steps 
    the API response.
    ![Form POST](assets/user-guide/sf-credit-pay/form-post.png)
 
-    1. Enter in the encrypted payload into the text field in the Form POST template
+    1. Enter the encrypted payload into the text field in the Form POST template
     2. Click on the “Submit” button to send the Form POST request to the SSG SkillsFuture Credit Claims API
     3. You will be directed to log in with your Singpass
     4. After logging in, specify the claim amount and make the claim
@@ -904,7 +904,7 @@ To access the Cancel Claim API, follow the steps below:
    > To view the tooltips for the optional parameters, you can select the parameter first to view it
    > before unselecting it.
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
-   Body” heading to view a JSON representation of the request body which you will be sending to the API
+   Body” heading to view a JSON representation of the request body which you will be sent to the API
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Claim API
 6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,

@@ -71,17 +71,17 @@ security that AWS provides.
 
 ### Preparation
 
-Before you are able to deploy the Sample Application to AWS, follow the steps below to prepare your AWS account:
+Before you can deploy the Sample Application to AWS, follow the steps below to prepare your AWS account:
 
 1. Create an AWS account if you do not already have one. Follow the instructions provided in
    this [forum post](https://repost.aws/knowledge-center/create-and-activate-aws-account)
    for more information on how you can create an AWS account.
 2. Create an IAM user with the necessary permissions to deploy the Sample Application. Follow the instructions provided
-   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create a IAM user. Make
+   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create an IAM user. Make
    sure to attach
    the [AdministratorAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html)
-   policy to the IAM user to ensure that the user has the necessary permissions to deploy the Sample Application.
-    1. This is important as you are highly advised against using the root account to make changes to your AWS resources.
+   policy to the IAM user to ensure the user has the necessary permissions to deploy the Sample Application.
+    1. This is important as you are highly advised against using the root account to change your AWS resources.
 
 > [!WARNING]
 > Even though you are also recommended to keep permissions as minimal as possible, for the purposes of this guide, you
@@ -96,13 +96,13 @@ Before you are able to deploy the Sample Application to AWS, follow the steps be
 > Make sure NOT to check the key files or any other files containing your keys into version control or share them
 > with anyone! This is to prevent unauthorised access to your AWS resources.
 
-After obtaining your secret key and access key, you are then ready to move on to the next step of the preparation
+After obtaining your secret key and access key, you are ready to move on to the next step of the preparation
 process on GitHub. Refer to the [GitHub section](#GitHub) for more information on what you need to do for the next step.
 
 ## Codecov
 
-Codecov is a code coverage tool that helps you to measure the effectiveness of your tests by showing you which parts of
-your code are being tested and which parts are not.
+Codecov is a code coverage tool that helps you measure the effectiveness of your tests by showing you which parts of
+your code is being tested and which parts are not.
 
 For the Sample Application, we will be using Codecov to measure the code coverage of the tests that are run on the
 application.
@@ -110,7 +110,7 @@ application.
 To use Codecov, you will need to create an account on Codecov and link your GitHub repository to Codecov. Follow
 [this guide](https://docs.codecov.com/docs/quick-start) to get started with Codecov.
 
-Make sure to save the Repository Upload Token, as it will be used in next section to configure the GitHub Actions
+Make sure to save the Repository Upload Token, as it will be used in the next section to configure the GitHub Actions
 workflows.
 
 ## GitHub
@@ -131,21 +131,21 @@ development workflows. You can use GitHub Actions to build, test, and deploy you
 GitHub Actions allow you to specify workflows that are triggered by events in your GitHub repository by using YML files
 that declare the resources, actions and triggers that are used to trigger a workflow.
 
-GitHub Actions workflows are stored in the `.github/workflows` directory in the root of the repository.
+GitHub Actions workflows are stored in the `.github/workflows` directory at the root of the repository.
 
 > [!NOTE]
 > Workflows can be automatically triggered by events such as a push (commit) to the repository, a pull request, or
 > a new release. Workflows can also be **manually triggered** by using the `workflow_dispatch` event.
 >
 > For `workflow_dispatch` events, you can trigger a workflow by going to the Actions tab in your repository, selecting
-> the workflow that you want to run, and clicking the `Run workflow` button.
+> the workflow that you want to run, and click the `Run workflow` button.
 >
 > Note that `workflow_dispatch` workflows can be triggered manually only if the workflow YML file exists in the
 > `main`/`master` branch of the repository!
 
 #### Workflows
 
-Workflows are declared within a YML file. Sections within the YML file determines the actions, as well as the sequence,
+Workflows are declared within a YML file. Sections within the YML file determine the actions, as well as the sequence,
 to take when the workflow is triggered.
 
 Most importantly, there are a few declarations that you should be aware of when creating a workflow:
@@ -192,7 +192,7 @@ To better understand the workflows that are used in the Sample Application, refe
 > [!WARNING]
 > Make sure to complete the preparation steps under the AWS and Codecov section before proceeding with the steps below!
 
-Before you are able to deploy the application to AWS, you need to set up GitHub Actions.
+Before you can deploy the application to AWS, you need to set up GitHub Actions.
 
 Follow [this guide](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) to add the
 following GitHub Actions Secrets to the repository:
@@ -205,10 +205,10 @@ following GitHub Actions Secrets to the repository:
 
 ## Docker
 
-Docker is a containerisation tool and framework to help you ship applications in a consistent and reliable manner.
+Docker is a containerisation tool and framework to help you ship applications consistently and reliably.
 
 Docker is the main tool used for deployment as it helps to ensure that the sample application can be quickly deployed
-and torn down in a predictable and consistent manner.
+and torn down predictably and consistently.
 
 ### Images and Dockerfiles
 
@@ -216,7 +216,7 @@ Docker **Images** are the building blocks of Docker containers. A Docker image i
 executable package of software that includes everything needed to run a piece of software, including the code,
 runtime and dependencies.
 
-A **Dockerfile** is a text file that contain a set of instructions that are used to create a Docker image.
+A **Dockerfile** is a text file that contains a set of instructions that are used to create a Docker image.
 
 For the Sample Application, the Dockerfile used to create a container containing the Sample Application is found
 at the top level application directory [here](../app/Dockerfile).
@@ -336,7 +336,7 @@ The Terraform code for the Sample Application is organised into two main directo
 `main-infrastructure`.
 
 The `create-backend` directory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
-that are used to store the Terraform state and lock the state respectively.
+that is used to store the Terraform state and lock the state respectively.
 
 The `main-infrastructure` directory contains the Terraform code that is used to provision the main infrastructure of the
 Sample Application, such as the VPC, subnets, security groups, and other resources that are required to host the
@@ -444,7 +444,7 @@ terraform destroy
 
 ## Cloud Architecture
 
-Now that you understand the main tools that we will be using in the deployment to of the Sample Application to AWS,
+Now that you understand the main tools that we will be using in the deployment of the Sample Application to AWS,
 let's next take a look at the AWS architecture that is used to serve the application.
 
 ### Services
@@ -452,7 +452,7 @@ let's next take a look at the AWS architecture that is used to serve the applica
 Let's take a look at the services that we will be using in the application.
 
 1. **Amazon Virtual Private Cloud (VPC)**: VPC is a service that lets you launch AWS resources in a virtual network that
-   you define. You have complete control over your virtual networking environment, including selection of your own IP
+   you define. You have complete control over your virtual networking environment, including selection of your IP
    address range, creation of subnets, and configuration of route tables and network gateways.
 2. **Subnets**: Subnets are segments of a VPC's IP address range that you can use to group resources based on security
    and operational needs.
@@ -484,10 +484,10 @@ Let's zoom into the few services that we will actively be using and managing in 
 
 #### EC2
 
-EC2 is used to provide the application a platform and compute capabilities to run on.
+EC2 is used to provide the application with a platform and compute capabilities to run on.
 
 In the initial stages of deployment, this was used as it allows you to get the application up and running quickly, by
-provisioning an EC2 instance on-demand and manually deploying the application on it without much configurations required
+provisioning an EC2 instance on-demand and manually deploying the application on it without many configurations required
 by the developer.
 
 However, as we move towards a more cloud-native solution, we will be using ECS in conjunction with Fargate to manage the
@@ -499,11 +499,11 @@ to host the application.
 ECR is a scalable private container registry (something like GitHub for Docker images!) that allows you to store,
 manage, and deploy Docker container images.
 
-ECR has integrations with ECS that allows you to easily push and pull Docker images from the registry to the ECS, and
+ECR has integrations with ECS that allow you to easily push and pull Docker images from the registry to the ECS, and
 trigger upstream changes to ECS services when a new image is pushed to the registry.
 
 This allows you to create complex Continuous Deployment pipelines that automatically deploy new versions of the
-application to production when a new image is ready.
+production application when a new image is ready.
 
 #### ECS
 
@@ -528,7 +528,7 @@ the necessary resources to run the application.
 This allows you to focus on the application itself, rather than the underlying infrastructure that the application is
 running on.
 
-This is especially useful for the Sample Application, since the infrastructural security of the application can be
+This is especially useful for the Sample Application since the infrastructural security of the application can be
 managed by AWS instead, offloading the responsibility of keeping our system updated and patched to AWS.
 
 #### Elastic Load Balancer
@@ -539,7 +539,7 @@ multiple targets, such as EC2 instances, containers, and IP addresses.
 ELB is used to distribute incoming traffic across multiple instances of the application to ensure that the application
 is highly available and fault-tolerant.
 
-ELB is used to route traffic to the application, and to ensure that the application is running and healthy.
+ELB is used to route traffic to the application and to ensure that the application is running and healthy.
 
 ### Production Architecture
 
@@ -555,9 +555,9 @@ This architecture is implemented within the Terraform code.
 
 You can also notice that there is a distinct split in the processes needed to deploy the application, with the
 `create-backend` directory handling the creation of the S3 bucket and DynamoDB table, and the `main-infrastructure`
-directory handling the creation of the main infrastructure of the Sample Application. GitHub and Terraform is also
+directory handling the creation of the main infrastructure of the Sample Application. GitHub and Terraform are also
 involved in the deployment process, with GitHub Actions being used to test and deploy the application, and Terraform
-being used as an infrastructure as code tool to automatically check the status of AWS resources and deploy the
+being used as an infrastructure as a code tool to automatically check the status of AWS resources and deploy the
 application.
 
 The following is a rough process of what happens when you deploy the application to AWS:

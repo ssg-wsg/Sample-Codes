@@ -80,12 +80,12 @@ by https://github.com/AY2324S1-CS2103T-T17-1/tp/blob/master/docs/DeveloperGuide.
 ## Introduction
 
 In this guide, you will learn more about the underlying design and architecture of the application, the features of the
-application, and how you can maintain or develop on them.
+application, and how you can maintain or develop them.
 
 ### Notation
 
-Some special notation will be used througout the Developer Guide. Do make sure to familiarise yourself with the notation
-below to avoid misunderstandings and confusions regarding the content of the guide!
+Some special notation will be used throughout the Developer Guide. Do make sure to familiarise yourself with the notation
+below to avoid misunderstandings and confusion regarding the content of the guide!
 
 Text in **green** callout boxes are some tips and tricks that you should be aware of:
 
@@ -121,7 +121,7 @@ If you are not sure how to Python `3.12` or Docker, head over to the
 
 ### Next Steps
 
-Now that you have installed the requirements for the Sample Application, you can now begin developing new features or
+Now that you have installed the requirements for the Sample Application, you can begin developing new features or
 fixing bugs within the application!
 
 Refer to the [Design](#Design) section for more information about the overall architecture of the application.
@@ -138,8 +138,8 @@ The Sample Application is designed to be a simple monolithic Python application 
 and UI/UX development, by using a UI/UX framework called Streamlit.
 
 Unlike traditional UI/UX frameworks and languages like React or Flutter, Streamlit blurs the line between the backend
-and frontend, by allowing developers to write Python code that generates UI/UX elements and handle the logic behind the
-UI/UX elements all in the same file, and often without much abstraction of logic between them.
+and frontend, by allowing developers to write Python code that generates UI/UX elements and handles the logic behind the
+UI/UX elements are all in the same file, and often without much abstraction of logic between them.
 
 ### Architecture
 
@@ -165,7 +165,7 @@ We will explore in greater detail each of the components in the following sectio
 The entrypoint to the application is the `Home.py` file located in the `app` directory.
 
 This file is a special page that is initially rendered when the application is first run. It provides users with the
-opportunity to enter in their credentials to authenticate themselves with the APIs and to access the other non-Home
+opportunity to enter their credentials to authenticate themselves with the APIs and to access the other non-Home
 pages, that will be described below under [Pages](#Pages).
 
 To start the application, run the following command within the [`app`](../app) directory:
@@ -211,7 +211,7 @@ This section is to aid you in understanding how the Streamlit server is started 
 
 #### User Flow
 
-Once the server is started, you are able to access it via:
+Once the server is started, you can access it via:
 
 ```text
 http://localhost:[YOUR PORT HERE]
@@ -230,15 +230,15 @@ The following diagram showcases how a user might interact with the application:
 ![backend flow](assets/developer-guide/sequence/OverallBackendFlow-Backend_Flow.png)
 
 1. The server is started
-2. User makes a HTTP/HTTPS connection to the server
+2. User makes an HTTP/HTTPS connection to the server
 3. While the server is active,
     1. When the user interacts with the frontend UI elements, HTTP requests are sent to the server
-    2. The request trigger a change on the frontend
+    2. The request triggers a change on the frontend
     3. This frontend change (usually) triggers a backend action
         1. For data entry changes, setters for backend model classes are called
         2. For event triggers (such as clicking buttons), depending on the event in question, either UI changes are made
            or backend logic is executed that calls external APIs
-    4. Backend changes is then pushed to the frontend
+    4. Backend changes are then pushed to the frontend
     5. The user's view is then updated with the changes made
 
 This flow is also something that you will highly unlikely need to modify, as it is provided by the Streamlit library.
@@ -258,10 +258,10 @@ The 6 non-Home pages in the application are contained in this component:
 * [`Assessments`](#Assessments)
 * [`SkillsFuture Credit Pay`](#SkillsFuture-Credit-Pay)
 
-Each page of the application either showcases a certain functionality required for the application or utilises a
+Each page of the application either showcases a certain functionality required for the application or utilises a 
 particular set of SSG APIs.
 
-More information about the APIs are provided on
+More information about the APIs is provided on
 the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
 
 > [!TIP]
@@ -442,7 +442,7 @@ section.
 
 ### Encryption and Decryption
 
-The En-Decryption page uses the following classes/methods from the `core` and `utils` component to encrypt and decrypt
+The En-Decryption page uses the following classes/methods from the `core` and `utils` components to encrypt and decrypt
 text:
 
 * `core.cipher.encrypt_decrypt.Cryptography`
@@ -605,7 +605,7 @@ Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/integr
 the
 process.
 
-The different stages of the CI/CD pipeline is as such:
+The different stages of the CI/CD pipeline are as such:
 
 1. **Test**: Conduct unit tests and checkstyle on the codebase
     1. Start the pipeline on all major OSes (Windows, MacOS, Linux)
@@ -646,7 +646,7 @@ These tools might come in useful when you are debugging the application, or when
 
 ### Logging
 
-We have implemented a utility `Logger` class, located under in `logger.py` under
+We have implemented a utility `Logger` class, located under `logger.py` under
 the [`app.core.system`](../app/core/system) package.
 
 The `Logger` class uses a global `StreamHandler` and `FileHandler` to print out logs to `stdout` and save the logs to a
@@ -678,25 +678,25 @@ The "garbage collection" package used is `apscheduler`, a non-blocking task sche
 allows you to create cron (interval) tasks that will be performed at a specified time interval without blocking the
 execution of the base Sample Application.
 
-We chose those to use this package over other packages due to its ease of use, compatability with Streamlit and the
-lack of the need to write explicit multithreading/concurrent code to execute cron task.
+We chose those to use this package over other packages due to its ease of use, compatibility with Streamlit and the
+lack of the need to write explicit multithreading/concurrent code to execute cron tasks.
 
 #### `start_scheduler()`
 
 `start_scheduler()` is the main method used to start the scheduler. The following details the steps taken when the
 method is called:
 
-1. Check if the task with job ID equals to `UNIQUE_JOB_ID` is already present in the task scheduling pool
+1. Check if the task with a job ID equal to `UNIQUE_JOB_ID` is already present in the task scheduling pool
 2. If it is not in the pool, create a new task to add to the pool.
     1. Specify the time interval as 7 days
     2. Specify the job ID as `UNIQUE_JOB_ID`
-    3. Specify to replace any existing jobs with the same job ID to prevent conflicts over which tasks is the latest
+    3. Specify to replace any existing jobs with the same job ID to prevent conflicts over which task is the latest
        task
     4. Start the scheduler
 3. If the job ID is in the pool, return immediately and do nothing
 
 > [!TIP]
-> Do note that the interval is arbitrarily set, you may wish to use another interval for a stricter housekeeping and
+> Do note that the interval is arbitrarily set, you may wish to use another interval for stricter housekeeping and
 > certificate and private key retention policy.
 
 #### `_clean_temp()`
