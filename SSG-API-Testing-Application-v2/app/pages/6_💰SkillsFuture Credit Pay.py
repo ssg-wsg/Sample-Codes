@@ -273,6 +273,10 @@ with view:
                          key="view-claims-nric",
                          max_chars=9,
                          help="NRIC of the individual")
+
+    if len(nric) > 0 and not Validators.verify_nric(nric):
+        st.warning("*NRIC format** is not valid!", icon="⚠️")
+
     claim_id = st.text_input(label="Claim ID",
                              key="view-claims-claim-id",
                              max_chars=10,

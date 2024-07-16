@@ -78,6 +78,10 @@ with create:
                                                   help="Trainee's government-issued ID number",
                                                   key="enrolment-trainee-id")
 
+    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
+            and not Validators.verify_nric(create_enrolment.trainee_id):
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
+
     st.markdown("#### Payment Info")
     if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
         create_enrolment.trainee_fees_discountAmount = st.number_input(label="Trainee Fees Discount",
@@ -124,9 +128,9 @@ with create:
             help="The employer contact's email address",
             key="enrolment-employer-contact-email-address")
 
-        if len(create_enrolment.employer_emailAddress) > 0:
-            if not Validators.verify_email(create_enrolment.employer_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(create_enrolment.employer_emailAddress) > 0 and \
+                not Validators.verify_email(create_enrolment.employer_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -168,9 +172,9 @@ with create:
                                                           max_chars=100,
                                                           help="The trainee's email address",
                                                           key="enrolment-trainee-email-address")
-    if len(create_enrolment.trainee_emailAddress) > 0:
-        if not Validators.verify_email(create_enrolment.trainee_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+    if len(create_enrolment.trainee_emailAddress) > 0 and \
+            not Validators.verify_email(create_enrolment.trainee_emailAddress):
+        st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -213,7 +217,7 @@ with create:
 
     if uen is not None and len(uen) > 0 and not Validators.verify_uen(uen):
         st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
-    elif uen is not None and len(uen) > 0 and Validators.verify_nric(uen):
+    elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
     create_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
@@ -299,9 +303,9 @@ with update:
             help="The employer contact's email address",
             key="update-enrolment-employer-contact-email-address")
 
-        if len(update_enrolment.employer_emailAddress) > 0:
-            if not Validators.verify_email(update_enrolment.employer_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(update_enrolment.employer_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.employer_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -335,9 +339,9 @@ with update:
                                                               help="The trainee's email address",
                                                               key="update-enrolment-trainee-email-address")
 
-        if len(update_enrolment.trainee_emailAddress) > 0:
-            if not Validators.verify_email(update_enrolment.trainee_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(update_enrolment.trainee_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.trainee_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
     if col1.checkbox("Specify Trainee Phone Number Area Code",
@@ -517,6 +521,10 @@ with search:
                                                         key="search-enrolment-trainee-id",
                                                         help="Trainee's government-issued ID number",
                                                         max_chars=20)
+
+            if search_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(search_enrolment.trainee_id) > 0 \
+                    and not Validators.verify_nric(search_enrolment.trainee_id):
+                st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     if st.checkbox("Specify Fee Collection Status?", key="specify-search-enrolment-fee-collection-status"):
         search_enrolment.trainee_fees_feeCollectionStatus = st.selectbox(label="Fee Collection Status",

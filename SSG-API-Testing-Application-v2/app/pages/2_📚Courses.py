@@ -549,6 +549,10 @@ with add:
                                                                              "number of the trainer.",
                                                                         max_chars=50)
 
+                            if runtrainer.trainer_idType != IdType.OTHERS and len(runtrainer.trainer_idNumber) > 0\
+                                    not Validators.verify_nric(runtrainer.trainer_idNumber):
+                                st.warning(f"**ID Number** format may not valid!", icon="⚠️")
+
                         st.markdown("###### Trainer Roles\n"
                                     "Select one or more of the roles below!")
                         runtrainer.trainer_roles = st.multiselect(
@@ -1065,6 +1069,9 @@ with edit_delete:
                                                                     help="This refers to the NRIC/FIN/Passport "
                                                                          "number of the trainer.",
                                                                     max_chars=50)
+
+                        if not Validators.verify_nric(runtrainer.trainer_idNumber):
+                            st.warning(f"**ID Number** format may not valid!", icon="⚠️")
                     elif code == TrainerType.NEW:
                         if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
                             runtrainer.index_number = st.number_input(

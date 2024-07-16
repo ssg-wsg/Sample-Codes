@@ -148,6 +148,11 @@ with upload:
                                                     max_chars=50,
                                                     key="trainee-id-upload-attendance")
 
+    if (uploadAttendance.trainee_id_type != IdType.OTHERS
+            or uploadAttendance.trainee_id_type != IdType.FOREIGN_PASSPORT) and len(uploadAttendance.trainee_id) \
+            and not Validators.verify_nric(uploadAttendance.trainee_id):
+        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+
     uploadAttendance.trainee_name = st.text_input(label="Enter Trainee Name",
                                                   help="Name of the trainee",
                                                   max_chars=66,
@@ -160,9 +165,8 @@ with upload:
                                                        max_chars=320,
                                                        key="trainee-email-upload-attendance")
 
-        if len(uploadAttendance.trainee_email) > 0:
-            if not Validators.verify_email(uploadAttendance.trainee_email):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(uploadAttendance.trainee_email) > 0 and not Validators.verify_email(uploadAttendance.trainee_email):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
                                                           max_chars=15,

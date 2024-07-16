@@ -31,6 +31,7 @@ from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
     does_not_have_keys
+from app.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -100,6 +101,11 @@ with create:
                                                         help="This is the individual's government-issued "
                                                              "ID number",
                                                         key="create-assessment-trainee-id")
+
+    if create_assessment_info.trainee_idType != IdTypeSummary.OTHERS and len(create_assessment_info.trainee_id) > 0 \
+            and not Validators.verify_nric(create_assessment_info.trainee_id):
+        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+
     create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
                                                             max_chars=200,
                                                             help="This is the individual's full name",
