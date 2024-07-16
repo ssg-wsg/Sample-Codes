@@ -43,30 +43,15 @@ endfork
 
 :Begin process for setting up Terraform backend;
 :Runs on Ubuntu-latest;
-:Checkout Repository;
-:Set up Terraform;
-:Verify Terraform script;
-:Initialise Terraform backend;
-:Validate Terraform script;
-:Apply Terraform script;
+:Clone Repository and Execute Terraform Scripts;
 
 :Begin process for setting up ECR Repository;
 :Runs on Ubuntu-latest;
-:Checkout Repository;
-:Set up Terraform;
-:Verify Terraform script;
-:Initialise Terraform backend;
-:Validate Terraform script;
-:Apply Terraform script;
+:Clone Repository and Execute Terraform Scripts;
 
 :Begin process for setting up main infrastructure;
 :Runs on Ubuntu-latest;
-:Checkout Repository;
-:Set up Terraform;
-:Verify Terraform script;
-:Initialise Terraform backend;
-:Validate Terraform script;
-:Apply Terraform script;
+:Clone Repository and Execute Terraform Scripts;
 
 if (fail) then (yes))
     :Destory Infrastructure;

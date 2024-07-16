@@ -92,8 +92,7 @@ application, and how you can maintain or develop them.
 ### Notation
 
 Some special notation will be used throughout the Developer Guide. Do make sure to familiarise yourself with the
-notation
-below to avoid misunderstandings and confusion regarding the content of the guide!
+notation below to avoid misunderstandings and confusion regarding the content of the guide!
 
 Text in **green** callout boxes are some tips and tricks that you should be aware of:
 
@@ -212,7 +211,7 @@ The process taken to start the Streamlit server is detailed below in the sequenc
     2. `Runtime::start()` is finally invoked and awaited, which creates `AsyncObjects` and returns them to `Server`
 7. The server is up and running
 
-For most intents and purposes, it is highly unlike you will need to modify any of these processes, as they are provided
+For most intents and purposes, it is highly unlikely you will need to modify any of these processes, as they are provided
 by the Streamlit library.
 
 This section is to aid you in understanding how the Streamlit server is started and how the application is served.
@@ -435,27 +434,59 @@ The structure of the component is as such:
 * [`resources`](../app/test/resources): Contains resources that are used in the unit tests
 * [`utils`](../app/test/utils): Contains classes that are used to test the utils component
 
+> [!NOTE]
+> Feel free to modify the test cases in this component to add new test cases or to modify existing test cases to
+> ensure that the application is functioning as expected!
+
 ### AWS Architecture
 
 This application is also hosted on AWS. More information about the AWS cloud architecture is provided in the
 [Deployment Guide](Deployment%20Guide.md).
+
+For this Sample Application, we will be using the following Services provided by AWS:
+
+* Amazon Elastic Container Registry (ECR)
+* Amazon Elastic Container Service (ECS)
+* Amazon Elastic Compute Cloud (EC2)
+* Amazon DocumentDB
+* Amazon Simple Storage Service (S3)
+* Amazon CloudWatch
+* VPC, Subnets, Route Tables, Internet Gateway, NAT Gateway, Elastic IPs (not services, but core components of AWS)
 
 ## Implementation
 
 Since Streamlit uses a rather declarative approach to UI/UX development, the following section will focus on how the
 encryption/decryption processes, 15 mandated APIs, SkillsFuture Credit Pay APIs are implemented in the application.
 
-The UI and UI logic should be self-explanatory enough as you read the code and will hence not be covered in this
-section.
+In general, the collection of APIs is arranged as such:
+
+- Each API is associated with a Streamlit Tab
+- Within each Tab, all the UI and UI logic are placed within it
+- The different data entry fields are usually at the top of the Tab. When data is entered, the data model class
+  associated with an API is updated.
+- A Streamlit Button is usually placed near the bottom of the Tab, after the data entry fields. When the button
+  is clicked, the associated API request is called.
+
+A diagram of the overall UI structure is seen below:
+
+![Overall UI](assets/developer-guide/UI.png)
+
+An actual screenshot of the UI can be seen in the [User Guide](User%20Guide.md).
+
+We will not cover how the UI and UI logic is implemented as it is extensively documented by Streamlit in their
+[documentation](https://docs.streamlit.io/).
+
+We will, however, cover some of the design decisions regarding some of the APIs in greater detail below.
 
 > [!NOTE]
-> More details about this API can be found at the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
+> More details about the SSG APIs can be found at
+> the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
 
-> [!NOTE]
-> When an API is declared as "Request Encrypted", it means that you need to encrypt the payload with your AES-256
+> [!TIP]
+> When an API is declared as "Request Encrypted", it means that you need to **encrypt the payload** with your AES-256
 > key before sending it to the API.
-> 
-> When an API is declared as "Response Encrypted", it means that the payload returned by the API is encrypted with
+>
+> When an API is declared as "Response Encrypted", it means that the **payload returned by the API is encrypted** with
 > your AES-256 key, and you need to decrypt it before using the data. You can use the same key for both encryption and
 > decryption as AES-256 is a symmetric encryption algorithm.
 
@@ -487,9 +518,9 @@ API:
 
 * `core.courses.delete_course_run`, `core.courses.view_course_run`, `core.courses.edit_course_run`,
   `core.courses.add_course_run`, `core.courses.view_course_sessions`
-  * Provides the ability to interact with the Courses API
+    * Provides the ability to interact with the Courses API
 * `core.models.course_runs.*`
-  * Provides the data models for the Courses API
+    * Provides the data models for the Courses API
 * `core.system.logger.Logger`
     * Provides logging capabilities
 * `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
@@ -502,29 +533,35 @@ API:
 
 #### Course Run by Run Id
 
-|   **Data Field**    |                 **Value**                 |
-|:-------------------:|:-----------------------------------------:|
-|    API Reference    | Training Providers > Course Run by Run Id |
-|    Request Type     |                    GET                    |
-|  Request Encrypted  |                    No                     |
-| Response Encrypted  |                    No                     |
+|   **Data Field**   |                 **Value**                 |
+|:------------------:|:-----------------------------------------:|
+|   API Reference    | Training Providers > Course Run by Run Id |
+|    Request Type    |                    GET                    |
+| Request Encrypted  |                    No                     |
+| Response Encrypted |                    No                     |
 
 This API is implemented under the "View Course Run" tab.
 
 The user must input a valid Course Run ID to view the details of the course run.
 
+Since neither the request and response are encrypted, both the request payload and the response payloads are
+read and displayed as is to the user via the UI. No preprocessing needs to be done on the request and response.
+
 #### Add Course Runs
 
-|   **Data Field**    |                 **Value**                 |
-|:-------------------:|:-----------------------------------------:|
-|    API Reference    | Training Providers > Add Course Run (New) |
-|    Request Type     |                   POST                    |
-|  Request Encrypted  |                    Yes                    |
-| Response Encrypted  |                    No                     |
+|   **Data Field**   |                 **Value**                 |
+|:------------------:|:-----------------------------------------:|
+|   API Reference    | Training Providers > Add Course Run (New) |
+|    Request Type    |                   POST                    |
+| Request Encrypted  |                    Yes                    |
+| Response Encrypted |                    No                     |
 
 This API is implemented under the "Add Course Run" tab.
 
 Users must use this API to get a new Course Run ID for testing with the other APIs.
+
+Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
+is displayed to the user.
 
 #### Edit or Delete Course Runs
 
@@ -535,10 +572,12 @@ Users must use this API to get a new Course Run ID for testing with the other AP
 | Request Encrypted  |                    Yes                     |
 | Response Encrypted |                     No                     |
 
-
 This API is implemented under the "Edit/Delete Course Runs" tab.
 
 Users must use this API to edit or delete a Course Run.
+
+Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
+is displayed to the user.
 
 #### View Course Sessions
 
@@ -546,12 +585,15 @@ Users must use this API to edit or delete a Course Run.
 |:------------------:|:------------------------------------:|
 |   API Reference    | Training Providers > Course Sessions |
 |    Request Type    |                 GET                  |
-| Request Encrypted  |                 Yes                  |
+| Request Encrypted  |                  No                  |
 | Response Encrypted |                  No                  |
 
 This API is implemented under the "View Course Sessions" tab.
 
 Users must use this API to view the course sessions for a particular Course Run.
+
+Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
+is displayed to the user.
 
 ### Enrolment
 
@@ -562,9 +604,9 @@ Enrolment API:
 
 * `core.enrolment.create_enrolment`, `core.enrolment.view_enrolment`, `core.enrolment.update_enrolment`,
   `core.enrolment.cancel_enrolment`, `core.enrolment.search_enrolment`, `core.enrolment.update_enrolment_fee_collection`
-  * Provides the ability to interact with the Enrolment API
+    * Provides the ability to interact with the Enrolment API
 * `core.models.enrolment.*`
-  * Provides the data models for the Enrolment API
+    * Provides the data models for the Enrolment API
 * `core.system.logger.Logger`
     * Provides logging capabilities
 * `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
@@ -583,6 +625,14 @@ Enrolment API:
 | Request Encrypted  |              Yes              |
 | Response Encrypted |              Yes              |
 
+This API is implemented under the "Create Enrolment" tab.
+
+Users must use this API to create an enrolment record for a particular trainee.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### Update Enrolment
 
 |   **Data Field**   |                **Value**                |
@@ -591,6 +641,14 @@ Enrolment API:
 |    Request Type    |                  POST                   |
 | Request Encrypted  |                   Yes                   |
 | Response Encrypted |                   Yes                   |
+
+This API is implemented under the "Update Enrolment" tab.
+
+Users must use this API to update an existing enrolment record.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
 
 #### Cancel Enrolment
 
@@ -601,6 +659,14 @@ Enrolment API:
 | Request Encrypted  |                   Yes                   |
 | Response Encrypted |                   Yes                   |
 
+This API is implemented under the "Cancel Enrolment" tab.
+
+Users must use this API to cancel an existing enrolment record.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### Search Enrolment
 
 |   **Data Field**   |           **Value**           |
@@ -610,14 +676,33 @@ Enrolment API:
 | Request Encrypted  |              Yes              |
 | Response Encrypted |              Yes              |
 
+This API is implemented under the "Search Enrolment" tab.
+
+Users must use this API to query for enrolment records that satisfy the constraints and parameters that
+is specified by the parameters provided to the API.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### View Enrolment
 
-|   **Data Field**   |                 **Value**                 |
-|:------------------:|:-----------------------------------------:|
-|   API Reference    |        Enrolments > View Enrolment        |
-|    Request Type    |                    GET                    |
-| Request Encrypted  | Yes (GET Request is encrypted by SSL/TLS) |
-| Response Encrypted |                    Yes                    |
+|   **Data Field**   |          **Value**          |
+|:------------------:|:---------------------------:|
+|   API Reference    | Enrolments > View Enrolment |
+|    Request Type    |             GET             |
+| Request Encrypted  |             No              |
+| Response Encrypted |             Yes             |
+
+This API is implemented under the "View Enrolment" tab.
+
+Users must use this API to view an enrolment record using a provided enrolment record reference number.
+
+Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
+payload is displayed to the user. The request payload is displayed as is to the user.
+
+> [!NOTE]
+> Since this API uses a HTTP GET request, the request payload might be empty!
 
 #### Update Enrolment Fee Collection
 
@@ -628,6 +713,14 @@ Enrolment API:
 | Request Encrypted  |                     Yes                      |
 | Response Encrypted |                     Yes                      |
 
+This API is implemented under the "Update Enrolment Fee Collection".
+
+Users can use this API to update the enrolment fee collection status of an existing enrolment record.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 ### Attendance
 
 [[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/6kYpfJEWVb7NyYVVHvUmHi/group/374zmR5D0tQeS87eA1hrLV)
@@ -636,9 +729,9 @@ The Attendance Page uses the following classes/methods from the `core` and `util
 Attendance API:
 
 * `core.attendance.course_session_attendance`, `core.enrolment.attendance.upload_course_session_attendance`
-  * Provides the ability to interact with the Attendance API
+    * Provides the ability to interact with the Attendance API
 * `core.models.attendance.*`
-  * Provides the data models for the Enrolment API
+    * Provides the data models for the Enrolment API
 * `core.system.logger.Logger`
     * Provides logging capabilities
 * `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
@@ -658,6 +751,17 @@ Attendance API:
 | Request Encrypted  |                       No                       |
 | Response Encrypted |                      Yes                       |
 
+This API is implemented under the "Course Session Attendance" tab.
+
+Users must use this API to retrieve the course session attendance corresponding to a course run ID and
+assessment record reference number.
+
+Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
+payload is displayed to the user. The request payload is displayed as is to the user.
+
+> [!NOTE]
+> Since this API uses a HTTP GET request, the request payload might be empty!
+
 #### Upload Course Session Attendance
 
 |   **Data Field**   |                       **Value**                       |
@@ -667,9 +771,34 @@ Attendance API:
 | Request Encrypted  |                          Yes                          |
 | Response Encrypted |                          No                           |
 
+This API is implemented under the "Upload Course Session Attendance" tab.
+
+Users must use this API to upload information related to a course session attendance.
+
+Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
+is displayed to the user.
+
 ### Assessment
 
 [[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/7KU1xrpxljJZnsIkJP6QNF/group/3540ZmPQma3rcanoBfNYff)
+
+The Assessment Page uses the following classes/methods from the `core` and `utils` components to interact with the
+Assessment API:
+
+* `core.assessments.create_assessment`, `core.assessments.update_void_assessment`, `core.assessments.view_assessment`
+  `core.assessments.search_assessment`
+    * Provides the ability to interact with the Attendance API
+* `core.models.assessments.*`
+    * Provides the data models for the Enrolment API
+* `core.system.logger.Logger`
+    * Provides logging capabilities
+* `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
+  , `utils.streamlit_utils.does_not_have_keys`
+    * Provides Streamlit-specific capabilities
+* `utils.http_utils.handle_request`, `utils.http_utils.handle_request`
+    * Handles the HTTP requests sent and responses received
+* `utils.verify.Validators`
+    * Provides validation capabilities for AES-256 keys
 
 #### Create Assessment
 
@@ -680,6 +809,14 @@ Attendance API:
 | Request Encrypted  |               Yes               |
 | Response Encrypted |               Yes               |
 
+This API is implemented under the "Create Assessment" tab.
+
+Users must use this API to create an assessment record for a particular trainee.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### Update or Void Assessment
 
 |   **Data Field**   |                **Value**                |
@@ -688,6 +825,14 @@ Attendance API:
 |    Request Type    |                  POST                   |
 | Request Encrypted  |                   Yes                   |
 | Response Encrypted |                   Yes                   |
+
+This API is implemented under the "Update/Void Assessment" tab.
+
+Users must use this API to update or void an existing assessment record.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
 
 #### Find Assessment
 
@@ -698,18 +843,54 @@ Attendance API:
 | Request Encrypted  |               Yes               |
 | Response Encrypted |               Yes               |
 
+This API is implemented under the "Search Assessment" tab.
+
+Users must use this API to query for assessment records that satisfy the constraints and parameters that
+is specified by the parameters provided to the API.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### View Assessment
 
-|   **Data Field**   |                **Value**                |
-|:------------------:|:---------------------------------------:|
-|   API Reference    |      Assessments > View Assessment      |
-|    Request Type    | GET (GET requests encrypted by SSL/TLS) |
-| Request Encrypted  |                   Yes                   |
-| Response Encrypted |                   Yes                   |
+|   **Data Field**   |           **Value**           |
+|:------------------:|:-----------------------------:|
+|   API Reference    | Assessments > View Assessment |
+|    Request Type    |              GET              |
+| Request Encrypted  |              No               |
+| Response Encrypted |              Yes              |
+
+This API is implemented under the "View Assessment" tab.
+
+Users must use this API to view an assessment record using a provided assessment record reference number.
+
+Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
+payload is displayed to the user. The request payload is displayed as is to the user.
+
+> [!NOTE]
+> Since this API uses a HTTP GET request, the request payload might be empty!
 
 ### SkillsFuture Credit Pay
 
 [[API Reference]](https://developer.ssg-wsg.gov.sg/webapp/docs/product/7KU1xrpxljJZnsIkJP6QNF/group/2RTLOUTuE3Dkgf7MOdn0Cm)
+
+The SkillsFuture Credit Pay Page uses the following classes/methods from the `core` and `utils` components to interact
+with the SkillsFuture Credit Pay API:
+
+* `core.credit.view_claim`, `core.credit.cancel_claims`, `core.credit.encrypt_payload`, `core.credit.decrypt_payload`,
+  `core.credit.upload_document`
+    * Provides the ability to interact with the SkillsFuture Credit Pay API
+* `core.models.credit.*`
+    * Provides the data models for the SkillsFuture Credit Pay API
+* `core.system.logger.Logger`
+    * Provides logging capabilities
+* `utils.streamlit_utils.init`, `utils.streamlit_utils.display_config`, `utils.streamlit_utils.validation_error_handler`
+    * Provides Streamlit-specific capabilities
+* `utils.http_utils.handle_request`, `utils.http_utils.handle_request`
+    * Handles the HTTP requests sent and responses received
+* `utils.verify.Validators`
+    * Provides validation capabilities for AES-256 keys
 
 #### SF Credit Claims Payment Request Encryption
 
@@ -720,6 +901,20 @@ Attendance API:
 | Request Encrypted  |                         Yes                          |
 | Response Encrypted |                         Yes                          |
 
+This API is implemented under the "Encryption" tab.
+
+Users must use this API to encrypt the payment request payload before sending it to the SkillsFuture Credit Pay API.
+This API assists you in further encrypting the request payload with SSG's keys, which then allow you to send it to
+the SkillsFuture Credit Pay Claims API to initiate a claim.
+
+Users must create a form POST request to the SkillsFuture Credit Pay Claims API with the encrypted payload. The form
+is provided at the bottom of this tab, but users will also be given the option to download the form POST HTML file
+and make the request on their own.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### SF Credit Claims Payment Request Decryption
 
 |   **Data Field**   |                      **Value**                       |
@@ -728,6 +923,14 @@ Attendance API:
 |    Request Type    |                         POST                         |
 | Request Encrypted  |                         Yes                          |
 | Response Encrypted |                         Yes                          |
+
+This API is implemented under the "Decryption" tab.
+
+Users must use this API to decrypt the payment request payload after receiving it from the SkillsFuture Credit Pay API.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
 
 #### Upload Supporting Documents
 
@@ -738,14 +941,32 @@ Attendance API:
 | Request Encrypted  |                          Yes                          |
 | Response Encrypted |                          Yes                          |
 
+This API is implemented under the "Upload Supporting Documents" tab.
+
+Users must use this API to upload supporting documents for a claim.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
+
 #### View Claim Details
 
 |   **Data Field**   |                  **Value**                   |
 |:------------------:|:--------------------------------------------:|
 |   API Reference    | SkillsFuture Credit Pay > View Claim Details |
 |    Request Type    |                     GET                      |
-| Request Encrypted  |   Yes (GET requests encrypted by SSL/TLS)    |
+| Request Encrypted  |                      No                      |
 | Response Encrypted |                     Yes                      |
+
+This API is implemented under the "View Claims" tab.
+
+Users must use this API to view the details of a claim using a provided claim reference number.
+
+Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
+payload is displayed to the user. The request payload is displayed as is to the user.
+
+> [!NOTE]
+> Since this API uses a HTTP GET request, the request payload might be empty!
 
 #### Cancel Claim
 
@@ -755,6 +976,14 @@ Attendance API:
 |    Request Type    |                  POST                   |
 | Request Encrypted  |                   Yes                   |
 | Response Encrypted |                   Yes                   |
+
+This API is implemented under the "Cancel Claims" tab.
+
+Users must use this API to cancel a claim using a provided claim reference number.
+
+Since both the request and response is encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+user.
 
 ## DevOps
 
@@ -848,8 +1077,22 @@ For the Sample Application, the automation of unit testing, checkstyle and deplo
 Actions.
 
 Refer to the [GitHub Actions CI/CD workflow file](../../.github/workflows/integration.yml) for a better understanding of
-the
-process.
+the process.
+
+A common process that is used by 3 out of the 4 stages of the CI/CD process is the following:
+
+* **Clone Repository and Execute Terraform Scripts**
+    1. Checkout (clone) the repository
+    2. Set up Terraform
+    3. Verify the Terraform script by formatting and then conducting a check again
+    4. Initialise Terraform backend
+    5. Validate the Terraform script to run
+    6. View the plan for the Terraform deployment
+    7. Apply the Terraform plan
+
+Here is a diagram representing the process detailed above:
+
+![common process](assets/developer-guide/CICDCommonProcessActivityDiagram-Clone_Repository_and_Execute_Terraform_Scripts.png)
 
 The different stages of the CI/CD pipeline are as such:
 
@@ -862,32 +1105,17 @@ The different stages of the CI/CD pipeline are as such:
     6. Upload the code coverage reports to Codecov
 2. **Setup**: Sets up the S3 bucket used for Terraform backend
     1. Start the pipeline on Ubuntu
-    2. Checkout (clone) the repository
-    3. Set up Terraform
-    4. Verify the Terraform script by formatting and then conducting a check again
-    5. Initialise Terraform backend
-    6. Validate the Terraform script to run
-    7. View the plan for the Terraform deployment
-    8. Apply the Terraform plan (this step is failable as the backend S3 bucket and DynamoDB tables may already exist)
-3. **ECR**: Set up the ECR Repository
-   1. Start the pipeline on Ubuntu
-   2. Checkout (clone) the repository
-   3. Set up Terraform
-   4. Verify the Terraform script by formatting and then conducting a check again
-   5. Initialise Terraform backend
-   6. Validate the Terraform script to run
-   7. View the plan for the Terraform deployment
-   8. Apply the Terraform plan (this step is failable as the repository may already exist)
+    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
+    3. This step can fail if the backend S3 bucket and DynamoDB tables may already exist, but this is anticipated
+       and CI will ignore the error
+3. **ECR**: Set up the Elastic Container Registry (ECR) Repository
+    1. Start the pipeline on Ubuntu
+    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
+    3. This step can fail if the ECR repository already exist
 4. **Deploy**: Use Terraform to deploy the application to AWS
-   1. Start the pipeline on Ubuntu
-   2. Checkout (clone) the repository
-   3. Set up Terraform
-   4. Verify the Terraform script by formatting and then conducting a check again
-   5. Initialise Terraform backend
-   6. Validate the Terraform script to run
-   7. View the plan for the Terraform deployment
-   8. Apply the Terraform plan
-   9. If the application of the plan fails, destroy the resources created
+    1. Start the pipeline on Ubuntu
+    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
+    3. If the application of the plan fails, destroy the resources created
 
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
@@ -913,13 +1141,18 @@ file under `app/.log/log.txt`.
 >
 > `FileHandler` is used to save the log text to a designated log file.
 
+> [!WARNING]
+> `StreamHandler` and printing out log text to `stdout` is necessary if you are using AWS CloudWatch Logs for logging
+> your container applications!
+
 The `Logger` class has 4 main methods to allow you to log messages of different severity:
 
-* `Logger::debug()`: logs a DEBUG level message - use this for debugging the application
-* `Logger::info()`: logs an INFO level message - use this for informative messages that you wish to log
-* `Logger::warning()`: logs a WARNING level message - use this for exceptional but non-critical events that you wish to
+* `Logger::debug()`: logs a **DEBUG** level message - use this for debugging the application
+* `Logger::info()`: logs an **INFO** level message - use this for informative messages that you wish to log
+* `Logger::warning()`: logs a **WARNING** level message - use this for exceptional but non-critical events that you wish
+  to
   note
-* `Logger::error()`: logs an ERROR level message - use this for exceptional events that are critical
+* `Logger::error()`: logs an **ERROR** level message - use this for exceptional events that are critical
 
 The `Logger` class also has another utility method: `Logger::close()`, which is used to shut down the `Logger` instance.
 You may indicate `close_handler = False` to override the default behaviour of closing the global handlers in the loggers
@@ -968,9 +1201,3 @@ This (private) method does the following:
 
 If you wish to include more cron tasks to perform, feel free to define more methods within this file, and add them into
 the scheduler within `start_scheduler()`, defining the interval in which to execute the task.
-
-## Glossary
-
-| Term | Definition |
-|------|------------|
-|      |            |

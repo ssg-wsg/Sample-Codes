@@ -3,13 +3,13 @@ This page is used to enable access to the Courses API.
 
 There are 4 main processes:
 1. View Course Run
-    - This tab allows you to enter in a Course Run ID and retrieve course run information from the API
+    - This tab allows you to enter a Course Run ID and retrieve course run information from the API
 2. Add Course Run
     - This tab allows you to create/publish one or more course runs with sessions
 3. Edit/Delete Course Run
     - This tab allows you to edit or delete your existing course runs.
 4. View Course Sessions
-    - This tab allows you to enter in a Course Reference ID and a corresponding Course Run ID to retrieve
+    - This tab allows you to enter a Course Reference ID and a corresponding Course Run ID to retrieve
       course session information from the API
 
 It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend

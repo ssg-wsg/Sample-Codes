@@ -61,6 +61,8 @@ Sample Application:
 > [!CAUTION]
 > This is a potential error!
 
+The following section details some of the tools that we are using to deploy the application to AWS.
+
 ## AWS
 
 Amazon Web Services (AWS) is a cloud computing platform that provides a wide range of cloud services, including
