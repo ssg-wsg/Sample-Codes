@@ -5,7 +5,7 @@ data "aws_ecr_repository" "ecr" {
 
 locals {
   repo_url = data.aws_ecr_repository.ecr.repository_url
-  hash     = md5(join("-", [for x in fileset("../../app", "**") : filemd5(x)])) # hash all files in the app directory
+  hash     = md5(join("-", [for x in  fileset("", "../../**") : filemd5(x)])) # hash all files
 }
 
 resource "null_resource" "image" {

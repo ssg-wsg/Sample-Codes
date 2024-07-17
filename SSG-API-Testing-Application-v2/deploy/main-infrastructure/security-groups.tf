@@ -1,6 +1,6 @@
 # Create EC2 Security Group
 resource "aws_security_group" "ec2" {
-  name        = "${module.constants.namespace}_ec2_sg"
+  name        = "${module.constants.namespace}-ec2-sg"
   description = "Security group for EC2 instances"
   vpc_id      = aws_vpc.default.id
 
@@ -34,13 +34,13 @@ resource "aws_security_group" "ec2" {
   }
 
   tags = {
-    Name = "${module.constants.namespace}_ec2_sg"
+    Name = "${module.constants.namespace}-ec2-sg"
   }
 }
 
 # Create ALB SG
 resource "aws_security_group" "alb" {
-  name        = "${module.constants.namespace}_alb_sg"
+  name        = "${module.constants.namespace}-application-load-balancer-sg"
   description = "Security group for ALB"
   vpc_id      = aws_vpc.default.id
 
@@ -81,5 +81,9 @@ resource "aws_security_group" "bastion_host" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = [module.constants.broadcast_ipv4]
+  }
+
+  tags = {
+    Name = "${module.constants.namespace}-bastion-host-sg"
   }
 }
