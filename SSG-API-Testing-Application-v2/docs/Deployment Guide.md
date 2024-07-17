@@ -4,36 +4,46 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
 
 ## Table of Contents
 
-1. [Usage of the Guide](#usage-of-the-guide)
-2. [AWS](#aws)
-    1. [Preparation](#preparation)
-3. [Codecov](#codecov)
-4. [GitHub](#github)
-    1. [GitHub Actions](#github-actions)
-        1. [Workflows](#workflows)
-    2. [Preparation](#preparation-1)
-5. [Docker](#docker)
-    1. [Images and Dockerfiles](#images-and-dockerfiles)
-    2. [Docker Commands](#docker-commands)
-        1. [`docker build`](#docker-build)
-        2. [`docker run`](#docker-run)
-6. [Terraform](#terraform)
-    1. [Install Terraform](#install-terraform)
-    2. [Terraform Configuration](#terraform-configuration)
-        1. [`create-backend`](#create-backend)
-        2. [`main-infrastructure`](#main-infrastructure)
-    3. [Terraform Modules](#terraform-modules)
-    4. [Terraform Plan](#terraform-plan)
-    5. [Terraform Apply](#terraform-apply)
-    6. [Terraform Destroy](#terraform-destroy)
-7. [Cloud Architecture](#cloud-architecture)
-    1. [Services](#services)
-        1. [EC2](#ec2)
-        2. [ECR](#ecr)
-        3. [ECS](#ecs)
-        4. [Fargate](#fargate)
-        5. [Elastic Load Balancer](#elastic-load-balancer)
-    2. [Production Architecture](#production-architecture)
+* [Table of Contents](#table-of-contents)
+* [Usage of the Guide](#usage-of-the-guide)
+* [AWS](#aws)
+    * [Preparation](#preparation)
+* [Codecov](#codecov)
+* [GitHub](#github)
+    * [GitHub Actions](#github-actions)
+        * [Workflows](#workflows)
+    * [Preparation](#preparation-1)
+* [Docker](#docker)
+    * [Images and Dockerfiles](#images-and-dockerfiles)
+    * [Docker Commands](#docker-commands)
+        * [`docker build`](#docker-build)
+        * [`docker run`](#docker-run)
+* [Terraform](#terraform)
+    * [Install Terraform](#install-terraform)
+    * [Organisation of Terraform Code](#organisation-of-terraform-code)
+        * [`create-backend`](#create-backend)
+        * [`main-infrastructure`](#main-infrastructure)
+    * [Terraform Configuration](#terraform-configuration)
+    * [Terraform Modules](#terraform-modules)
+    * [Terraform Plan](#terraform-plan)
+    * [Terraform Apply](#terraform-apply)
+    * [Terraform Destroy](#terraform-destroy)
+* [Cloud Architecture](#cloud-architecture)
+    * [VPC and Region](#vpc-and-region)
+    * [Availability Zones](#availability-zones)
+    * [Networking](#networking)
+        * [Subnets](#subnets)
+    * [Load Balancer](#load-balancer)
+    * [Security Groups](#security-groups)
+    * [Logging](#logging)
+    * [IAM](#iam)
+        * [SSH Keys](#ssh-keys)
+    * [Compute](#compute)
+        * [EC2](#ec2)
+        * [ECR and ECS](#ecr-and-ecs)
+        * [Docker](#docker-1)
+        * [AutoScaling Group](#autoscaling-group)
+    * [Architecture Diagram](#architecture-diagram)
 
 ## Usage of the Guide
 
@@ -61,7 +71,7 @@ Sample Application:
 > [!CAUTION]
 > This is a potential error!
 
-The following section details some of the tools that we are using to deploy the application to AWS.
+The following section details some of the tools we use to deploy the application to AWS.
 
 ## AWS
 
@@ -86,7 +96,7 @@ Before you can deploy the Sample Application to AWS, follow the steps below to p
     1. This is important as you are highly advised against using the root account to change your AWS resources.
 
 > [!WARNING]
-> Even though you are also recommended to keep permissions as minimal as possible, for the purposes of this guide, you
+> Even though you are also recommended to keep permissions as minimal as possible, for this guide, you
 > are advised to attach the `AdministratorAccess` policy to the IAM user to ensure that you have the necessary
 > permissions to deploy the Sample Application.
 
@@ -109,7 +119,7 @@ your code is being tested and which parts are not.
 For the Sample Application, we will be using Codecov to measure the code coverage of the tests that are run on the
 application.
 
-To use Codecov, you will need to create an account on Codecov and link your GitHub repository to Codecov. Follow
+To use Codecov, you must create an account on Codecov and link your GitHub repository to Codecov. Follow
 [this guide](https://docs.codecov.com/docs/quick-start) to get started with Codecov.
 
 Make sure to save the Repository Upload Token, as it will be used in the next section to configure the GitHub Actions
@@ -465,7 +475,7 @@ You may change the region that the Sample Application is deployed to by changing
 Terraform and within the Terraform scripts that reference the region.
 
 > [!CAUTION]
-> If you decide to change the default region where the Sample Application will be hosted on, make sure that any
+> If you decide to change the default region where the Sample Application will be hosted, make sure that any
 > reference to the AWS region of interest is updated in the Terraform code. Failure to update the Region within
 > the Terraform scripts may result in a failed deployment!
 
@@ -477,7 +487,7 @@ Availability Zones are distinct locations within a region that are engineered to
 failures in other Availability Zones.
 
 For the Sample Application, all 3 Availability Zones in the `ap-southeast-1` region (`ap-southeast-1a`,
-`ap-southeast-1b`, `ap-southeast-1c`) are used to ensure high availability and fault tolerance.
+`ap-southeast-1b` and `ap-southeast-1c`) are used to ensure high availability and fault tolerance.
 
 You may change the number of Availability Zones that the VPC is created in by changing the `az_count` variable
 in the Terraform file [`constants.tf`](../deploy/modules/constants/constants.tf).
@@ -512,11 +522,10 @@ For the Sample Application, 2 types of subnets are created: **public** and **pri
 
 [[Terraform File]](../deploy/main-infrastructure/public-subnet.tf)
 
-Public subnets are Internet-facing, and has a route to an Internet Gateway. Internet Gateways are gateways that allow
+Public subnets are Internet-facing and have a route to an Internet Gateway. Internet Gateways are gateways that allow
 Internet traffic out of the VPC.
 
-NAT Gateways are created and associated with a Public Subnet as they facilitate outbound traffic from the private
-subnets to the Internet.
+NAT Gateways are created and associated with a Public Subnet as they facilitate outbound traffic from the Private Subnet to the Internet.
 
 For the public subnets, the IP addresses assigned to them are:
 
@@ -544,7 +553,7 @@ For the private subnets, the IP addresses assigned to them are:
 
 An Application Load Balancer (ALB) is created to route traffic to the ECS Service that hosts the Sample Application.
 
-An ALB Listener and Target Group is also created to ensure that traffic is listened on port `80` and routed to the ECS
+An ALB Listener and Target Group is also created to ensure that traffic is listened to on port `80` and routed to the ECS
 Service on port `80`.
 
 The configurations for the ALB are:
@@ -566,7 +575,7 @@ The configurations for the ALB Target Group are:
 * Protocol: `HTTP`
 * Port: `80`
 * VPC: VPC created above
-* Dereigistration Delay: `120` seconds
+* Deregistration Delay: `120` seconds
 * Health Check Configuration:
     * Healthy Threshold: 2
     * Unhealthy Threshold: 2
@@ -613,7 +622,7 @@ There are 3 main Security Groups that are created for the Sample Application:
 
 [[Terraform File]](../deploy/main-infrastructure/cloudwatch.tf)
 
-A AWS CloudWatch Log Group is created to store the logs of the ECS Tasks that are run by the ECS Service.
+An AWS CloudWatch Log Group is created to store the logs of the ECS Tasks that are run by the ECS Service.
 
 The configurations for the CloudWatch Log Group are:
 
@@ -672,7 +681,7 @@ The following roles and policies are created for the Sample Application:
 
 SSH Keys are used to allow secure access to the EC2 instances that are created to host the Sample Application.
 
-For the purposes of this application, we will be using RSA-4096 as the encryption algorithm for the SSH Key Pair.
+For this application, we will be using RSA-4096 as the encryption algorithm for the SSH Key Pair.
 
 The configuration of the SSH Key is:
 
@@ -694,16 +703,16 @@ The private key will be provided to you in another package containing all the cr
 maintain the application.
 
 > [!WARNING]
-> Even though an existing key pair is created for you, you should still change the SSH key pair to your own SSH 
+> Even though an existing key pair is created for you, you should still change the SSH key pair to your SSH
 > key pair to avoid reusing keys.
-> 
+>
 > To create a new key pair, run the command (you need the `ssh-keygen` command to be installed on your machine):
 > ```shell
 > ssh-keygen -t rsa -b 4096
 > ```
-> 
-> Replace the existing public key with the public key generated by the command above, by replace both the key file
-> stored in the [constants](../deploy/modules/constants) directory and the public key string in 
+>
+> Replace the existing public key with the public key generated by the command above, by replacing both the key file
+> stored in the [constants](../deploy/modules/constants) directory and the public key string in
 > [constants.tf](../deploy/modules/constants/constants.tf).
 
 > [!CAUTION]
@@ -772,7 +781,7 @@ The services created and their associated configurations are:
             * Field: `memory`
     * Lifecycle: Ignore changes made to the desired count to allow autoscaling to manage the desired count
 * **Capacity Provider**: Specifies the Auto Scaling Group that the ECS Service uses to run the ECS Tasks. This is
-  attached to a ECS Cluster Capacity Provider, which itself is attached to the ECS Cluster.
+  attached to an ECS Cluster Capacity Provider, which itself is attached to the ECS Cluster.
     * Name: `ssg-capacity-provider-sample-application`
     * Auto Scaling Group Provider
         * Auto Scaling Group ARN: EC2 Auto Scaling Group ARN
@@ -823,7 +832,7 @@ The configurations for the Docker Image are:
 * Docker Image Name: `[ECR Repository URL]:[Hash of files used in the Docker Container]`
 
 > [!CAUTION]
-> This step is must be done after the ECR Repository is created or else the Docker Image will not be able to be pushed
+> This step must be done after the ECR Repository is created or else the Docker Image will not be able to be pushed
 > to the ECR Repository!
 
 #### AutoScaling Group
@@ -833,24 +842,25 @@ An Auto Scaling Group is created to manage the EC2 instances that are created to
 The configurations for the Auto Scaling Group are:
 
 * Auto Scaling Group
-  * Name: `ssg-asg`
-  * Min Size: `1`
-  * Max Size: `1`  (this should ideally be more than 1 for high availability)
-  * VPC Zone Identifier: All Private Subnets (since EC2 instances except the Bastion Host are hosted on private subnets)
-  * Health Check Type: `EC2`
-  * Protect From Scale In: `true`
-  * Enabled Metrics (list of metrics that will trigger a scaling event):
-    * `GroupMinSize`
-    * `GroupMaxSize`
-    * `GroupDesiredCapacity`
-    * `GroupInServiceInstances`
-    * `GroupPendingInstances`
-    * `GroupStandbyInstances`
-    * `GroupTerminatingInstances`
-    * `GroupTotalInstances`
-  * Launch Template: `ssg_ec2_launchTemplate`
-  * Instance Refresh Strategy: `Rolling`
-  * Lifecycle: Create Before Destroy
+    * Name: `ssg-asg`
+    * Min Size: `1`
+    * Max Size: `1`  (this should ideally be more than 1 for high availability)
+    * VPC Zone Identifier: All Private Subnets (since EC2 instances except the Bastion Host are hosted on private
+      subnets)
+    * Health Check Type: `EC2`
+    * Protect From Scale In: `true`
+    * Enabled Metrics (list of metrics that will trigger a scaling event):
+        * `GroupMinSize`
+        * `GroupMaxSize`
+        * `GroupDesiredCapacity`
+        * `GroupInServiceInstances`
+        * `GroupPendingInstances`
+        * `GroupStandbyInstances`
+        * `GroupTerminatingInstances`
+        * `GroupTotalInstances`
+    * Launch Template: `ssg_ec2_launchTemplate`
+    * Instance Refresh Strategy: `Rolling`
+    * Lifecycle: Create Before Destroy
 
 We also enabled Target Tracking on the ECS Cluster to allow autoscaling to manage the desired number of EC2 instances
 to launch.
@@ -858,31 +868,31 @@ to launch.
 The following services and policies are created for this:
 
 * App Autoscaling Target
-  * Minimum Capacity: `1` (minimum task count)
-  * Maximum Capacity: `1` (maximum task count)
-  * Resource ID: `service/ssg_ecs_cluster/ssg_ecs_service`
-  * Scalable Dimension: `ecs:service:DesiredCount` (The desired count as established above under ECS)
-  * Service Namespace: `ecs`
+    * Minimum Capacity: `1` (minimum task count)
+    * Maximum Capacity: `1` (maximum task count)
+    * Resource ID: `service/ssg_ecs_cluster/ssg_ecs_service`
+    * Scalable Dimension: `ecs:service:DesiredCount` (The desired count as established above under ECS)
+    * Service Namespace: `ecs`
 * App Autoscaling Policy: CPU Usage
-  * Policy Name: `ssg-ecs-cpu-policy`
-  * Policy Type: `TargetTrackingScaling`
-  * Resource ID: Resource ID of the App Autoscaling Target formed above
-  * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
-  * Service Namespace: Service Namespace of the App Autoscaling Target formed above
-  * Target Tracking Scaling Policy Configuration
-    * Target Value: `50`
-    * Predefined Metrics Specification
-      * Predefined Metric Type: `ECSServiceAverageCPUUtilization`
+    * Policy Name: `ssg-ecs-cpu-policy`
+    * Policy Type: `TargetTrackingScaling`
+    * Resource ID: Resource ID of the App Autoscaling Target formed above
+    * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
+    * Service Namespace: Service Namespace of the App Autoscaling Target formed above
+    * Target Tracking Scaling Policy Configuration
+        * Target Value: `50`
+        * Predefined Metrics Specification
+            * Predefined Metric Type: `ECSServiceAverageCPUUtilization`
 * App Autoscaling Policy: Memory Usage
-  * Policy Name: `ssg-memoryTargetTracking`
-  * Policy Type: `TargetTrackingScaling`
-  * Resource ID: Resource ID of the App Autoscaling Target formed above
-  * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
-  * Service Namespace: Service Namespace of the App Autoscaling Target formed above
-  * Target Tracking Scaling Policy Configuration
-    * Target Value: `50`
-    * Predefined Metrics Specification
-      * Predefined Metric Type: `ECSServiceAverageMemoryUtilization`
+    * Policy Name: `ssg-memoryTargetTracking`
+    * Policy Type: `TargetTrackingScaling`
+    * Resource ID: Resource ID of the App Autoscaling Target formed above
+    * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
+    * Service Namespace: Service Namespace of the App Autoscaling Target formed above
+    * Target Tracking Scaling Policy Configuration
+        * Target Value: `50`
+        * Predefined Metrics Specification
+            * Predefined Metric Type: `ECSServiceAverageMemoryUtilization`
 
 ### Architecture Diagram
 

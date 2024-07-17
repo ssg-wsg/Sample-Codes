@@ -4,38 +4,68 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
 
 ## Table of Contents
 
-1. [Acknowledgements](#Acknowledgements)
-2. [Introduction](#Introduction)
-    1. [Notation](#Notation)
-3. [Getting Started](#Getting-Started)
-    1. [Minimum Requirements](#Minimum-Requirements)
-    2. [Next Steps](#Next-Steps)
-4. [Design](#Design)
-    1. [Architecture](#Architecture)
-        1. [Entrypoint](#Entrypoint)
-        2. [User Flow](#User-Flow)
-        3. [AWS Architecture](#AWS-Architecture)
-        4. [Pages](#Pages)
-            1. [`Encryption-Decryption`](#Encryption-Decryption)
-            2. [`Courses`](#Courses)
-            3. [`Enrolment`](#Enrolment)
-            4. [`Attendance`](#Attendance)
-            5. [`Assessments`](#Assessments)
-            6. [`SkillsFuture Credit Pay`](#SkillsFuture-Credit-Pay)
-        5. [Core](#Core)
-        6. [Utils](#Utils)
-        7. [Tests](#Tests)
-    2. [AWS Architecture](#AWS-Architecture)
-5. [Implementation](#Implementation)
-6. [DevOps](#DevOps)
-7. [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD)
-    1. [Logging](#Logging)
-    2. [Housekeeping](#Housekeeping)
-        1. [`start_scheduler()`](#start_scheduler)
-        2. [`_clean_temp()`](#_clean_temp)
-        3. [Extending tasks to perform](#Extending-tasks-to-perform)
-    3. [CI/CD](#CICD)
-8. [Glossary](#Glossary)
+* [Acknowledgements](#acknowledgements)
+* [Introduction](#introduction)
+    * [Notation](#notation)
+* [Getting Started](#getting-started)
+    * [Minimum Requirements](#minimum-requirements)
+    * [Next Steps](#next-steps)
+* [Design](#design)
+    * [Architecture](#architecture)
+        * [Entrypoint](#entrypoint)
+        * [User Flow](#user-flow)
+        * [Pages](#pages)
+            * [`Encryption-Decryption`](#encryption-decryption)
+            * [`Courses`](#courses)
+            * [`Enrolment`](#enrolment)
+            * [`Attendance`](#attendance)
+            * [`Assessments`](#assessments)
+            * [`SkillsFuture Credit Pay`](#skillsfuture-credit-pay)
+        * [Core](#core)
+        * [Utils](#utils)
+        * [Tests](#tests)
+    * [AWS Architecture](#aws-architecture)
+* [Implementation](#implementation)
+    * [Encryption and Decryption](#encryption-and-decryption)
+    * [Courses](#courses-1)
+        * [Course Run by Run Id](#course-run-by-run-id)
+        * [Add Course Runs](#add-course-runs)
+        * [Edit or Delete Course Runs](#edit-or-delete-course-runs)
+        * [View Course Sessions](#view-course-sessions)
+    * [Enrolment](#enrolment-1)
+        * [Create Enrolment](#create-enrolment)
+        * [Update Enrolment](#update-enrolment)
+        * [Cancel Enrolment](#cancel-enrolment)
+        * [Search Enrolment](#search-enrolment)
+        * [View Enrolment](#view-enrolment)
+        * [Update Enrolment Fee Collection](#update-enrolment-fee-collection)
+    * [Attendance](#attendance-1)
+        * [Course Session Attendance](#course-session-attendance)
+        * [Upload Course Session Attendance](#upload-course-session-attendance)
+    * [Assessment](#assessment)
+        * [Create Assessment](#create-assessment)
+        * [Update or Void Assessment](#update-or-void-assessment)
+        * [Find Assessment](#find-assessment)
+        * [View Assessment](#view-assessment)
+    * [SkillsFuture Credit Pay](#skillsfuture-credit-pay-1)
+        * [SF Credit Claims Payment Request Encryption](#sf-credit-claims-payment-request-encryption)
+        * [SF Credit Claims Payment Request Decryption](#sf-credit-claims-payment-request-decryption)
+        * [Upload Supporting Documents](#upload-supporting-documents)
+        * [View Claim Details](#view-claim-details)
+        * [Cancel Claim](#cancel-claim)
+* [DevOps](#devops)
+    * [GitHub Setup](#github-setup)
+        * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
+    * [CI/CD](#cicd)
+* [Logging and Housekeeping](#logging-and-housekeeping)
+    * [Logging](#logging)
+    * [Housekeeping](#housekeeping)
+        * [`start_scheduler()`](#start_scheduler)
+        * [`_clean_temp()`](#_clean_temp)
+        * [Extending tasks to perform](#extending-tasks-to-perform)
+* [Planned Enhancements](#planned-enhancements)
+    * [In-memory Key Files](#in-memory-key-files)
+    * [Go Serverless: Fargate](#go-serverless-fargate)
 
 ## Acknowledgements
 
@@ -47,6 +77,8 @@ Code from the application is reused from multiple sources:
     * https://github.com/aws-actions/amazon-ecr-login
 * Medium
     * https://medium.com/@octavio/ecs-deployments-with-github-actions-dd34beed6528
+* nexgeneerz
+    * https://nexgeneerz.io/aws-computing-with-ecs-ec2-terraform/
 * nric.biz
     * https://nric.biz/
 * Protecto.ai
@@ -83,6 +115,9 @@ Code from the application is reused from multiple sources:
 
 This guide's structure is also heavily inspired
 by https://github.com/AY2324S1-CS2103T-T17-1/tp/blob/master/docs/DeveloperGuide.md.
+
+This list of acknowledgements is not exhaustive, the relevant sources are credited in the codebase where the code is
+reused.
 
 ## Introduction
 
@@ -211,7 +246,8 @@ The process taken to start the Streamlit server is detailed below in the sequenc
     2. `Runtime::start()` is finally invoked and awaited, which creates `AsyncObjects` and returns them to `Server`
 7. The server is up and running
 
-For most intents and purposes, it is highly unlikely you will need to modify any of these processes, as they are provided
+For most intents and purposes, it is highly unlikely you will need to modify any of these processes, as they are
+provided
 by the Streamlit library.
 
 This section is to aid you in understanding how the Streamlit server is started and how the application is served.
@@ -1201,3 +1237,22 @@ This (private) method does the following:
 
 If you wish to include more cron tasks to perform, feel free to define more methods within this file, and add them into
 the scheduler within `start_scheduler()`, defining the interval in which to execute the task.
+
+## Planned Enhancements
+
+There are some planned enhancements that we wish to implement in the future. These enhancements are as follows:
+
+### In-memory Key Files
+
+Currently, the application saves the uploaded key files to the local filesystem. This is not ideal as the key files are
+sensitive and anyone with access to the filesystem can potentially access the key files. Saving it in memory will
+make it more difficult for attackers to gain access to the key files, as they will need to have access to the memory
+space of the application, which is difficult without root access.
+
+### Go Serverless: Fargate
+
+EC2 instances are currently used to host the application via ECS. This may be problematic since we need to regularly
+maintain the EC2 instances to ensure that they are up-to-date and secure.
+
+By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
+it for us. We only need to focus on the application itself.

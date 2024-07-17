@@ -7,21 +7,21 @@ start the application.
 
 ## Table of Contents
 
-- [Requirements](#Requirements)
-- [Downloading Code Files](#Downloading-Code-Files)
-    - [Method 1: Downloading the Code via Web UI](#Method-1-Downloading-the-Code-via-Web-UI)
-    - [Method 2: Downloading the Code via `git`](#Method-2-Downloading-the-Code-via-git)
-- [Installation](#Installation)
-    - [Python](#Python)
-        - [Installation of Python](#Installation-of-Python)
-        - [Python Libraries](#Python-Libraries)
-    - [Docker](#Docker)
-        - [Installation of Docker](#Installation-of-Docker)
-- [Usage](#Usage)
-    - [Running the Application in Python](#Running-the-Application-in-Python)
-    - [Running the Application in Docker](#Running-the-Application-in-Docker)
-        - [Building the Docker Container](#Building-the-Docker-Container)
-        - [Running the Docker Container](#Running-the-Docker-Container)
+* [Requirements](#requirements)
+* [Downloading Code Files](#downloading-code-files)
+   * [Method 1: Downloading the Code via Web UI](#method-1-downloading-the-code-via-web-ui)
+   * [Method 2: Downloading the Code via `git`](#method-2-downloading-the-code-via-git)
+* [Installation](#installation)
+   * [Python](#python)
+      * [Installation of Python](#installation-of-python)
+      * [Python Libraries](#python-libraries)
+   * [Docker](#docker)
+      * [Installation of Docker](#installation-of-docker)
+* [Usage](#usage)
+   * [Running the Application in Python](#running-the-application-in-python)
+   * [Running the Application in Docker](#running-the-application-in-docker)
+      * [Building the Docker Container](#building-the-docker-container)
+      * [Running the Docker Container](#running-the-docker-container)
 
 ## Requirements
 

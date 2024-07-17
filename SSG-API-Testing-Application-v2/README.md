@@ -1,15 +1,11 @@
 # SSG API Demo Application
 
+[![codecov](https://codecov.io/gh/asdfghjkxd/Sample-Codes/graph/badge.svg?token=DZZXXV1XW9)](https://codecov.io/gh/asdfghjkxd/Sample-Codes)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
 Built with Streamlit, this sample application provides you with a quick and easy way to try out our APIs without 
 needing to write your own code!
-
-## AWS Deployment
-
-Don't want to install any packages or run commands? Head over to [this site]() where this application is being hosted
-on to get started quickly!
 
 ## Local Installation
 
@@ -207,4 +203,4 @@ Using this API, you can:
 ## Acknowledgements
 
 Many of the backend functions are adapted from the [SSG-API-Testing-Application](../../Sample-Codes/SSG-API-Testing-Application) and various sources from the
-Internet. They are credited where they are due.
+Internet. Sources are credited where they are referenced or reused.
