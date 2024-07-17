@@ -6,7 +6,7 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.default.id
 
   tags = {
-    Name = "${module.constants.namespace}_privateSubnet_${count.index}"
+    Name = "${module.constants.namespace}-private-subnet-${count.index}"
   }
 }
 
@@ -16,12 +16,12 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.default.id
 
   route {
-    cidr_block     = "0.0.0.0/0"
+    cidr_block     = module.constants.broadcast_ipv4
     nat_gateway_id = aws_nat_gateway.nat_gateway[count.index].id
   }
 
   tags = {
-    Name = "${module.constants.namespace}_privateRouteTable_${count.index}"
+    Name = "${module.constants.namespace}-private-route-table-${count.index}"
   }
 }
 

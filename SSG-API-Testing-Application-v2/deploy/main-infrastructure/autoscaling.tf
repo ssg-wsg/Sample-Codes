@@ -26,7 +26,7 @@ resource "aws_appautoscaling_policy" "ecs_cpu_policy" {
 
 # Target Tracking on ECS Cluster Memory Utilization
 resource "aws_appautoscaling_policy" "ecs_memory_policy" {
-  name               = "${module.constants.namespace}_memoryTargetTracking"
+  name               = "${module.constants.namespace}-ecs-memory-policy"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension

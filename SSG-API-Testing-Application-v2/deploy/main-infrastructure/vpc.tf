@@ -5,7 +5,7 @@ resource "aws_vpc" "default" {
   enable_dns_support   = true
 
   tags = {
-    Name = "${module.constants.namespace}_VPC_${module.constants.service_name}"
+    Name = "${module.constants.namespace}-vpc-${module.constants.service_name}"
   }
 }
 
@@ -14,9 +14,11 @@ resource "aws_internet_gateway" "default" {
   vpc_id = aws_vpc.default.id
 
   tags = {
-    Name = "${module.constants.namespace}_IGW_${module.constants.service_name}"
+    Name = "${module.constants.namespace}-internet-gateway-${module.constants.service_name}"
   }
 }
 
 # Specify all available AZs
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+
+}

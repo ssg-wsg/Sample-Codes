@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "ec2_instance_role_policy" {
 }
 
 resource "aws_iam_role" "ec2_instance_role" {
-  name               = "${module.constants.namespace}_ec2_instance_role"
+  name               = "${module.constants.namespace}-ec2-instance-role"
   assume_role_policy = data.aws_iam_policy_document.ec2_instance_role_policy.json
 }
 
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "ec2_instance_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "ec2_instance_role_profile" {
-  name = "${module.constants.namespace}_ec2_instance_role_profile"
+  name = "${module.constants.namespace}-ec2-instance-role-profile"
   role = aws_iam_role.ec2_instance_role.name
 }
 
@@ -66,12 +66,12 @@ data "aws_iam_policy_document" "ecs_service_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_service_role" {
-  name               = "${module.constants.namespace}_ecs_service_role"
+  name               = "${module.constants.namespace}-ecs-service-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_service_policy.json
 }
 
 resource "aws_iam_role_policy" "ecs_service_role_policy" {
-  name   = "${module.constants.namespace}_ecs_service_role_policy"
+  name   = "${module.constants.namespace}-ecs-service-role-policy"
   role   = aws_iam_role.ecs_service_role.name
   policy = data.aws_iam_policy_document.ecs_service_role_policy.json
 }
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "task_assume_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name               = "${module.constants.namespace}_ecs_task_execution_role"
+  name               = "${module.constants.namespace}-ecs-task-execution-role"
   assume_role_policy = data.aws_iam_policy_document.task_assume_role_policy.json
 }
 
@@ -100,6 +100,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 }
 
 resource "aws_iam_role" "ecs_task_iam_role" {
-  name               = "${module.constants.namespace}_ecs_task_iam_role"
+  name               = "${module.constants.namespace}-ecs-task-iam-role"
   assume_role_policy = data.aws_iam_policy_document.task_assume_role_policy.json
 }

@@ -5,10 +5,10 @@ module "constants" {
 
 terraform {
   backend "s3" {
-    bucket         = "ssg-tf-bucket"
-    key            = "main/main_infra.tfstate"
-    region         = "ap-southeast-1"
-    dynamodb_table = "ssg-tf-state-lock"
+    bucket         = "ssg-tf-bucket"               # module.constants.s3_bucket_name
+    key            = "main/infrastructure.tfstate" # module.constants.ecr_s3_state_bucket_name
+    region         = "ap-southeast-1"              # module.constants.aws_region
+    dynamodb_table = "ssg-terraform-state-lock"    # module.constants.dynamodb_table_name
     encrypt        = true
   }
 
@@ -26,6 +26,6 @@ provider "aws" {
 
 # Create key pair for SSH into Bastion Host
 resource "aws_key_pair" "default" {
-  key_name   = "${module.constants.namespace}_keyPair"
+  key_name   = "${module.constants.namespace}-key-pair"
   public_key = module.constants.ssh_public_key
 }

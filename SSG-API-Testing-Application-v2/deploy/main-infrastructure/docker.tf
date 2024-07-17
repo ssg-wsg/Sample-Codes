@@ -5,12 +5,12 @@ data "aws_ecr_repository" "ecr" {
 
 locals {
   repo_url = data.aws_ecr_repository.ecr.repository_url
-  hash     = md5(join("-", [for x in fileset("", "../../app/{*.py, Dockerfile}") : filemd5(x)]))
+  hash     = md5(join("-", [for x in fileset("../../app", "**") : filemd5(x)])) # hash all files in the app directory
 }
 
 resource "null_resource" "image" {
   triggers = {
-    hash = md5(join("-", [for x in fileset("", "../../app/{*.py, Dockerfile}") : filemd5(x)]))
+    hash = local.hash
   }
 
   provisioner "local-exec" {

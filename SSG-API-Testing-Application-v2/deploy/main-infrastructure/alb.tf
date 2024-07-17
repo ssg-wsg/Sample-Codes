@@ -8,7 +8,7 @@ resource "aws_alb" "alb" {
 # Create HTTP listener
 resource "aws_alb_listener" "alb_default_listener_http" {
   load_balancer_arn = aws_alb.alb.arn
-  port              = 80
+  port              = 80 # HTTP Port
   protocol          = "HTTP"
 
   default_action {
@@ -19,7 +19,7 @@ resource "aws_alb_listener" "alb_default_listener_http" {
 
 # Create TG
 resource "aws_alb_target_group" "service_target_group" {
-  name                 = "${module.constants.namespace}-targetGroup"
+  name                 = "${module.constants.namespace}-target-group"
   port                 = "80"
   protocol             = "HTTP"
   vpc_id               = aws_vpc.default.id

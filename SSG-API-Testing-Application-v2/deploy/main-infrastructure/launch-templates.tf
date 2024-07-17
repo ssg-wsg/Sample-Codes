@@ -1,4 +1,4 @@
-data "aws_ami" "amazon_linux_2" {
+data "aws_ami" "am2" {
   most_recent = true
 
   filter {
@@ -20,9 +20,9 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 resource "aws_launch_template" "ecs_launch_template" {
-  name                   = "${module.constants.namespace}_ec2_launchTemplate"
-  image_id               = data.aws_ami.amazon_linux_2.id
-  instance_type          = "t2.micro"
+  name                   = "${module.constants.namespace}-ec2-launch-template"
+  image_id               = data.aws_ami.am2.id
+  instance_type          = module.constants.launch_instance_instance_type
   key_name               = aws_key_pair.default.key_name
   vpc_security_group_ids = [aws_security_group.ec2.id]
 

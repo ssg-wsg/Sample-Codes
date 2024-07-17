@@ -1,5 +1,5 @@
 resource "aws_ecs_capacity_provider" "cas" {
-  name = "${module.constants.namespace}-capacity-provider-${module.constants.service_name}"
+  name = "${module.constants.namespace}-${module.constants.service_name}-capacity-provider"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ecs_autoscaling_group.arn

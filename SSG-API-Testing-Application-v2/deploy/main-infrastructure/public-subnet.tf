@@ -7,7 +7,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${module.constants.namespace}_publicSubnet_${count.index}"
+    Name = "${module.constants.namespace}-public-subnet-${count.index}"
   }
 }
 
@@ -16,12 +16,12 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.default.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = module.constants.broadcast_ipv4
     gateway_id = aws_internet_gateway.default.id
   }
 
   tags = {
-    Name = "${module.constants.namespace}_publicRouteTable"
+    Name = "${module.constants.namespace}-public-route-table"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_eip" "nat_gateway" {
   domain = "vpc"
 
   tags = {
-    Name = "${module.constants.namespace}_eip_${count.index}"
+    Name = "${module.constants.namespace}-elastic-ip-${count.index}"
   }
 }
 
@@ -56,6 +56,6 @@ resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway[count.index].id
 
   tags = {
-    Name = "${module.constants.namespace}_privateSubnet_${count.index}"
+    Name = "${module.constants.namespace}-nat-gateway-${count.index}"
   }
 }

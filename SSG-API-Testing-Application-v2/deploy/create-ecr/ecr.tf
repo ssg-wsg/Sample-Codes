@@ -5,10 +5,10 @@ module "constants" {
 
 terraform {
   backend "s3" {
-    bucket         = "ssg-tf-bucket"
-    key            = "main/ecr.tfstate"
-    region         = "ap-southeast-1"
-    dynamodb_table = "ssg-tf-state-lock"
+    bucket         = "ssg-tf-bucket"            # module.constants.s3_bucket_name
+    key            = "main/ecr.tfstate"         # module.constants.ecr_s3_state_bucket_name
+    region         = "ap-southeast-1"           # module.constants.aws_region
+    dynamodb_table = "ssg-terraform-state-lock" # module.constants.dynamodb_table_name
     encrypt        = true
   }
 
@@ -20,7 +20,7 @@ terraform {
   }
 }
 
-resource "aws_ecr_repository" "ecr" {
+resource "aws_ecr_repository" "ecr_repository" {
   name                 = "${module.constants.namespace}/${module.constants.service_name}"
   force_delete         = false
   image_tag_mutability = "MUTABLE"
