@@ -507,9 +507,7 @@ You may change the default CIDR IP of the VPC by changing the `cidr` variable in
 [`constants.tf`](../deploy/modules/constants/constants.tf).
 
 > [!NOTE]
-> Refer
->
-to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
+> Refer to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
 > for more information on how the CIDR IP addressing system works.
 
 #### Subnets
@@ -571,7 +569,7 @@ The configurations for the ALB Listener are:
 
 The configurations for the ALB Target Group are:
 
-* Target Group Name: `ssg-targetGroup`
+* Target Group Name: `ssg-target-group`
 * Protocol: `HTTP`
 * Port: `80`
 * VPC: VPC created above
@@ -598,7 +596,7 @@ There are 3 main Security Groups that are created for the Sample Application:
 1. **EC2 Security Group**: This Security Group is associated with the EC2 instances that are created to host the
    Sample Application.
     1. Inbound Rules:
-        * `TCP` on any port between `1024` to `65535` originating from the `Application Load Balancer` Security Group
+        * `TCP` on port `80` and `443` originating from the `Application Load Balancer` Security Group
         * `TCP` on port `22` originating from the `Bastion Host` Security Group
     2. Outbound Rules:
         * `TCP` on any port to any destination (`0.0.0.0/0`)
@@ -685,7 +683,7 @@ For this application, we will be using RSA-4096 as the encryption algorithm for 
 
 The configuration of the SSH Key is:
 
-* Key Pair Name: `ssg_keyPair`
+* Key Pair Name: `ssg-key-pair`
 * Public Key:
 
 ```text
@@ -761,10 +759,10 @@ Task Definition, and EC2 Launch Template.
 The services created and their associated configurations are:
 
 * **ECS Cluster**: Provides the compute resources for the ECS service
-    * Cluster Name: `ssg_ecs_cluster`
+    * Cluster Name: `ssg-ecs-cluster`
     * Lifecycle: Create Before Destroy
 * **ECS Service**
-    * Service Name: `ssg_ecs_service`
+    * Service Name: `ssg-ecs-service`
     * IAM Role: ECS Service Role
     * Cluster: ECS Cluster
     * Task Definition: ECS Task Definition
@@ -782,7 +780,7 @@ The services created and their associated configurations are:
     * Lifecycle: Ignore changes made to the desired count to allow autoscaling to manage the desired count
 * **Capacity Provider**: Specifies the Auto Scaling Group that the ECS Service uses to run the ECS Tasks. This is
   attached to an ECS Cluster Capacity Provider, which itself is attached to the ECS Cluster.
-    * Name: `ssg-capacity-provider-sample-application`
+    * Name: `ssg-sample-application-capacity-provider`
     * Auto Scaling Group Provider
         * Auto Scaling Group ARN: EC2 Auto Scaling Group ARN
         * Managed Scaling
@@ -791,7 +789,7 @@ The services created and their associated configurations are:
             * Target Capacity: 1
         * Managed Termination Protection: Enabled
 * **ECS Task Definition**: Specifies the Docker image that the ECS Service uses to run the Sample Application
-    * Family: `ssg_ecs_task_definition`
+    * Family: `ssg-ecs-task-definition`
     * Task Execution Role: ECS Task Execution Role
     * Task Role: ECS Task Role
     * Depends on: Docker Image of Sample Application
@@ -808,11 +806,11 @@ The services created and their associated configurations are:
         * Log Configuration
             * Log Driver: `awslogs`
             * Options
-                * awslogs-group: `/ecs/ssg_ecs_task_definition`
+                * awslogs-group: `ssg/ecs/sample-application`
                 * awslogs-region: `ap-southeast-1`
-                * awslogs-stream-prefix: `app`
+                * awslogs-stream-prefix: `ssg`
 * **EC2 Launch Template**: Specifies the configurations of the EC2 instances that the ECS Service runs on
-    * Name: `ssg_ec2_launchTemplate`
+    * Name: `ssg-ec2-launch-template`
     * Image ID: ID of the ECS-compatible Amazon Linux 2 AMI
     * Instance Type: `t2.micro`
     * Key Pair: `ssg-key-pair`
@@ -884,7 +882,7 @@ The following services and policies are created for this:
         * Predefined Metrics Specification
             * Predefined Metric Type: `ECSServiceAverageCPUUtilization`
 * App Autoscaling Policy: Memory Usage
-    * Policy Name: `ssg-memoryTargetTracking`
+    * Policy Name: `ssg-ecs-memory-policy`
     * Policy Type: `TargetTrackingScaling`
     * Resource ID: Resource ID of the App Autoscaling Target formed above
     * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
