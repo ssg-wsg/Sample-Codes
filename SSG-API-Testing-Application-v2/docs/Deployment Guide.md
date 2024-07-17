@@ -79,7 +79,8 @@ Before you can deploy the Sample Application to AWS, follow the steps below to p
    this [forum post](https://repost.aws/knowledge-center/create-and-activate-aws-account)
    for more information on how you can create an AWS account.
 2. Create an IAM user with the necessary permissions to deploy the Sample Application. Follow the instructions provided
-   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create an IAM user. Make sure to attach
+   in this [guide](https://medium.com/@sam.xzo.developing/create-aws-iam-user-02ee9c65c877) to create an IAM user. Make
+   sure to attach
    the [AdministratorAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AdministratorAccess.html)
    policy to the IAM user to ensure the user has the necessary permissions to deploy the Sample Application.
     1. This is important as you are highly advised against using the root account to change your AWS resources.
@@ -446,106 +447,444 @@ terraform destroy
 ## Cloud Architecture
 
 Now that you understand the main tools that we will be using in the deployment of the Sample Application to AWS,
-let's next take a look at the AWS architecture that is used to serve the application.
+let's delve deeper into how the Sample Application is architected.
 
-### Services
+### VPC and Region
 
-Let's take a look at the services that we will be using in the application.
+[[Terraform File]](../deploy/main-infrastructure/vpc.tf)
 
-1. **Amazon Virtual Private Cloud (VPC)**: VPC is a service that lets you launch AWS resources in a virtual network that
-   you define. You have complete control over your virtual networking environment, including selection of your IP
-   address range, creation of subnets, and configuration of route tables and network gateways.
-2. **Subnets**: Subnets are segments of a VPC's IP address range that you can use to group resources based on security
-   and operational needs.
-3. **Amazon Elastic Compute Cloud (EC2)**: EC2 is a web service that provides secure, resizable compute capacity in the
-   cloud. It is designed to make web-scale cloud computing easier for developers.
-4. **Amazon Elastic Container Service (ECS)**: ECS is a fully managed container orchestration service that allows you to
-   easily run, stop, and manage Docker containers on a cluster.
-5. **Amazon Elastic Container Registry (ECR)**: ECR is a fully managed Docker container registry that makes it easy for
-   developers to store, manage, and deploy Docker container images.
-6. **Amazon Fargate**: Fargate is a serverless compute engine for containers that works with both ECS and EKS. Fargate
-   removes the need to provision and manage servers, lets you specify and pay for resources per application, and
-   improves security through application isolation by design.
-   **This is a planned enhancement to the Sample Application.**
-7. **Amazon Application Load Balancer (ALB)**: ALB is a load balancer that operates at the application layer and allows
-   you to define routing rules based on content across multiple services or containers running on one or more EC2
-   instances.
-8. **Amazon CloudWatch**: CloudWatch is a monitoring and observability service built for DevOps engineers, developers,
-   site reliability engineers (SREs), and IT managers. CloudWatch provides you with data and actionable insights to
-   monitor your applications, respond to system-wide performance changes, optimize resource utilization, and get a
-   unified view of operational health.
-9. **Amazon Simple Storage Service (S3)**: S3 is an object storage service that offers industry-leading scalability,
-   data availability, security, and performance. S3 is designed for 99.999999999% (11 9's) of durability, and stores
-   data for millions of applications for companies all around the world.
-10. **Amazon DynamoDB**: DynamoDB is a key-value and document database that delivers single-digit millisecond
-    performance at any scale. It's a fully managed, multi-region, multi-master database with built-in security, backup
-    and restore, and in-memory caching for internet-scale applications.
+For purposes of compliance and proximity to our customers (who are mainly based in Singapore), the Sample Application
+is deployed in the `ap-southeast-1` (Singapore) region.
 
-Let's zoom into the few services that we will actively be using and managing in the application.
+A Virtual Private Cloud (VPC) is hence created in the `ap-southeast-1` region to host the Sample Application.
+
+Virtual Private Clouds (VPCs) are isolated networks within the AWS cloud that allow you to launch AWS resources in a
+virtual network that you define.
+
+You may change the region that the Sample Application is deployed to by changing the `aws_region` variable in the
+Terraform and within the Terraform scripts that reference the region.
+
+> [!CAUTION]
+> If you decide to change the default region where the Sample Application will be hosted on, make sure that any
+> reference to the AWS region of interest is updated in the Terraform code. Failure to update the Region within
+> the Terraform scripts may result in a failed deployment!
+
+### Availability Zones
+
+[[Terraform File]](../deploy/main-infrastructure/vpc.tf)
+
+Availability Zones are distinct locations within a region that are engineered to be geographically isolated from
+failures in other Availability Zones.
+
+For the Sample Application, all 3 Availability Zones in the `ap-southeast-1` region (`ap-southeast-1a`,
+`ap-southeast-1b`, `ap-southeast-1c`) are used to ensure high availability and fault tolerance.
+
+You may change the number of Availability Zones that the VPC is created in by changing the `az_count` variable
+in the Terraform file [`constants.tf`](../deploy/modules/constants/constants.tf).
+
+> [!WARNING]
+> You are highly recommended to deploy the VPC in at least 2 Availability Zones to ensure high availability and fault
+> tolerance. Deploying the VPC in a single Availability Zone may result in a single point of failure!
+
+### Networking
+
+[[Terraform File]](../deploy/main-infrastructure/vpc.tf)
+
+By default, the VPC is created with a Class B CIDR IPv4 IP address of `172.16.0.0/16`.
+This configuration allows for `2^16` ~ `65536` IP addresses within your VPC.
+
+You may change the default CIDR IP of the VPC by changing the `cidr` variable in the Terraform file
+[`constants.tf`](../deploy/modules/constants/constants.tf).
+
+> [!NOTE]
+> Refer
+>
+to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
+> for more information on how the CIDR IP addressing system works.
+
+#### Subnets
+
+Subnets are created within the VPC to segment the IP address space of the VPC into smaller, more manageable blocks.
+
+For the Sample Application, 2 types of subnets are created: **public** and **private** subnets.
+
+**Public Subnets**
+
+[[Terraform File]](../deploy/main-infrastructure/public-subnet.tf)
+
+Public subnets are Internet-facing, and has a route to an Internet Gateway. Internet Gateways are gateways that allow
+Internet traffic out of the VPC.
+
+NAT Gateways are created and associated with a Public Subnet as they facilitate outbound traffic from the private
+subnets to the Internet.
+
+For the public subnets, the IP addresses assigned to them are:
+
+* `172.16.3.0/24`
+* `172.16.4.0/24`
+* `172.16.5.0/24`
+
+**Private Subnets**
+
+[[Terraform File]](../deploy/main-infrastructure/private-subnet.tf)
+
+Private subnets are not Internet-facing, and have a route to a NAT Gateway. Instances in a private subnet can
+initiate outbound connections to the Internet, but cannot receive direct inbound connections from the Internet
+due to NAT translation at the gateway.
+
+For the private subnets, the IP addresses assigned to them are:
+
+* `172.16.0.0/24`
+* `172.16.1.0/24`
+* `172.16.2.0/24`
+
+### Load Balancer
+
+[[Terraform File]](../deploy/main-infrastructure/alb.tf)
+
+An Application Load Balancer (ALB) is created to route traffic to the ECS Service that hosts the Sample Application.
+
+An ALB Listener and Target Group is also created to ensure that traffic is listened on port `80` and routed to the ECS
+Service on port `80`.
+
+The configurations for the ALB are:
+
+* Load Balancer Name: `ssg-alb`
+* Security Group: [Application Load Balancer Security Group](#Security-Groups)
+* Subnets: Attach all Public Subnets to the ALB
+
+The configurations for the ALB Listener are:
+
+* Associated Load Balancer: `ssg-alb`
+* Protocol: `HTTP`
+* Port: `80`
+* Default Action: Forward to the Target Group
+
+The configurations for the ALB Target Group are:
+
+* Target Group Name: `ssg-targetGroup`
+* Protocol: `HTTP`
+* Port: `80`
+* VPC: VPC created above
+* Dereigistration Delay: `120` seconds
+* Health Check Configuration:
+    * Healthy Threshold: 2
+    * Unhealthy Threshold: 2
+    * Interval of Health Check: 60 seconds
+    * HTTP codes permitted: `200` (Success Codes) - `399` (Redirection Codes)
+    * Port: Traffic Port
+    * Protocol: `HTTP`
+    * Timeout: 30 seconds
+
+**This ALB Target Group depends on the ALB (ALB must be created before the Target Group can be created).**
+
+### Security Groups
+
+[[Terraform File]](../deploy/main-infrastructure/security-groups.tf)
+
+Security Groups are virtual firewalls that control the inbound and outbound traffic to your AWS resources.
+
+There are 3 main Security Groups that are created for the Sample Application:
+
+1. **EC2 Security Group**: This Security Group is associated with the EC2 instances that are created to host the
+   Sample Application.
+    1. Inbound Rules:
+        * `TCP` on any port between `1024` to `65535` originating from the `Application Load Balancer` Security Group
+        * `TCP` on port `22` originating from the `Bastion Host` Security Group
+    2. Outbound Rules:
+        * `TCP` on any port to any destination (`0.0.0.0/0`)
+2. **Application Load Balancer Security Group**: This Security Group is associated with the Application Load Balancer
+   that routes traffic to the ECS Service.
+    1. Inbound Rules:
+        * `TCP` on port `80` from any source (`0.0.0.0/0`)
+    2. Outbound Rules:
+        * `TCP` on any port to any destination (`0.0.0.0/0`)
+3. **Bastion Host Security Group**: This Security Group is associated with the Bastion Host that is used to SSH into
+   the EC2 instances.
+    1. Inbound Rules:
+        * `TCP` on port `22` from any source (`0.0.0.0/0`)
+    2. Outbound Rules:
+        * `TCP` on any port to any destination (`0.0.0.0/0`)
+
+> [!NOTE]
+> `0.0.0.0/0` represents a broadcast address that allows traffic from any source to the specified destination.
+
+### Logging
+
+[[Terraform File]](../deploy/main-infrastructure/cloudwatch.tf)
+
+A AWS CloudWatch Log Group is created to store the logs of the ECS Tasks that are run by the ECS Service.
+
+The configurations for the CloudWatch Log Group are:
+
+* Name: `ssg/ecs/sample-application`
+* Retention Period: `7` days'
+
+> [!WARNING]
+> Logs will be delivered to the CloudWatch Log Group from your application in ECS only if the application prints its
+> logs to `STDOUT` or `STDERR`, otherwise, no logs will be captured by CloudWatch!
+
+### IAM
+
+[[Terraform File]](../deploy/main-infrastructure/iam.tf)
+
+Identity and Access Management (IAM) is a service that helps you securely control access to AWS resources.
+
+The following roles and policies are created for the Sample Application:
+
+* EC2 Instance Role
+    * Statements
+        * Action: `sts:AssumeRole`
+        * Effect: `Allow`
+        * Principals
+            * Type: Service
+            * Identifiers: [`ec2.amazonaws.com`, `ecs.amazonaws.com`]
+    * Attached IAM Role Policy: `arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role`
+* Associated EC2 Instance Role Profile
+* ECS Service Role
+    * Statements
+        * Action: `sts:AssumeRole`
+        * Effect: `Allow`
+        * Principals
+            * Type: Service
+            * Identifiers: `ecs.amazonaws.com`
+    * Attached **Service Role Policy**
+        * Statements
+            * Effect: `Allow`
+            * Actions: [`ec2:AuthorizeSecurityGroupIngress`, `ec2:Describe*`,
+              `elasticloadbalancing:DeregisterInstancesFromLoadBalancer`, `elasticloadbalancing:DeregisterTargets`,
+              `elasticloadbalancing:Describe*`, `elasticloadbalancing:RegisterInstancesWithLoadBalancer`,
+              `elasticloadbalancing:RegisterTargets`, `ec2:DescribeTags`, `logs:CreateLogGroup`, `logs:CreateLogStream`,
+              `logs:DescribeLogStreams`, `logs:PutSubscriptionFilter`, `logs:PutLogEvents`]
+            * Resources: `*` (all AWS resources)
+* ECS Task Execution Role
+    * Statements
+        * Action: `sts:AssumeRole`
+        * Effect: `Allow`
+        * Principals
+            * Type: Service
+            * Identifiers: `ecs-tasks.amazonaws.com`
+    * Attached IAM Role Policy: `arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy`
+
+#### SSH Keys
+
+[[Terraform File]](../deploy/main-infrastructure/main.tf)
+
+SSH Keys are used to allow secure access to the EC2 instances that are created to host the Sample Application.
+
+For the purposes of this application, we will be using RSA-4096 as the encryption algorithm for the SSH Key Pair.
+
+The configuration of the SSH Key is:
+
+* Key Pair Name: `ssg_keyPair`
+* Public Key:
+
+```text
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDVLkiG61Z6tcziVlMDL3TWcFJbDGFJRv8e98lbGNZKMtOzTf++wIzJYuSvS+RK/sM/Gqql4nxagRhSKh
+6cx+KAYzd4zbMjrqvlRYXEWoQwD+/xm160A+R7ecGSEhbwxVigkJqAx9HGzMvO0o07oLtUz3NZxNEMLiIw8ZE0VjkCTa2gzaD3Rs3SFuPcsruc8wr0S+4y
+bazlx+Y1if7qWEGtixVtsBS3U89XK29amNr3HliPUPrvjcuh5Y4feI3f3mmGVvRCbmqkahfC2i6h9BKOI2c8Z4ZNRD/YAsMwe3GbZw8mk4rIztHHKIsuby
+jOGrqbWyO24/hKB2ooQVGE+9jM/YUD5dq8TyC9JniKgGVSlZSudfBTYsi/3fH76gO7i0vmNTL10Yf2zxYoVsWbeYvsId83RFbNZ3L6wlZngg6DFFAEtB5O
+UeMFKts+B/fq1ykJPD8DNyDfZtuI5C54oddxs+8oEDCGJWyl/1SkrHNGhKXcpPdLoKex3iVNw0whOBZS8t7Jru4/vy2CYNlRt3lnPjt+4Up+6H70F9jsJC
+xRTN5kFZQxJv+vWSAZwVqxNxx7IcY7N/bWTeajnoyXoglmERDhGToRsGPXf0V0gMsdzNcmKO6HuSyHYjw/U5ZOJQOil1vk4GDuDUspIxjlz4bmf78ppuDz
+xkjvwIxZu+VtaQ== george@Georges-MacBook-Pro.local
+
+```
+
+The private key will be provided to you in another package containing all the credentials you need to access and
+maintain the application.
+
+> [!WARNING]
+> Even though an existing key pair is created for you, you should still change the SSH key pair to your own SSH 
+> key pair to avoid reusing keys.
+> 
+> To create a new key pair, run the command (you need the `ssh-keygen` command to be installed on your machine):
+> ```shell
+> ssh-keygen -t rsa -b 4096
+> ```
+> 
+> Replace the existing public key with the public key generated by the command above, by replace both the key file
+> stored in the [constants](../deploy/modules/constants) directory and the public key string in 
+> [constants.tf](../deploy/modules/constants/constants.tf).
+
+> [!CAUTION]
+> You should not share your SSH keys with anyone who is not permitted to access the EC2 instances.
+
+### Compute
+
+The following section details some of the compute resources that are created to host the Sample Application.
 
 #### EC2
 
-EC2 is used to provide the application with a platform and compute capabilities to run on.
+[[Terraform File]](../deploy/main-infrastructure/ssh.tf)
 
-In the initial stages of deployment, this was used as it allows you to get the application up and running quickly, by
-provisioning an EC2 instance on-demand and manually deploying the application on it without many configurations required
-by the developer.
+One Elastic Compute Cloud (EC2) instance is created to act as a Bastion Host to allow SSH access to the EC2 instances
+that are created to host the Sample Application.
 
-However, as we move towards a more cloud-native solution, we will be using ECS in conjunction with Fargate to manage the
-orchestration and deployment of the application through Docker containers instead, rather than using bare EC2 instances
-to host the application.
+The Bastion Host is created in the public subnet and is associated with the Bastion Host Security Group.
 
-#### ECR
+The configurations for the Bastion Host are:
 
-ECR is a scalable private container registry (something like GitHub for Docker images!) that allows you to store,
-manage, and deploy Docker container images.
+* AMI: `Amazon Linux 2`
+* Instance Type: `t2.micro`
+* Associated Subnet: First Public Subnet (`172.16.3.0/24`)
+* Public IPv4 Address: Enabled
+* Security Group: [`Bastion Host` Security Group](#Security-Groups)
 
-ECR has integrations with ECS that allow you to easily push and pull Docker images from the registry to the ECS, and
-trigger upstream changes to ECS services when a new image is pushed to the registry.
+#### ECR and ECS
 
-This allows you to create complex Continuous Deployment pipelines that automatically deploy new versions of the
-production application when a new image is ready.
+[[Terraform File]](../deploy/main-infrastructure/ecs.tf)
 
-#### ECS
+A Private Elastic Container Registry (ECR) is used to store Docker images of the Sample Application.
 
-ECS is used to orchestrate and manage the deployment of the application through Docker containers.
+The configurations for the ECR are:
 
-ECS allows you to define a task definition that specifies the Docker container image to use, the CPU and memory
-requirements, the networking configuration, and other configurations that are required to run the application.
+* Repository Name: `ssg/sample-application`
+* Force Delete Repository: False
+* Image Tag Mutability: `MUTABLE`
+* Image Scanning: Enabled
 
-ECS also allows you to define a service that manages the task definition and ensures that the application is running
-according to the configurations specified in the task definition.
+An Elastic Container Service (ECS) is used to run the Docker images of the Sample Application. The ECS Service is
+dependent on the ECR Repository to pull the Docker images.
 
-You will be using this service mostly throughout the deployment process.
+ECS also creates other services that it uses to host the Sample Application, such as the ECS Cluster, Capacity Provider,
+Task Definition, and EC2 Launch Template.
 
-#### Fargate
+The services created and their associated configurations are:
 
-> [!NOTE]
-> Fargate is a planned enhancement to the Sample Application!
+* **ECS Cluster**: Provides the compute resources for the ECS service
+    * Cluster Name: `ssg_ecs_cluster`
+    * Lifecycle: Create Before Destroy
+* **ECS Service**
+    * Service Name: `ssg_ecs_service`
+    * IAM Role: ECS Service Role
+    * Cluster: ECS Cluster
+    * Task Definition: ECS Task Definition
+    * Desired Count: 1 (Number of ECS Tasks to run, this should be more than 1 for high availability)
+    * Deployment Maximum Percent: 100
+    * Deployment Minimum Healthy Percent: 50
+    * Associated Load Balancer
+        * Target Group ARN: ALB Target Group ARN
+        * Container Name: `sample-application`
+        * Container Port: `80`
+    * Placement Strategy
+        * Strategy: `spread` (Distribute tasks evenly across Availability Zones)
+        * Strategy: `binpack` (Pack tasks based on memory usage)
+            * Field: `memory`
+    * Lifecycle: Ignore changes made to the desired count to allow autoscaling to manage the desired count
+* **Capacity Provider**: Specifies the Auto Scaling Group that the ECS Service uses to run the ECS Tasks. This is
+  attached to a ECS Cluster Capacity Provider, which itself is attached to the ECS Cluster.
+    * Name: `ssg-capacity-provider-sample-application`
+    * Auto Scaling Group Provider
+        * Auto Scaling Group ARN: EC2 Auto Scaling Group ARN
+        * Managed Scaling
+            * Maximum Scaling Step Size: 1
+            * Minimum Scaling Step Size: 1
+            * Target Capacity: 1
+        * Managed Termination Protection: Enabled
+* **ECS Task Definition**: Specifies the Docker image that the ECS Service uses to run the Sample Application
+    * Family: `ssg_ecs_task_definition`
+    * Task Execution Role: ECS Task Execution Role
+    * Task Role: ECS Task Role
+    * Depends on: Docker Image of Sample Application
+    * Container Definition
+        * Name: `sample-application`
+        * Image: `[ECR Repository URI]:[Hash of files used in the Docker Container]`
+        * CPU: `512`
+        * Memory: `512`
+        * Essential: `true`
+        * Port Mappings
+            * Container Port: `80`
+            * Host Port: `0` (Any port)
+            * Protocol: `tcp`
+        * Log Configuration
+            * Log Driver: `awslogs`
+            * Options
+                * awslogs-group: `/ecs/ssg_ecs_task_definition`
+                * awslogs-region: `ap-southeast-1`
+                * awslogs-stream-prefix: `app`
+* **EC2 Launch Template**: Specifies the configurations of the EC2 instances that the ECS Service runs on
+    * Name: `ssg_ec2_launchTemplate`
+    * Image ID: ID of the ECS-compatible Amazon Linux 2 AMI
+    * Instance Type: `t2.micro`
+    * Key Pair: `ssg-key-pair`
 
-Fargate is a serverless compute engine for containers that allows you to run containers without having to manage the
-underlying infrastructure.
+#### Docker
 
-Fargate allows you to specify the CPU and memory requirements of the application, and AWS will automatically provision
-the necessary resources to run the application.
+[[Terraform File]](../deploy/main-infrastructure/docker.tf)
 
-This allows you to focus on the application itself, rather than the underlying infrastructure that the application is
-running on.
+Docker is used to create a Docker image of the Sample Application that is stored in the ECR Repository.
 
-This is especially useful for the Sample Application since the infrastructural security of the application can be
-managed by AWS instead, offloading the responsibility of keeping our system updated and patched to AWS.
+To create the Docker Image, Terraform utilises the native execution environment to run the Docker commands to build the
+Docker image.
 
-#### Elastic Load Balancer
+The configurations for the Docker Image are:
 
-The Elastic Load Balancer (ELB) is a service that automatically distributes incoming application traffic across
-multiple targets, such as EC2 instances, containers, and IP addresses.
+* Hash: Hash of the files used in the Docker Container
+* Docker Image Name: `[ECR Repository URL]:[Hash of files used in the Docker Container]`
 
-ELB is used to distribute incoming traffic across multiple instances of the application to ensure that the application
-is highly available and fault-tolerant.
+> [!CAUTION]
+> This step is must be done after the ECR Repository is created or else the Docker Image will not be able to be pushed
+> to the ECR Repository!
 
-ELB is used to route traffic to the application and to ensure that the application is running and healthy.
+#### AutoScaling Group
 
-### Production Architecture
+An Auto Scaling Group is created to manage the EC2 instances that are created to host the Sample Application.
+
+The configurations for the Auto Scaling Group are:
+
+* Auto Scaling Group
+  * Name: `ssg-asg`
+  * Min Size: `1`
+  * Max Size: `1`  (this should ideally be more than 1 for high availability)
+  * VPC Zone Identifier: All Private Subnets (since EC2 instances except the Bastion Host are hosted on private subnets)
+  * Health Check Type: `EC2`
+  * Protect From Scale In: `true`
+  * Enabled Metrics (list of metrics that will trigger a scaling event):
+    * `GroupMinSize`
+    * `GroupMaxSize`
+    * `GroupDesiredCapacity`
+    * `GroupInServiceInstances`
+    * `GroupPendingInstances`
+    * `GroupStandbyInstances`
+    * `GroupTerminatingInstances`
+    * `GroupTotalInstances`
+  * Launch Template: `ssg_ec2_launchTemplate`
+  * Instance Refresh Strategy: `Rolling`
+  * Lifecycle: Create Before Destroy
+
+We also enabled Target Tracking on the ECS Cluster to allow autoscaling to manage the desired number of EC2 instances
+to launch.
+
+The following services and policies are created for this:
+
+* App Autoscaling Target
+  * Minimum Capacity: `1` (minimum task count)
+  * Maximum Capacity: `1` (maximum task count)
+  * Resource ID: `service/ssg_ecs_cluster/ssg_ecs_service`
+  * Scalable Dimension: `ecs:service:DesiredCount` (The desired count as established above under ECS)
+  * Service Namespace: `ecs`
+* App Autoscaling Policy: CPU Usage
+  * Policy Name: `ssg-ecs-cpu-policy`
+  * Policy Type: `TargetTrackingScaling`
+  * Resource ID: Resource ID of the App Autoscaling Target formed above
+  * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
+  * Service Namespace: Service Namespace of the App Autoscaling Target formed above
+  * Target Tracking Scaling Policy Configuration
+    * Target Value: `50`
+    * Predefined Metrics Specification
+      * Predefined Metric Type: `ECSServiceAverageCPUUtilization`
+* App Autoscaling Policy: Memory Usage
+  * Policy Name: `ssg-memoryTargetTracking`
+  * Policy Type: `TargetTrackingScaling`
+  * Resource ID: Resource ID of the App Autoscaling Target formed above
+  * Scalable Dimension: Scalable Dimension of the App Autoscaling Target formed above
+  * Service Namespace: Service Namespace of the App Autoscaling Target formed above
+  * Target Tracking Scaling Policy Configuration
+    * Target Value: `50`
+    * Predefined Metrics Specification
+      * Predefined Metric Type: `ECSServiceAverageMemoryUtilization`
+
+### Architecture Diagram
 
 The following architectural diagram shows the AWS, GitHub and Terraform services that are used in the deployment of the
 Sample Application:
