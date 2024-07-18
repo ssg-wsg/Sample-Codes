@@ -306,7 +306,7 @@ with view:
                          help="NRIC of the individual")
 
     if len(nric) > 0 and not Validators.verify_nric(nric):
-        st.warning("*NRIC format** is not valid!", icon="⚠️")
+        st.warning("**NRIC format** is not valid!", icon="⚠️")
 
     claim_id = st.text_input(label="Claim ID",
                              key="view-claims-claim-id",
@@ -335,7 +335,7 @@ with view:
                 handle_request(vc)
 
             with response:
-                handle_response(lambda: vc.execute())
+                handle_response(lambda: vc.execute(), require_decryption=True)
 
 
 with cancel:
