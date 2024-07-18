@@ -610,7 +610,7 @@ class TestSFCreditInfo(unittest.TestCase):
                     'fileSize': '1 MB',
                     'fileType': 'pdf',
                     'attachmentId': 'attachment_one',
-                    'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                    'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                 }
             )
 
@@ -621,7 +621,7 @@ class TestSFCreditInfo(unittest.TestCase):
                     'fileSize': '2 MB',
                     'fileType': 'docx',
                     'attachmentId': 'attachment_two',
-                    'attachmentBytes': base64.b64encode(attachment_2).decode("utf-8")
+                    'attachmentByte': base64.b64encode(attachment_2).decode("utf-8")
                 }
             )
 
@@ -810,7 +810,7 @@ class TestSFCreditInfo(unittest.TestCase):
                         'fileSize': '1 MB',
                         'fileType': 'pdf',
                         'attachmentId': 'attachment_one',
-                        'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                     }
                 ]
             }
@@ -822,13 +822,13 @@ class TestSFCreditInfo(unittest.TestCase):
                         'fileName': 'file.pdf',
                         'fileSize': '1 MB', 'fileType': 'pdf',
                         'attachmentId': 'attachment_one',
-                        'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                     },
                     {
                         'fileName': 'file.docx',
                         'fileSize': '2 MB', 'fileType': 'docx',
                         'attachmentId': 'attachment_two',
-                        'attachmentBytes': base64.b64encode(attachment_2).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_2).decode("utf-8")
                     }
                 ]
             }
