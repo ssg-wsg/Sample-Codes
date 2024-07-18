@@ -19,7 +19,8 @@ st.set_page_config(page_title="En-Decryption", page_icon="🔑")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)

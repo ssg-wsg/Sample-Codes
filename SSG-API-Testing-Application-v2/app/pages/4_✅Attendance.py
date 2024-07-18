@@ -37,7 +37,8 @@ st.set_page_config(page_title="Attendance", page_icon="✅")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -71,10 +72,11 @@ with view:
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view_course_session_attendance_button"):
+
+    if st.button("Send", key="view_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -104,6 +106,7 @@ with view:
             with response:
                 LOGGER.info("Executing request...")
                 handle_response(lambda: vc.execute(), require_decryption=True)
+
 
 with upload:
     st.header("Upload Course Session Attendance")
@@ -206,10 +209,11 @@ with upload:
 
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="upload_course_session_attendance_button"):
+
+    if st.button("Send", key="upload_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:

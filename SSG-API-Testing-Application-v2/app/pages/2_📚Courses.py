@@ -46,7 +46,8 @@ st.set_page_config(page_title="Courses", page_icon="📚")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -86,10 +87,11 @@ with view:
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view-button"):
+
+    if st.button("Send", key="view-button", type="primary"):
         LOGGER.info("Attempting to send request to View Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(runs) == 0:
@@ -110,6 +112,7 @@ with view:
             with response:
                 LOGGER.info("Executing request...")
                 handle_response(lambda: vc.execute())
+
 
 with add:
     st.header("Add Course Runs")
@@ -671,10 +674,10 @@ with add:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="add-button") or st.session_state["add-button"]:
+    if st.button("Send", key="add-button", type="primary") or st.session_state["add-button"]:
         LOGGER.info("Attempting to send request to Add Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -697,6 +700,7 @@ with add:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ac.execute())
+
 
 with edit_delete:
     st.header("Edit/Delete Course Runs")
@@ -1240,10 +1244,10 @@ with edit_delete:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="edit-button"):
+    if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -1274,6 +1278,7 @@ with edit_delete:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ec.execute())
+
 
 with sessions:
     st.header("View Course Sessions")
@@ -1318,10 +1323,11 @@ with sessions:
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view-session-button"):
+
+    if st.button("Send", key="view-session-button", type="primary"):
         LOGGER.info("Attempting to send request to View Course Sessions API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:

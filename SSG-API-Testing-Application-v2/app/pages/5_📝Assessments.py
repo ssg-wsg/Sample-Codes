@@ -42,7 +42,8 @@ st.set_page_config(page_title="Assessments", page_icon="📝")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -162,10 +163,10 @@ with create:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="edit-button"):
+    if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Create Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -186,6 +187,7 @@ with create:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ec.execute(), require_decryption=True)
+
 
 with update_void:
     st.header("Update/Void Assessment")
@@ -263,10 +265,10 @@ with update_void:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="update-void-button"):
+    if st.button("Send", key="update-void-button", type="primary"):
         LOGGER.info("Attempting to send request to Update/Void Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -291,6 +293,7 @@ with update_void:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: uva.execute(), require_decryption=True)
+
 
 with find:
     st.header("Find Assessments")
@@ -396,10 +399,10 @@ with find:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="search-button"):
+    if st.button("Send", key="search-button", type="primary"):
         LOGGER.info("Attempting to send request to Search Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -421,6 +424,7 @@ with find:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: sa.execute(), require_decryption=True)
 
+
 with view:
     st.header("View Assessment")
     st.markdown("You can use this API to view an assessment record for trainees enrolled in your courses.")
@@ -434,10 +438,10 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="view-assessment-button"):
+    if st.button("Send", key="view-assessment-button", type="primary"):
         LOGGER.info("Attempting to send request to View Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif arn is None or len(arn) == 0:
