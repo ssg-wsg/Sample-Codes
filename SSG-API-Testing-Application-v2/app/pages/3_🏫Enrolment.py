@@ -14,13 +14,16 @@ from app.core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFe
 from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableCollectionStatus,
                                 SponsorshipType, EnrolmentSortField, SortOrder,
                                 EnrolmentCourseStatus)
+from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
 from app.utils.streamlit_utils import init, display_config, validation_error_handler
 from app.utils.verify import Validators
 
 init()
+LOGGER = Logger("Courses API")
 
 st.set_page_config(page_title="Enrolment", page_icon="🏫")
+
 
 with st.sidebar:
     st.header("View Configs")
@@ -234,7 +237,13 @@ with create:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="create-button"):
-        if not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
+        LOGGER.info("Attempting to send request to Create Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
+            LOGGER.error("Missing UEN!")
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
         else:
@@ -376,7 +385,12 @@ with update:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-button"):
-        if len(enrolment_reference_num) == 0:
+        LOGGER.info("Attempting to send request to Update Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
         else:
             errors, warnings = update_enrolment.validate()
@@ -415,7 +429,12 @@ with cancel:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="cancel-button"):
-        if len(enrolment_reference_num) == 0:
+        LOGGER.info("Attempting to send request to Cancel Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -605,7 +624,12 @@ with search:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="search-button"):
-        if st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
+        LOGGER.info("Attempting to send request to Search Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
         else:
@@ -637,7 +661,12 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="view-button"):
-        if len(ref_num) == 0:
+        LOGGER.info("Attempting to send request to View Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(ref_num) == 0:
             st.error("Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -678,7 +707,12 @@ with update_fee:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-fee-button"):
-        if len(enrolment_reference_num) == 0:
+        LOGGER.info("Attempting to send request to Update Enrolment Fee Collection API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])

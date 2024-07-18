@@ -74,7 +74,10 @@ with view:
     if st.button("Send", key="view_course_session_attendance_button"):
         LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if not st.session_state["uen"]:
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif len(runs) == 0:
@@ -205,7 +208,11 @@ with upload:
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="upload_course_session_attendance_button"):
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
-        if not st.session_state["uen"]:
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:

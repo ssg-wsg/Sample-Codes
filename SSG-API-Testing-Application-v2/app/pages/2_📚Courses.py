@@ -88,7 +88,11 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-button"):
         LOGGER.info("Attempting to send request to View Course Run API...")
-        if len(runs) == 0:
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(runs) == 0:
             LOGGER.error("Missing Course Run ID!")
             st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
         elif does_not_have_keys():
@@ -669,7 +673,11 @@ with add:
 
     if st.button("Send", key="add-button") or st.session_state["add-button"]:
         LOGGER.info("Attempting to send request to Add Course Run API...")
-        if not st.session_state["uen"]:
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif does_not_have_keys():
@@ -1234,7 +1242,11 @@ with edit_delete:
 
     if st.button("Send", key="edit-button"):
         LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
-        if not st.session_state["uen"]:
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:
@@ -1308,7 +1320,11 @@ with sessions:
     st.markdown("Click the `Send` button below to send the request to the API!")
     if st.button("Send", key="view-session-button"):
         LOGGER.info("Attempting to send request to View Course Sessions API...")
-        if not st.session_state["uen"]:
+
+        if "url" not in st.session_state or st.session_state["url"] is None or len(st.session_state["url"]) == 0:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif does_not_have_keys():
