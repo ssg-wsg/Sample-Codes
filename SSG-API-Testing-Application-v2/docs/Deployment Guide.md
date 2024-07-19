@@ -507,7 +507,8 @@ You may change the default CIDR IP of the VPC by changing the `cidr` variable in
 [`constants.tf`](../deploy/modules/constants/constants.tf).
 
 > [!NOTE]
-> Refer to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
+> Refer
+> to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
 > for more information on how the CIDR IP addressing system works.
 
 #### Subnets
@@ -523,13 +524,18 @@ For the Sample Application, 2 types of subnets are created: **public** and **pri
 Public subnets are Internet-facing and have a route to an Internet Gateway. Internet Gateways are gateways that allow
 Internet traffic out of the VPC.
 
-NAT Gateways are created and associated with a Public Subnet as they facilitate outbound traffic from the Private Subnet to the Internet.
+NAT Gateways are created and associated with a Public Subnet as they facilitate outbound traffic from the Private Subnet
+to the Internet.
 
 For the public subnets, the IP addresses assigned to them are:
 
 * `172.16.3.0/24`
 * `172.16.4.0/24`
 * `172.16.5.0/24`
+
+> [!NOTE]
+> Developer Note: You may wish to replace the Internet Gateway with a VPC peering connection or VPC endpoint to the
+> SSG API Gateway VPC to reduce the complexity of your network and improve security.
 
 **Private Subnets**
 
@@ -551,7 +557,8 @@ For the private subnets, the IP addresses assigned to them are:
 
 An Application Load Balancer (ALB) is created to route traffic to the ECS Service that hosts the Sample Application.
 
-An ALB Listener and Target Group is also created to ensure that traffic is listened to on port `80` and routed to the ECS
+An ALB Listener and Target Group is also created to ensure that traffic is listened to on port `80` and routed to the
+ECS
 Service on port `80`.
 
 The configurations for the ALB are:

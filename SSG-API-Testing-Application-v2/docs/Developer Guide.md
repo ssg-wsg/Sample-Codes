@@ -144,11 +144,6 @@ Text in **yellow** callout boxes are warnings that you should take note of to en
 > [!WARNING]
 > This is a warning!
 
-Text in **red** callout boxes are potential errors which you may encounter:
-
-> [!CAUTION]
-> This is a potential error!
-
 ## Getting Started
 
 Before you start, make sure that you use a device that supports the minimum requirements needed to run the Sample

@@ -7,21 +7,42 @@ start the application.
 
 ## Table of Contents
 
+* [Usage of the Guide](#usage-of-the-guide)
 * [Requirements](#requirements)
 * [Downloading Code Files](#downloading-code-files)
-   * [Method 1: Downloading the Code via Web UI](#method-1-downloading-the-code-via-web-ui)
-   * [Method 2: Downloading the Code via `git`](#method-2-downloading-the-code-via-git)
+    * [Method 1: Downloading the Code via Web UI](#method-1-downloading-the-code-via-web-ui)
+    * [Method 2: Downloading the Code via `git`](#method-2-downloading-the-code-via-git)
 * [Installation](#installation)
-   * [Python](#python)
-      * [Installation of Python](#installation-of-python)
-      * [Python Libraries](#python-libraries)
-   * [Docker](#docker)
-      * [Installation of Docker](#installation-of-docker)
+    * [Python](#python)
+        * [Installation of Python](#installation-of-python)
+        * [Python Libraries](#python-libraries)
+    * [Docker](#docker)
+        * [Installation of Docker](#installation-of-docker)
 * [Usage](#usage)
-   * [Running the Application in Python](#running-the-application-in-python)
-   * [Running the Application in Docker](#running-the-application-in-docker)
-      * [Building the Docker Container](#building-the-docker-container)
-      * [Running the Docker Container](#running-the-docker-container)
+    * [Running the Application in Python](#running-the-application-in-python)
+    * [Running the Application in Docker](#running-the-application-in-docker)
+        * [Building the Docker Container](#building-the-docker-container)
+        * [Running the Docker Container](#running-the-docker-container)
+
+## Usage of the Guide
+
+Some special notation will be used throughout the Developer Guide. Do make sure to familiarise yourself with the
+notation below to avoid misunderstandings and confusion regarding the content of the guide!
+
+Text in **green** callout boxes are some tips and tricks that you should be aware of:
+
+> [!TIP]
+> This is a tip!
+
+Text in **blue** callout boxes are informational messages that you should take note of:
+
+> [!NOTE]
+> This is a note!
+
+Text in **yellow** callout boxes are warnings that you should take note of to ensure that you do not encounter an error:
+
+> [!WARNING]
+> This is a warning!
 
 ## Requirements
 
@@ -76,7 +97,8 @@ To obtain the code using `git`, follow the steps below:
 1. Open a new command prompt or terminal in a location that is convenient for you. You should take note that the
    location
    where this command prompt is opened is where the source code files will be downloaded!
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the
        files in the directory (folder)
 2. Run the following command:
    ```shell
@@ -128,7 +150,8 @@ To install Python `3.12` on your system, follow the steps below:
 #### Python Libraries
 
 > [!TIP]
-> You are highly recommended to use package managers like `pyenv` or `conda` to manage your Python packages, as it helps to
+> You are highly recommended to use package managers like `pyenv` or `conda` to manage your Python packages, as it helps
+> to
 > prevent dependency clashes between different Python projects on your system!
 >
 > Click on the respective links to learn more about [pyenv](https://github.com/pyenv/pyenv)
@@ -141,7 +164,8 @@ The application leverages several libraries to run. To install these libraries, 
 
 1. Open up a command prompt or terminal on your environment
 2. Navigate to the directory (folder) `SSG-API-Testing-Application-v2/app` where the `requirements.txt` file is located
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the
        files in the directory (folder)
 3. Run the command:
     ```shell
@@ -193,7 +217,8 @@ To run the application in Python, follow the steps below:
    downloaded into
 2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
    directory (folder) should have a `requirements.txt` file present in it
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the
        files in the directory (folder)
 3. Run the command:
    ```shell
@@ -213,7 +238,8 @@ To build and run the Docker container with the application running inside it, fo
    downloaded into
 2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
    directory (folder) should have a `Dockerfile` present in it
-    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list* the
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the
        files in the directory (folder)
 3. Run the following command to build the Docker container:
     ```shell

@@ -89,11 +89,6 @@ Text in **green** callout boxes are some tips and tricks that you should be awar
 > [!TIP]
 > This is a tip!
 
-Text in **blue** callout boxes are informational messages that you should take note of:
-
-> [!NOTE]
-> This is a note!
-
 Text in **yellow** callout boxes are warnings that you should take note of to ensure that you do not encounter an error:
 
 > [!WARNING]

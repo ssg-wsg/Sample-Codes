@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > This guide is for administrators who wish to set up an AWS account to host the SSG API Testing Application.
-> We will go through the entire process of setting up you root account, creating IAM users, and setting up
+> We will go through the entire process of setting up your root account, creating IAM users, and setting up
 > your own AWS Organization.
 
 Welcome to the AWS Account Setup Guide!
@@ -18,7 +18,7 @@ Welcome to the AWS Account Setup Guide!
 To create an AWS account, follow the steps below:
 
 1. Head over to the [Signup Portal](https://signin.aws.amazon.com/signup?request_type=register)
-2. Enter in your email and your AWS account username to continue. 
+2. Enter your email and your AWS account username to continue.
 3. Follow the on-screen instructions to create your AWS Account.
 
 Once you are done, log into the AWS Management Console using your root account.
@@ -55,7 +55,7 @@ After you have created your root account, it is important to follow the steps be
     13. Review the details of your IAM account, and then click on `Create user`
     14. Download the `.csv` file containing your IAM account details, or save the console sign-in URL, username and
         password in a secure location
-3. Log into the AWS Management Console using your IAM account. Only use the `root` account only for billing and
+3. Log into the AWS Management Console using your IAM account. Only use the `root` account for billing and
    administrative purposes; all other actions should be done using your IAM account.
 
 ## Setting up AWS Organization
@@ -70,7 +70,7 @@ To allow you to better control and manage your AWS accounts, you can create an A
        around to other Operational Units (OUs) later.
 4. If the user you wish to add does not have an existing AWS account, select the `Create an AWS account` option and
    follow the steps below:
-    1. Enter the AWS account name you wish to assign the new account
+    1. Enter the AWS account name you wish to assign to the new account
     2. Enter the email associated with the AWS account
     3. Leave the IAM role field as is (`OrganizationAccountAccessRole` provides you as the administrator access to the
        member accounts that you create via AWS Organizations by allowing you to assume the role)
@@ -78,7 +78,7 @@ To allow you to better control and manage your AWS accounts, you can create an A
        email
     5. Instruct your users to follow the instructions below to set up their AWS account
         1. Go to the [Signup Portal](https://signin.aws.amazon.com/signup?request_type=register)
-        2. Sign in as a root user by entering in the email that was used to create their AWS account
+        2. Sign in as a root user by entering the email that was used to create their AWS account
         3. Click on `Forgot password?`. This will send a password reset email to the email address used to create the
            account
         4. Follow the instructions in the email to reset the password
@@ -87,8 +87,8 @@ To allow you to better control and manage your AWS accounts, you can create an A
 5. If the user you wish to add already has an existing AWS account, select the `Invite an existing AWS account` option
    and follow the steps below:
     1. Enter the email associated with the AWS account or their AWS account ID
-    2. (Optional) Include a message in the invitiation email
-    3. Click on `Send inivitation`.
+    2. (Optional) Include a message in the invitation email
+    3. Click on `Send invitation`.
     4. Instruct your users to follow the instructions below to accept the invitation
         1. Check their email for an invitation from AWS
         2. Click on the link in the email to accept the invitation
