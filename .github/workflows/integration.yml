@@ -15,10 +15,12 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
+  AWS_REGION: "ap-southeast-1"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   test:
-    environment: test
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
@@ -51,10 +53,6 @@ jobs:
           fail_ci_if_error: false
 
   setup:
-    environment: setup
-    strategy:
-      matrix:
-        dir: [./SSG-API-Testing-Application-v2/deploy/create-backend, ./SSG-API-Testing-Application-v2/deploy/create-ecr]
     needs:
       - test
     runs-on: ubuntu-latest
@@ -68,43 +66,93 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Verify Terraform Script
-        id: verify-script
-        working-directory: ${{ matrix.dir }}
+        id: create-backend-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         run: |
           terraform fmt
           terraform fmt -check
 
-      - name: Initialise Terraform Resources
-        id: init
-        working-directory: ${{ matrix.dir }}
+      - name: Initialise Backend
+        id: init-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         run: terraform init
 
       - name: Validate Terraform Script
-        id: validate-script
-        working-directory: ${{ matrix.dir }}
+        id: create-backend-validate
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         run: terraform validate
 
-      - name: View Terraform Plan
-        id: plan
-        working-directory: ${{ matrix.dir }}
+      - name: View Backend Plan
+        id: plan-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform plan
 
       - name: Apply Terraform Plan
-        id: apply
-        working-directory: ${{ matrix.dir }}
+        id: apply-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-backend
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform apply -auto-approve
-        continue-on-error: true  # possible errors are to do with the resources already existing
+        continue-on-error: true  # possible errors are to do with the presence of the bucket
+
+  ecr:
+    needs:
+      - setup
+    runs-on: ubuntu-latest
+    name: Setup ECR Repository
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Verify Terraform Script
+        id: create-backend-verify
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: |
+          terraform fmt
+          terraform fmt -check
+
+      - name: Initialise Backend
+        id: init-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: terraform init
+
+      - name: Validate Terraform Script
+        id: create-backend-validate
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        run: terraform validate
+
+      - name: View Backend Plan
+        id: plan-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+        run: terraform plan
+
+      - name: Apply Terraform Plan
+        id: apply-backend
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/create-ecr
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+        run: terraform apply -auto-approve
+        continue-on-error: true  # possible errors are to do with the presence of the repo
 
   main-infra:
-    environment: deployment
+    needs:
+      - ecr
     runs-on: ubuntu-latest
     name: Create/Maintain Main Infrastructure
 
@@ -139,7 +187,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform plan
 
       - name: Apply Terraform Plan
@@ -148,7 +196,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform apply -auto-approve
 
       # if rollback fails, you may need to manually delete the infrastructure using the AWS console
@@ -160,5 +208,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform destroy -auto-approve
