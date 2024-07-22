@@ -77,10 +77,7 @@ jobs:
       - name: Initialise Terraform Resources
         id: init
         working-directory: ${{ matrix.dir }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform init -backend-config="access_key=$AWS_ACCESS_KEY_ID" -backend-config="secret_key=$AWS_SECRET_ACCESS_KEY"
+        run: terraform init
 
       - name: Validate Terraform Script
         id: validate-script
