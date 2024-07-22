@@ -58,6 +58,7 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
         * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
     * [General Workflow](#general-workflow)
     * [CI/CD](#cicd)
+        * [Approval for Deployment](#approval-for-deployment)
         * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
     * [Logging](#logging)
@@ -1168,9 +1169,49 @@ The different stages of the CI/CD pipeline are as such:
     1. Start the pipeline on Ubuntu
     2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
 
+> [!WARNING]
+> The deployment process is only permitted once a reviewer approves it.
+
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
 ![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
+
+#### Approval for Deployment
+
+The deployment process is only permitted once a reviewer approves it. This is to ensure that the deployment process is
+controlled and that the reviewer has verified the changes made to the codebase.
+
+Refer to the [Deployment Guide](Deployment%20Guide.md#github-environments) for more information on how to setup the
+approval before deployment process.
+
+As a developer however, you may not want this behaviour for your test.
+
+To disable approval for deployment, remove the `environment: production` line from the `integration.yml` file.
+
+It should change from:
+
+```yaml
+...
+  main-infra:
+    environment: production
+    needs:
+      - ecr
+...
+```
+
+to
+
+```yaml
+...
+  main-infra:
+    needs:
+      - ecr
+...
+```
+
+> [!CAUTION]
+> Make sure that the relevant secrets detailed in the [Deployment Guide](Deployment%20Guide.md#preparation) 
+> are still present as repository secrets.
 
 #### Failed Deployment
 
