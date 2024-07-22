@@ -5,7 +5,7 @@ skinparam linetype ortho
 title High Level Class Diagram Of Core Package
 
 package pages {
-    package 3_Enrolment {
+    package 2_Enrolment {
 
     }
 }

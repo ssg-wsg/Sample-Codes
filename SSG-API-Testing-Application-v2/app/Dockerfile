@@ -1,7 +1,9 @@
 FROM python:3.12
 WORKDIR /app
-EXPOSE 8502
+EXPOSE 80
 
-COPY .. .
+COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+ENTRYPOINT ["streamlit", "run", "Home.py"]

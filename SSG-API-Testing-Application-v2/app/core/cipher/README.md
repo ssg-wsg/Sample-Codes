@@ -6,7 +6,8 @@ The API uses [Advanced Encryption Standard with 256-bit keys](https://en.wikiped
 (AES-256), with [Cipher Block Chaining (CBC)](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher_block_chaining_(CBC))
 and [PKCS7](https://en.wikipedia.org/wiki/PKCS_7) for encrypting and decrypting your messages.
 
-> ❗ Note: **Plaintext** refers to the message prior to encryption, while **ciphertext** refers to the message
+> [!NOTE]
+> **Plaintext** refers to the message prior to encryption, while **ciphertext** refers to the message
 > prior to decryption.
 
 

@@ -5,7 +5,7 @@ skinparam linetype ortho
 title Attendance Classes Diagram
 
 package pages {
-    package 4_Attendance {
+    package 3_Attendance {
 
     }
 }
