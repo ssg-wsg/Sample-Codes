@@ -14,7 +14,7 @@ LOGGER = Logger(__name__)
 
 def init() -> None:
     """
-    Initialises all the necessary Stremalit variables to record configurations.
+    Initialises all the necessary Streamlit variables to record configurations.
 
     :return: None
     """
