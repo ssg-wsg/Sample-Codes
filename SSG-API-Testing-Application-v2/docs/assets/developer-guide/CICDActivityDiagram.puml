@@ -53,12 +53,6 @@ endfork
 :Runs on Ubuntu-latest;
 :Clone Repository and Execute Terraform Scripts;
 
-if (fail) then (yes))
-    :Destory Infrastructure;
-else (no)
-    stop
-endif
-
 stop
 
 @enduml

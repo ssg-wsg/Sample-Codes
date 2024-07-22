@@ -603,7 +603,7 @@ There are 3 main Security Groups that are created for the Sample Application:
 1. **EC2 Security Group**: This Security Group is associated with the EC2 instances that are created to host the
    Sample Application.
     1. Inbound Rules:
-        * `TCP` on port `80` and `443` originating from the `Application Load Balancer` Security Group
+        * `TCP` on port `80` originating from the `Application Load Balancer` Security Group
         * `TCP` on port `22` originating from the `Bastion Host` Security Group
     2. Outbound Rules:
         * `TCP` on any port to any destination (`0.0.0.0/0`)

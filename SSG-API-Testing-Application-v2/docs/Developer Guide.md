@@ -57,6 +57,7 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
     * [GitHub Setup](#github-setup)
         * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
     * [CI/CD](#cicd)
+        * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
     * [Logging](#logging)
     * [Housekeeping](#housekeeping)
@@ -1146,11 +1147,18 @@ The different stages of the CI/CD pipeline are as such:
 4. **Deploy**: Use Terraform to deploy the application to AWS
     1. Start the pipeline on Ubuntu
     2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
-    3. If the application of the plan fails, destroy the resources created
 
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
 ![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
+
+#### Failed Deployment
+
+Should the deployment fail, and you need to destroy the infrastructure, you may need to trigger a manual workflow run
+stored in [this file](../../.github/workflows/teardown.yml).
+
+To run a manual workflow, refer
+to [this guide](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow).
 
 ## Logging and Housekeeping
 
