@@ -5,7 +5,7 @@ skinparam linetype ortho
 title Course Runs Classes
 
 package pages {
-    package 2_Courses {
+    package 1_Courses {
 
     }
 }

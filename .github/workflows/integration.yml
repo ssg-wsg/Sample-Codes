@@ -151,6 +151,7 @@ jobs:
         continue-on-error: true  # possible errors are to do with the presence of the repo
 
   main-infra:
+    #    if: github.event.review.state == 'approved'
     needs:
       - ecr
     runs-on: ubuntu-latest
@@ -170,7 +171,7 @@ jobs:
           terraform fmt
           terraform fmt -check
 
-      - name: Initialise Backend
+      - name: Initialise Main Infrastructure
         id: init-main
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         run: |

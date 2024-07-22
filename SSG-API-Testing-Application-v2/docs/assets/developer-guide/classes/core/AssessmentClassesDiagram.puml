@@ -5,7 +5,7 @@ skinparam linetype ortho
 title Assessment Classes Diagram
 
 package pages {
-    package 5_Assessments {
+    package 4_Assessments {
 
     }
 }

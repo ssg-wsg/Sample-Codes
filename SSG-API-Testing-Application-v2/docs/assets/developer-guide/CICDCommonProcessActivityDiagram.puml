@@ -1,0 +1,15 @@
+@startuml
+title Clone Repository and Execute Terraform Scripts
+
+start
+:Checkout Repository;
+:Set up Terraform;
+:Verify the Terraform script by formatting
+and then conducting a check again;
+:Initialise Terraform backend;
+:Validate Terraform script;
+:View the plan for the Terraform deployment;
+:Apply Terraform script;
+stop
+
+@enduml
