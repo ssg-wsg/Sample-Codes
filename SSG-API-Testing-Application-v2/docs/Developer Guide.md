@@ -56,6 +56,7 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
 * [DevOps](#devops)
     * [GitHub Setup](#github-setup)
         * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
+    * [General Workflow](#general-workflow)
     * [CI/CD](#cicd)
         * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
@@ -1036,36 +1037,12 @@ To set up a GitHub repository, follow the steps below:
    hosted on.
 3. Fork the repository. Click on the `Fork` button in the top right corner of the repository page to fork it.
 
-> [!INFO]
-> *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to make
-> changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the upstream
-> repository.
-
-4. Follow the process outlined in the [Installation Guide](Installation%20Guide.md) to download the forked codebase into
-   your computer.
-   Make sure to follow the second method to download your code, as you will need `git` to make changes to the forked
-   codebase.
-5. Make changes to the codebase as you see fit.
-6. Push the changes to your forked repository. Follow the steps below to push your changes:
-    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
-       downloaded to:
-        ```shell
-        git add .
-        ```
-    2. Commit the changes by running the following command:
-        ```shell
-        git commit -m "Your commit message here"
-        ```
-    3. Push the changes to your forked repository by running the following command:
-        ```shell
-        git push origin main
-        ```
-    4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
-       or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
-       the above actions through a graphical user interface.
-    5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
-       repository to create a PR.
-       Follow the instructions to create a PR.
+   > [!INFO]
+   > *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to
+   make
+   > changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
+   upstream
+   > repository.
 
 For CI/CD to work, make sure to add the following secrets to your repository:
 
@@ -1099,6 +1076,49 @@ To do so, follow the steps below:
     7. Dependabot on Actions runners
     8. Code Scanning > CodeQL analysis
         1. Set up basic CodeQL analysis
+
+### General Workflow
+
+The general workflow for contributing to the Sample Application is as follows:
+
+1. Follow the process outlined in the [Installation Guide](Installation%20Guide.md) to download the forked codebase into
+   your computer.
+   Make sure to follow the second method to download your code, as you will need `git` to make changes to the forked
+   codebase.
+2. Make changes to the codebase as you see fit using your code editor or Integrated Development Environment (IDE) of
+   choice.
+3. Create a new branch to contribute your code to by running the command:
+   ```shell
+   git checkout -b [BRANCH_NAME]
+   ```
+   Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you wish to create.
+4. Push the changes to your forked repository. Follow the steps below to push your changes:
+    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
+       downloaded to:
+        ```shell
+        git add .
+        ```
+    2. Commit the changes by running the following command:
+        ```shell
+        git commit -m "Your commit message here"
+        ```
+    3. Push the changes to your forked repository by running the following command:
+        ```shell
+        git push origin [BRANCH_NAME]
+        ```
+       > [!INFO]
+       > Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you created in step 3.
+    4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
+       or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
+       the above actions through a graphical user interface.
+    5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
+       repository to create a PR. Follow the instructions to create a PR.
+    6. Make sure to create a PR only when you are ready to merge your changes into the upstream repository. The PR will
+       trigger an upstream action to run the CI/CD process on your code in the upstream repository. If you do not wish
+       to deploy your changes, make sure to cancel the running GitHub Actions on the upstream repository.
+       > [!INFO]
+       > We are looking at using environments to manage deployments in the future. This will allow you to deploy your
+       > changes without triggering an upstream deployment.
 
 ### CI/CD
 
@@ -1259,3 +1279,11 @@ maintain the EC2 instances to ensure that they are up-to-date and secure.
 
 By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
 it for us. We only need to focus on the application itself.
+
+### Deployment Environments on GitHub
+
+Currently we cannot control the deployment of the application via GitHub Actions. This is because the deployment is
+triggered whenever a PR is created, which may not be ideal if we are not ready to deploy the changes.
+
+By using environments, we can control when the deployment is triggered. This will allow us to deploy the changes only
+when we are ready to do so.

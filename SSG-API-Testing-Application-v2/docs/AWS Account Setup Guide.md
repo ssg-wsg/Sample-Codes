@@ -9,9 +9,12 @@ Welcome to the AWS Account Setup Guide!
 
 ## Table of Contents
 
+* [Table of Contents](#table-of-contents)
 * [Creating your AWS Account](#creating-your-aws-account)
 * [Setting up your Root Account](#setting-up-your-root-account)
 * [Setting up AWS Organization](#setting-up-aws-organization)
+* [Restrict AWS Regions](#restrict-aws-regions)
+* [Programmatic Access to AWS](#programmatic-access-to-aws)
 
 ## Creating your AWS Account
 
@@ -102,3 +105,107 @@ To allow you to better control and manage your AWS accounts, you can create an A
    to and click on `Move AWS account`.
 
 With this, you have successfully set up your AWS account and created an AWS Organization!
+
+## Restrict AWS Regions
+
+You may not want all IAM accounts and member accounts of your AWS Organization to have access to all AWS regions and
+create resources in regions that are not approved.
+
+To restrict the regions that your member accounts can create resources in, follow the steps below:
+
+1. Click on your username in the top right corner of the AWS Management Console and click on `Organization`
+2. Click on `Policies` on the sidebar
+3. Click on `Service control policies`
+4. If `Service control policies` is not enabled, click on `Enable service control policies`
+5. Click on `Create policy`
+6. Enter a name for your policy
+7. Enter a description for your policy if you wish
+8. Paste the following code into the policy document field:
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "DenyNotSingaporeRegion",
+          "Effect": "Deny",
+          "NotAction": [
+            "a4b:*",
+            "acm:*",
+            "aws-marketplace-management:*",
+            "aws-marketplace:*",
+            "aws-portal:*",
+            "budgets:*",
+            "ce:*",
+            "chime:*",
+            "cloudfront:*",
+            "config:*",
+            "cur:*",
+            "directconnect:*",
+            "ec2:DescribeRegions",
+            "ec2:DescribeTransitGateways",
+            "ec2:DescribeVpnGateways",
+            "fms:*",
+            "globalaccelerator:*",
+            "health:*",
+            "iam:*",
+            "importexport:*",
+            "kms:*",
+            "mobileanalytics:*",
+            "networkmanager:*",
+            "organizations:*",
+            "pricing:*",
+            "route53:*",
+            "route53domains:*",
+            "route53-recovery-cluster:*",
+            "route53-recovery-control-config:*",
+            "route53-recovery-readiness:*",
+            "s3:GetAccountPublic*",
+            "s3:ListAllMyBuckets",
+            "s3:ListMultiRegionAccessPoints",
+            "s3:PutAccountPublic*",
+            "shield:*",
+            "sts:*",
+            "support:*",
+            "trustedadvisor:*",
+            "waf-regional:*",
+            "waf:*",
+            "wafv2:*",
+            "wellarchitected:*"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "StringNotEquals": {
+              "aws:RequestedRegion": [
+                "ap-southeast-1"
+              ]
+            }
+          }
+        }
+      ]
+    }
+    ```
+9. Click on `Create policy`
+
+Your AWS accounts within your organization is now restricted to creating resources in the regions `ap-southeast-1`
+Singapore region.
+
+## Programmatic Access to AWS
+
+Now that both your root and IAM accounts are set up, you need to create an access key and secret key for your IAM
+account to access AWS programmatically.
+
+To do so, follow the steps below:
+
+1. Log into the AWS Management Console using your IAM account
+2. Click on your username on the top right corner of the page and click on `Security Credentials`
+3. Scroll down to the `Access keys` section and click on `Create access key`
+4. Select `Command Line Interface (CLI)`
+5. Select `I understand the above recommendation and want to proceed to create an access key.`
+6. Click on `Next`
+7. Give it a Description tag if you wish
+8. Click on `Create access key`
+9. Download the `.csv` file containing your access key and secret key, or save the access key and secret key in a
+   secure location
+
+> [!CAUTION]
+> Do not share your access key and secret key with anyone. Keep them in a secure location. 
