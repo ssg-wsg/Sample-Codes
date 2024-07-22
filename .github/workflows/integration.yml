@@ -198,15 +198,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
         run: terraform apply -auto-approve
-
-      # if rollback fails, you may need to manually delete the infrastructure using the AWS console
-      # Inspired by: https://github.com/orgs/community/discussions/26097
-      - name: Rollback and Destroy Infrastructure
-        if: failure() && steps.apply-main.outcome == 'failure'
-        continue-on-error: true
-        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ env.AWS_REGION }}
-        run: terraform destroy -auto-approve

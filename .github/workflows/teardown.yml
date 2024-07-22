@@ -1,12 +1,11 @@
 name: Tear Down Main Infrastructure
 
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 
 jobs:
   teardown:
     runs-on: ubuntu-latest
-    name: Create Docker Image and Deploy to ECR
+    name: Tear Down Infrastructure
 
     steps:
       - name: Checkout Repository
@@ -16,9 +15,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Destroy Main Infrastructure
-        id: main-infra
         working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: terraform destroy -auto-approve
