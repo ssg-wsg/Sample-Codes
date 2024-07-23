@@ -49,10 +49,12 @@ endfork
 :Runs on Ubuntu-latest;
 :Clone Repository and Execute Terraform Scripts;
 
-:Begin process for setting up main infrastructure;
-:Runs on Ubuntu-latest;
-:Clone Repository and Execute Terraform Scripts;
-
-stop
+if (Approval from reviewers?) then (yes)
+    :Begin process for setting up main infrastructure;
+    :Runs on Ubuntu-latest;
+    :Clone Repository and Execute Terraform Scripts;
+    stop
+else (no)
+    stop
 
 @enduml
