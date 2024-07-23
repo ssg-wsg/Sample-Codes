@@ -56,7 +56,9 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
 * [DevOps](#devops)
     * [GitHub Setup](#github-setup)
         * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
+    * [General Workflow](#general-workflow)
     * [CI/CD](#cicd)
+        * [Approval for Deployment](#approval-for-deployment)
         * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
     * [Logging](#logging)
@@ -66,7 +68,9 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
         * [Extending tasks to perform](#extending-tasks-to-perform)
 * [Planned Enhancements](#planned-enhancements)
     * [In-memory Key Files](#in-memory-key-files)
+    * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
     * [Go Serverless: Fargate](#go-serverless-fargate)
+    * [Deployment Environments on GitHub](#deployment-environments-on-github)
 
 ## Acknowledgements
 
@@ -167,8 +171,11 @@ Refer to the [Design](#Design) section for more information about the overall ar
 Refer to the [Implementation](#Implementation) section for more information about the features of the application,
 and how they are implemented in code.
 
-Refer to [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD) for more information about the logging,
-housekeeping and CI/CD processes of the application, so that you are better able to maintain the application.
+Refer to [CI/CD](#cicd) for more information about the Continuous Integration and Continuous Deployment processes
+is implemented in GitHub Actions.
+
+Refer to [Logging and Housekeeping](#Logging-And-Housekeeping) for more information about the logging and
+housekeeping processes of the application, so that you are better able to maintain the application.
 
 ## Design
 
@@ -1036,36 +1043,12 @@ To set up a GitHub repository, follow the steps below:
    hosted on.
 3. Fork the repository. Click on the `Fork` button in the top right corner of the repository page to fork it.
 
-> [!INFO]
-> *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to make
-> changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the upstream
+> [!NOTE]
+> *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to
+> make
+> changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
+> upstream
 > repository.
-
-4. Follow the process outlined in the [Installation Guide](Installation%20Guide.md) to download the forked codebase into
-   your computer.
-   Make sure to follow the second method to download your code, as you will need `git` to make changes to the forked
-   codebase.
-5. Make changes to the codebase as you see fit.
-6. Push the changes to your forked repository. Follow the steps below to push your changes:
-    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
-       downloaded to:
-        ```shell
-        git add .
-        ```
-    2. Commit the changes by running the following command:
-        ```shell
-        git commit -m "Your commit message here"
-        ```
-    3. Push the changes to your forked repository by running the following command:
-        ```shell
-        git push origin main
-        ```
-    4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
-       or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
-       the above actions through a graphical user interface.
-    5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
-       repository to create a PR.
-       Follow the instructions to create a PR.
 
 For CI/CD to work, make sure to add the following secrets to your repository:
 
@@ -1077,7 +1060,7 @@ For CI/CD to work, make sure to add the following secrets to your repository:
 Head over to [this](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions?tool=webui)
 website to find out more about how you can add secrets to your repository.
 
-> [!INFO]
+> [!NOTE]
 > More information about what the tokens do and how you need to configure your AWS and Codecov account
 > can be found in the [Deployment Guide](Deployment%20Guide.md#github)!
 
@@ -1098,7 +1081,52 @@ To do so, follow the steps below:
     6. Dependabot version updates
     7. Dependabot on Actions runners
     8. Code Scanning > CodeQL analysis
-        1. Set up basic CodeQL analysis
+        1. Set up basic CodeQL analysis for Python code
+
+### General Workflow
+
+The general workflow for contributing to the Sample Application is as follows:
+
+1. Follow the process outlined in the [Installation Guide](Installation%20Guide.md) to download the forked codebase into
+   your computer.
+   Make sure to follow the second method to download your code, as you will need `git` to make changes to the forked
+   codebase.
+2. Make changes to the codebase as you see fit using your code editor or Integrated Development Environment (IDE) of
+   choice.
+3. Create a new branch to contribute your code to by running the command:
+   ```shell
+   git checkout -b [BRANCH_NAME]
+   ```
+   Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you wish to create.
+4. Push the changes to your forked repository. Follow the steps below to push your changes:
+    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
+       downloaded to:
+        ```shell
+        git add .
+        ```
+    2. Commit the changes by running the following command:
+        ```shell
+        git commit -m "Your commit message here"
+        ```
+    3. Push the changes to your forked repository by running the following command:
+        ```shell
+        git push origin [BRANCH_NAME]
+        ```
+       > [!NOTE]
+       > Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you created in step 3.
+
+    4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
+       or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
+       the above actions through a graphical user interface.
+5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
+   repository to create a PR. Follow the instructions to create a PR.
+6. Make sure to create a PR only when you are ready to merge your changes into the upstream repository. The PR will
+   trigger an upstream action to run the CI/CD process on your code in the upstream repository. If you do not wish
+   to deploy your changes, make sure to cancel the running GitHub Actions on the upstream repository.
+
+> [!NOTE]
+> We are looking at using environments to manage deployments in the future. This will allow you to deploy your
+> changes without triggering an upstream deployment.
 
 ### CI/CD
 
@@ -1148,9 +1176,49 @@ The different stages of the CI/CD pipeline are as such:
     1. Start the pipeline on Ubuntu
     2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
 
+> [!WARNING]
+> The deployment process is only permitted once a reviewer approves it.
+
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
 ![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
+
+#### Approval for Deployment
+
+The deployment process is only permitted once a reviewer approves it. This is to ensure that the deployment process is
+controlled and that the reviewer has verified the changes made to the codebase.
+
+Refer to the [Deployment Guide](Deployment%20Guide.md#github-environments) for more information on how to set up the
+approval before deployment process.
+
+As a developer however, you may not want this behaviour for your test.
+
+To disable approval for deployment, remove the `environment: production` line from the `integration.yml` file.
+
+It should change from:
+
+```yaml
+...
+main-infra:
+  environment: production
+  needs:
+    - ecr
+...
+```
+
+to
+
+```yaml
+...
+main-infra:
+  needs:
+    - ecr
+...
+```
+
+> [!CAUTION]
+> Make sure that the relevant secrets detailed in the [Deployment Guide](Deployment%20Guide.md#preparation)
+> are still present as repository secrets.
 
 #### Failed Deployment
 
@@ -1209,19 +1277,24 @@ execution of the base Sample Application.
 We chose those to use this package over other packages due to its ease of use, compatibility with Streamlit and the
 lack of the need to write explicit multithreading/concurrent code to execute cron tasks.
 
+> [!NOTE]
+> There are plans to move to use an in-memory certificate and private key file system, or to change processes such that
+> any certificate and key files are not stored in the filesystem permanently.
+
 #### `start_scheduler()`
 
 `start_scheduler()` is the main method used to start the scheduler. The following details the steps taken when the
 method is called:
 
-1. Check if the task with a job ID equal to `UNIQUE_JOB_ID` is already present in the task scheduling pool
-2. If it is not in the pool, create a new task to add to the pool.
+1. Declare a `UNIQUE_JOB_ID` to identify the task to be scheduled
+2. Check if the task with a job ID equal to `UNIQUE_JOB_ID` is already present in the task scheduling pool
+3. If it is not in the pool, create a new task to add to the pool.
     1. Specify the time interval as 7 days
     2. Specify the job ID as `UNIQUE_JOB_ID`
     3. Specify to replace any existing jobs with the same job ID to prevent conflicts over which task is the latest
        task
     4. Start the scheduler
-3. If the job ID is in the pool, return immediately and do nothing
+4. If the job ID is in the pool, return immediately and do nothing
 
 > [!TIP]
 > Do note that the interval is arbitrarily set, you may wish to use another interval for stricter housekeeping and
@@ -1252,6 +1325,13 @@ sensitive and anyone with access to the filesystem can potentially access the ke
 make it more difficult for attackers to gain access to the key files, as they will need to have access to the memory
 space of the application, which is difficult without root access.
 
+### Alternative: Change processes to save key files to temporary files
+
+We could also explore changing processes of writing to a temporary file system, where the key files are saved to a
+temporary file when needed and deleted after it is done being used. This will prevent the key files from being saved
+permanently on the filesystem, mitigating some of the security issues that may arise from saving the key files to the
+filesystem.
+
 ### Go Serverless: Fargate
 
 EC2 instances are currently used to host the application via ECS. This may be problematic since we need to regularly
@@ -1259,3 +1339,14 @@ maintain the EC2 instances to ensure that they are up-to-date and secure.
 
 By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
 it for us. We only need to focus on the application itself.
+
+### Deployment Environments on GitHub
+
+Currently we cannot control the deployment of the application via GitHub Actions. This is because the deployment is
+triggered whenever a PR is created, which may not be ideal if we are not ready to deploy the changes.
+
+By using environments, we can control when the deployment is triggered. This will allow us to deploy the changes only
+when we are ready to do so.
+
+We could perhaps look into creating a staging environment for testing purposes, and a production environment for
+deploying the application to AWS.

@@ -8,6 +8,7 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
 * [Usage of the Guide](#usage-of-the-guide)
 * [AWS](#aws)
     * [Preparation](#preparation)
+    * [GitHub Environments](#github-environments)
 * [Codecov](#codecov)
 * [GitHub](#github)
     * [GitHub Actions](#github-actions)
@@ -215,6 +216,42 @@ following GitHub Actions Secrets to the repository:
    is used under the [`deploy` directory](../deploy).
 4. `CODECOV_TOKEN`: The Repository Upload Token that you obtained from Codecov.
 
+### GitHub Environments
+
+To prevent unwanted deployments to AWS, you can set up GitHub Environments to restrict deployments to specific branches.
+
+Refer
+to [this guide](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment)
+to learn more about the use of environments to enforce approvals before deployment.
+
+For the application, you will need to create the `production` environment.
+
+To create the `production` environment, follow the steps below:
+
+1. Go to the `Settings` tab of the repository.
+2. Click on the `Environments` tab on the sidebar.
+3. Click on the `New environment` button.
+4. Enter `production` as the environment name.
+5. Click on the `Configure environment` button.
+6. Click on the `Required reviewers` checkbox. Feel free to add reviewers to the environment to enforce approvals
+   before deployment.
+    1. If needed, select the `Prevent self-review` option to prevent self-approval of the deployment
+7. Add the following secrets to the environment by clicking on the `Add environment secret` button:
+    * `AWS_ACCESS_KEY_ID`: The Access Key ID of the IAM user that you created in the AWS preparation step
+    * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key of the IAM user that you created in the AWS preparation step
+    * `AWS_REGION`: The AWS region that you want to deploy the application to. This should correspond to the region that
+      is used under the [`deploy` directory](../deploy)
+
+> [!WARNING]
+> Secrets need to be re-declared in the environment to ensure that the secrets created in the previous step
+> are available to the environment.
+
+> [!WARNING]
+> Currently, this approval behaviour is only enforced for the final step of the build process whereby the necessary
+> main infrastructure is provisioned. If you require approvals for other steps in the build process, you will need to
+> modify the GitHub Actions workflows with different environments. You may repeat the step above to create environments
+> for other build steps.
+
 ## Docker
 
 Docker is a containerisation tool and framework to help you ship applications consistently and reliably.
@@ -247,7 +284,7 @@ RUN ...
 * `WORKDIR`: The working directory of the Docker container. This should mirror the name of the folder that the
   application code is stored in.
 * `EXPOSE`: The port that is exposed (accessible) from outside the container. This depends on the port that you set in
-  your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `8502`.
+  your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `80`.
 * `COPY`: Copies the application code from your device into the Docker container.
 * `RUN`: This clause is used to specify a command that is executed when the container is started.
 
@@ -508,7 +545,8 @@ You may change the default CIDR IP of the VPC by changing the `cidr` variable in
 
 > [!NOTE]
 > Refer
-> to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
+>
+to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
 > for more information on how the CIDR IP addressing system works.
 
 #### Subnets

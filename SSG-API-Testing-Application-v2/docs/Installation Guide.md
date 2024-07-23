@@ -81,7 +81,7 @@ To obtain the code directly from GitHub's UI, follow the steps below:
 > This method requires you to have `git` installed in your environment.
 >
 > If you do not have `git` installed, you can refer
-> to [this guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
+> to [this guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 > to learn more about how to install `git` on your environment.
 >
 > To verify if your environment has `git` installed, run the following command on a command prompt or terminal:
@@ -173,7 +173,7 @@ The application leverages several libraries to run. To install these libraries, 
     ```
 
 > [!NOTE]
-> If the command fails to execute, try replacing `pip` with `pip3`!
+> If the command fails to execute, try replacing `pip` with `pip3`! If that also fails, try `python -m pip`!
 
 > [!TIP]
 > To verify if you have successfully installed the required libraries, run the following command on a command prompt
@@ -184,7 +184,7 @@ The application leverages several libraries to run. To install these libraries, 
 > ```
 >
 > ```python
-> import streamlit, pycodestyle, requests, cryptography, streamlit_nested_layout, requests_oauthlib, \
+> import streamlit, pycodestyle, requests, cryptography, streamlit_nested_layout, \
 >     apscheduler, certifi, OpenSSL, coverage, email_validator
 > ```
 
@@ -218,13 +218,12 @@ To run the application in Python, follow the steps below:
 2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
    directory (folder) should have a `requirements.txt` file present in it
     1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
-       the
-       files in the directory (folder)
+       the files in the directory (folder)
 3. Run the command:
    ```shell
    streamlit run Home.py
    ```
-4. If successful, your browser should open up and the application should be running on `http://localhost:8502`
+4. If successful, your browser should open up and the application should be running on `http://localhost:80`
 
 ### Running the Application in Docker
 
@@ -258,14 +257,14 @@ Once your build is successful, follow the steps below to run your container:
 
 1. Run the Docker container using the following command:
     ```shell
-    docker run -it -p 8502:8502 app
+    docker run -it -p 80:80 app
     ```
     1. The `docker run` command is used to run the Docker container
     2. The `-it` flag is used to run the Docker container in interactive mode
-    3. The `-p` flag is used to map the port `8502` on the host machine to the port `8502` on the Docker container
+    3. The `-p` flag is used to map the port `80` on the host machine to the port `80` on the Docker container
     4. The `app` at the end of the command specifies the name of the Docker container to run. This should match the name
        that you have tagged the Docker container within the previous step
-2. Open your web browser and navigate to `http://localhost:8502` to access the application running inside the Docker
+2. Open your web browser and navigate to `http://localhost:80` to access the application running inside the Docker
    container
 
 > [!NOTE]

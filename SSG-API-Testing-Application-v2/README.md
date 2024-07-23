@@ -16,7 +16,6 @@ This application was built using Python 3.12, and it uses the following Python l
 * `requests`: Library for sending HTTP requests; the backbone of this application
 * `cryptography`: For encryption and decryption of the requests and payloads
 * `streamlit-nested-layout`: Patch for UI framework to allow deep nesting of elements
-* `requests-oauthlib`: OAuth Authentication with `requests`
 * `apscheduler`: Runs cron jobs required for maintenance and housekeeping
 * `certifi`: Provides updated information on Root Certificate Authority
 * `pyOpenSSL`: Provides SSL functionalities
@@ -117,13 +116,13 @@ streamlit run Home.py
 If successful, you should be able to see that your browser would open, and you will be navigated to the `localhost`
 address where this application is hosted on!
 
-By default, the application is set to run on `localhost:8502`, where `8502` is the port number allocated to the
+By default, the application is set to run on `localhost:80`, where `80` is the port number allocated to the
 application.
 
 The application is also run over HTTP; take care not to connect to the application via HTTPS!
 
 > [!NOTE]
-> If you wish to host the application on a server, make sure to open up the port `8502` on your server to allow
+> If you wish to host the application on a server, make sure to open up the port `80` on your server to allow
 > connections to the application! Otherwise, do consider using port forwarding or reverse proxies to route requests
 > to the correct port!
 
