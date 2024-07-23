@@ -148,12 +148,13 @@ To upload your credentials and use it for calling the SSG APIs, follow the steps
    UAT)*
    environment, but you can choose between the UAT, Production and Mock environment.
    ![API Endpoint](assets/user-guide/setup/api-endpoint-selection.png)
-   > [!CAUTION]
-   > If the application reruns for any reason (e.g. the application code has been altered, the application is reloaded,
-   e.t.c.),
-   > you must return to the Home Screen and re-select the API Endpoint.
-   >
-   > **This selection is reset if the application is rerun!**
+
+> [!CAUTION]
+> If the application reruns for any reason (e.g. the application code has been altered, the application is reloaded,
+> e.t.c.), you must return to the Home Screen and re-select the API Endpoint.
+>
+> **This selection is reset if the application is rerun!**
+
 3. Scroll down to the UEN and Keys section
    ![UEN and Keys section](assets/user-guide/setup/uen-keys.png)
 4. Under the “Enter in your UEN” field, key in your 9-10 digit UEN number:
@@ -209,7 +210,6 @@ Congratulations! You have loaded up your credentials and are now ready to call S
 Now, let us explore the different pages of the Sample Application. There are 7 main pages of the application:
 
 * [En-Decryption](#En-Decryption)
-* [Demo Code](#Demo-Code)
 * [Courses](#Courses)
 * [Attendance](#Attendance)
 * [Assessment](#Assessment)
@@ -303,12 +303,14 @@ To access this API, follow the following steps:
    ![Add Course Run Page](assets/user-guide/courses/add-course-run-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview
    Request Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Add Course Run (New) API
@@ -328,12 +330,14 @@ To access this API, follow the following steps:
    ![Edit/Delete Course Run Page](assets/user-guide/courses/edit-delete-course-run-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API. Depending
    on the action that you have specified above, the JSON representation you see may be different
@@ -355,12 +359,14 @@ To access the Course Sessions API (via the View Course Sessions page), follow th
    ![View Course Sessions Page](assets/user-guide/courses/view-course-sessions-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Edit Course Run
    (New) API
 5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
@@ -406,12 +412,14 @@ To access the Create Enrolment API, follow the steps below:
    ![Create Enrolment Page](assets/user-guide/enrolment/create-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Enrolment API
@@ -432,12 +440,14 @@ To access the Update Enrolment API, follow the steps below:
    ![Update Enrolment Page](assets/user-guide/enrolment/update-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment API
 6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
@@ -457,12 +467,14 @@ To access the Cancel Enrolment API, follow the steps below:
    ![Cancel Enrolment Page](assets/user-guide/enrolment/cancel-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Enrolment API
@@ -482,12 +494,14 @@ To access the Search Enrolment API, follow the steps below:
    ![Search Enrolment Page](assets/user-guide/enrolment/search-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Search Enrolment API
@@ -508,12 +522,14 @@ To access the View Enrolment API, follow the steps below:
    ![View Enrolment Page](assets/user-guide/enrolment/view-enrolment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 5. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Enrolment API
 6. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
@@ -531,12 +547,14 @@ To access the Update Enrolment Fee Collection API, follow the steps below:
    ![Update Enrolment Fee Collection Page](assets/user-guide/enrolment/update-enrolment-fee-collection-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update Enrolment Fee
@@ -579,12 +597,14 @@ To access the Course Session Attendance API, follow the steps below:
    ![Course Session Attendance Page](assets/user-guide/attendance/course-session-attendance-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the Course Session Attendance
    API
 5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
@@ -603,12 +623,14 @@ To access the Upload Course Session Attendance API, follow the steps below:
    ![Upload Course Session Attendance Page](assets/user-guide/attendance/upload-course-session-attendance-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Course Session
@@ -653,12 +675,14 @@ To access the Create Assessment API, follow the steps below:
    ![Create Assessment Page](assets/user-guide/assessment/create-assessment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Create Assessment API
@@ -679,12 +703,14 @@ To access the Update or Void Assessment API, follow the steps below:
    ![Update or Void Assessment Page](assets/user-guide/assessment/update-void-assessment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Update or Void Assessment
@@ -706,12 +732,14 @@ To access the Find Assessment API, follow the steps below:
    ![Find Assessment Page](assets/user-guide/assessment/find-assessment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Find Assessment API
@@ -732,12 +760,14 @@ To access the View Assessment API, follow the steps below:
    ![View Assessment Page](assets/user-guide/assessment/view-assessment-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Assessment API
 5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the GET request to, the Headers of the request,
@@ -775,12 +805,14 @@ To access the SF Credit Claims Payment Request Encryption API, follow the steps 
    ![SF Credit Claims Payment Request Encryption Page](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-encryption-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
@@ -813,12 +845,14 @@ To access the SF Credit Claims Payment Request Decryption API, follow the steps 
    ![SF Credit Claims Payment Request Decryption Page](assets/user-guide/sf-credit-pay/sf-credit-claims-payment-request-decryption-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API.
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the SF Credit Claims Payment
@@ -840,12 +874,14 @@ To access the Upload Supporting Documents API, follow the steps below:
    ![Upload Supporting Documents Page](assets/user-guide/sf-credit-pay/upload-supporting-documents-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sending to the API
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Upload Supporting
@@ -868,12 +904,14 @@ To access the View Claim Details API, follow the steps below:
    ![View Claim Details Page](assets/user-guide/sf-credit-pay/view-claim-details-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. Once you are done, click on the “Send” button. This should send an HTTP GET request to the View Claim Details API
 5. If the HTTP request is successful, you should be able to see 2 new tabs show up on your screen
     1. The Request tab shows the API endpoint that you are making the POST request to, the Headers of the request,
@@ -892,12 +930,14 @@ To access the Cancel Claim API, follow the steps below:
    ![Cancel Claim Page](assets/user-guide/sf-credit-pay/cancel-claim-page.png)
 3. Fill in the required parameters. Optional parameters (parameters hidden behind a checkbox) are optional to define
    and can be left as if not needed
-   > [!TIP]
-   > Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
-   > the fields mean and what you should fill it up with!
-   >
-   > To view the tooltips for the optional parameters, you can select the parameter first to view it
-   > before unselecting it.
+
+> [!TIP]
+> Unsure of what the fields mean? Hover over the tooltip icon to display a useful help text explaining what
+> the fields mean and what you should fill it up with!
+>
+> To view the tooltips for the optional parameters, you can select the parameter first to view it
+> before unselecting it.
+
 4. To view the request body that you will be sending, click on the “Request Body” expander under the “Preview Request
    Body” heading to view a JSON representation of the request body which you will be sent to the API
 5. Once you are done, click on the “Send” button. This should send an HTTP POST request to the Cancel Claim API

@@ -68,7 +68,9 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
         * [Extending tasks to perform](#extending-tasks-to-perform)
 * [Planned Enhancements](#planned-enhancements)
     * [In-memory Key Files](#in-memory-key-files)
+    * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
     * [Go Serverless: Fargate](#go-serverless-fargate)
+    * [Deployment Environments on GitHub](#deployment-environments-on-github)
 
 ## Acknowledgements
 
@@ -169,8 +171,11 @@ Refer to the [Design](#Design) section for more information about the overall ar
 Refer to the [Implementation](#Implementation) section for more information about the features of the application,
 and how they are implemented in code.
 
-Refer to [Logging, Housekeeping and CI/CD](#Logging-Housekeeping-and-CICD) for more information about the logging,
-housekeeping and CI/CD processes of the application, so that you are better able to maintain the application.
+Refer to [CI/CD](#cicd) for more information about the Continuous Integration and Continuous Deployment processes
+is implemented in GitHub Actions.
+
+Refer to [Logging and Housekeeping](#Logging-And-Housekeeping) for more information about the logging and
+housekeeping processes of the application, so that you are better able to maintain the application.
 
 ## Design
 
@@ -1038,12 +1043,12 @@ To set up a GitHub repository, follow the steps below:
    hosted on.
 3. Fork the repository. Click on the `Fork` button in the top right corner of the repository page to fork it.
 
-   > [!INFO]
-   > *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to
-   make
-   > changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
-   upstream
-   > repository.
+> [!NOTE]
+> *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to
+> make
+> changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
+> upstream
+> repository.
 
 For CI/CD to work, make sure to add the following secrets to your repository:
 
@@ -1055,7 +1060,7 @@ For CI/CD to work, make sure to add the following secrets to your repository:
 Head over to [this](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions?tool=webui)
 website to find out more about how you can add secrets to your repository.
 
-> [!INFO]
+> [!NOTE]
 > More information about what the tokens do and how you need to configure your AWS and Codecov account
 > can be found in the [Deployment Guide](Deployment%20Guide.md#github)!
 
@@ -1076,7 +1081,7 @@ To do so, follow the steps below:
     6. Dependabot version updates
     7. Dependabot on Actions runners
     8. Code Scanning > CodeQL analysis
-        1. Set up basic CodeQL analysis
+        1. Set up basic CodeQL analysis for Python code
 
 ### General Workflow
 
@@ -1107,19 +1112,21 @@ The general workflow for contributing to the Sample Application is as follows:
         ```shell
         git push origin [BRANCH_NAME]
         ```
-       > [!INFO]
+       > [!NOTE]
        > Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you created in step 3.
+
     4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
        or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
        the above actions through a graphical user interface.
-    5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
-       repository to create a PR. Follow the instructions to create a PR.
-    6. Make sure to create a PR only when you are ready to merge your changes into the upstream repository. The PR will
-       trigger an upstream action to run the CI/CD process on your code in the upstream repository. If you do not wish
-       to deploy your changes, make sure to cancel the running GitHub Actions on the upstream repository.
-       > [!INFO]
-       > We are looking at using environments to manage deployments in the future. This will allow you to deploy your
-       > changes without triggering an upstream deployment.
+5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
+   repository to create a PR. Follow the instructions to create a PR.
+6. Make sure to create a PR only when you are ready to merge your changes into the upstream repository. The PR will
+   trigger an upstream action to run the CI/CD process on your code in the upstream repository. If you do not wish
+   to deploy your changes, make sure to cancel the running GitHub Actions on the upstream repository.
+
+> [!NOTE]
+> We are looking at using environments to manage deployments in the future. This will allow you to deploy your
+> changes without triggering an upstream deployment.
 
 ### CI/CD
 
@@ -1181,7 +1188,7 @@ Here is a diagram representing the overall flow of processes implemented in the 
 The deployment process is only permitted once a reviewer approves it. This is to ensure that the deployment process is
 controlled and that the reviewer has verified the changes made to the codebase.
 
-Refer to the [Deployment Guide](Deployment%20Guide.md#github-environments) for more information on how to setup the
+Refer to the [Deployment Guide](Deployment%20Guide.md#github-environments) for more information on how to set up the
 approval before deployment process.
 
 As a developer however, you may not want this behaviour for your test.
@@ -1192,10 +1199,10 @@ It should change from:
 
 ```yaml
 ...
-  main-infra:
-    environment: production
-    needs:
-      - ecr
+main-infra:
+  environment: production
+  needs:
+    - ecr
 ...
 ```
 
@@ -1203,14 +1210,14 @@ to
 
 ```yaml
 ...
-  main-infra:
-    needs:
-      - ecr
+main-infra:
+  needs:
+    - ecr
 ...
 ```
 
 > [!CAUTION]
-> Make sure that the relevant secrets detailed in the [Deployment Guide](Deployment%20Guide.md#preparation) 
+> Make sure that the relevant secrets detailed in the [Deployment Guide](Deployment%20Guide.md#preparation)
 > are still present as repository secrets.
 
 #### Failed Deployment
@@ -1270,19 +1277,24 @@ execution of the base Sample Application.
 We chose those to use this package over other packages due to its ease of use, compatibility with Streamlit and the
 lack of the need to write explicit multithreading/concurrent code to execute cron tasks.
 
+> [!NOTE]
+> There are plans to move to use an in-memory certificate and private key file system, or to change processes such that
+> any certificate and key files are not stored in the filesystem permanently.
+
 #### `start_scheduler()`
 
 `start_scheduler()` is the main method used to start the scheduler. The following details the steps taken when the
 method is called:
 
-1. Check if the task with a job ID equal to `UNIQUE_JOB_ID` is already present in the task scheduling pool
-2. If it is not in the pool, create a new task to add to the pool.
+1. Declare a `UNIQUE_JOB_ID` to identify the task to be scheduled
+2. Check if the task with a job ID equal to `UNIQUE_JOB_ID` is already present in the task scheduling pool
+3. If it is not in the pool, create a new task to add to the pool.
     1. Specify the time interval as 7 days
     2. Specify the job ID as `UNIQUE_JOB_ID`
     3. Specify to replace any existing jobs with the same job ID to prevent conflicts over which task is the latest
        task
     4. Start the scheduler
-3. If the job ID is in the pool, return immediately and do nothing
+4. If the job ID is in the pool, return immediately and do nothing
 
 > [!TIP]
 > Do note that the interval is arbitrarily set, you may wish to use another interval for stricter housekeeping and
@@ -1313,6 +1325,13 @@ sensitive and anyone with access to the filesystem can potentially access the ke
 make it more difficult for attackers to gain access to the key files, as they will need to have access to the memory
 space of the application, which is difficult without root access.
 
+### Alternative: Change processes to save key files to temporary files
+
+We could also explore changing processes of writing to a temporary file system, where the key files are saved to a
+temporary file when needed and deleted after it is done being used. This will prevent the key files from being saved
+permanently on the filesystem, mitigating some of the security issues that may arise from saving the key files to the
+filesystem.
+
 ### Go Serverless: Fargate
 
 EC2 instances are currently used to host the application via ECS. This may be problematic since we need to regularly
@@ -1328,3 +1347,6 @@ triggered whenever a PR is created, which may not be ideal if we are not ready t
 
 By using environments, we can control when the deployment is triggered. This will allow us to deploy the changes only
 when we are ready to do so.
+
+We could perhaps look into creating a staging environment for testing purposes, and a production environment for
+deploying the application to AWS.

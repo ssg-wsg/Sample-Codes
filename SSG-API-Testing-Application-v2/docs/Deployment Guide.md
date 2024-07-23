@@ -235,7 +235,7 @@ To create the `production` environment, follow the steps below:
 5. Click on the `Configure environment` button.
 6. Click on the `Required reviewers` checkbox. Feel free to add reviewers to the environment to enforce approvals
    before deployment.
-   1. Select the `Prevent self-review` option to prevent self-approval of the deployment
+    1. If needed, select the `Prevent self-review` option to prevent self-approval of the deployment
 7. Add the following secrets to the environment by clicking on the `Add environment secret` button:
     * `AWS_ACCESS_KEY_ID`: The Access Key ID of the IAM user that you created in the AWS preparation step
     * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key of the IAM user that you created in the AWS preparation step
@@ -247,7 +247,7 @@ To create the `production` environment, follow the steps below:
 > are available to the environment.
 
 > [!WARNING]
-> Currently, this approval behaviour is only enforced for the final step of the build process whereby the necessary 
+> Currently, this approval behaviour is only enforced for the final step of the build process whereby the necessary
 > main infrastructure is provisioned. If you require approvals for other steps in the build process, you will need to
 > modify the GitHub Actions workflows with different environments. You may repeat the step above to create environments
 > for other build steps.
@@ -284,7 +284,7 @@ RUN ...
 * `WORKDIR`: The working directory of the Docker container. This should mirror the name of the folder that the
   application code is stored in.
 * `EXPOSE`: The port that is exposed (accessible) from outside the container. This depends on the port that you set in
-  your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `8502`.
+  your [Streamlit configuration file](../app/.streamlit/config.toml). By default, the port is `80`.
 * `COPY`: Copies the application code from your device into the Docker container.
 * `RUN`: This clause is used to specify a command that is executed when the container is started.
 

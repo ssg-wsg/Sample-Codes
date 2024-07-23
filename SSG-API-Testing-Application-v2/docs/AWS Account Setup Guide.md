@@ -9,7 +9,6 @@ Welcome to the AWS Account Setup Guide!
 
 ## Table of Contents
 
-* [Table of Contents](#table-of-contents)
 * [Creating your AWS Account](#creating-your-aws-account)
 * [Setting up your Root Account](#setting-up-your-root-account)
 * [Setting up AWS Organization](#setting-up-aws-organization)
