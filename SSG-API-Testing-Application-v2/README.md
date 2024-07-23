@@ -1,15 +1,11 @@
 # SSG API Demo Application
 
+[![codecov](https://codecov.io/gh/asdfghjkxd/Sample-Codes/graph/badge.svg?token=DZZXXV1XW9)](https://codecov.io/gh/asdfghjkxd/Sample-Codes)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
 Built with Streamlit, this sample application provides you with a quick and easy way to try out our APIs without 
 needing to write your own code!
-
-## AWS Deployment
-
-Don't want to install any packages or run commands? Head over to [this site]() where this application is being hosted
-on to get started quickly!
 
 ## Local Installation
 
@@ -20,7 +16,6 @@ This application was built using Python 3.12, and it uses the following Python l
 * `requests`: Library for sending HTTP requests; the backbone of this application
 * `cryptography`: For encryption and decryption of the requests and payloads
 * `streamlit-nested-layout`: Patch for UI framework to allow deep nesting of elements
-* `requests-oauthlib`: OAuth Authentication with `requests`
 * `apscheduler`: Runs cron jobs required for maintenance and housekeeping
 * `certifi`: Provides updated information on Root Certificate Authority
 * `pyOpenSSL`: Provides SSL functionalities
@@ -121,20 +116,20 @@ streamlit run Home.py
 If successful, you should be able to see that your browser would open, and you will be navigated to the `localhost`
 address where this application is hosted on!
 
-By default, the application is set to run on `localhost:8502`, where `8502` is the port number allocated to the
+By default, the application is set to run on `localhost:80`, where `80` is the port number allocated to the
 application.
 
 The application is also run over HTTP; take care not to connect to the application via HTTPS!
 
 > [!NOTE]
-> If you wish to host the application on a server, make sure to open up the port `8502` on your server to allow
+> If you wish to host the application on a server, make sure to open up the port `80` on your server to allow
 > connections to the application! Otherwise, do consider using port forwarding or reverse proxies to route requests
 > to the correct port!
 
 
 ## Features
 
-There are 7 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
+There are 6 main pages of the application. Each page focuses on one particular aspect of the SSG 15 mandated APIs,
 as well as the SkillsFuture Credit API.
 
 The pages are all found within the [pages](app/pages) folder.
@@ -145,13 +140,6 @@ This page allows you to quickly encrypt and decrypt your text using the same alg
 
 This allows you to quickly convert encrypted responses from the API into plaintext, or generate encrypted payloads
 to send to the API!
-
-### Demo Code - Authentication
-
-This page contains sample code which you can use in your application to get started with authentication.
-
-This page also provides you with a quick and simple way to test if your credentials work, allowing you to do a 
-quick sanity check on the veracity of your credentials.
 
 ### Courses
 
@@ -165,17 +153,17 @@ Using this API, you can:
 * View a Course Run
 * View Course Sessions
 
-### Enrollment
+### Enrolment
 
-This page contains APIs that are related to the enrollment of learners to your courses!
+This page contains APIs that are related to the enrolment of learners to your courses!
 
 Using this API, you can:
 
-* Create Enrollment
-* View Enrollment
-* Search Enrollment
-* Update Enrollment
-* Delete Enrollment
+* Create Enrolment
+* View Enrolment
+* Search Enrolment
+* Update Enrolment
+* Delete Enrolment
 
 ### Attendance
 
@@ -214,4 +202,4 @@ Using this API, you can:
 ## Acknowledgements
 
 Many of the backend functions are adapted from the [SSG-API-Testing-Application](../../Sample-Codes/SSG-API-Testing-Application) and various sources from the
-Internet. They are credited where they are due.
+Internet. Sources are credited where they are referenced or reused.

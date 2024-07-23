@@ -15,6 +15,7 @@ There are 4 main processes:
 It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
 functions to clean up the request body and send requests that contains only non-null fields.
 """
+
 import datetime
 
 import streamlit as st

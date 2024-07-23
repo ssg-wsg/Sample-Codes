@@ -4,7 +4,7 @@ skinparam linetype ortho
 
 title Assessments Page Class Dependencies
 
-package "5_Assessments" as page {
+package "4_Assessments" as page {
 
 }
 

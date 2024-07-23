@@ -14,7 +14,7 @@ LOGGER = Logger(__name__)
 
 def init() -> None:
     """
-    Initialises all the necessary Stremalit variables to record configurations.
+    Initialises all the necessary Streamlit variables to record configurations.
 
     :return: None
     """
@@ -43,8 +43,8 @@ def display_config() -> None:
 
     st.header("API Endpoint")
     try:
-        st.code(f"{st.session_state["url"].name if "url" in st.session_state else "Unknown"}: "
-                f"{st.session_state["url"].value if "url" in st.session_state else "Unknown URL"}", language="text")
+        st.code(f"{st.session_state['url'].name if 'url' in st.session_state else 'Unknown'}: "
+                f"{st.session_state['url'].value if 'url' in st.session_state else 'Unknown URL'}", language="text")
     except AttributeError:
         st.info("Your app has rerun, make sure to navigate back to the **Home** page to reselect the API endpoint!",
                 icon="ℹ️")

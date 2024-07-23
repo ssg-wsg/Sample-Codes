@@ -1,3 +1,24 @@
+"""
+This page is used to enable access to the Enrolment API.
+
+There are 6 main processes:
+1. Create Enrolment
+    - This tab allows you to create a new enrolment record for an attendee of your course
+2. Update Enrolment
+    - This tab allows you to update an existing enrolment record for an attendee of your course
+3. Cancel Enrolment
+    - This tab allows you to cancel and delete an existing enrolment record for an attendee of your course
+4. Search Enrolment
+    - This tab allows you to query for enrolment records based on a set of parameters
+5. View Enrolment
+    - This tab allows you to view the enrolment record using an enrolment record reference number
+6. Update Enrolment Fee Collection
+    - This tab allows you to update the fee collection status of an existing enrolment record
+
+It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
+functions to clean up the request body and send requests that contains only non-null fields.
+"""
+
 import datetime
 
 import streamlit as st

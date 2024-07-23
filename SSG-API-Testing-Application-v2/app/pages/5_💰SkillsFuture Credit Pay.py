@@ -1,3 +1,23 @@
+"""
+This page is used to enable access to the SkillsFuture Credit Pay API.
+
+There are 5 main processes:
+1. Encryption
+    - This tab allows you to create a claims request, and obtain the encrypted API response that will be used in
+      the sending of a form POST request to the SFC UAT Endpoint
+2. Decryption
+    - This tab allows you to decrypt the response from the above form POST request
+3. Upload Supporting Documents
+    - This tab allows you to upload any supporting documents for making a claims request
+4. View Claims
+    - This tab allows you to view the details of an existing claims request
+5. Cancel Claims
+    - This tab allows you to cancel a claims request
+
+It is important to note that optional fields are always hidden behind a Streamlit checkbox to allow the backend
+functions to clean up the request body and send requests that contains only non-null fields.
+"""
+
 import datetime
 
 import streamlit as st
