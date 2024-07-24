@@ -158,14 +158,14 @@ with encryption:
     st.download_button(
         "Download HTML Form",
         data="""
-        <h1>SkillsFuture Credit Payment Request Form</h1>
-        <p>Enter in the encrypted payload below and click "Submit" to send the request to the API!</p>
-        <form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
-               method="post" target="_blank">
-             <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100"></textarea>
-             <br>
-             <input type="submit" href="#" formtarget="_blank" value="Submit">
-         </form>
+<h1>SkillsFuture Credit Payment Request Form</h1>
+<p>Enter in the encrypted payload below and click "Submit" to send the request to the API!</p>
+<form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
+       method="post" target="_blank">
+     <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100"></textarea>
+     <br>
+     <input type="submit" href="#" formtarget="_blank" value="Submit">
+ </form>
         """,
         file_name="form.html",
         mime="text/html",
@@ -173,7 +173,6 @@ with encryption:
         help="Click to download the HTML form for submission!",
         on_click=lambda: LOGGER.info("Downloading HTML form for submission..."),
         type="primary")
-
 
 with decryption:
     st.header("SF Credit Claims Payment Request Decryption")
@@ -213,7 +212,6 @@ with decryption:
 
                 with response:
                     handle_response(lambda: dec.execute(), require_decryption=True)
-
 
 with upload:
     st.header("Upload Supporting Documents")
@@ -315,7 +313,6 @@ with upload:
                 with response:
                     handle_response(lambda: ud.execute(), require_decryption=True)
 
-
 with view:
     st.header("View Claim Details")
     st.markdown("Training Providers can retrieve the details of an individual’s claim by calling this API.")
@@ -356,7 +353,6 @@ with view:
 
             with response:
                 handle_response(lambda: vc.execute(), require_decryption=True)
-
 
 with cancel:
     st.header("Cancel Claim")

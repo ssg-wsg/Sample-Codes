@@ -76,6 +76,7 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
     * [In-memory Key Files](#in-memory-key-files)
     * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
     * [Go Serverless: Fargate](#go-serverless-fargate)
+* [Conclusion](#conclusion)
 
 ## Acknowledgements
 
@@ -1233,9 +1234,9 @@ The general workflow for contributing to the Sample Application is as follows:
    repository to keep your forked repository up to date. Refer
    to [this guide](https://www.atlassian.com/git/tutorials/syncing/git-pull)
    for more information on pulling the changes made from the upstream repository to your local repository.
-10. Note that deployments are only permitted once a reviewer approves the deployment. Refer to the
-    [Approval for Deployment](#approval-for-deployment) section for more information about the approval before
-    the deployment process.
+10. Note that deployments to the upstream branches are only permitted upon approval from a reviewer. You may or may not
+    require approval for deployments to your own local testing environment based on how you have set up GitHub 
+    Environments [above](#github-environments).
 
 ### AWS Workflow
 
@@ -1448,3 +1449,21 @@ maintain the EC2 instances to ensure that they are up-to-date and secure.
 
 By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
 it for us. We only need to focus on the application itself.
+
+## Conclusion
+
+Congratulations! You have made it to the end of the Developer Guide for the Sample Application. We hope that this guide
+has been helpful in providing you with the necessary information to get started with development of the Sample
+Application.
+
+If you wish to learn more on how to set up your AWS account and AWS Organization, refer to the
+[AWS Account Setup Guide](AWS%20Account%20Setup%20Guide.md).
+
+If you wish to learn more about how to deploy the application onto AWS, refer to the
+[Deployment Guide](Deployment%20Guide.md).
+
+If you wish to learn more about how to use the application from the user's perspective, refer to the
+[User Guide](User%20Guide.md).
+
+If you wish to just install the application locally on your machine and use it without any further development, refer
+to the [Installation Guide](Installation%20Guide.md).

@@ -45,6 +45,7 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
         * [Docker](#docker-1)
         * [AutoScaling Group](#autoscaling-group)
     * [Architecture Diagram](#architecture-diagram)
+* [Conclusion](#conclusion)
 
 ## Usage of the Guide
 
@@ -993,3 +994,22 @@ The following is a rough process of what happens when you deploy the application
     1. An Auto Scaling Group and EC2 Container Instances are created
     2. The ECS Service is then linked to the Auto Scaling Group to ensure that the ECS Service is running on the EC2
        Container Instances through the Capacity Provider
+
+## Conclusion
+
+Congratulations! You have successfully completed the deployment guide for the Sample Application.
+
+You have learned how to deploy the Sample Application to AWS using GitHub Actions and Terraform, and how to configure
+the necessary infrastructure to host the Sample Application.
+
+If you wish to learn more on how to set up your AWS account and AWS Organization, refer to the
+[AWS Account Setup Guide](AWS%20Account%20Setup%20Guide.md).
+
+If you wish to learn more about how to use the application from a user's perspective, refer to the
+[User Guide](User%20Guide.md).
+
+If you wish to learn more about how to set up the application locally and develop it, refer to the
+[Developer Guide](Developer%20Guide.md).
+
+If you wish to just install the application locally on your machine and use it without any further development, refer
+to the [Installation Guide](Installation%20Guide.md).
