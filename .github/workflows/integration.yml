@@ -63,18 +63,6 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Scan Terraform Backend Script
-        id: terrascan
-        uses: tenable/terrascan-action@main
-        with:
-          iac_type: "terraform"
-          iac_version: "v14"
-          policy_type: "aws"
-          only_warn: true
-          non_recursive: false
-          sarif_upload: true
-          iac_dir: "./SSG-API-Testing-Application-v2/deploy/create-backend"
-
       - name: Scan Terraform Script
         id: terrascan
         uses: tenable/terrascan-action@main
