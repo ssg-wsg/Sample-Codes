@@ -20,10 +20,10 @@ def init() -> None:
     """
 
     if "uen" not in st.session_state:
-        st.session_state["uen"] = None
+        st.session_state["uen"] = ""
 
     if "encryption_key" not in st.session_state:
-        st.session_state["encryption_key"] = None
+        st.session_state["encryption_key"] = ""
 
     if "cert_pem" not in st.session_state:
         st.session_state["cert_pem"] = None
@@ -53,7 +53,7 @@ def display_config() -> None:
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
     st.header("Encryption Key:")
-    st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] is not None else "-")
+    st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
 
     st.header("Certificate Key:")
     st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")

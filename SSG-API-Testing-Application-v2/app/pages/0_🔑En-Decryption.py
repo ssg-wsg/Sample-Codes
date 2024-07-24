@@ -30,10 +30,11 @@ st.markdown("This page helps you to experiment with the AES-256 encryption algor
 
 st.header("AES Key")
 st.markdown("Enter in your AES key or reuse the AES key provided in the Home page!")
+
 key = st.text_input(label="AES Key",
-                    value=st.session_state["encryption_key"] if "encryption_key" in st.session_state else "",
                     type="password",
-                    key="encryption_key")
+                    value=st.session_state["encryption_key"],
+                    key="en-decrypt-encryption-key")
 
 if key is None or len(key) == 0:
     LOGGER.error("No key provided!")

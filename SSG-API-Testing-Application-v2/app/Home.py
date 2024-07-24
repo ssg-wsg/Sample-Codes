@@ -59,34 +59,37 @@ st.markdown("Key in your UEN number, as well as your encryption keys, certificat
             "(`.pem`) below!")
 
 # UEN to be loaded outside of a form
-uen = st.text_input(label="Enter in your UEN",
-                    help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
-                         "to identify your organisation.",
-                    value="" if st.session_state["uen"] is None else st.session_state["uen"])
+st.session_state["uen"] = st.text_input(label="Enter in your UEN",
+                                        help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
+                                             "to identify your organisation.",
+                                        value=st.session_state["uen"])
 
-if len(uen) > 0:
-    if not Validators.verify_uen(uen):
+if len(st.session_state["uen"]) > 0:
+    if not Validators.verify_uen(st.session_state["uen"]):
         LOGGER.error("Invalid UEN provided!")
         st.error("Invalid **UEN** provided!", icon="🚨")
+        st.session_state["uen"] = ""
     else:
-        st.session_state["uen"] = uen.upper()  # UENs only have upper case characters
         LOGGER.info("UEN loaded!")
         st.success("**UEN** loaded successfully!", icon="✅")
+        st.session_state.update(uen=st.session_state["uen"].upper())  # UENs only have upper case characters
 
 # AES Encryption Key to be loaded outside of a form
-enc_key = st.text_input("Enter in your encryption key", type="password",
-                        help="Refer to this [guide](https://developer.ssg-wsg.gov.sg/webapp/guides/"
-                             "6gvz7gEnwU2dSIKPrTcXnq#authentication-types) for more info.",
-                        value="" if st.session_state["encryption_key"] is None else st.session_state["encryption_key"])
+st.session_state["encryption_key"] = st.text_input("Enter in your encryption key", type="password",
+                                                   help="Refer to this [guide]("
+                                                        "https://developer.ssg-wsg.gov.sg/webapp/guides/"
+                                                        "6gvz7gEnwU2dSIKPrTcXnq#authentication-types) for more info.",
+                                                   value=st.session_state["encryption_key"])
 
-if len(enc_key) > 0:
-    if not Validators.verify_aes_encryption_key(enc_key):
+if len(st.session_state["encryption_key"]) > 0:
+    if not Validators.verify_aes_encryption_key(st.session_state["encryption_key"]):
         LOGGER.error("Invalid AES-256 encryption key provided!")
         st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+        st.session_state["encryption_key"] = ""
     else:
-        st.session_state["encryption_key"] = enc_key
         LOGGER.info("Encryption Key loaded!")
         st.success("**Encryption Key** loaded successfully!", icon="✅")
+        st.session_state.update(encryption_key=st.session_state["encryption_key"])
 
 # Credentials need to be loaded in a form to ensure that the pair submitted is valid
 with st.form(key="init_config"):
