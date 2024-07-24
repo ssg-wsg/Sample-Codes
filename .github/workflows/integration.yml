@@ -63,8 +63,8 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Scan Terraform Script
-        id: terrascan
+      - name: Scan Terraform Backend Script
+        id: terrascan-1
         uses: tenable/terrascan-action@main
         with:
           iac_type: "terraform"
@@ -73,12 +73,46 @@ jobs:
           only_warn: true
           non_recursive: false
           sarif_upload: true
-          iac_dir: "./SSG-API-Testing-Application-v2/deploy"
+          iac_dir: "./SSG-API-Testing-Application-v2/deploy/create-backend"
+
+      - name: Scan Terraform ECR Script
+        id: terrascan-2
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: "terraform"
+          iac_version: "v14"
+          policy_type: "aws"
+          only_warn: true
+          non_recursive: false
+          sarif_upload: true
+          iac_dir: "./SSG-API-Testing-Application-v2/deploy/create-ecr"
+
+      - name: Scan Terraform Main Script
+        id: terrascan-3
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: "terraform"
+          iac_version: "v14"
+          policy_type: "aws"
+          only_warn: true
+          non_recursive: false
+          sarif_upload: true
+          iac_dir: "./SSG-API-Testing-Application-v2/deploy/main-infrastructure"
 
       - name: Upload SARIF to CodeQL
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: terrascan.sarif
+          sarif_file: terrascan-1.sarif
+
+      - name: Upload SARIF to CodeQL
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: terrascan-2.sarif
+
+      - name: Upload SARIF to CodeQL
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: terrascan-3.sarif
 
   setup:
     needs:
