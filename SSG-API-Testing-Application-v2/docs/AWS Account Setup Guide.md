@@ -185,7 +185,7 @@ To restrict the regions that your member accounts can create resources in, follo
     ```
 9. Click on `Create policy`
 
-Your AWS accounts within your organization is now restricted to creating resources in the regions `ap-southeast-1`
+Your AWS accounts within your organization are now restricted to creating resources in the regions `ap-southeast-1`
 Singapore region.
 
 ## Programmatic Access to AWS

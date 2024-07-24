@@ -381,11 +381,14 @@ the [official Terraform documentation](https://developer.hashicorp.com/terraform
 
 ### Organisation of Terraform Code
 
-The Terraform code for the Sample Application is organised into two main directories: `create-backend` and
-`main-infrastructure`.
+The Terraform code for the Sample Application is organised into three main directories: `create-backend`, `create-ecr`
+and `main-infrastructure`.
 
 The `create-backend` directory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
 that is used to store the Terraform state and lock the state respectively.
+
+The `create-ecr` directory contains the Terraform code that is used to provision the Elastic Container Registry
+repository that is used to store the images used for Elastic Container Service.
 
 The `main-infrastructure` directory contains the Terraform code that is used to provision the main infrastructure of the
 Sample Application, such as the VPC, subnets, security groups, and other resources that are required to host the
@@ -402,12 +405,22 @@ state respectively.
 The Terraform code used to provision these resources can be found in the [`create-backend`](../deploy/create-backend)
 directory.
 
-
 > [!CAUTION]
 > If you are deploying the application locally rather than via GitHub Actions, make sure to initialise the Terraform
 > code within this folder before attempting to initialise the main infrastructure.
 >
 > Failure to do so may result in the deployment of the main infrastructure to fail!
+
+#### `create-ecr`
+
+> [!CAUTION]
+> Make sure to initialise the necessary AWS resources under `create-backend` first, before initialising the main
+> infrastructure contained in this directory!
+
+This directory contains the Terraform code that is used to deploy the Elastic Container Registry (ECR) repository that
+is used to store the Docker images used for the Elastic Container Service (ECS).
+
+The Terraform code used to provision the ECR repository can be found in the [`create-ecr`](../deploy/create-ecr)
 
 #### `main-infrastructure`
 
@@ -490,6 +503,10 @@ If you want to destroy the infrastructure that you have created, you can run the
 ```shell
 terraform destroy
 ```
+
+## DevOps
+
+
 
 ## Cloud Architecture
 

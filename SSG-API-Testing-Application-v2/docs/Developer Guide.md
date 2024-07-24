@@ -4,6 +4,7 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
 
 ## Table of Contents
 
+* [Table of Contents](#table-of-contents)
 * [Acknowledgements](#acknowledgements)
 * [Introduction](#introduction)
     * [Notation](#notation)
@@ -54,11 +55,16 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
         * [View Claim Details](#view-claim-details)
         * [Cancel Claim](#cancel-claim)
 * [DevOps](#devops)
+    * [AWS Setup](#aws-setup)
     * [GitHub Setup](#github-setup)
+        * [GitHub Actions Secrets](#github-actions-secrets)
+        * [GitHub Environments](#github-environments)
         * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
     * [General Workflow](#general-workflow)
+    * [AWS Workflow](#aws-workflow)
+        * [Production](#production)
+        * [Testing](#testing)
     * [CI/CD](#cicd)
-        * [Approval for Deployment](#approval-for-deployment)
         * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
     * [Logging](#logging)
@@ -70,7 +76,6 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
     * [In-memory Key Files](#in-memory-key-files)
     * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
     * [Go Serverless: Fargate](#go-serverless-fargate)
-    * [Deployment Environments on GitHub](#deployment-environments-on-github)
 
 ## Acknowledgements
 
@@ -91,7 +96,7 @@ Code from the application is reused from multiple sources:
 * Python Docs
     * https://docs.python.org/3/library/logging.html#module-logging
     * https://docs.python.org/3/howto/logging-cookbook.html
-* [samliew.com](samliew.com)
+* [samliew.com](https://samliew.com)
     * https://samliew.com/nric-generator
 * StackOverflow
     * https://stackoverflow.com/questions/25389095/python-get-path-of-root-project-structure
@@ -495,7 +500,7 @@ For this Sample Application, we will be using the following Services provided by
 ## Implementation
 
 Since Streamlit uses a rather declarative approach to UI/UX development, the following section will focus on how the
-encryption/decryption processes, 15 mandated APIs, SkillsFuture Credit Pay APIs are implemented in the application.
+encryption/decryption processes, 15 mandated APIs, and SkillsFuture Credit Pay APIs are implemented in the application.
 
 In general, the collection of APIs is arranged as such:
 
@@ -512,7 +517,7 @@ A diagram of the overall UI structure is seen below:
 
 An actual screenshot of the UI can be seen in the [User Guide](User%20Guide.md).
 
-We will not cover how the UI and UI logic is implemented as it is extensively documented by Streamlit in their
+We will not cover how the UI and UI logic are implemented as it is extensively documented by Streamlit in their
 [documentation](https://docs.streamlit.io/).
 
 We will, however, cover some of the design decisions regarding some of the APIs in greater detail below.
@@ -583,7 +588,7 @@ This API is implemented under the "View Course Run" tab.
 
 The user must input a valid Course Run ID to view the details of the course run.
 
-Since neither the request and response are encrypted, both the request payload and the response payloads are
+Since neither the request nor response is encrypted, both the request payload and the response payloads are
 read and displayed as is to the user via the UI. No preprocessing needs to be done on the request and response.
 
 #### Add Course Runs
@@ -668,8 +673,8 @@ This API is implemented under the "Create Enrolment" tab.
 
 Users must use this API to create an enrolment record for a particular trainee.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Update Enrolment
@@ -685,8 +690,8 @@ This API is implemented under the "Update Enrolment" tab.
 
 Users must use this API to update an existing enrolment record.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Cancel Enrolment
@@ -702,8 +707,8 @@ This API is implemented under the "Cancel Enrolment" tab.
 
 Users must use this API to cancel an existing enrolment record.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Search Enrolment
@@ -720,8 +725,8 @@ This API is implemented under the "Search Enrolment" tab.
 Users must use this API to query for enrolment records that satisfy the constraints and parameters that
 is specified by the parameters provided to the API.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### View Enrolment
@@ -738,10 +743,10 @@ This API is implemented under the "View Enrolment" tab.
 Users must use this API to view an enrolment record using a provided enrolment record reference number.
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
-payload is displayed to the user. The request payload is displayed as is to the user.
+payload are displayed to the user. The request payload is displayed as is to the user.
 
 > [!NOTE]
-> Since this API uses a HTTP GET request, the request payload might be empty!
+> Since this API uses an HTTP GET request, the request payload might be empty!
 
 #### Update Enrolment Fee Collection
 
@@ -756,8 +761,8 @@ This API is implemented under the "Update Enrolment Fee Collection".
 
 Users can use this API to update the enrolment fee collection status of an existing enrolment record.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 ### Attendance
@@ -796,10 +801,10 @@ Users must use this API to retrieve the course session attendance corresponding 
 assessment record reference number.
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
-payload is displayed to the user. The request payload is displayed as is to the user.
+payload are displayed to the user. The request payload is displayed as is to the user.
 
 > [!NOTE]
-> Since this API uses a HTTP GET request, the request payload might be empty!
+> Since this API uses an HTTP GET request, the request payload might be empty!
 
 #### Upload Course Session Attendance
 
@@ -852,8 +857,8 @@ This API is implemented under the "Create Assessment" tab.
 
 Users must use this API to create an assessment record for a particular trainee.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Update or Void Assessment
@@ -869,8 +874,8 @@ This API is implemented under the "Update/Void Assessment" tab.
 
 Users must use this API to update or void an existing assessment record.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Find Assessment
@@ -887,8 +892,8 @@ This API is implemented under the "Search Assessment" tab.
 Users must use this API to query for assessment records that satisfy the constraints and parameters that
 is specified by the parameters provided to the API.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### View Assessment
@@ -905,10 +910,10 @@ This API is implemented under the "View Assessment" tab.
 Users must use this API to view an assessment record using a provided assessment record reference number.
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
-payload is displayed to the user. The request payload is displayed as is to the user.
+payload are displayed to the user. The request payload is displayed as is to the user.
 
 > [!NOTE]
-> Since this API uses a HTTP GET request, the request payload might be empty!
+> Since this API uses an HTTP GET request, the request payload might be empty!
 
 ### SkillsFuture Credit Pay
 
@@ -943,15 +948,15 @@ with the SkillsFuture Credit Pay API:
 This API is implemented under the "Encryption" tab.
 
 Users must use this API to encrypt the payment request payload before sending it to the SkillsFuture Credit Pay API.
-This API assists you in further encrypting the request payload with SSG's keys, which then allow you to send it to
+This API assists you in further encrypting the request payload with SSG's keys, which then allows you to send it to
 the SkillsFuture Credit Pay Claims API to initiate a claim.
 
 Users must create a form POST request to the SkillsFuture Credit Pay Claims API with the encrypted payload. The form
 is provided at the bottom of this tab, but users will also be given the option to download the form POST HTML file
 and make the request on their own.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### SF Credit Claims Payment Request Decryption
@@ -967,8 +972,8 @@ This API is implemented under the "Decryption" tab.
 
 Users must use this API to decrypt the payment request payload after receiving it from the SkillsFuture Credit Pay API.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### Upload Supporting Documents
@@ -984,8 +989,8 @@ This API is implemented under the "Upload Supporting Documents" tab.
 
 Users must use this API to upload supporting documents for a claim.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 #### View Claim Details
@@ -1002,10 +1007,10 @@ This API is implemented under the "View Claims" tab.
 Users must use this API to view the details of a claim using a provided claim reference number.
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
-payload is displayed to the user. The request payload is displayed as is to the user.
+payload are displayed to the user. The request payload is displayed as is to the user.
 
 > [!NOTE]
-> Since this API uses a HTTP GET request, the request payload might be empty!
+> Since this API uses an HTTP GET request, the request payload might be empty!
 
 #### Cancel Claim
 
@@ -1020,14 +1025,37 @@ This API is implemented under the "Cancel Claims" tab.
 
 Users must use this API to cancel a claim using a provided claim reference number.
 
-Since both the request and response is encrypted, the request payload, along with the encrypted request payload
-is displayed to the user. The encrypted response payload and decrypted response payload is also displayed to the
+Since both the request and response are encrypted, the request payload, along with the encrypted request payload
+is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
 ## DevOps
 
 The following section will explore more about the DevOps processes involved in maintaining/developing the Sample
 Application. It will also detail some of the existing workflows that are implemented in the application.
+
+### AWS Setup
+
+You need to set up an AWS Organization account within the SSG API Gateway Organization to create the necessary
+AWS environment to test the application.
+
+To get started, follow the steps below:
+
+1. Request for an AWS Organization account from an Administrator of the SSG API Gateway Organization.
+2. Once your request is approved, you will receive an email to your work account with the necessary details to set up
+   your AWS account.
+3. Go to the [AWS Management Console](https://aws.amazon.com/console/) and attempt to sign in with your work email as
+   a root user.
+4. Click on `Forget Password?` and follow the onscreen instructions to reset your password.
+5. Log in to your AWS account using your work email and the new password you have set as a root user.
+6. Follow the steps outlined
+   in [`Setting up your Root Account`](AWS%20Account%20Setup%20Guide.md#setting-up-your-root-account)
+   within the AWS Account Setup Guide to set up your AWS account.
+7. Follow the steps outlined
+   in [`Programmatic Access to AWS`](AWS%20Account%20Setup%20Guide.md#programmatic-access-to-aws)
+   within the AWS Account Setup Guide to set up programmatic access to your AWS account.
+8. The AWS Access Key ID and Secret Access Key will be used in the subsequent steps to set up your GitHub account and
+   repository.
 
 ### GitHub Setup
 
@@ -1045,10 +1073,10 @@ To set up a GitHub repository, follow the steps below:
 
 > [!NOTE]
 > *Forking* refers to the process of creating a copy of the repository in your GitHub account. This allows you to
-> make
-> changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
-> upstream
-> repository.
+> make changes to the codebase without affecting the upstream codebase, while also allowing you to contribute to the
+> upstream repository.
+
+#### GitHub Actions Secrets
 
 For CI/CD to work, make sure to add the following secrets to your repository:
 
@@ -1063,6 +1091,68 @@ website to find out more about how you can add secrets to your repository.
 > [!NOTE]
 > More information about what the tokens do and how you need to configure your AWS and Codecov account
 > can be found in the [Deployment Guide](Deployment%20Guide.md#github)!
+
+#### GitHub Environments
+
+> [!TIP]
+> The approval before deployment behaviour is optional in the testing environment. If you wish to disable it, you may
+> skip the process of creating the `testing` GitHub environment below and instead remove the line
+> `environment: production` from the [`integration.yml`](../../.github/workflows/integration.yml) file.
+>
+> The file should look like this after the removal of the line:
+> ```yaml
+> ...
+>   main-infra:
+>     environment: testing
+>     needs:
+>       - ecr
+>     runs-on: ubuntu-latest
+>     name: Create/Maintain Main Infrastructure
+> ...
+> ```
+>
+> You will now no longer be required to review and approve deployments to the testing environment.
+
+GitHub Environments allow us to set up environments within our GitHub repository to deploy our application to. They
+also allow us to enforce certain approvals and checks before code can be deployed to the environment.
+
+For testing purposes, you will need to create the `testing` environment.
+
+To create the `testing` environment, follow the steps below:
+
+1. Go to the `Settings` tab of the forked repository.
+2. Click on the `Environments` tab on the sidebar.
+3. Click on the `New environment` button.
+4. Enter `testing` as the environment name.
+5. Click on the `Configure environment` button.
+6. Click on the `Required reviewers` checkbox. Feel free to add yourself as a reviewer if you wish to enforce checks
+   before deployment. Leave it blank if you do not wish to enforce any reviews and checks.
+7. Add the following secrets to the environment by clicking on the `Add environment secret` button:
+    * `AWS_ACCESS_KEY_ID`: The Access Key ID of your AWS account obtained above
+    * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key of your AWS account obtained above
+    * `AWS_REGION`: The AWS region that you want to deploy the application to. This should correspond to the region that
+      is used under the [`deploy` directory](../deploy)
+
+> [!NOTE]
+> Even though the secrets are defined in the `testing` environment, make sure to still follow the steps outlined
+> above in [GitHub Actions Secrets](#github-actions-secrets) to set up GitHub Action secrets as they will be used
+> in other steps of the build process.
+
+Within the [`.github/workflows/integration.yml`](../../.github/workflows/integration.yml) file,
+replace `environment: production` with `environment: testing`.
+
+The file should now look like this:
+
+```yaml
+...
+main-infra:
+  environment: testing
+  needs:
+    - ecr
+  runs-on: ubuntu-latest
+  name: Create/Maintain Main Infrastructure
+...
+```
 
 #### GitHub Code Scanning and Dependency Analysis
 
@@ -1085,48 +1175,100 @@ To do so, follow the steps below:
 
 ### General Workflow
 
+> [!CAUTION]
+> Make sure to complete the actions in the [GitHub Setup](#github-setup) section before proceeding with development!
+
+To contribute, you should follow
+the [forking workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
+
 The general workflow for contributing to the Sample Application is as follows:
 
-1. Follow the process outlined in the [Installation Guide](Installation%20Guide.md) to download the forked codebase into
-   your computer.
-   Make sure to follow the second method to download your code, as you will need `git` to make changes to the forked
-   codebase.
-2. Make changes to the codebase as you see fit using your code editor or Integrated Development Environment (IDE) of
-   choice.
-3. Create a new branch to contribute your code to by running the command:
-   ```shell
-   git checkout -b [BRANCH_NAME]
-   ```
-   Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you wish to create.
-4. Push the changes to your forked repository. Follow the steps below to push your changes:
-    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
+1. Fork the repository (if you have not done so already).
+2. Clone the forked repository to your local machine using Git or download the source files directly using the
+   GitHub Web UI. Refer to the [Installation Guide](Installation%20Guide.md#downloading-code-files) for more information
+   on how to clone the repository.
+    1. Make sure to follow the second method to download your code, as you will need `git` to make changes to the
+       forked codebase.
+3. Create a new branch to contribute your code to. Refer
+   to [this guide](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)
+   for more information about creating branches using `git`. You can follow the steps below to create a branch.
+    1. To create a new branch using `git`, run the following command in the location where the forked codebase is
        downloaded to:
         ```shell
-        git add .
+        git checkout -b [BRANCH_NAME]
         ```
-    2. Commit the changes by running the following command:
-        ```shell
-        git commit -m "Your commit message here"
-        ```
-    3. Push the changes to your forked repository by running the following command:
-        ```shell
-        git push origin [BRANCH_NAME]
-        ```
-       > [!NOTE]
-       > Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you created in step 3.
 
+       Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you wish to create.
+4. Using your code editor or Integrated Development Environment (IDE) of choice, make changes to the codebase.
+5. Commit the changes to your local copy of the repository and push it to your forked repository.
+   Follow the steps below to push your changes:
+    1. Add the changes to the staging area by running the following command in the location where the forked codebase is
+       downloaded to:
+       ```shell
+       git add .
+       ```
+    2. Commit the changes by running the following command:
+       ```shell
+       git commit -m "Your commit message here"
+       ```
+
+       Make sure to replace `"Your commit message here"` with your actual commit message
+    3. Push the changes to your forked repository by running the following command:
+       ```shell
+       git push origin [BRANCH_NAME]
+       ```
+
+       Make sure to replace `[BRANCH_NAME]` completely with the name of the branch you created in step 3.
     4. Alternatively, you may use third-party applications such as [Sourcetree](https://www.sourcetreeapp.com/)
        or [GitHub Desktop](https://github.com/apps/desktop) to help you complete
        the above actions through a graphical user interface.
-5. Create a Pull Request (PR) to the upstream repository. Click on the `Pull Request` button in your forked
-   repository to create a PR. Follow the instructions to create a PR.
-6. Make sure to create a PR only when you are ready to merge your changes into the upstream repository. The PR will
-   trigger an upstream action to run the CI/CD process on your code in the upstream repository. If you do not wish
-   to deploy your changes, make sure to cancel the running GitHub Actions on the upstream repository.
+6. Create a Pull Request (PR) to the upstream repository. Refer
+   to [this guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+   for more information on how to create a PR. Make sure that the source branch is the branch you created in step 3,
+   and the target branch is the `main` or `master` branch in the upstream repository (the Sample-Codes repository).
+7. Allow CI/CD to run and fix any errors that are raised by CI/CD. More information about CI/CD can be found in the
+   [CI/CD](#cicd) section.
+8. Request a review from a reviewer.
+9. Once the PR is approved and merged, you should pull the changes from the upstream repository to your forked
+   repository to keep your forked repository up to date. Refer
+   to [this guide](https://www.atlassian.com/git/tutorials/syncing/git-pull)
+   for more information on pulling the changes made from the upstream repository to your local repository.
+10. Note that deployments are only permitted once a reviewer approves the deployment. Refer to the
+    [Approval for Deployment](#approval-for-deployment) section for more information about the approval before
+    the deployment process.
 
-> [!NOTE]
-> We are looking at using environments to manage deployments in the future. This will allow you to deploy your
-> changes without triggering an upstream deployment.
+### AWS Workflow
+
+For the Sample Application, Continuous Integration/Continuous Deployment (CI/CD) will deploy the application to
+whichever AWS account is set up in the above [GitHub Setup](#github-setup) section, pending approval from a reviewer.
+More information will be provided in the [next section](#cicd) regarding the CI/CD process.
+
+#### Production
+
+The production environment refers to the production AWS account that is set up in the upstream repository.
+
+This environment requires approvals before the code can be deployed.
+
+As a developer, you do not have direct access to this environment; you can only access it via pull requests to the
+upstream Sample-Codes repository and changes can only be made after a reviewer approves the pull request.
+
+You should do your testing in the testing environment before deploying to the production environment.
+
+#### Testing
+
+The testing environment refers to your personal AWS Organization account that is set up in your fork of the upstream
+repository.
+
+This environment may or may not require approvals for deployment, depending on how you have configured your GitHub
+Environments.
+
+As a developer, you have full access to this environment and can access the AWS Management Console to view the
+resources that are deployed.
+
+You should do all of your application and infrastructure testing in this environment. The Terraform code used for
+infrastructure deployment will ensure that the resources created in your account mirror that in the production
+environment (and vice versa), so you can be assured that the application will work as expected in the production
+environment.
 
 ### CI/CD
 
@@ -1165,16 +1307,16 @@ The different stages of the CI/CD pipeline are as such:
     6. Upload the code coverage reports to Codecov
 2. **Setup**: Sets up the S3 bucket used for Terraform backend
     1. Start the pipeline on Ubuntu
-    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
+    2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
     3. This step can fail if the backend S3 bucket and DynamoDB tables may already exist, but this is anticipated
        and CI will ignore the error
 3. **ECR**: Set up the Elastic Container Registry (ECR) Repository
     1. Start the pipeline on Ubuntu
-    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
-    3. This step can fail if the ECR repository already exist
+    2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
+    3. This step can fail if the ECR repository already exists
 4. **Deploy**: Use Terraform to deploy the application to AWS
     1. Start the pipeline on Ubuntu
-    2. Execute "Clone Repository and Execute Terraform Scripts" process as defined above
+    2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
 
 > [!WARNING]
 > The deployment process is only permitted once a reviewer approves it.
@@ -1183,42 +1325,9 @@ Here is a diagram representing the overall flow of processes implemented in the 
 
 ![Activity Diagram](assets/developer-guide/CICDActivityDiagram.png)
 
-#### Approval for Deployment
-
-The deployment process is only permitted once a reviewer approves it. This is to ensure that the deployment process is
-controlled and that the reviewer has verified the changes made to the codebase.
-
-Refer to the [Deployment Guide](Deployment%20Guide.md#github-environments) for more information on how to set up the
-approval before deployment process.
-
-As a developer however, you may not want this behaviour for your test.
-
-To disable approval for deployment, remove the `environment: production` line from the `integration.yml` file.
-
-It should change from:
-
-```yaml
-...
-main-infra:
-  environment: production
-  needs:
-    - ecr
-...
-```
-
-to
-
-```yaml
-...
-main-infra:
-  needs:
-    - ecr
-...
-```
-
-> [!CAUTION]
-> Make sure that the relevant secrets detailed in the [Deployment Guide](Deployment%20Guide.md#preparation)
-> are still present as repository secrets.
+> [!NOTE]
+> If the setting up of your GitHub Environment was skipped, the `Approval from reviewers?` process is skipped and
+> the CI/CD pipeline will proceed to `Begin process for setting up main infrastructure`.
 
 #### Failed Deployment
 
@@ -1278,7 +1387,7 @@ We chose those to use this package over other packages due to its ease of use, c
 lack of the need to write explicit multithreading/concurrent code to execute cron tasks.
 
 > [!NOTE]
-> There are plans to move to use an in-memory certificate and private key file system, or to change processes such that
+> There are plans to move to use an in-memory certificate and private key file system or to change processes such that
 > any certificate and key files are not stored in the filesystem permanently.
 
 #### `start_scheduler()`
@@ -1339,14 +1448,3 @@ maintain the EC2 instances to ensure that they are up-to-date and secure.
 
 By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
 it for us. We only need to focus on the application itself.
-
-### Deployment Environments on GitHub
-
-Currently we cannot control the deployment of the application via GitHub Actions. This is because the deployment is
-triggered whenever a PR is created, which may not be ideal if we are not ready to deploy the changes.
-
-By using environments, we can control when the deployment is triggered. This will allow us to deploy the changes only
-when we are ready to do so.
-
-We could perhaps look into creating a staging environment for testing purposes, and a production environment for
-deploying the application to AWS.
