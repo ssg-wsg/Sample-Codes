@@ -63,7 +63,7 @@ with view:
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    crn = st.text_input("Key in the Assessment Reference Number", key="crn_view_sessions")
+    crn = st.text_input("Key in the Course Reference Number", key="crn_view_sessions")
     session_id = st.text_input("Enter Session ID",
                                help="The course session ID to be retrieved; encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
@@ -190,11 +190,10 @@ with upload:
                                                                  value=65)
 
     st.subheader("Course Information")
-    if st.checkbox("Specify number of hours?", key="hours-upload-attendance"):
-        uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
-                                                         min_value=0.5,
-                                                         max_value=8.0,
-                                                         step=0.1)
+    uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
+                                                     min_value=0.5,
+                                                     max_value=8.0,
+                                                     step=0.1)
 
     uploadAttendance.surveyLanguage_code = st.selectbox(
         label="Enter Survey Language",

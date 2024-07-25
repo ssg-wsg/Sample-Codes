@@ -81,11 +81,10 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    if st.checkbox("Specify Course Run ID?", key="specify-enrolment-course-run-id"):
-        create_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                       help="SSG-generated Unique ID for the course run",
-                                                       key="enrolment-course-run-id",
-                                                       max_chars=20)
+    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
+                                                   help="SSG-generated Unique ID for the course run",
+                                                   key="enrolment-course-run-id",
+                                                   max_chars=20)
     create_enrolment.course_referenceNumber = st.text_input(label="Course Reference Number",
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
@@ -128,7 +127,13 @@ with create:
                                                                   key="enrolment-trainee-fees-collection-status")
 
     st.markdown("#### Employer Info")
-    if st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
+    create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
+                                                            options=SponsorshipType,
+                                                            format_func=lambda x: x.value,
+                                                            key="enrolment-trainee-sponsorship-type")
+
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
         uen = st.text_input(label="Employer UEN",
                             max_chars=50,
                             help="Employer organisation's UEN",
@@ -139,14 +144,16 @@ with create:
 
         create_enrolment.employer_uen = uen
 
-    if st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.employer_fullName = st.text_input(
             label="Employer Full Name",
             max_chars=50,
             help="The employer contact's person name",
             key="enrolment-employer-contact-full-name")
 
-    if st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
         create_enrolment.employer_emailAddress = st.text_input(
             label="Employer Email Address",
             max_chars=100,
@@ -167,15 +174,17 @@ with create:
             help="Area code of phone number",
             key="enrolment-employer-contact-number-area-code")
 
-    if col2.checkbox("Specify Employer Phone Number Country Code",
-                     key="specify-enrolment-employer-contact-number-country-code"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or col2.checkbox("Specify Employer Phone Number Country Code",
+                             key="specify-enrolment-employer-contact-number-country-code"):
         create_enrolment.employer_countryCode = col2.text_input(
             label="Employer Contact Number Country",
             max_chars=5,
             help="Country code of the phone number",
             key="enrolment-employer-contact-number-country-code")
 
-    if col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
         create_enrolment.employer_phoneNumber = col3.text_input(
             label="Employer Phone Number",
             max_chars=20,
@@ -228,11 +237,6 @@ with create:
                                                                min_value=datetime.date(1900, 1, 1),
                                                                help="Trainee Date of Enrolment",
                                                                key="enrolment-trainee-date-of-enrolment")
-
-    create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
-                                                            options=SponsorshipType,
-                                                            format_func=lambda x: x.value,
-                                                            key="enrolment-trainee-sponsorship-type")
 
     st.subheader("Training Partner Info")
     uen = st.text_input(label="Training Partner UEN",
