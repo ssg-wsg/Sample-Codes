@@ -1082,7 +1082,8 @@ with edit_delete:
                                                                          "number of the trainer.",
                                                                     max_chars=50)
 
-                        if not Validators.verify_nric(runtrainer.trainer_idNumber):
+                        if runtrainer.trainer_idNumber is not None and len(runtrainer.trainer_idNumber) > 0 \
+                                and not Validators.verify_nric(runtrainer.trainer_idNumber):
                             st.warning(f"**ID Number** format may not valid!", icon="⚠️")
                     elif code == TrainerType.NEW:
                         if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
