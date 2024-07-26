@@ -4,6 +4,8 @@
 > This guide is for administrators who wish to set up an AWS account to host the SSG API Testing Application.
 > We will go through the entire process of setting up your root account, creating IAM users, and setting up
 > your own AWS Organization.
+> 
+> If you are not an administrator, you may still follow the first two steps and final step to set up your AWS account!
 
 Welcome to the AWS Account Setup Guide!
 
@@ -110,6 +112,9 @@ With this, you have successfully set up your AWS account and created an AWS Orga
 
 You may not want all IAM accounts and member accounts of your AWS Organization to have access to all AWS regions and
 create resources in regions that are not approved.
+
+Refer to the examples provided by AWS on how to restrict regions for your member accounts:
+[samples by AWS](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html#example-scp-deny-region)
 
 To restrict the regions that your member accounts can create resources in, follow the steps below:
 
