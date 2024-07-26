@@ -1306,16 +1306,21 @@ The different stages of the CI/CD pipeline are as such:
     4. Install the Python dependencies
     5. Execute the unit tests
     6. Upload the code coverage reports to Codecov
-2. **Setup**: Sets up the S3 bucket used for Terraform backend
+2. **Terrascan**: Scan Terraform code for security vulnerabilities
+    1. Start the pipeline on Ubuntu
+    2. Checkout the repository and set up Terraform
+    3. Execute Terrascan on all Terraform files in the `deploy` directory
+    4. Upload the Security Report to GitHub
+3. **Setup**: Sets up the S3 bucket used for Terraform backend
     1. Start the pipeline on Ubuntu
     2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
     3. This step can fail if the backend S3 bucket and DynamoDB tables may already exist, but this is anticipated
        and CI will ignore the error
-3. **ECR**: Set up the Elastic Container Registry (ECR) Repository
+4. **ECR**: Set up the Elastic Container Registry (ECR) Repository
     1. Start the pipeline on Ubuntu
     2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
     3. This step can fail if the ECR repository already exists
-4. **Deploy**: Use Terraform to deploy the application to AWS
+5. **Deploy**: Use Terraform to deploy the application to AWS
     1. Start the pipeline on Ubuntu
     2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
 
