@@ -59,15 +59,15 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
+    crn = st.text_input("Key in the Course Reference Number", key="crn-view-sessions")
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    crn = st.text_input("Key in the Course Reference Number", key="crn_view_sessions")
     session_id = st.text_input("Enter Session ID",
                                help="The course session ID to be retrieved; encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
-                               key="session_id_view_attendance")
+                               key="session-id-view-attendance")
 
     st.divider()
     st.subheader("Send Request")
@@ -119,12 +119,12 @@ with upload:
 
     uploadAttendance = UploadAttendanceInfo()
 
+    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
+                                                     key="crn-upload-attendance-sessions")
     runs = st.text_input(label="Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
-                                                     key="crn-upload-attendance-sessions")
     uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
                                                 key="corppass-upload-attendance-sessions")
     uploadAttendance.sessionId = st.text_input(label="Enter Session ID",

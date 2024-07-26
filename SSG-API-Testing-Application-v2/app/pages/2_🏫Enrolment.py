@@ -81,15 +81,15 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                   help="SSG-generated Unique ID for the course run",
-                                                   key="enrolment-course-run-id",
-                                                   max_chars=20)
     create_enrolment.course_referenceNumber = st.text_input(label="Course Reference Number",
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
+    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
+                                                   help="SSG-generated Unique ID for the course run",
+                                                   key="enrolment-course-run-id",
+                                                   max_chars=20)
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)

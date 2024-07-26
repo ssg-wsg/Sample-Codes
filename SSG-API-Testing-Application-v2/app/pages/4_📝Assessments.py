@@ -81,15 +81,15 @@ with create:
                                                                      "being submitted",
                                                                 key="create-assessment-training-partner-code")
     st.subheader("Course Info")
-    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
-                                                        max_chars=20,
-                                                        help="The ID for the course run",
-                                                        key="create-assessment-run-id")
     create_assessment_info.course_referenceNumber = st.text_input(label="Enter the Course Reference Number",
                                                                   max_chars=100,
                                                                   help="The course reference number as in the "
                                                                        "Training Partners Gateway course registry",
                                                                   key="create-assessment-reference-number")
+    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
+                                                        max_chars=20,
+                                                        help="The ID for the course run",
+                                                        key="create-assessment-run-id")
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
