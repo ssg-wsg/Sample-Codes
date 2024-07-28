@@ -505,10 +505,6 @@ If you want to destroy the infrastructure that you have created, you can run the
 terraform destroy
 ```
 
-## DevOps
-
-
-
 ## Cloud Architecture
 
 Now that you understand the main tools that we will be using in the deployment of the Sample Application to AWS,
@@ -614,8 +610,7 @@ For the private subnets, the IP addresses assigned to them are:
 An Application Load Balancer (ALB) is created to route traffic to the ECS Service that hosts the Sample Application.
 
 An ALB Listener and Target Group is also created to ensure that traffic is listened to on port `80` and routed to the
-ECS
-Service on port `80`.
+ECS Service on port `80`.
 
 The configurations for the ALB are:
 
@@ -625,10 +620,16 @@ The configurations for the ALB are:
 
 The configurations for the ALB Listener are:
 
-* Associated Load Balancer: `ssg-alb`
-* Protocol: `HTTP`
-* Port: `80`
-* Default Action: Forward to the Target Group
+* HTTP
+    * Associated Load Balancer: `ssg-alb`
+    * Protocol: `HTTP`
+    * Port: `80`
+    * Default Action: Forward to the Target Group
+* HTTPS
+    * Associated Load Balancer: `ssg-alb`
+    * Protocol: `HTTPS`
+    * Port: `443`
+    * Default Action: Forward to the Target Group
 
 The configurations for the ALB Target Group are:
 
@@ -641,10 +642,15 @@ The configurations for the ALB Target Group are:
     * Healthy Threshold: 2
     * Unhealthy Threshold: 2
     * Interval of Health Check: 60 seconds
-    * HTTP codes permitted: `200` (Success Codes) - `399` (Redirection Codes)
+    * HTTP codes permitted: `200` (Success Code)
     * Port: Traffic Port
     * Protocol: `HTTP`
-    * Timeout: 30 seconds
+    * Timeout: 10 seconds
+* Session Stickiness
+    * Cookie Duration: `1` day = `86400` seconds
+    * Cookie Name: `SSGWSGSAMPLEAPPCOOKIE`
+    * Enabled: `true`
+    * Type: `app_cookie`
 
 **This ALB Target Group depends on the ALB (ALB must be created before the Target Group can be created).**
 
