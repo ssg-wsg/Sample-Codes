@@ -19,20 +19,6 @@ resource "aws_alb_listener" "alb_default_listener_http" {
   depends_on = [aws_alb.alb]
 }
 
-# Create HTTPS listener, prepare for SSL/TLS termination
-resource "aws_alb_listener" "alb_default_listener_https" {
-  load_balancer_arn = aws_alb.alb.arn
-  port = 443
-  protocol = "HTTPS"
-
-  default_action {
-    type = "forward"
-    target_group_arn = aws_alb_target_group.service_target_group.arn
-  }
-
-  depends_on = [aws_alb.alb]
-}
-
 # Create TG
 resource "aws_alb_target_group" "service_target_group" {
   name                 = "${module.constants.namespace}-target-group"

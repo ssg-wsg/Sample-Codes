@@ -620,16 +620,10 @@ The configurations for the ALB are:
 
 The configurations for the ALB Listener are:
 
-* HTTP
-    * Associated Load Balancer: `ssg-alb`
-    * Protocol: `HTTP`
-    * Port: `80`
-    * Default Action: Forward to the Target Group
-* HTTPS
-    * Associated Load Balancer: `ssg-alb`
-    * Protocol: `HTTPS`
-    * Port: `443`
-    * Default Action: Forward to the Target Group
+* Associated Load Balancer: `ssg-alb`
+* Protocol: `HTTP`
+* Port: `80`
+* Default Action: Forward to the Target Group
 
 The configurations for the ALB Target Group are:
 
