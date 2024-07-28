@@ -51,6 +51,10 @@ resource "aws_dynamodb_table" "tf_lock" {
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = module.constants.dynamodb_table_hash_key
 
+  server_side_encryption {
+    enabled = true
+  }
+
   attribute {
     name = module.constants.dynamodb_table_hash_key
     type = "S"
