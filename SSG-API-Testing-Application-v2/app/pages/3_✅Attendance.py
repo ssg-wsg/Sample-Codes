@@ -37,7 +37,8 @@ st.set_page_config(page_title="Attendance", page_icon="✅")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -58,23 +59,27 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
+    crn = st.text_input("Key in the Course Reference Number", key="crn-view-sessions")
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    crn = st.text_input("Key in the Assessment Reference Number", key="crn_view_sessions")
     session_id = st.text_input("Enter Session ID",
                                help="The course session ID to be retrieved; encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
-                               key="session_id_view_attendance")
+                               key="session-id-view-attendance")
 
     st.divider()
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="view_course_session_attendance_button"):
+
+    if st.button("Send", key="view_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if not st.session_state["uen"]:
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif len(runs) == 0:
@@ -102,6 +107,7 @@ with view:
                 LOGGER.info("Executing request...")
                 handle_response(lambda: vc.execute(), require_decryption=True)
 
+
 with upload:
     st.header("Upload Course Session Attendance")
     st.markdown("You can use this API to update the attendance of the trainees who are enrolled into your course for "
@@ -113,12 +119,12 @@ with upload:
 
     uploadAttendance = UploadAttendanceInfo()
 
+    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
+                                                     key="crn-upload-attendance-sessions")
     runs = st.text_input(label="Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
-                                                     key="crn-upload-attendance-sessions")
     uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
                                                 key="corppass-upload-attendance-sessions")
     uploadAttendance.sessionId = st.text_input(label="Enter Session ID",
@@ -148,6 +154,11 @@ with upload:
                                                     max_chars=50,
                                                     key="trainee-id-upload-attendance")
 
+    if (uploadAttendance.trainee_id_type != IdType.OTHERS
+            or uploadAttendance.trainee_id_type != IdType.FOREIGN_PASSPORT) and len(uploadAttendance.trainee_id) \
+            and not Validators.verify_nric(uploadAttendance.trainee_id):
+        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+
     uploadAttendance.trainee_name = st.text_input(label="Enter Trainee Name",
                                                   help="Name of the trainee",
                                                   max_chars=66,
@@ -160,9 +171,8 @@ with upload:
                                                        max_chars=320,
                                                        key="trainee-email-upload-attendance")
 
-        if len(uploadAttendance.trainee_email) > 0:
-            if not Validators.verify_email(uploadAttendance.trainee_email):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(uploadAttendance.trainee_email) > 0 and not Validators.verify_email(uploadAttendance.trainee_email):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
                                                           max_chars=15,
@@ -180,11 +190,10 @@ with upload:
                                                                  value=65)
 
     st.subheader("Course Information")
-    if st.checkbox("Specify number of hours?", key="hours-upload-attendance"):
-        uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
-                                                         min_value=0.5,
-                                                         max_value=8.0,
-                                                         step=0.1)
+    uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
+                                                     min_value=0.5,
+                                                     max_value=8.0,
+                                                     step=0.1)
 
     uploadAttendance.surveyLanguage_code = st.selectbox(
         label="Enter Survey Language",
@@ -199,9 +208,14 @@ with upload:
 
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
-    if st.button("Send", key="upload_course_session_attendance_button"):
+
+    if st.button("Send", key="upload_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
-        if not st.session_state["uen"]:
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:

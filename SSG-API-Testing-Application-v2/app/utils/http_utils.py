@@ -315,8 +315,7 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
 
 
 def handle_response(throwable: Callable[[], requests.Response],
-                    require_decryption: bool = False,
-                    fields_to_decrypt: list[str] = []) -> dict:
+                    require_decryption: bool = False) -> dict:
     """
     Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
@@ -325,8 +324,6 @@ def handle_response(throwable: Callable[[], requests.Response],
                       This function should also return the response object from the request.
     :param require_decryption: Boolean indicating whether decryption is required for the returned payload. If the
                                response should be decrypted, then a section will display the decrypted response.
-    :param fields_to_decrypt: A list of fields to decrypt after the decryption action has taken place. This is mostly
-                              used by the SFC API.
     """
 
     try:
@@ -346,6 +343,7 @@ def handle_response(throwable: Callable[[], requests.Response],
                 data = json.loads(response.text)
                 st.code(Cryptography.decrypt(data["error"]).decode("utf-8"))
             except Exception:
+                # replace the unicode characters with the utf-8 encoded characters
                 st.code(response.text.replace(r"\u003D", "="))
             return
 

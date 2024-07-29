@@ -4,6 +4,8 @@
 > This guide is for administrators who wish to set up an AWS account to host the SSG API Testing Application.
 > We will go through the entire process of setting up your root account, creating IAM users, and setting up
 > your own AWS Organization.
+> 
+> If you are not an administrator, you may still follow the first two steps and final step to set up your AWS account!
 
 Welcome to the AWS Account Setup Guide!
 
@@ -14,6 +16,7 @@ Welcome to the AWS Account Setup Guide!
 * [Setting up AWS Organization](#setting-up-aws-organization)
 * [Restrict AWS Regions](#restrict-aws-regions)
 * [Programmatic Access to AWS](#programmatic-access-to-aws)
+* [Conclusion](#conclusion)
 
 ## Creating your AWS Account
 
@@ -110,6 +113,9 @@ With this, you have successfully set up your AWS account and created an AWS Orga
 You may not want all IAM accounts and member accounts of your AWS Organization to have access to all AWS regions and
 create resources in regions that are not approved.
 
+Refer to the examples provided by AWS on how to restrict regions for your member accounts:
+[samples by AWS](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html#example-scp-deny-region)
+
 To restrict the regions that your member accounts can create resources in, follow the steps below:
 
 1. Click on your username in the top right corner of the AWS Management Console and click on `Organization`
@@ -185,7 +191,7 @@ To restrict the regions that your member accounts can create resources in, follo
     ```
 9. Click on `Create policy`
 
-Your AWS accounts within your organization is now restricted to creating resources in the regions `ap-southeast-1`
+Your AWS accounts within your organization are now restricted to creating resources in the regions `ap-southeast-1`
 Singapore region.
 
 ## Programmatic Access to AWS
@@ -207,4 +213,20 @@ To do so, follow the steps below:
    secure location
 
 > [!CAUTION]
-> Do not share your access key and secret key with anyone. Keep them in a secure location. 
+> Do not share your access key and secret key with anyone. Keep them in a secure location.
+
+## Conclusion
+
+Congratulations! You have successfully set up your AWS account and AWS Organization!
+
+If you wish to learn more about how to deploy the application onto AWS, refer to the
+[Deployment Guide](Deployment%20Guide.md).
+
+If you wish to learn more about how to set up the application locally and develop it, refer to the
+[Developer Guide](Developer%20Guide.md).
+
+If you wish to just install the application locally on your machine and use it without any further development, refer
+to the [Installation Guide](Installation%20Guide.md).
+
+If you wish to learn more about how to use the application from the user's perspective, refer to the
+[User Guide](User%20Guide.md).

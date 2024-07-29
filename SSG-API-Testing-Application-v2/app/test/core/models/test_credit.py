@@ -610,7 +610,7 @@ class TestSFCreditInfo(unittest.TestCase):
                     'fileSize': '1 MB',
                     'fileType': 'pdf',
                     'attachmentId': 'attachment_one',
-                    'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                    'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                 }
             )
 
@@ -621,7 +621,7 @@ class TestSFCreditInfo(unittest.TestCase):
                     'fileSize': '2 MB',
                     'fileType': 'docx',
                     'attachmentId': 'attachment_two',
-                    'attachmentBytes': base64.b64encode(attachment_2).decode("utf-8")
+                    'attachmentByte': base64.b64encode(attachment_2).decode("utf-8")
                 }
             )
 
@@ -759,14 +759,14 @@ class TestSFCreditInfo(unittest.TestCase):
             TestSFCreditInfo.DOCUMENT_INFO_TWO.attachment_bytes = attachment_2
             TestSFCreditInfo.DOCUMENT_INFO_THREE.attachment_bytes = attachment_3
 
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_ONE._attachmentBytes, attachment_1)
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_ONE._attachmentBytes,
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_ONE._attachmentByte, attachment_1)
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_ONE._attachmentByte,
                              TestSFCreditInfo.DOCUMENT_INFO_ONE.attachment_bytes)
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_TWO._attachmentBytes, attachment_2)
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_TWO._attachmentBytes,
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_TWO._attachmentByte, attachment_2)
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_TWO._attachmentByte,
                              TestSFCreditInfo.DOCUMENT_INFO_TWO.attachment_bytes)
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_THREE._attachmentBytes, attachment_3)
-            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_THREE._attachmentBytes,
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_THREE._attachmentByte, attachment_3)
+            self.assertEqual(TestSFCreditInfo.DOCUMENT_INFO_THREE._attachmentByte,
                              TestSFCreditInfo.DOCUMENT_INFO_THREE.attachment_bytes)
 
     def test_TestDocumentInfo_get_file_size(self):
@@ -810,7 +810,7 @@ class TestSFCreditInfo(unittest.TestCase):
                         'fileSize': '1 MB',
                         'fileType': 'pdf',
                         'attachmentId': 'attachment_one',
-                        'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                     }
                 ]
             }
@@ -822,13 +822,13 @@ class TestSFCreditInfo(unittest.TestCase):
                         'fileName': 'file.pdf',
                         'fileSize': '1 MB', 'fileType': 'pdf',
                         'attachmentId': 'attachment_one',
-                        'attachmentBytes': base64.b64encode(attachment_1).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_1).decode("utf-8")
                     },
                     {
                         'fileName': 'file.docx',
                         'fileSize': '2 MB', 'fileType': 'docx',
                         'attachmentId': 'attachment_two',
-                        'attachmentBytes': base64.b64encode(attachment_2).decode("utf-8")
+                        'attachmentByte': base64.b64encode(attachment_2).decode("utf-8")
                     }
                 ]
             }

@@ -32,6 +32,7 @@ from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
     does_not_have_keys
+from app.utils.verify import Validators
 
 # initialise necessary variables
 init()
@@ -42,7 +43,8 @@ st.set_page_config(page_title="Assessments", page_icon="📝")
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -79,15 +81,15 @@ with create:
                                                                      "being submitted",
                                                                 key="create-assessment-training-partner-code")
     st.subheader("Course Info")
-    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
-                                                        max_chars=20,
-                                                        help="The ID for the course run",
-                                                        key="create-assessment-run-id")
     create_assessment_info.course_referenceNumber = st.text_input(label="Enter the Course Reference Number",
                                                                   max_chars=100,
                                                                   help="The course reference number as in the "
                                                                        "Training Partners Gateway course registry",
                                                                   key="create-assessment-reference-number")
+    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
+                                                        max_chars=20,
+                                                        help="The ID for the course run",
+                                                        key="create-assessment-run-id")
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
@@ -101,6 +103,11 @@ with create:
                                                         help="This is the individual's government-issued "
                                                              "ID number",
                                                         key="create-assessment-trainee-id")
+
+    if create_assessment_info.trainee_idType != IdTypeSummary.OTHERS and len(create_assessment_info.trainee_id) > 0 \
+            and not Validators.verify_nric(create_assessment_info.trainee_id):
+        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+
     create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
                                                             max_chars=200,
                                                             help="This is the individual's full name",
@@ -157,9 +164,13 @@ with create:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="edit-button"):
+    if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Create Assessment API...")
-        if does_not_have_keys():
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
@@ -177,6 +188,7 @@ with create:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ec.execute(), require_decryption=True)
+
 
 with update_void:
     st.header("Update/Void Assessment")
@@ -254,9 +266,13 @@ with update_void:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="update-void-button"):
+    if st.button("Send", key="update-void-button", type="primary"):
         LOGGER.info("Attempting to send request to Update/Void Assessment API...")
-        if does_not_have_keys():
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
@@ -278,6 +294,7 @@ with update_void:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: uva.execute(), require_decryption=True)
+
 
 with find:
     st.header("Find Assessments")
@@ -383,9 +400,13 @@ with find:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="search-button"):
+    if st.button("Send", key="search-button", type="primary"):
         LOGGER.info("Attempting to send request to Search Assessment API...")
-        if does_not_have_keys():
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
@@ -404,6 +425,7 @@ with find:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: sa.execute(), require_decryption=True)
 
+
 with view:
     st.header("View Assessment")
     st.markdown("You can use this API to view an assessment record for trainees enrolled in your courses.")
@@ -417,10 +439,13 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="view-assessment-button"):
+    if st.button("Send", key="view-assessment-button", type="primary"):
         LOGGER.info("Attempting to send request to View Assessment API...")
 
-        if arn is None or len(arn) == 0:
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif arn is None or len(arn) == 0:
             LOGGER.error("No Assessment Reference Number provide! Request aborted...")
             st.error("Please enter in the **Assessment Reference Number**!", icon="🚨")
         elif does_not_have_keys():

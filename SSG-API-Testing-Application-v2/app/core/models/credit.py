@@ -268,7 +268,7 @@ class DocumentInfo(AbstractRequestInfo):
         self._fileSize: Annotated[str, "Size of attached file, auto-inferred if not provided"] = None
         self._fileType: PermittedFileUploadType = None
         self._attachmentId: Annotated[Optional[str], "Unique ID for each attachment"] = None
-        self._attachmentBytes: Annotated[UploadedFile, "Base64 encoded value of the file contents"] = None
+        self._attachmentByte: Annotated[UploadedFile, "Base64 encoded value of the file contents"] = None
 
     def __repr__(self):
         return self.payload(verify=False, as_json_str=True)
@@ -285,7 +285,7 @@ class DocumentInfo(AbstractRequestInfo):
             and self._fileSize == other._fileSize
             and self._fileType == other._fileType
             and self._attachmentId == other._attachmentId
-            and self._attachmentBytes == other._attachmentBytes
+            and self._attachmentByte == other._attachmentByte
         )
 
     def validate(self) -> tuple[list[str], list[str]]:
@@ -301,10 +301,10 @@ class DocumentInfo(AbstractRequestInfo):
         if self._fileType is None:
             errors.append("File type cannot be empty!")
 
-        if self._attachmentBytes is None:
+        if self._attachmentByte is None:
             errors.append("No document uploaded!")
 
-        if self._attachmentBytes is not None and len(self._attachmentBytes.getvalue()) == 0:
+        if self._attachmentByte is not None and len(self._attachmentByte.getvalue()) == 0:
             errors.append("Document uploaded is empty even though it was marked as specified!")
 
         if self._attachmentId is not None and len(self._attachmentId) == 0:
@@ -324,8 +324,8 @@ class DocumentInfo(AbstractRequestInfo):
             "fileSize": self._fileSize,
             "fileType": self._fileType.value if self._fileType is not None else None,
             "attachmentId": self._attachmentId,
-            "attachmentBytes": (base64.b64encode(self._attachmentBytes.getvalue()).decode("utf-8")
-                                if self._attachmentBytes else None),
+            "attachmentByte": (base64.b64encode(self._attachmentByte.getvalue()).decode("utf-8")
+                               if self._attachmentByte else None),
         }
 
         pl = remove_null_fields(pl)
@@ -381,33 +381,33 @@ class DocumentInfo(AbstractRequestInfo):
 
     @property
     def attachment_bytes(self):
-        return self._attachmentBytes
+        return self._attachmentByte
 
     @attachment_bytes.setter
     def attachment_bytes(self, attachment_bytes: UploadedFile):
         if attachment_bytes is not None and not isinstance(attachment_bytes, UploadedFile):
             raise ValueError("Invalid attachment bytes")
 
-        self._attachmentBytes = attachment_bytes
+        self._attachmentByte = attachment_bytes
 
     def get_file_size(self) -> float:
         """Returns the size of the file in MB, if uploaded"""
 
-        if self._attachmentBytes is not None:
-            return round(len(self._attachmentBytes.getvalue()) / (10 ** 6), 3)
+        if self._attachmentByte is not None:
+            return round(len(self._attachmentByte.getvalue()) / (10 ** 6), 3)
 
         return 0
 
     def get_formatted_size(self) -> str:
         """Returns the size of the file as a formatted string"""
 
-        if self._attachmentBytes is not None:
+        if self._attachmentByte is not None:
             return f"{self.get_file_size()} MB"
 
         return ""
 
     def has_file(self) -> bool:
-        return self._attachmentBytes is not None
+        return self._attachmentByte is not None
 
 
 class UploadDocumentInfo(AbstractRequestInfo):

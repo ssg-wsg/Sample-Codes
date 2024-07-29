@@ -41,6 +41,12 @@ endif
 
 endfork
 
+:Begin Terrascan;
+:Runs on Ubuntu-latest;
+:Clone Repository and Install Terraform;
+:Execute Terrascan;
+:Upload Security Report to GitHub;
+
 :Begin process for setting up Terraform backend;
 :Runs on Ubuntu-latest;
 :Clone Repository and Execute Terraform Scripts;

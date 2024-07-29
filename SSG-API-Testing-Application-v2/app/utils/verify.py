@@ -78,7 +78,7 @@ class Validators:
         if not isinstance(key, str):
             raise ValueError("Key must be a string!")
 
-        if len(key) == 0:
+        if key is None or len(key) == 0:
             return False
 
         len_key = len(key)

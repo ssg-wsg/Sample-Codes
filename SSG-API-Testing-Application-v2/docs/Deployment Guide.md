@@ -45,6 +45,7 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
         * [Docker](#docker-1)
         * [AutoScaling Group](#autoscaling-group)
     * [Architecture Diagram](#architecture-diagram)
+* [Conclusion](#conclusion)
 
 ## Usage of the Guide
 
@@ -381,11 +382,14 @@ the [official Terraform documentation](https://developer.hashicorp.com/terraform
 
 ### Organisation of Terraform Code
 
-The Terraform code for the Sample Application is organised into two main directories: `create-backend` and
-`main-infrastructure`.
+The Terraform code for the Sample Application is organised into three main directories: `create-backend`, `create-ecr`
+and `main-infrastructure`.
 
 The `create-backend` directory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
 that is used to store the Terraform state and lock the state respectively.
+
+The `create-ecr` directory contains the Terraform code that is used to provision the Elastic Container Registry
+repository that is used to store the images used for Elastic Container Service.
 
 The `main-infrastructure` directory contains the Terraform code that is used to provision the main infrastructure of the
 Sample Application, such as the VPC, subnets, security groups, and other resources that are required to host the
@@ -402,12 +406,22 @@ state respectively.
 The Terraform code used to provision these resources can be found in the [`create-backend`](../deploy/create-backend)
 directory.
 
-
 > [!CAUTION]
 > If you are deploying the application locally rather than via GitHub Actions, make sure to initialise the Terraform
 > code within this folder before attempting to initialise the main infrastructure.
 >
 > Failure to do so may result in the deployment of the main infrastructure to fail!
+
+#### `create-ecr`
+
+> [!CAUTION]
+> Make sure to initialise the necessary AWS resources under `create-backend` first, before initialising the main
+> infrastructure contained in this directory!
+
+This directory contains the Terraform code that is used to deploy the Elastic Container Registry (ECR) repository that
+is used to store the Docker images used for the Elastic Container Service (ECS).
+
+The Terraform code used to provision the ECR repository can be found in the [`create-ecr`](../deploy/create-ecr)
 
 #### `main-infrastructure`
 
@@ -596,8 +610,7 @@ For the private subnets, the IP addresses assigned to them are:
 An Application Load Balancer (ALB) is created to route traffic to the ECS Service that hosts the Sample Application.
 
 An ALB Listener and Target Group is also created to ensure that traffic is listened to on port `80` and routed to the
-ECS
-Service on port `80`.
+ECS Service on port `80`.
 
 The configurations for the ALB are:
 
@@ -623,10 +636,15 @@ The configurations for the ALB Target Group are:
     * Healthy Threshold: 2
     * Unhealthy Threshold: 2
     * Interval of Health Check: 60 seconds
-    * HTTP codes permitted: `200` (Success Codes) - `399` (Redirection Codes)
+    * HTTP codes permitted: `200` (Success Code)
     * Port: Traffic Port
     * Protocol: `HTTP`
-    * Timeout: 30 seconds
+    * Timeout: 10 seconds
+* Session Stickiness
+    * Cookie Duration: `1` day = `86400` seconds
+    * Cookie Name: `SSGWSGSAMPLEAPPCOOKIE`
+    * Enabled: `true`
+    * Type: `app_cookie`
 
 **This ALB Target Group depends on the ALB (ALB must be created before the Target Group can be created).**
 
@@ -976,3 +994,22 @@ The following is a rough process of what happens when you deploy the application
     1. An Auto Scaling Group and EC2 Container Instances are created
     2. The ECS Service is then linked to the Auto Scaling Group to ensure that the ECS Service is running on the EC2
        Container Instances through the Capacity Provider
+
+## Conclusion
+
+Congratulations! You have successfully completed the deployment guide for the Sample Application.
+
+You have learned how to deploy the Sample Application to AWS using GitHub Actions and Terraform, and how to configure
+the necessary infrastructure to host the Sample Application.
+
+If you wish to learn more on how to set up your AWS account and AWS Organization, refer to the
+[AWS Account Setup Guide](AWS%20Account%20Setup%20Guide.md).
+
+If you wish to learn more about how to use the application from a user's perspective, refer to the
+[User Guide](User%20Guide.md).
+
+If you wish to learn more about how to set up the application locally and develop it, refer to the
+[Developer Guide](Developer%20Guide.md).
+
+If you wish to just install the application locally on your machine and use it without any further development, refer
+to the [Installation Guide](Installation%20Guide.md).

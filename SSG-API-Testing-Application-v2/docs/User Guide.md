@@ -56,6 +56,7 @@ Here is a quick summary of what the SSG Sample Application does:
         * [Upload Supporting Documents](#upload-supporting-documents)
         * [View Claim Details](#view-claim-details)
         * [Cancel Claim](#cancel-claim)
+* [Conclusion](#conclusion)
 * [Glossary](#glossary)
 
 ## Introduction
@@ -659,7 +660,7 @@ using the SSG APIs.
 
 To access the APIs, navigate to the sidebar and click on the “Assessments” page.
 
-![img.png](assets/user-guide/assessment/assessment-sidebar.png)
+![assessment sidebar](assets/user-guide/assessment/assessment-sidebar.png)
 
 You should then be able to see the front page of the Assessment page.
 
@@ -795,6 +796,14 @@ courses using the SSG APIs.
 5. [Cancel Claim](#Cancel-Claim)
     1. This API is used to cancel a claim
 
+To access the APIs, navigate to the sidebar and click on the “SkillsFuture Credit Pay” page.
+
+![assessment sidebar](assets/user-guide/sf-credit-pay/sf-credit-sidebar.png)
+
+You should then be able to see the front page of the SkillsFuture Credit Pay page.
+
+![assessment-page.png](assets/user-guide/sf-credit-pay/sf-credit-page.png)
+
 #### SF Credit Claims Payment Request Encryption
 
 To access the SF Credit Claims Payment Request Encryption API, follow the steps below:
@@ -824,16 +833,35 @@ To access the SF Credit Claims Payment Request Encryption API, follow the steps 
     2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
        you will be view the encrypted payload that you are receiving from the API.
 7. Using the encrypted payload returned from the API, you can then proceed to send a Form POST request to the SSG
-   SkillsFuture Credit Claims API to begin the claims process. The Form POST template is provided below the results of
-   the API response.
+   SkillsFuture Credit Claims API to begin the claims process. A template POST form is provided for you to download and
+   edit.
    ![Form POST](assets/user-guide/sf-credit-pay/form-post.png)
 
-    1. Enter the encrypted payload into the text field in the Form POST template
+    1. Edit the downloaded HTML file and add the encrypted payload between the `<textarea>` tags. The HTML file should
+       now look like this:
+       ```html
+       <h1>SkillsFuture Credit Payment Request Form</h1>
+       <p>Enter in the encrypted payload below and click "Submit" to send the request to the API!</p>
+       <form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
+              method="post" target="_blank">
+           <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100">
+               [YOUR PAYLOAD HERE]
+           </textarea>
+           <br>
+           <input type="submit" href="#" formtarget="_blank" value="Submit">
+       </form>
+       ```
+       
+       `[YOUR PAYLOAD HERE]` should be replaced entirely with your encrypted payload.
     2. Click on the “Submit” button to send the Form POST request to the SSG SkillsFuture Credit Claims API
     3. You will be directed to log in with your Singpass
     4. After logging in, specify the claim amount and make the claim
     5. The callback action will trigger after you submit the claim
     6. Use the Developer Mode console of your browser to view the encrypted response. This will be used in the next API.
+
+> [!INFO]
+> Refer to the SF Credit API documentation within the conformance test package for more information about the
+> usage of this API.
 
 #### SF Credit Claims Payment Request Decryption
 
@@ -947,6 +975,24 @@ To access the Cancel Claim API, follow the steps below:
        able to view the encrypted payload that you are sending to the API.
     2. The Response tab shows the API response after receiving your request. Since this API returns encrypted payloads,
        you will be view the encrypted payload that you are receiving from the API.
+
+## Conclusion
+
+Congratulations! You have successfully completed the User Guide for the Sample Application. You should now be able to
+use the Sample Application to call the SSG APIs to manage your courses, enrolments, assessments, attendance and
+SkillsFuture Credit claims.
+
+If you wish to learn more on how to set up your AWS account and AWS Organization, refer to the
+[AWS Account Setup Guide](AWS%20Account%20Setup%20Guide.md).
+
+If you wish to learn more about how to deploy the application onto AWS, refer to the
+[Deployment Guide](Deployment%20Guide.md).
+
+If you wish to learn more about how to set up the application locally and develop it, refer to the
+[Developer Guide](Developer%20Guide.md).
+
+If you wish to just install the application locally on your machine and use it without any further development, refer
+to the [Installation Guide](Installation%20Guide.md).
 
 ## Glossary
 
