@@ -303,7 +303,7 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         warnings = []
 
         if self._course_run_id is not None and len(self._course_run_id) == 0:
-            errors.append("Course Run ID is empty even though it is marked as specified!")
+            errors.append("Course Run ID is empty!")
 
         if (self._trainee_employer_uen is None or len(self._trainee_employer_uen) == 0) and \
                 self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
