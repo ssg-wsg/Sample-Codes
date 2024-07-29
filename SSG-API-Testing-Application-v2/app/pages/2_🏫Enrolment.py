@@ -35,18 +35,22 @@ from app.core.enrolment.update_enrolment_fee_collection import UpdateEnrolmentFe
 from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableCollectionStatus,
                                 SponsorshipType, EnrolmentSortField, SortOrder,
                                 EnrolmentCourseStatus)
+from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
 from app.utils.streamlit_utils import init, display_config, validation_error_handler
 from app.utils.verify import Validators
 
 init()
+LOGGER = Logger("Courses API")
 
 st.set_page_config(page_title="Enrolment", page_icon="🏫")
+
 
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -77,16 +81,15 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    if st.checkbox("Specify Course Run ID?", key="specify-enrolment-course-run-id"):
-        create_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                       help="SSG-generated Unique ID for the course run",
-                                                       key="enrolment-course-run-id",
-                                                       max_chars=20)
     create_enrolment.course_referenceNumber = st.text_input(label="Course Reference Number",
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
+    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
+                                                   help="SSG-generated Unique ID for the course run",
+                                                   key="enrolment-course-run-id",
+                                                   max_chars=20)
 
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
@@ -98,6 +101,10 @@ with create:
     create_enrolment.trainee_id = col2.text_input(label="Trainee ID",
                                                   help="Trainee's government-issued ID number",
                                                   key="enrolment-trainee-id")
+
+    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
+            and not Validators.verify_nric(create_enrolment.trainee_id):
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     st.markdown("#### Payment Info")
     if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
@@ -120,7 +127,13 @@ with create:
                                                                   key="enrolment-trainee-fees-collection-status")
 
     st.markdown("#### Employer Info")
-    if st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
+    create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
+                                                            options=SponsorshipType,
+                                                            format_func=lambda x: x.value,
+                                                            key="enrolment-trainee-sponsorship-type")
+
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
         uen = st.text_input(label="Employer UEN",
                             max_chars=50,
                             help="Employer organisation's UEN",
@@ -131,23 +144,25 @@ with create:
 
         create_enrolment.employer_uen = uen
 
-    if st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.employer_fullName = st.text_input(
             label="Employer Full Name",
             max_chars=50,
             help="The employer contact's person name",
             key="enrolment-employer-contact-full-name")
 
-    if st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
         create_enrolment.employer_emailAddress = st.text_input(
             label="Employer Email Address",
             max_chars=100,
             help="The employer contact's email address",
             key="enrolment-employer-contact-email-address")
 
-        if len(create_enrolment.employer_emailAddress) > 0:
-            if not Validators.verify_email(create_enrolment.employer_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(create_enrolment.employer_emailAddress) > 0 and \
+                not Validators.verify_email(create_enrolment.employer_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -159,15 +174,17 @@ with create:
             help="Area code of phone number",
             key="enrolment-employer-contact-number-area-code")
 
-    if col2.checkbox("Specify Employer Phone Number Country Code",
-                     key="specify-enrolment-employer-contact-number-country-code"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or col2.checkbox("Specify Employer Phone Number Country Code",
+                             key="specify-enrolment-employer-contact-number-country-code"):
         create_enrolment.employer_countryCode = col2.text_input(
             label="Employer Contact Number Country",
             max_chars=5,
             help="Country code of the phone number",
             key="enrolment-employer-contact-number-country-code")
 
-    if col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
+    if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
+            or col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
         create_enrolment.employer_phoneNumber = col3.text_input(
             label="Employer Phone Number",
             max_chars=20,
@@ -189,9 +206,9 @@ with create:
                                                           max_chars=100,
                                                           help="The trainee's email address",
                                                           key="enrolment-trainee-email-address")
-    if len(create_enrolment.trainee_emailAddress) > 0:
-        if not Validators.verify_email(create_enrolment.trainee_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+    if len(create_enrolment.trainee_emailAddress) > 0 and \
+            not Validators.verify_email(create_enrolment.trainee_emailAddress):
+        st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -221,11 +238,6 @@ with create:
                                                                help="Trainee Date of Enrolment",
                                                                key="enrolment-trainee-date-of-enrolment")
 
-    create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
-                                                            options=SponsorshipType,
-                                                            format_func=lambda x: x.value,
-                                                            key="enrolment-trainee-sponsorship-type")
-
     st.subheader("Training Partner Info")
     uen = st.text_input(label="Training Partner UEN",
                         key="enrolment-training-partner-uen",
@@ -234,7 +246,7 @@ with create:
 
     if uen is not None and len(uen) > 0 and not Validators.verify_uen(uen):
         st.warning("**Training Provider UEN** is not a valid UEN!", icon="⚠️")
-    elif uen is not None and len(uen) > 0 and Validators.verify_nric(uen):
+    elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
     create_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
@@ -250,8 +262,14 @@ with create:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="create-button"):
-        if not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
+    if st.button("Send", key="create-button", type="primary"):
+        LOGGER.info("Attempting to send request to Create Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
+            LOGGER.error("Missing UEN!")
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
         else:
@@ -320,9 +338,9 @@ with update:
             help="The employer contact's email address",
             key="update-enrolment-employer-contact-email-address")
 
-        if len(update_enrolment.employer_emailAddress) > 0:
-            if not Validators.verify_email(update_enrolment.employer_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(update_enrolment.employer_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.employer_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -356,9 +374,9 @@ with update:
                                                               help="The trainee's email address",
                                                               key="update-enrolment-trainee-email-address")
 
-        if len(update_enrolment.trainee_emailAddress) > 0:
-            if not Validators.verify_email(update_enrolment.trainee_emailAddress):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+        if len(update_enrolment.trainee_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.trainee_emailAddress):
+            st.warning(f"Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
     if col1.checkbox("Specify Trainee Phone Number Area Code",
@@ -392,8 +410,13 @@ with update:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="update-button"):
-        if len(enrolment_reference_num) == 0:
+    if st.button("Send", key="update-button", type="primary"):
+        LOGGER.info("Attempting to send request to Update Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
         else:
             errors, warnings = update_enrolment.validate()
@@ -431,8 +454,13 @@ with cancel:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="cancel-button"):
-        if len(enrolment_reference_num) == 0:
+    if st.button("Send", key="cancel-button", type="primary"):
+        LOGGER.info("Attempting to send request to Cancel Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -539,6 +567,10 @@ with search:
                                                         help="Trainee's government-issued ID number",
                                                         max_chars=20)
 
+            if search_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(search_enrolment.trainee_id) > 0 \
+                    and not Validators.verify_nric(search_enrolment.trainee_id):
+                st.warning("**ID Number** may not be valid!", icon="⚠️")
+
     if st.checkbox("Specify Fee Collection Status?", key="specify-search-enrolment-fee-collection-status"):
         search_enrolment.trainee_fees_feeCollectionStatus = st.selectbox(label="Fee Collection Status",
                                                                          options=CancellableCollectionStatus,
@@ -617,8 +649,13 @@ with search:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="search-button"):
-        if st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
+    if st.button("Send", key="search-button", type="primary"):
+        LOGGER.info("Attempting to send request to Search Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
         else:
@@ -649,8 +686,13 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="view-button"):
-        if len(ref_num) == 0:
+    if st.button("Send", key="view-button", type="primary"):
+        LOGGER.info("Attempting to send request to View Enrolment API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(ref_num) == 0:
             st.error("Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -690,8 +732,13 @@ with update_fee:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="update-fee-button"):
-        if len(enrolment_reference_num) == 0:
+    if st.button("Send", key="update-fee-button", type="primary"):
+        LOGGER.info("Attempting to send request to Update Enrolment Fee Collection API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(enrolment_reference_num) == 0:
             st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])

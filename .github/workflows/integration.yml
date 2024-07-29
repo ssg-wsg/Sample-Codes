@@ -52,6 +52,33 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+  terrascan:
+    runs-on: ubuntu-latest
+    name: Scan Terraform Scripts
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Scan Terraform Script
+        id: terrascan
+        uses: tenable/terrascan-action@main
+        with:
+          iac_type: "terraform"
+          iac_version: "v14"
+          policy_type: "aws"
+          only_warn: true
+          sarif_upload: true
+          iac_dir: "./SSG-API-Testing-Application-v2/deploy"
+
+      - name: Upload SARIF to CodeQL
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: terrascan.sarif
+
   setup:
     needs:
       - test

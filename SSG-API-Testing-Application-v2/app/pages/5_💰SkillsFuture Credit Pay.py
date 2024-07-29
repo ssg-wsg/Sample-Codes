@@ -30,21 +30,21 @@ from app.core.credit.encrypt_payload import EncryptPayload
 from app.core.credit.decrypt_payload import DecryptPayload
 from app.core.credit.upload_document import UploadDocument
 from app.core.constants import CancelClaimsCode, PermittedFileUploadType
+from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler
 from app.utils.verify import Validators
 
 init()
-
-if "claims_request" not in st.session_state:
-    st.session_state["claims_request"] = None
+LOGGER = Logger("SkillsFuture Credit Pay")
 
 st.set_page_config(page_title="SkillsFuture Credit Pay", page_icon="💰")
 
 with st.sidebar:
     st.header("View Configs")
     st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
-    if st.button("Configs", key="config_display"):
+
+    if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
 st.image("assets/sf.png", width=200)
@@ -131,30 +131,48 @@ with encryption:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="encrypt-button"):
-        errors, warnings = encrypt.validate()
+    if st.button("Send", key="encrypt-button", type="primary"):
+        LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Encryption API...")
 
-        if validation_error_handler(errors, warnings):
-            enc = EncryptPayload(encrypt)
-            request, response = st.tabs(["Request", "Response"])
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        else:
+            errors, warnings = encrypt.validate()
 
-            with request:
-                handle_request(enc, require_encryption=True)
+            if validation_error_handler(errors, warnings):
+                enc = EncryptPayload(encrypt)
+                request, response = st.tabs(["Request", "Response"])
 
-            with response:
-                handle_response(lambda: enc.execute(), require_decryption=True)
+                with request:
+                    handle_request(enc, require_encryption=True)
+
+                with response:
+                    handle_response(lambda: enc.execute(), require_decryption=True)
 
     st.divider()
     st.subheader("Form POST Encrypted Payload")
-    st.markdown("After obtaining the encrypted payload, use the form below to initiate a Form POST request.")
-    st.html("""
-    <form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
-          method="post" target="_blank">
-        <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100"></textarea>
-        <br>
-        <input type="submit" href="#" formtarget="_blank" value="Submit">
-    </form>
-        """)
+    st.markdown("After obtaining the encrypted payload, download the HTML form below, open it within your browser, "
+                "and paste the encrypted payload into the field in the HTML form.")
+
+    st.download_button(
+        "Download HTML Form",
+        data="""
+<h1>SkillsFuture Credit Payment Request Form</h1>
+<p>Enter in the encrypted payload below and click "Submit" to send the request to the API!</p>
+<form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
+       method="post" target="_blank">
+     <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100"></textarea>
+     <br>
+     <input type="submit" href="#" formtarget="_blank" value="Submit">
+ </form>
+        """,
+        file_name="form.html",
+        mime="text/html",
+        key="download-html-form",
+        help="Click to download the HTML form for submission!",
+        on_click=lambda: LOGGER.info("Downloading HTML form for submission..."),
+        type="primary")
 
 with decryption:
     st.header("SF Credit Claims Payment Request Decryption")
@@ -166,8 +184,6 @@ with decryption:
     decrypt = DecryptPayloadInfo()
     decrypt.encrypted_request = st.text_area(label="Enter Encrypted Request",
                                              key="decryption-request-payload",
-                                             value=(st.session_state["claims_request"]["claimRequestStatus"]
-                                                    if st.session_state["claims_request"] is not None else ""),
                                              help="The payload consist of the information to be decrypted.")
 
     st.divider()
@@ -178,18 +194,24 @@ with decryption:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="decrypt-button"):
-        errors, warnings = decrypt.validate()
+    if st.button("Send", key="decrypt-button", type="primary"):
+        LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Decryption API...")
 
-        if validation_error_handler(errors, warnings):
-            dec = DecryptPayload(decrypt)
-            request, response = st.tabs(["Request", "Response"])
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        else:
+            errors, warnings = decrypt.validate()
 
-            with request:
-                handle_request(dec, require_encryption=True)
+            if validation_error_handler(errors, warnings):
+                dec = DecryptPayload(decrypt)
+                request, response = st.tabs(["Request", "Response"])
 
-            with response:
-                handle_response(lambda: dec.execute(), require_decryption=True)
+                with request:
+                    handle_request(dec, require_encryption=True)
+
+                with response:
+                    handle_response(lambda: dec.execute(), require_decryption=True)
 
 with upload:
     st.header("Upload Supporting Documents")
@@ -269,8 +291,14 @@ with upload:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="upload-button"):
-        if claim_id is not None and len(claim_id) == 0:
+    if st.button("Send", key="upload-button", type="primary"):
+        LOGGER.info("Attempting to send request to Upload Supporting Documents API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif claim_id is None or (claim_id is not None and len(claim_id) == 0):
+            LOGGER.error("No Claim ID provided!")
             st.error("Invalid Claim ID!", icon="🚨")
         else:
             errors, warnings = upload_doc.validate()
@@ -293,6 +321,10 @@ with view:
                          key="view-claims-nric",
                          max_chars=9,
                          help="NRIC of the individual")
+
+    if len(nric) > 0 and not Validators.verify_nric(nric):
+        st.warning("**NRIC format** is not valid!", icon="⚠️")
+
     claim_id = st.text_input(label="Claim ID",
                              key="view-claims-claim-id",
                              max_chars=10,
@@ -302,8 +334,13 @@ with view:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="view-button"):
-        if len(nric) == 0:
+    if st.button("Send", key="view-button", type="primary"):
+        LOGGER.info("Attempting to send request to View SF Credit Claims API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(nric) == 0:
             st.error("Invalid **NRIC** number!", icon="🚨")
         elif len(claim_id) != 10:
             st.error("Invalid **Claims ID**!", icon="🚨")
@@ -315,7 +352,7 @@ with view:
                 handle_request(vc)
 
             with response:
-                handle_response(lambda: vc.execute())
+                handle_response(lambda: vc.execute(), require_decryption=True)
 
 with cancel:
     st.header("Cancel Claim")
@@ -352,8 +389,13 @@ with cancel:
     st.subheader("Send Request")
     st.markdown("Click the `Send` button below to send the request to the API!")
 
-    if st.button("Send", key="cancel-button"):
-        if len(claim_id) != 10:
+    if st.button("Send", key="cancel-button", type="primary"):
+        LOGGER.info("Attempting to send request to Cancel SF Credit Claims API...")
+
+        if "url" not in st.session_state or st.session_state["url"] is None:
+            LOGGER.error("Missing Endpoint URL!")
+            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+        elif len(claim_id) != 10:
             st.error("Invalid **Claims ID**!", icon="🚨")
         else:
             if validation_error_handler(*(cancel_claims.validate())):

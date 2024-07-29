@@ -7,22 +7,28 @@ start the application.
 
 ## Table of Contents
 
+* [Table of Contents](#table-of-contents)
 * [Usage of the Guide](#usage-of-the-guide)
 * [Requirements](#requirements)
 * [Downloading Code Files](#downloading-code-files)
     * [Method 1: Downloading the Code via Web UI](#method-1-downloading-the-code-via-web-ui)
     * [Method 2: Downloading the Code via `git`](#method-2-downloading-the-code-via-git)
 * [Installation](#installation)
+    * [`conda`](#conda)
+        * [Installation of `conda`](#installation-of-conda)
+        * [Python Libraries](#python-libraries)
     * [Python](#python)
         * [Installation of Python](#installation-of-python)
-        * [Python Libraries](#python-libraries)
+        * [Python Libraries](#python-libraries-1)
     * [Docker](#docker)
         * [Installation of Docker](#installation-of-docker)
 * [Usage](#usage)
+    * [Running the Application in `conda`](#running-the-application-in-conda)
     * [Running the Application in Python](#running-the-application-in-python)
     * [Running the Application in Docker](#running-the-application-in-docker)
         * [Building the Docker Container](#building-the-docker-container)
         * [Running the Docker Container](#running-the-docker-container)
+* [Conclusion](#conclusion)
 
 ## Usage of the Guide
 
@@ -116,9 +122,65 @@ To obtain the code using `git`, follow the steps below:
 
 The application supports 2 methods of installation: Python and Docker.
 
-For Python, you will need to prepare your local environment and install the necessary runtimes and
+For Python, you will need to prepare your local environment and install the necessary runtimes and packages to run
+the application.
+
+### `conda`
+
+Follow this section of the guide if you wish to install the application using `conda`.
+
+`conda` is a package manager that is used to manage Python packages and environments. It is highly recommended to use
+`conda` to manage your Python packages to prevent dependency clashes between different Python projects on your system.
+
+#### Installation of `conda`
+
+Refer to the following links to find out more on how to install `conda` on your OS of choice:
+
+* [Windows](https://conda.io/projects/conda/en/latest/user-guide/install/windows.html)
+* [MacOS](https://conda.io/projects/conda/en/latest/user-guide/install/macos.html)
+* [Linux](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html)
+
+After installing `conda`, open up a command prompt or a terminal in the same location as this `README.md` document.
+
+Run the command:
+
+```shell
+conda create -n [YOUR ENV NAME HERE] python=3.12
+```
+
+> [!WARNING]
+> Make sure to change `[YOUR ENV NAME HERE]` to any name that you desire (e.g. `ssg`, `api`, `demo`, `application`)!
+
+Running the command will create a new `conda` environment with `Python 3.12` installed!
+
+#### Python Libraries
+
+After your environment is created, make sure to activate it first. To activate an environment, run the command:
+
+```shell
+conda activate [YOUR ENV NAME HERE]
+```
+
+where `[YOUR ENV NAME HERE]` is the same environment name that you used in the previous steps.
+
+Follow the steps below to install the required Python libraries into your `conda` environment:
+
+1. Activate your `conda` environment if you have not done so already
+2. Navigate to the directory (folder) `SSG-API-Testing-Application-v2/app` where the `requirements.txt` file is located
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the files in the directory (folder)
+3. Run the following commands to install the required Python libraries into your `conda` environment.
+    ```shell
+    pip install -r requirements.txt
+    ```
 
 ### Python
+
+> [!WARNING]
+> You are highly recommended not to install the required Python libraries on the base environment
+> provided when you first install Python. This is because installations on the base environment may
+> result in dependency clashes with future packages you install. Use package managers like `pyenv`
+> or [`conda`](#conda) to manage your Python packages and environments!
 
 Follow this section of the guide if you wish to install the application manually using Python.
 
@@ -205,10 +267,32 @@ The Docker Engine is required to build and run Docker containers in your environ
 
 ## Usage
 
+### Running the Application in `conda`
+
+To run the application in `conda`, follow the steps below:
+
+1. Open up a command prompt or terminal in the directory (folder) where the above source code for the application is
+   downloaded into
+2. Navigate to the `app` directory (folder) located within the `SSG-API-Testing-Application-v2` directory (folder). This
+   directory (folder) should have a `requirements.txt` file present in it
+    1. Use the `cd` command to *change directory* to the correct directory (folder) and use the `ls` command to *list*
+       the files in the directory (folder)
+3. Activate your `conda` environment by running the command:
+    ```shell
+    conda activate [YOUR ENV NAME HERE]
+    ```
+    1. Replace `[YOUR ENV NAME HERE]` with the name of the `conda` environment that you have created
+4. Run the command:
+    ```shell
+    streamlit run Home.py
+    ```
+5. If successful, your browser should open up and the application should be running on `http://localhost:80`
+
 ### Running the Application in Python
 
 > [!WARNING]
-> If you are using any package managers like `pyenv` or `conda`, make sure to activate the environment where the
+> If you are using any package managers like `pyenv` or [`conda`](#conda), make sure to activate the environment where
+> the
 > required Python libraries are installed before running the application!
 
 To run the application in Python, follow the steps below:
@@ -270,3 +354,19 @@ Once your build is successful, follow the steps below to run your container:
 > [!NOTE]
 > Refer to the [Docker CLI References](https://docs.docker.com/reference/cli/docker/) for more information about the
 > different Docker commands used!
+
+## Conclusion
+
+Congratulations! You have successfully installed and executed the Sample Application on your local environment.
+
+If you wish to learn more on how to set up your AWS account and AWS Organization, refer to the
+[AWS Account Setup Guide](AWS%20Account%20Setup%20Guide.md).
+
+If you wish to learn more about how to deploy the application onto AWS, refer to the
+[Deployment Guide](Deployment%20Guide.md).
+
+If you wish to learn more about how to set up the application locally and develop it, refer to the
+[Developer Guide](Developer%20Guide.md).
+
+If you wish to learn more about how to use the application from a user's perspective, refer to the
+[User Guide](User%20Guide.md).

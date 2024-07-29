@@ -302,6 +302,32 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
         errors = []
         warnings = []
 
+        if self._course_run_id is not None and len(self._course_run_id) == 0:
+            errors.append("Course Run ID is empty!")
+
+        if (self._trainee_employer_uen is None or len(self._trainee_employer_uen) == 0) and \
+                self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
+            errors.append("No valid Employer UEN specified!")
+
+        if (self._trainee_employer_contact_fullName is None or len(self._trainee_employer_contact_fullName) == 0) \
+                and self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
+            errors.append("No valid Trainee Full Name specified!")
+
+        if (self._trainee_employer_contact_emailAddress is None
+            or len(self._trainee_employer_contact_emailAddress) == 0) \
+                and self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
+            errors.append("No valid Employer Email Address specified!")
+
+        if (self._trainee_employer_contact_contactNumber_countryCode is None
+            or len(self._trainee_employer_contact_contactNumber_countryCode) == 0) \
+                and self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
+            errors.append("No valid Employer Contact Number Country Code specified!")
+
+        if (self._trainee_employer_contact_contactNumber_phoneNumber is None
+            or len(self._trainee_employer_contact_contactNumber_phoneNumber) == 0) \
+                and self.trainee_sponsorshipType == SponsorshipType.EMPLOYER:
+            errors.append("No valid Employer Contact Number Phone Number specified!")
+
         if self._course_referenceNumber is None or len(self._course_referenceNumber) == 0:
             errors.append("No valid Course Reference Number specified!")
 
@@ -345,17 +371,17 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
 
         # optional parameter validation
         # validate the pseudo-numerical values
-        if self._course_run_id is not None and len(self._course_run_id) == 0:
-            warnings.append("Course Run ID is empty even though it is marked as specified!")
-
-        if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) == 0:
+        if self._trainee_employer_uen is not None and len(self._trainee_employer_uen) == 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             warnings.append("Employer UEN is empty even though it is marked as specified!")
 
-        if self._trainee_employer_contact_fullName is not None and len(self._trainee_employer_contact_fullName) == 0:
+        if self._trainee_employer_contact_fullName is not None and len(self._trainee_employer_contact_fullName) == 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             warnings.append("Employer Full Name is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_emailAddress is not None \
-                and len(self._trainee_employer_contact_emailAddress) == 0:
+                and len(self._trainee_employer_contact_emailAddress) == 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             warnings.append("Employer Email Address is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_emailAddress is not None and \
@@ -374,23 +400,27 @@ class CreateEnrolmentInfo(AbstractRequestInfo):
             warnings.append("Employer Contact Number Area Code is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_countryCode is not None and \
-                len(self._trainee_employer_contact_contactNumber_countryCode) != 0:
+                len(self._trainee_employer_contact_contactNumber_countryCode) != 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             try:
                 int(self._trainee_employer_contact_contactNumber_countryCode)
             except ValueError:
                 warnings.append("Employer Country Code is not a number!")
         elif self._trainee_employer_contact_contactNumber_countryCode is not None and \
-                len(self._trainee_employer_contact_contactNumber_countryCode) == 0:
+                len(self._trainee_employer_contact_contactNumber_countryCode) == 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             warnings.append("Employer Country Code is empty even though it is marked as specified!")
 
         if self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
-                len(self._trainee_employer_contact_contactNumber_phoneNumber) != 0:
+                len(self._trainee_employer_contact_contactNumber_phoneNumber) != 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             try:
                 int(self._trainee_employer_contact_contactNumber_phoneNumber)
             except ValueError:
                 warnings.append("Employer Phone Number is not a number!")
         elif self._trainee_employer_contact_contactNumber_phoneNumber is not None and \
-                len(self._trainee_employer_contact_contactNumber_phoneNumber) == 0:
+                len(self._trainee_employer_contact_contactNumber_phoneNumber) == 0 \
+                and self.trainee_sponsorshipType != SponsorshipType.EMPLOYER:
             warnings.append("Employer Phone Number is empty even though it is marked as specified!")
 
         if self._trainee_contactNumber_areaCode is not None and \
