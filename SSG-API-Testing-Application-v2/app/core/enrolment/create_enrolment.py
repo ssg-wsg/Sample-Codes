@@ -37,8 +37,6 @@ class CreateEnrolment(AbstractRequest):
             .with_header("Content-Type", "application/json") \
             .with_body(enrolment_info.payload())
 
-        print(enrolment_info.payload())
-
     def execute(self) -> requests.Response:
         """
         Executes the HTTP request and returns the response object
