@@ -4,6 +4,10 @@ This directory contains files used for deploying the Sample Application to AWS.
 
 The code is heavily inspired and reused from [this guide](https://nexgeneerz.io/aws-computing-with-ecs-ec2-terraform/).
 
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to another
+> unique name! If not, you will get an error as the bucket already exists.
+
 ## `create-backend`
 
 This directory contains the Terraform code for deploying the backend of the Sample Application to AWS.

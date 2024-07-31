@@ -412,6 +412,10 @@ directory.
 >
 > Failure to do so may result in the deployment of the main infrastructure to fail!
 
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to another
+> unique name! If not, you will get an error as the bucket already exists.
+
 #### `create-ecr`
 
 > [!CAUTION]
@@ -422,6 +426,10 @@ This directory contains the Terraform code that is used to deploy the Elastic Co
 is used to store the Docker images used for the Elastic Container Service (ECS).
 
 The Terraform code used to provision the ECR repository can be found in the [`create-ecr`](../deploy/create-ecr)
+
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to the name used
+> above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
 
 #### `main-infrastructure`
 
@@ -437,6 +445,10 @@ deploying them to production!
 
 More information on the overall architecture of the Sample Application can be found below under
 [Cloud Architecture](#cloud-architecture).
+
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to the name used
+> above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
 
 > [!TIP]
 > Terraform does not care about how you structure your code within the same directory. You can split your code into
@@ -471,6 +483,13 @@ process.
 
 The constants can be found under the `deploy/modules/constants/` directory in
 the [`constants.tf`](../deploy/modules/constants/constants.tf) file.
+
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the constants file to the name used
+> above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
+> 
+> Make sure that this value is equal to that used throughout the Terraform code. Failure to do so may result
+> in deployments referencing an incorrect S3 bucket and results in errors!
 
 ### Terraform Plan
 
