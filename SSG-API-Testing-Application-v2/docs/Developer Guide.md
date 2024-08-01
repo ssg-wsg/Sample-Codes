@@ -1330,6 +1330,9 @@ The different stages of the CI/CD pipeline are as such:
 > [!CAUTION]
 > If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to another
 > unique name! If not, you will get an error as the bucket already exists.
+>
+> Do not commit the changes made to the Terraform code to the repository as this will cause an error upstream
+> when the main repository attempts to deploy the infrastructure!
 > 
 > Refer to the [Deployment Guide](Deployment%20Guide.md) for more information.
 

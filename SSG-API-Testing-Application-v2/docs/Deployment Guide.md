@@ -415,6 +415,9 @@ directory.
 > [!CAUTION]
 > If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to another
 > unique name! If not, you will get an error as the bucket already exists.
+> 
+> However, do not commit the changes made to the Terraform code to the repository as this will cause an error upstream
+> when the main repository attempts to deploy the infrastructure!
 
 #### `create-ecr`
 
@@ -430,6 +433,9 @@ The Terraform code used to provision the ECR repository can be found in the [`cr
 > [!CAUTION]
 > If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to the name used
 > above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
+> 
+> However, do not commit the changes made to the Terraform code to the repository as this will cause an error upstream
+> when the main repository attempts to deploy the infrastructure!
 
 #### `main-infrastructure`
 
@@ -449,6 +455,9 @@ More information on the overall architecture of the Sample Application can be fo
 > [!CAUTION]
 > If you are a developer, make sure to change the name of the S3 bucket used in the Terraform code to the name used
 > above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
+> 
+> However, do not commit the changes made to the Terraform code to the repository as this will cause an error upstream
+> when the main repository attempts to deploy the infrastructure!
 
 > [!TIP]
 > Terraform does not care about how you structure your code within the same directory. You can split your code into
@@ -490,6 +499,9 @@ the [`constants.tf`](../deploy/modules/constants/constants.tf) file.
 > 
 > Make sure that this value is equal to that used throughout the Terraform code. Failure to do so may result
 > in deployments referencing an incorrect S3 bucket and results in errors!
+> 
+> However, do not commit the changes made to the Terraform code to the repository as this will cause an error upstream
+> when the main repository attempts to deploy the infrastructure!
 
 ### Terraform Plan
 
