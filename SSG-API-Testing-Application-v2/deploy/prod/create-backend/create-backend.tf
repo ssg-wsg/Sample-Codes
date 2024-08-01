@@ -1,6 +1,6 @@
 # adapted from https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa
 module "constants" {
-  source = "../modules/constants"
+  source = "../../modules/constants"
 }
 
 provider "aws" {

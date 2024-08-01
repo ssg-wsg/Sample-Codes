@@ -1,6 +1,6 @@
 # Contains the main configurations for Terraform
 module "constants" {
-  source = "../modules/constants"
+  source = "../../modules/constants"
 }
 
 terraform {

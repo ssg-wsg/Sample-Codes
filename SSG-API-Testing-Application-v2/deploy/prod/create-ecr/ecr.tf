@@ -1,6 +1,6 @@
 # Create ECR repository
 module "constants" {
-  source = "../modules/constants"
+  source = "../../modules/constants"
 }
 
 terraform {
