@@ -12,6 +12,10 @@ output "s3_bucket_name" {
   value = "ssg-tf-bucket"
 }
 
+output "s3_dev_bucket_name" {
+  value = "ssg-tf-dev-bucket"
+}
+
 # ecr constants
 output "ecr_s3_state_bucket_name" {
   value = "main/ecr.tfstate"

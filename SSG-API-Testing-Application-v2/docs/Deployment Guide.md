@@ -561,6 +561,10 @@ Terraform and within the Terraform scripts that reference the region.
 > reference to the AWS region of interest is updated in the Terraform code. Failure to update the Region within
 > the Terraform scripts may result in a failed deployment!
 
+> [!CAUTION]
+> Your deployment may fail if there are any policies in place to restrict creation of resources to certain regions. 
+> Make sure to check with your administrator if there are such policies in place before deploying your application.
+
 ### Availability Zones
 
 [[Terraform File]](../deploy/main-infrastructure/vpc.tf)
