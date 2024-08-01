@@ -339,7 +339,7 @@ jobs:
   main-infra-dev:
     # setting up prod infrastructure should be done on prod only
     if: github.repository != 'ssg-wsg/Sample-Codes'
-    environment: production  # this is kept to ensure backwards compatability
+    environment: dev
     needs:
       - ecr-dev
     runs-on: ubuntu-latest

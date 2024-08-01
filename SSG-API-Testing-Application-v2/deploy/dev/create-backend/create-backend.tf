@@ -9,7 +9,7 @@ provider "aws" {
 
 # Provision a S3 bucket to store the Terraform state
 resource "aws_s3_bucket" "tf_state" {
-  bucket = module.constants.s3_dev_bucket_name
+  bucket = "ssg-tf-dev-bucket"
 
   lifecycle {
     prevent_destroy = true
