@@ -1233,14 +1233,18 @@ The general workflow for contributing to the Sample Application is as follows:
    to [this guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
    for more information on how to create a PR. Make sure that the source branch is the branch you created in step 3,
    and the target branch is the `main` or `master` branch in the upstream repository (the Sample-Codes repository).
-7. Allow CI/CD to run and fix any errors that are raised by CI/CD. More information about CI/CD can be found in the
-   [CI/CD](#cicd) section.
+7. Provision your `dev` environment using CI/CD and test the code changes you made within the `dev` environment. More
+   information about CI/CD can be found in the [CI/CD](#cicd) section.
 8. Request a review from a reviewer.
-9. Once the PR is approved and merged, you should pull the changes from the upstream repository to your forked
-   repository to keep your forked repository up to date. Refer
+9. Once the reviewer has ascertained that your code is free of errors, and that the environment is performing as 
+   expected, the reviewer will approve your changes and will request that you migrate the changes made to `dev` over to
+   `production`.
+10. Once the migration is complete, request a review from the reviewer.
+11. Once the PR is approved and merged, you should then pull the changes from the upstream repository to your forked
+12. repository to keep your forked repository up to date. Refer 
    to [this guide](https://www.atlassian.com/git/tutorials/syncing/git-pull)
    for more information on pulling the changes made from the upstream repository to your local repository.
-10. Note that deployments to the upstream branches are only permitted upon approval from a reviewer. You may or may not
+13. Note that deployments to the upstream branches are only permitted upon approval from a reviewer. You may or may not
     require approval for deployments to your own local testing environment based on how you have set up GitHub 
     Environments [above](#github-environments).
 
@@ -1254,6 +1258,8 @@ More information will be provided in the [next section](#cicd) regarding the CI/
 
 The production environment refers to the production AWS account that is set up in the upstream repository.
 
+Terraform code to provision the production environment is found within [deploy/prod](../deploy/prod).
+
 This environment requires approvals before the code can be deployed.
 
 As a developer, you do not have direct access to this environment; you can only access it via pull requests to the
@@ -1265,6 +1271,8 @@ You should do your testing in the dev environment before deploying to the produc
 
 The dev environment refers to your personal AWS Organization account that is set up in your fork of the upstream
 repository.
+
+Terraform code to provision the dev environment is found within [deploy/dev](../deploy/dev).
 
 This environment may or may not require approvals for deployment, depending on how you have configured your GitHub
 Environments.
@@ -1330,13 +1338,14 @@ The different stages of the CI/CD pipeline are as such:
     1. Start the pipeline on Ubuntu
     2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
 
-Depending on the repository where the CI/CD pipeline is run, different scripts corresponding to different environments.
+Depending on the repository where the CI/CD pipeline is run, different scripts corresponding to different environments
+will be executed.
 
 If the repository is the upstream repository, the pipeline will deploy to the `prod` environment. If the repository
 is a forked repository, the pipeline will deploy to the `dev` environment.
 
 > [!WARNING]
-> The deployment process is only permitted once a reviewer approves it.
+> The deployment process to `prod` is only permitted once a reviewer approves it.
 
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
@@ -1346,6 +1355,10 @@ Here is a diagram representing the overall flow of processes implemented in the 
 > If the setting up of your GitHub Environment was skipped, the `Approval from reviewers?` process is skipped and
 > the CI/CD pipeline will proceed to `Begin process for setting up main infrastructure`.
 
+> [!CAUTION]
+> Should GitHub Actions not execute the Actions contained within the repository after a fork, you may have to delete
+> the files contained within the `.github/workflows` directory and recommit the files in directory to the repository.
+
 #### Failed Deployment
 
 Should the deployment fail, and you need to destroy the infrastructure, you may need to trigger a manual workflow run
@@ -1353,6 +1366,18 @@ stored in [this file](../../.github/workflows/teardown.yml).
 
 To run a manual workflow, refer
 to [this guide](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow).
+
+Alternatively, if you have the credentials to the AWS account used to provision the infrastructure in `prod` or `dev`,
+you may run the command within the subdirectories of the `deploy` directory (e.g. `deploy/dev/create-ecr`):
+
+```shell
+terraform destroy
+```
+
+More information about the Terraform commands can be found within the [Deployment Guide](Deployment%20Guide.md#terraform).
+
+> [!CAUTION]
+> If you are destroying the `prod` environment, make sure to get explicit approval from a reviewer before doing so!
 
 ## Logging and Housekeeping
 

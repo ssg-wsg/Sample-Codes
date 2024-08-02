@@ -7,48 +7,48 @@ Welcome to the SSG-WSG Sample Application Deployment Guide!
 * [Table of Contents](#table-of-contents)
 * [Usage of the Guide](#usage-of-the-guide)
 * [AWS](#aws)
-   * [Preparation](#preparation)
+    * [Preparation](#preparation)
 * [Codecov](#codecov)
 * [GitHub](#github)
-   * [GitHub Actions](#github-actions)
-      * [Workflows](#workflows)
-   * [Preparation](#preparation-1)
-   * [GitHub Environments](#github-environments)
+    * [GitHub Actions](#github-actions)
+        * [Workflows](#workflows)
+    * [Preparation](#preparation-1)
+    * [GitHub Environments](#github-environments)
 * [Docker](#docker)
-   * [Images and Dockerfiles](#images-and-dockerfiles)
-   * [Docker Commands](#docker-commands)
-      * [`docker build`](#docker-build)
-      * [`docker run`](#docker-run)
+    * [Images and Dockerfiles](#images-and-dockerfiles)
+    * [Docker Commands](#docker-commands)
+        * [`docker build`](#docker-build)
+        * [`docker run`](#docker-run)
 * [Terraform](#terraform)
-   * [Install Terraform](#install-terraform)
-   * [Organisation of Terraform Code](#organisation-of-terraform-code)
-      * [`dev`](#dev)
-      * [`prod`](#prod)
-      * [`create-backend`](#create-backend)
-      * [`create-ecr`](#create-ecr)
-      * [`main-infrastructure`](#main-infrastructure)
-   * [Terraform Configuration](#terraform-configuration)
-   * [Terraform Modules](#terraform-modules)
-   * [Terraform Plan](#terraform-plan)
-   * [Terraform Apply](#terraform-apply)
-   * [Terraform Destroy](#terraform-destroy)
+    * [Install Terraform](#install-terraform)
+    * [Organisation of Terraform Code](#organisation-of-terraform-code)
+        * [`dev`](#dev)
+        * [`prod`](#prod)
+        * [`create-backend`](#create-backend)
+        * [`create-ecr`](#create-ecr)
+        * [`main-infrastructure`](#main-infrastructure)
+    * [Terraform Configuration](#terraform-configuration)
+    * [Terraform Modules](#terraform-modules)
+    * [Terraform Plan](#terraform-plan)
+    * [Terraform Apply](#terraform-apply)
+    * [Terraform Destroy](#terraform-destroy)
 * [Cloud Architecture](#cloud-architecture)
-   * [`prod` and `dev` Environments](#prod-and-dev-environments)
-   * [VPC and Region](#vpc-and-region)
-   * [Availability Zones](#availability-zones)
-   * [Networking](#networking)
-      * [Subnets](#subnets)
-   * [Load Balancer](#load-balancer)
-   * [Security Groups](#security-groups)
-   * [Logging](#logging)
-   * [IAM](#iam)
-      * [SSH Keys](#ssh-keys)
-   * [Compute](#compute)
-      * [EC2](#ec2)
-      * [ECR and ECS](#ecr-and-ecs)
-      * [Docker](#docker-1)
-      * [AutoScaling Group](#autoscaling-group)
-   * [Architecture Diagram](#architecture-diagram)
+    * [`prod` and `dev` Environments](#prod-and-dev-environments)
+    * [VPC and Region](#vpc-and-region)
+    * [Availability Zones](#availability-zones)
+    * [Networking](#networking)
+        * [Subnets](#subnets)
+    * [Load Balancer](#load-balancer)
+    * [Security Groups](#security-groups)
+    * [Logging](#logging)
+    * [IAM](#iam)
+        * [SSH Keys](#ssh-keys)
+    * [Compute](#compute)
+        * [EC2](#ec2)
+        * [ECR and ECS](#ecr-and-ecs)
+        * [Docker](#docker-1)
+        * [AutoScaling Group](#autoscaling-group)
+    * [Architecture Diagram](#architecture-diagram)
 * [Conclusion](#conclusion)
 
 ## Usage of the Guide
@@ -170,6 +170,7 @@ Most importantly, there are a few declarations that you should be aware of when 
 
 * `on`: This declaration specifies the event that triggers the workflow. For example, a push to the repository, a pull
   request, or a new release.
+* `if`: This declaration specifies a condition that must be fulfilled if a job within a workflow is to execute
 * `env`: This declaration specifies the environment variables that are used in the workflow. Environment variables can
   either be
   secrets (which should never be exposed to the workflow in plaintext) or global variables that we want to keep
@@ -182,12 +183,10 @@ Most importantly, there are a few declarations that you should be aware of when 
 * `steps`: This declaration specifies the steps that are run in the job. Steps are a collection of tasks that are run in
   sequence to complete the job.
 * `strategy`, `matrix`: These declarations specify the matrix of configurations that are used to run the workflow. This
-  is
-  useful when you want to run the same workflow with different configurations in parallel.
+  is useful when you want to run the same workflow with different configurations in parallel.
 * `runs-on`: This declaration specifies the runner that the job runs on. The runner is the environment that the job runs
   on, such as `ubuntu-latest`, `windows-latest`, or `macos-latest`, each corresponding to an environment with the
-  respective
-  OS installed.
+  respective OS installed.
 * `uses`: This declaration specifies external extensions that are used in the workflow. External extensions can be
   actions, or other workflows that are stored in a different repository. A catalogue of external extensions can be found
 * `needs`: This declaration specifies the dependencies between jobs. If a job depends on another job, the dependent job
@@ -231,6 +230,10 @@ to learn more about the use of environments to enforce approvals before deployme
 
 For the application, you will need to create the `production` environment.
 
+> [!NOTE]
+> If you are a developer, make sure to create a `dev` environment instead. Simply replace `production` with
+> `dev` below.
+
 To create the `production` environment, follow the steps below:
 
 1. Go to the `Settings` tab of the repository.
@@ -266,7 +269,7 @@ and torn down predictably and consistently.
 
 ### Images and Dockerfiles
 
-Docker **Images** are the building blocks of Docker containers. A Docker image is a lightweight, standalone,
+Docker **Images** are the building blocks of Docker. A Docker image is a lightweight, standalone,
 executable package of software that includes everything needed to run a piece of software, including the code,
 runtime and dependencies.
 
@@ -370,7 +373,6 @@ Terraform is used in the deployment of the Sample Application to create the nece
 application. In particular, Terraform is used in conjunction with GitHub Actions to automatically provision the
 necessary resources and configure the provisioned resources.
 
-
 > [!NOTE]
 > Refer to the GitHub Actions [workflow file](../../.github/workflows/integration.yml) to see how Terraform is used in
 > conjunction with GitHub Actions to deploy the Sample Application.
@@ -395,13 +397,14 @@ of the Sample Application.
 Within both directories, the Terraform code is further organised into subdirectories that represent the different
 components of the Sample Application: `create-backend`, `create-ecr`, and `main-infrastructure`.
 
-The `create-backend` directory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
+The `create-backend` subdirectory contains the Terraform code that is used to provision the S3 bucket and DynamoDB table
 that is used to store the Terraform state and lock the state respectively.
 
-The `create-ecr` directory contains the Terraform code that is used to provision the Elastic Container Registry
+The `create-ecr` subdirectory contains the Terraform code that is used to provision the Elastic Container Registry
 repository that is used to store the images used for Elastic Container Service.
 
-The `main-infrastructure` directory contains the Terraform code that is used to provision the main infrastructure of the
+The `main-infrastructure` subdirectory contains the Terraform code that is used to provision the main infrastructure of
+the
 Sample Application, such as the VPC, subnets, security groups, and other resources that are required to host the
 application.
 
@@ -438,7 +441,7 @@ NoSQL databases like Amazon DynamoDB to lock the state to prevent concurrent mod
 For the Sample Application, we will deploy the S3 bucket and DynamoDB table to store the Terraform state and lock the
 state respectively.
 
-The Terraform code used to provision these resources can be found in the 
+The Terraform code used to provision these resources can be found in the
 [`dev` `create-backend`](../deploy/dev/create-backend) and
 [`prod` `create-backend`](../deploy/prod/create-backend) directory.
 
@@ -461,12 +464,12 @@ The Terraform code used to provision these resources can be found in the
 This directory contains the Terraform code that is used to deploy the Elastic Container Registry (ECR) repository that
 is used to store the Docker images used for the Elastic Container Service (ECS).
 
-The Terraform code used to provision the ECR repository can be found in the 
+The Terraform code used to provision the ECR repository can be found in the
 [`dev` `create-ecr`](../deploy/dev/create-ecr) and
 [`prod` `create-ecr`](../deploy/prod/create-ecr) directory.
 
 > [!CAUTION]
-> If you are a developer, make sure to change the name of the S3 bucket used in the `dev` Terraform code to the name 
+> If you are a developer, make sure to change the name of the S3 bucket used in the `dev` Terraform code to the name
 > used above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
 
 #### `main-infrastructure`
@@ -487,16 +490,16 @@ deploying them to `prod`!
 More information on the overall architecture of the Sample Application can be found below under
 [Cloud Architecture](#cloud-architecture).
 
-> [!CAUTION]
-> If you are a developer, make sure to change the name of the S3 bucket used in the `dev` Terraform code to the name 
-> used above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
-
 > [!TIP]
 > Terraform does not care about how you structure your code within the same directory. You can split your code into
 > multiple files and Terraform will treat them as a single configuration!
 >
 > For the Sample Application, we have split the Terraform code into multiple files to make it easier to manage and
 > maintain the different components of the Sample Application!
+
+> [!CAUTION]
+> If you are a developer, make sure to change the name of the S3 bucket used in the `dev` Terraform code to the name
+> used above under [`create-ecr`](#create-ecr)! If not, you will get an error as the bucket already exists.
 
 ### Terraform Configuration
 
@@ -514,7 +517,7 @@ Each directory contains the necessary Terraform code needed to deploy component(
 > [!TIP]
 > If you have already done this step previously and are repeating it, you can run the Terraform command with
 > the `-reconfigure` flag to force Terraform to reconfigure the backend configurations!
-> 
+>
 > e.g. `terraform init -reconfigure`
 
 ### Terraform Modules
@@ -567,7 +570,8 @@ let's delve deeper into how the Sample Application is architected.
 
 ### `prod` and `dev` Environments
 
-To better manage the deployment of the Sample Application, the application is deployed in 2 environments: `prod` and `dev`.
+To better manage the deployment of the Sample Application, the application is deployed in 2 environments: `prod` and
+`dev`.
 
 The `prod` environment is used to host the production version of the Sample Application,
 while the `dev` environment is used for testing and development of the Sample Application.
@@ -578,7 +582,6 @@ are deployed.
 > [!NOTE]
 > In the following sections, the description of each component of the cloud architecture applies to both the
 > `dev` and `prod` environments.
-
 
 ### VPC and Region
 
@@ -602,7 +605,7 @@ Terraform and within the Terraform scripts that reference the region.
 > the Terraform scripts may result in a failed deployment!
 
 > [!CAUTION]
-> Your deployment may fail if there are any policies in place to restrict creation of resources to certain regions. 
+> Your deployment may fail if there are any policies in place to restrict creation of resources to certain regions.
 > Make sure to check with your administrator if there are such policies in place before deploying your application.
 
 ### Availability Zones
@@ -628,7 +631,6 @@ in the Terraform file [`constants.tf`](../deploy/modules/constants/constants.tf)
 [[Prod Terraform File]](../deploy/prod/main-infrastructure/vpc.tf)
 [[Dev Terraform File]](../deploy/dev/main-infrastructure/vpc.tf)
 
-
 By default, the VPC is created with a Class B CIDR IPv4 IP address of `172.16.0.0/16`.
 This configuration allows for `2^16` ~ `65536` IP addresses within your VPC.
 
@@ -636,7 +638,8 @@ You may change the default CIDR IP of the VPC by changing the `cidr` variable in
 [`constants.tf`](../deploy/modules/constants/constants.tf).
 
 > [!NOTE]
-> Refer to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
+> Refer
+> to [this guide on IP addressing](https://aws.amazon.com/what-is/cidr/#:~:text=A%20CIDR%20IP%20address%20appends,2%2C%20is%20the%20network%20address.)
 > for more information on how the CIDR IP addressing system works.
 
 #### Subnets
@@ -645,11 +648,12 @@ Subnets are created within the VPC to segment the IP address space of the VPC in
 
 For the Sample Application, 2 types of subnets are created: **public** and **private** subnets.
 
+---
+
 **Public Subnets**
 
 [[Prod Terraform File]](../deploy/prod/main-infrastructure/public-subnet.tf)
 [[Dev Terraform File]](../deploy/dev/main-infrastructure/public-subnet.tf)
-
 
 Public subnets are Internet-facing and have a route to an Internet Gateway. Internet Gateways are gateways that allow
 Internet traffic out of the VPC.
@@ -666,6 +670,8 @@ For the public subnets, the IP addresses assigned to them are:
 > [!NOTE]
 > Developer Note: You may wish to replace the Internet Gateway with a VPC peering connection or VPC endpoint to the
 > SSG API Gateway VPC to reduce the complexity of your network and improve security.
+
+---
 
 **Private Subnets**
 
@@ -791,7 +797,9 @@ The following roles and policies are created for the Sample Application:
         * Effect: `Allow`
         * Principals
             * Type: Service
-            * Identifiers: [`ec2.amazonaws.com`, `ecs.amazonaws.com`]
+            * Identifiers:
+                * `ec2.amazonaws.com`
+                * `ecs.amazonaws.com`
     * Attached IAM Role Policy: `arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role`
 * Associated EC2 Instance Role Profile
 * ECS Service Role
@@ -804,11 +812,20 @@ The following roles and policies are created for the Sample Application:
     * Attached **Service Role Policy**
         * Statements
             * Effect: `Allow`
-            * Actions: [`ec2:AuthorizeSecurityGroupIngress`, `ec2:Describe*`,
-              `elasticloadbalancing:DeregisterInstancesFromLoadBalancer`, `elasticloadbalancing:DeregisterTargets`,
-              `elasticloadbalancing:Describe*`, `elasticloadbalancing:RegisterInstancesWithLoadBalancer`,
-              `elasticloadbalancing:RegisterTargets`, `ec2:DescribeTags`, `logs:CreateLogGroup`, `logs:CreateLogStream`,
-              `logs:DescribeLogStreams`, `logs:PutSubscriptionFilter`, `logs:PutLogEvents`]
+            * Actions:
+                * `ec2:AuthorizeSecurityGroupIngress`
+                * `ec2:Describe*`
+                * `elasticloadbalancing:DeregisterInstancesFromLoadBalancer`
+                * `elasticloadbalancing:DeregisterTargets`
+                * `elasticloadbalancing:Describe*`
+                * `elasticloadbalancing:RegisterInstancesWithLoadBalancer`
+                * `elasticloadbalancing:RegisterTargets`
+                * `ec2:DescribeTags`
+                * `logs:CreateLogGroup`
+                * `logs:CreateLogStream`
+                * `logs:DescribeLogStreams`
+                * `logs:PutSubscriptionFilter`
+                * `logs:PutLogEvents`
             * Resources: `*` (all AWS resources)
 * ECS Task Execution Role
     * Statements
@@ -891,8 +908,11 @@ The configurations for the Bastion Host are:
 
 #### ECR and ECS
 
-[[Prod Terraform File]](../deploy/prod/main-infrastructure/ecs.tf)
-[[Dev Terraform File]](../deploy/dev/main-infrastructure/ecs.tf)
+[[Prod Terraform File (ECS)]](../deploy/prod/main-infrastructure/ecs.tf)
+[[Dev Terraform File (ECS)]](../deploy/dev/main-infrastructure/ecs.tf)
+
+[[Prod Terraform File (EC2)]](../deploy/prod/main-infrastructure/launch-templates.tf)
+[[Dev Terraform File (EC2)]](../deploy/dev/main-infrastructure/launch-templates.tf)
 
 A Private Elastic Container Registry (ECR) is used to store Docker images of the Sample Application.
 
@@ -967,6 +987,18 @@ The services created and their associated configurations are:
     * Image ID: ID of the ECS-compatible Amazon Linux 2 AMI
     * Instance Type: `t2.micro`
     * Key Pair: `ssg-key-pair`
+    * VPC Security Group: EC2 Security Group
+    * User Data:
+        * ```
+        #!/bin/bash
+        echo ECS_CLUSTER=ssg-ecs-cluster >> /etc/ecs/ecs.config
+        ```
+    * IAM Instance Profile: EC2 Instance Role Profix
+    * Monitoring
+        * Enabled: `true`
+
+> [!WARNING]
+> You need to make sure to echo the name of the cluster into the ECS config file.
 
 #### Docker
 
@@ -996,11 +1028,13 @@ The configurations for the Auto Scaling Group are:
 * Auto Scaling Group
     * Name: `ssg-asg`
     * Min Size: `1`
-    * Max Size: `1`  (**this should ideally be more than 1 for high availability**, but this is kept low for reducing cost)
+    * Max Size: `1`  (**this should ideally be more than 1 for high availability**, but this is kept low for reducing
+      cost)
     * VPC Zone Identifier: All Private Subnets (since EC2 instances except the Bastion Host are hosted on private
       subnets)
     * Health Check Type: `EC2`
-    * Protect From Scale In: `true` (Prevent the Auto Scaling Group from terminating instances, but you may disable this if you want the ASG to terminate instances)
+    * Protect From Scale In: `true` (Prevent the Auto Scaling Group from terminating instances, but you may disable this
+      if you want the ASG to terminate instances)
     * Enabled Metrics (list of metrics that will trigger a scaling event):
         * `GroupMinSize`
         * `GroupMaxSize`
@@ -1058,7 +1092,7 @@ Sample Application to AWS.
 
 This architecture is implemented within the Terraform code.
 
-Notice that the `dev` and `prod` environments are identical, with the only difference being where the resources are 
+Notice that the `dev` and `prod` environments are identical, with the only difference being where the resources are
 deployed.
 
 You can also notice that there is a distinct split in the processes needed to deploy the application, with the
@@ -1074,7 +1108,7 @@ The following is a rough process of what happens when you deploy the application
 2. GitHub Actions trigger unit tests, linting and code coverage checks.
 3. GitHub Actions then uses Terraform to check the status of the Terraform remote backend, provisioning the resources
    as needed if it is missing in the target AWS environment. GitHub Actions will also trigger the correct CI pipeline
-   based on the repository where the CI pipeline is started (i.e. `dev` pipelines will trigger only on forked 
+   based on the repository where the CI pipeline is started (i.e. `dev` pipelines will trigger only on forked
    repositories while `prod` pipelines will trigger only on the main repository).
 4. GitHub Actions finally uses Terraform to check the status of the main infrastructure and provision resources if it
    is missing in the AWS environment or if Terraform files have changed
