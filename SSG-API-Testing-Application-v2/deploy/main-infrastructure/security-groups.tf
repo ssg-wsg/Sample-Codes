@@ -54,28 +54,3 @@ resource "aws_security_group" "alb" {
     Name = "${module.constants.namespace}-application-load-balancer-sg"
   }
 }
-
-# Create Bastion Host SG
-resource "aws_security_group" "bastion_host" {
-  name        = "${module.constants.namespace}-bastion-host-sg"
-  description = "Security group for Bastion Host"
-  vpc_id      = aws_vpc.default.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [module.constants.broadcast_ipv4]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [module.constants.broadcast_ipv4]
-  }
-
-  tags = {
-    Name = "${module.constants.namespace}-bastion-host-sg"
-  }
-}

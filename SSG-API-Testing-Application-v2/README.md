@@ -102,7 +102,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-First, open up a command prompt or terminal at the same location as this `README.md` document.
+First, open up a command prompt or terminal at the same location as `Home.py` in the `\app` folder.
 
 If you are using `conda`, make sure to activate the environment which you have installed the required Python
 libraries in.
