@@ -1,8 +1,0 @@
-version: 2
-updates:
-  - package-ecosystem: "pip"
-    directories:
-      - "/SSG-API-Testing-Application"
-      - "/SSG-API-Testing-Application-v2"
-    schedule:
-      interval: "weekly"
