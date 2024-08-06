@@ -601,7 +601,7 @@ The user must input a valid Course Run ID to view the details of the course run.
 Since neither the request nor response is encrypted, both the request payload and the response payloads are
 read and displayed as is to the user via the UI. No preprocessing needs to be done on the request and response.
 
-The parameters needed for this API are as follow:
+The parameters needed for this API are as follows:
 
 | **Field** |                            **Description**                             |      **Type**       | **Example** | **Counterexample** |
 |:---------:|:----------------------------------------------------------------------:|:-------------------:|:-----------:|:------------------:|
@@ -627,7 +627,7 @@ Users must use this API to get a new Course Run ID for testing with the other AP
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
 
-The parameters needed for this API are as follow:
+The parameters needed for this API are as follows:
 
 |                            **Field**                             |                                               **Description**                                               |                                                               **Type**                                                               |                       **Example**                        |               **Counterexample**                |
 |:----------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------:|:-----------------------------------------------:|
@@ -805,7 +805,7 @@ Users must use this API to view the course sessions for a particular Course Run.
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
 
-The parameters needed for this API are as follow:
+The parameters needed for this API are as follows:
 
 |       **Field**       |                                  **Description**                                  |      **Type**       |         **Example**          |  **Counterexample**  |
 |:---------------------:|:---------------------------------------------------------------------------------:|:-------------------:|:----------------------------:|:--------------------:|
@@ -855,6 +855,33 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                                **Field**                                |                                                      **Description**                                                      |                           **Type**                            |     **Example**     |   **Counterexample**    |
+|:-----------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------:|:-------------------:|:-----------------------:|
+|                         enrolment.course.run.id                         |                          The Course Run ID. This can be obtained from the "Add Course Run" API.                           |                    Integer-like String[20]                    |      `"1234"`       |     `"abc"`, `123`      |
+|                        enrolment.referenceNumber                        |                                          The reference number of the enrolment.                                           |                          String[100]                          | `"TGS-0026008-ES"`  |          `123`          |
+|                               trainee.id                                |                                              The official ID of the trainee.                                              |                            String                             |    `"S1234567A"`    |          `123`          |
+|                  enrolment.trainee.fees.discountAmount                  |                                       The amount of discount given to the trainee.                                        |                      Non-Negative Float                       |       `100.0`       |          `abc`          |
+|                 enrolment.trainee.fees.collectionStatus                 |                                       The status of fee collection for the trainee.                                       | Literal["Pending Payment", "Partial Payment", "Full Payment"] | `"Pending Payment"` |         `"abc"`         |
+|                      enrolment.trainee.idType.type                      |                                              The type of ID of the trainee.                                               |               Literal["NRIC", "FIN", "OTHERS"]                |      `"NRIC"`       |     `"abc"`, `123`      |
+|                    enrolment.trainee.sponsorshipType                    |                                         The type of sponsorship for the trainee.                                          |               Literal["EMPLOYER", "INDIVIDUAL"]               |    `"EMPLOYER"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.employer.uen (optional)                |      The UEN of the employer of the trainee. This value is optional **unless trainee.sponsorshipType is EMPLOYER**.       |                          String[50]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|         enrolment.trainee.employer.contact.fullName (optional)          |           The full name of the employer. This value is optional unless **trainee.sponsorshipType is EMPLOYER**.           |                          String[50]                           |    `"John Doe"`     |     `"abc"`, `123`      |
+|       enrolment.trainee.employer.contact.emailAddress (optional)        |         The email address of the employer. This value is optional unless **trainee.sponsorshipType is EMPLOYER**.         |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|  enrolment.trainee.employer.contact.contactNumber.areaCode (optional)   |                      The area code of the employer's contact number. This value **always** optional.                      |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.countryCode (optional) |         The country code of the employer. This value is optional **unless trainee.sponsorshipType is EMPLOYER**.          |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.phoneNumber (optional) | The phone number of the employer's contact number. This value is optional **unless trainee.sponsorshipType is EMPLOYER**. |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|                  enrolment.trainee.fullName (optional)                  |                                               The full name of the trainee.                                               |                          String[200]                          |    `"John Doe"`     |     `"abc"`, `123`      |
+|                      enrolment.trainee.dateOfBirth                      |                                             The date of birth of the trainee.                                             |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                     enrolment.trainee.emailAddress                      |                                             The email address of the trainee.                                             |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|           enrolment.trainee.contactNumber.areaCode (optional)           |                                      The area code of the trainee's contact number.                                       |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+|               enrolment.trainee.contactNumber.countryCode               |                                             The country code of the trainee.                                              |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+|               enrolment.trainee.contactNumber.phoneNumber               |                                     The phone number of the trainee's contact number.                                     |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|               enrolment.trainee.enrolmentDate (optional)                |                               The date of enrolment of the trainee. This value is optional.                               |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                      enrolment.trainingPartner.uen                      |                                             The UEN of the training partner.                                              |                          String[12]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|                     enrolment.trainingPartner.code                      |                                                The training partner code.                                                 |                          String[15]                           |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+
 #### Update Enrolment
 
 |   **Data Field**   |                **Value**                |
@@ -872,6 +899,37 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                                **Field**                                |                            **Description**                             |                           **Type**                            |     **Example**     |   **Counterexample**    |
+|:-----------------------------------------------------------------------:|:----------------------------------------------------------------------:|:-------------------------------------------------------------:|:-------------------:|:-----------------------:|
+|                   enrolment.course.run.id (optional)                    | The Course Run ID. This can be obtained from the "Add Course Run" API. |                    Integer-like String[20]                    |      `"1234"`       |     `"abc"`, `123`      |
+|               enrolment.course.referenceNumber (optional)               |                 The reference number of the enrolment.                 |                          String[100]                          | `"TGS-0026008-ES"`  |          `123`          |
+|                          trainee.id (optional)                          |                    The official ID of the trainee.                     |                            String                             |    `"S1234567A"`    |          `123`          |
+|            enrolment.trainee.fees.discountAmount (optional)             |              The amount of discount given to the trainee.              |                      Non-Negative Float                       |       `100.0`       |          `abc`          |
+|           enrolment.trainee.fees.collectionStatus (optional)            |             The status of fee collection for the trainee.              | Literal["Pending Payment", "Partial Payment", "Full Payment"] | `"Pending Payment"` |         `"abc"`         |
+|                enrolment.trainee.idType.type (optional)                 |                     The type of ID of the trainee.                     |               Literal["NRIC", "FIN", "OTHERS"]                |      `"NRIC"`       |     `"abc"`, `123`      |
+|              enrolment.trainee.sponsorshipType  (optional)              |                The type of sponsorship for the trainee.                |               Literal["EMPLOYER", "INDIVIDUAL"]               |    `"EMPLOYER"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.employer.uen (optional)                |                The UEN of the employer of the trainee.                 |                          String[50]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|         enrolment.trainee.employer.contact.fullName (optional)          |                     The full name of the employer.                     |                          String[50]                           |    `"John Doe"`     |     `"abc"`, `123`      |
+|       enrolment.trainee.employer.contact.emailAddress (optional)        |                   The email address of the employer.                   |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|  enrolment.trainee.employer.contact.contactNumber.areaCode (optional)   |            The area code of the employer's contact number.             |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.countryCode (optional) |                   The country code of the employer.                    |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.phoneNumber (optional) |           The phone number of the employer's contact number.           |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|                  enrolment.trainee.fullName (optional)                  |                     The full name of the trainee.                      |                          String[200]                          |    `"John Doe"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.dateOfBirth (optional)                 |                   The date of birth of the trainee.                    |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                enrolment.trainee.emailAddress (optional)                |                   The email address of the trainee.                    |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|           enrolment.trainee.contactNumber.areaCode (optional)           |             The area code of the trainee's contact number.             |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+|         enrolment.trainee.contactNumber.countryCode (optional)          |                    The country code of the trainee.                    |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+|         enrolment.trainee.contactNumber.phoneNumber (optional)          |           The phone number of the trainee's contact number.            |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|               enrolment.trainee.enrolmentDate (optional)                |     The date of enrolment of the trainee. This value is optional.      |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                enrolment.trainingPartner.uen (optional)                 |                    The UEN of the training partner.                    |                          String[12]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|                enrolment.trainingPartner.code (optional)                |                       The training partner code.                       |                          String[15]                           |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+
+> [!CAUTION]
+> More extensive testing should be done for this API. It seems that many combinations of parameters are not permitted.
+> Currently, we assume that users know exactly what they are editing.
+
 #### Cancel Enrolment
 
 |   **Data Field**   |                **Value**                |
@@ -888,6 +946,13 @@ Users must use this API to cancel an existing enrolment record.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|        **Field**        |                            **Description**                             |      **Type**       | **Example** |      **Counterexample**       |
+|:-----------------------:|:----------------------------------------------------------------------:|:-------------------:|:-----------:|:-----------------------------:|
+|    enrolment.action     |          The action to be performed on the enrolment record.           |  Literal["Cancel"]  | `"Cancel"`  | `"cancel"`, `"update"`, `123` |
+| enrolment.course.run.id | The Course Run ID. This can be obtained from the "Add Course Run" API. | Integer-like String |  `"1234"`   |        `"abc"`, `123`         |
 
 #### Search Enrolment
 
@@ -907,6 +972,28 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                       **Field**                       |                                    **Description**                                    |                                  **Type**                                  |    **Example**     |       **Counterexample**        |
+|:-----------------------------------------------------:|:-------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------:|:------------------:|:-------------------------------:|
+|           meta.lastUpdateDateTo (optional)            |  The end date of the last update date range for the enrolment records to be queried.  |                            Datetime-like String                            |   `"2020-02-01"`   |     `"2020-02-01 00:00:00"`     |
+|          meta.lastUpdateDateFrom (optional)           | The start date of the last update date range for the enrolment records to be queried. |                            Datetime-like String                            |   `"2020-01-01"`   |     `"2020-01-01 00:00:00"`     |
+|                sortBy.field (optional)                |                      The field to sort the enrolment records by.                      |                     Literal["updatedOn", "createdOn"]                      |   `"updatedOn"`    |      `"createdOn"`, `123`       |
+|                sortBy.order (optional)                |                      The order to sort the enrolment records by.                      |                           Literal["asc", "desc"]                           |      `"asc"`       |      `"ascending"`, `123`       |
+|          enrolment.course.run.id (optional)           |        The Course Run ID. This can be obtained from the "Add Course Run" API.         |                          Integer-like String[20]                           |      `"1234"`      |         `"abc"`, `123`          |
+|      enrolment.course.referenceNumber (optional)      |                          The reference number of the course.                          |                                String[100]                                 | `"TGS-0026008-ES"` |              `123`              |
+|              enrolment.status (optional)              |                          The status of the enrolment record.                          |                     Literal["Confirmed", "Cancelled"]                      |   `"Confirmed"`    | `"Pending Confirmation"`, `123` |
+|            enrolment.trainee.id (optional)            |                            The official ID of the trainee.                            |                                 String[20]                                 |   `"S1234567A"`    |              `123`              |
+| enrolment.trainee.fees.feeCollectionStatus (optional) |                       The fee collection status of the trainee.                       | Literal["Pending Payment", "Partial Payment", "Full Payment", "Cancelled"] |  `"Full Payment"`  |       `"Partial"`, `123`        |
+|       enrolment.trainee.idType.type (optional)        |                            The type of ID of the trainee.                             |                      Literal["NRIC", "FIN", "OTHERS"]                      |      `"NRIC"`      |         `"abc"`, `123`          |
+|       enrolment.trainee.employer.uen (optional)       |                        The UEN of the employer of the trainee.                        |                                 String[50]                                 |   `"T08GB0001A"`   |         `"abc"`, `123`          |
+|      enrolment.trainee.enrolmentDate (optional)       |                         The date of enrolment of the trainee.                         |                            Datetime-like String                            |   `"2020-01-01"`   |     `"2022-12-31 00:00:00"`     |
+|     enrolment.trainee.sponsorshipType (optional)      |                       The type of sponsorship for the trainee.                        |                     Literal["EMPLOYER", "INDIVIDUAL"]                      |    `"EMPLOYER"`    |         `"abc"`, `123`          |
+|       enrolment.trainingPartner.uen (optional)        |                           The UEN of the training partner.                            |                                 String[12]                                 |   `"T08GB0001A"`   |         `"abc"`, `123`          |
+|            enrolment.trainingPartner.code             |                              The training partner code.                               |                                 String[15]                                 | `"T08GB0001A-01"`  |         `"abc"`, `123`          |
+|              parameters.page (optional)               |                            The page number of the results.                            |                            Non-Negative Integer                            |        `0`         |           `-1`, `abc`           |
+|                  parameters.pageSize                  |                            The number of results per page.                            |                            Non-Negative Integer                            |        `20`        |           `-1`, `abc`           |
+
 #### View Enrolment
 
 |   **Data Field**   |          **Value**          |
@@ -922,6 +1009,12 @@ Users must use this API to view an enrolment record using a provided enrolment r
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
 payload are displayed to the user. The request payload is displayed as is to the user.
+
+The parameters needed for this API are as follows:
+
+|        **Field**        |            **Description**             | **Type** |    **Example**     | **Counterexample** |
+|:-----------------------:|:--------------------------------------:|:--------:|:------------------:|:------------------:|
+| Enrolment Record Number | The enrolment record reference number. |  String  | `"TGS-0026008-ES"` |    `""`, `123`     |
 
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
@@ -942,6 +1035,12 @@ Users can use this API to update the enrolment fee collection status of an exist
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|            **Field**            |                **Description**                |                                  **Type**                                  |   **Example**    | **Counterexample** |
+|:-------------------------------:|:---------------------------------------------:|:--------------------------------------------------------------------------:|:----------------:|:------------------:|
+| enrolment.fees.collectionStatus | The status of fee collection for the trainee. | Literal["Pending Payment", "Partial Payment", "Full Payment", "Cancelled"] | `"Full Payment"` | `"Partial"`, `123` |
 
 ### Attendance
 
@@ -984,6 +1083,14 @@ payload are displayed to the user. The request payload is displayed as is to the
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
 
+The parameters needed for this API are as follows:
+
+|        **Field**        |                            **Description**                             |      **Type**       |         **Example**          |  **Counterexample**  |
+|:-----------------------:|:----------------------------------------------------------------------:|:-------------------:|:----------------------------:|:--------------------:|
+| Course Reference Number |                      The course reference number.                      |       String        | `"XX-1000----K-01-TEST 166"` | `"123"`, `123456789` |
+|      Course Run ID      | The Course Run ID. This can be obtained from the `Add Course Run` API. | Integer-like String |           `"1234"`           |    `"abc"`, `123`    |
+|       Session ID        |                 The session ID of the course session.                  | Integer-like String |           `"1234"`           |    `"abc"`, `123`    |
+
 #### Upload Course Session Attendance
 
 |   **Data Field**   |                       **Value**                       |
@@ -999,6 +1106,25 @@ Users must use this API to upload information related to a course session attend
 
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
+
+The parameters needed for this API are as follows:
+
+|                          **Field**                          |                                   **Description**                                   |               **Type**               |          **Example**          |  **Counterexample**  |
+|:-----------------------------------------------------------:|:-----------------------------------------------------------------------------------:|:------------------------------------:|:-----------------------------:|:--------------------:|
+|                             uen                             |                          The UEN of the training provider.                          |                String                |        `"T08GB0001A"`         | `"123"`, `123456789` |
+|                      course.sessionID                       |                        The session ID of the course session.                        |                String                |     `"TEST 166-41618-S1"`     | `"123"`, `123456789` |
+|                course.attendance.status.code                |                         The status code of the attendance.                          |     Literal["1", "2", "3", "4"]      |             `"1"`             |    `"abc"`, `123`    |
+|                course.attendance.trainee.id                 |                           The official ID of the trainee.                           |              String[5]               |         `"S1234567H"`         | `"123"`, `123456789` |
+|               course.attendance.trainee.name                |                              The name of the trainee.                               |              String[66]              |            `"Tom"`            | `"123"`, `123456789` |
+|         course.attendance.trainee.email (optional)          |                          The email address of the trainee.                          |             String[320]              |      `"email@email.com"`      | `"123"`, `123456789` |
+|            course.attendance.trainee.idType.code            |                           The type of ID of the trainee.                            | Literal["SP", "SB", "SO", "FP, "OT"] |            `"SB"`             |    `"abc"`, `123`    |
+|       course.attendance.trainee.contactNumber.mobile        |                          The mobile number of the trainee.                          |       Non-Negative Integer[15]       |         `"85858585"`          | `"123"`, `123456789` |
+| course.attendance.trainee.contactNumber.areaCode (optional) |                   The area code of the trainee's contact number.                    |           Nullable Integer           |            `"123"`            |    `"abc"`, `123`    |
+|     course.attendance.trainee.contactNumber.countryCode     |                  The country code of the trainee's contact number.                  |         Non-Negative Integer         |            `"65"`             |    `"abc"`, `123`    |
+|               course.attendance.numberOfHours               | The number of hours the trainee attended. This value is bounded between 0.5 to 8.0. |          Non-Negative Float          |             `3.5`             |    `"abc"`, `123`    |
+|            course.attendance.surveyLanguage.code            |                          The language code of the survey.                           |   Literal["EL", "MN", "MY", "TM"]    |            `"EL"`             |    `"abc"`, `123`    |
+|                   course.referenceNumber                    |                         The reference number of the course.                         |                String                | `"XX-TxxxxxxxxN-01-TEST 166"` | `"123"`, `123456789` |
+|                         corppassId                          |                      The CorpPass ID of the training provider.                      |                String                |         `"SxxxxxxxT"`         | `"123"`, `123456789` |
 
 ### Assessment
 
@@ -1039,6 +1165,24 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                   **Field**                    |                            **Description**                             |               **Type**                |    **Example**     |   **Counterexample**    |
+|:----------------------------------------------:|:----------------------------------------------------------------------:|:-------------------------------------:|:------------------:|:-----------------------:|
+|          assessment.grade (optional)           |                      The grade of the assessment.                      | Literal["A", "B", "C", "D", "E", "F"] |       `"B"`        |     `"abc"`, `123`      |
+|          assessment.score (optional)           |                      The score of the assessment.                      |          Non-Negative Float           |        `80`        |     `"abc"`, `123`      |
+|            assessment.course.run.id            | The Course Run ID. This can be obtained from the "Add Course Run" API. |        Integer-like String[20]        |      `"1234"`      |     `"abc"`, `123`      |
+|       assessment.course.referenceNumber        |                  The reference number of the course.                   |              String[100]              | `"TGS-0026008-ES"` |          `123`          |
+|               assessment.result                |                     The result of the assessment.                      |   Literal["Pass", "Fail", "Exempt"]   |      `"Pass"`      |     `"abc"`, `123`      |
+|             assessment.trainee.id              |                    The official ID of the trainee.                     |              String[20]               |   `"S1234567A"`    |          `123`          |
+|           assessment.trainee.idType            |                     The type of ID of the trainee.                     |   Literal["NRIC", "FIN", "OTHERS"]    |      `"NRIC"`      |     `"abc"`, `123`      |
+|          assessment.trainee.fullName           |                     The full name of the trainee.                      |              String[200]              |    `"John Doe"`    |     `"abc"`, `123`      |
+|        assessment.skillCode (optional)         |                   The skill code of the assessment.                    |              String[30]               | `"TGS-MKG-234222"` |     `"abc"`, `123`      |
+|           assessment.assessmentDate            |                      The date of the assessment.                       |         Datetime-like String          |   `"2020-05-15"`   | `"2022-12-31 00:00:00"` |
+|         assessment.trainingPartner.uen         |                    The UEN of the training partner.                    |              String[12]               |   `"T16GB0003C"`   |     `"abc"`, `123`      |
+|        assessment.trainingPartner.code         |                   The code of the training partner.                    |              String[15]               | `"T16GB0003C-01"`  |     `"abc"`, `123`      |
+| assessment.conferringInstitute.code (optional) |                 The code of the conferring institute.                  |              String[15]               | `"T16GB0003C-01"`  |     `"abc"`, `123`      |
+
 #### Update or Void Assessment
 
 |   **Data Field**   |                **Value**                |
@@ -1055,6 +1199,22 @@ Users must use this API to update or void an existing assessment record.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|               **Field**                |                   **Description**                    |               **Type**                |     **Example**     |   **Counterexample**    |
+|:--------------------------------------:|:----------------------------------------------------:|:-------------------------------------:|:-------------------:|:-----------------------:|
+|      Assessment Reference Number       |       The reference number of the assessment.        |              String[100]              | `"ASM-1912-432432"` |          `123`          |
+|      assessment.grade (optional)       |             The grade of the assessment.             | Literal["A", "B", "C", "D", "E", "F"] |        `"B"`        |     `"abc"`, `123`      |
+|      assessment.score (optional)       |             The score of the assessment.             |          Non-Negative Float           |        `80`         |     `"abc"`, `123`      |
+|    assessment.action (auto-filled)     | The action to be performed on the assessment record. |       Literal["update", "void"]       |     `"update"`      |    `"Update"`, `123`    |
+|      assessment.result (optional)      |            The result of the assessment.             |   Literal["Pass", "Fail", "Exempt"]   |      `"Pass"`       |     `"abc"`, `123`      |
+| assessment.trainee.fullName (optional) |            The full name of the trainee.             |              String[200]              |    `"John Doe"`     |     `"abc"`, `123`      |
+|    assessment.skillCode (optional)     |          The skill code of the assessment.           |              String[30]               | `"TGS-MKG-234222"`  |     `"abc"`, `123`      |
+|  assessment.assessmentDate (optional)  |             The date of the assessment.              |         Datetime-like String          |   `"2020-05-15"`    | `"2022-12-31 00:00:00"` |
+
+> [!NOTE]
+> If you wish to void the assessment, all fields except the Assessment Reference Number and `assessment.action` are optional.
 
 #### Find Assessment
 
@@ -1074,6 +1234,24 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                    **Field**                     |                                    **Description**                                    |                      **Type**                       |     **Example**     |   **Counterexample**    |
+|:------------------------------------------------:|:-------------------------------------------------------------------------------------:|:---------------------------------------------------:|:-------------------:|:-----------------------:|
+|         meta.lastUpdateDateTo (optional)         |  The end date of the last update date range for the enrolment records to be queried.  |                Datetime-like String                 |   `"2020-02-01"`    | `"2020-02-01 00:00:00"` |
+|        meta.lastUpdateDateFrom (optional)        | The start date of the last update date range for the enrolment records to be queried. |                Datetime-like String                 |   `"2020-01-01"`    | `"2020-01-01 00:00:00"` |
+|             sortBy.field (optional)              |                      The field to sort the enrolment records by.                      | Literal["updatedOn", "createdOn", "assessmentDate"] |    `"updatedOn"`    |  `"createdOn"`, `123`   |
+|             sortBy.order (optional)              |                      The order to sort the enrolment records by.                      |               Literal["asc", "desc"]                |       `"asc"`       |  `"ascending"`, `123`   |
+|       assessments.course.run.id (optional)       |        The Course Run ID. This can be obtained from the "Add Course Run" API.         |               Integer-like String[20]               |      `"1234"`       |     `"abc"`, `123`      |
+|  assessments.course.referenceNumber (optional)   |                          The reference number of the course.                          |                     String[50]                      | `"TGS-0026008-ES"`  |          `123`          |
+|        assessments.trainee.id (optional)         |                            The official ID of the trainee.                            |                     String[20]                      |    `"S1234567A"`    |          `123`          |
+| assessments.enrolment.referenceNumber (optional) |                     The reference number of the enrolment record.                     |                       String                        | `"ENR-2001-123414"` |       `""`, `123`       |
+|         assessments.skillCode (optional)         |                           The skill code of the assessment.                           |                     String[30]                      | `"TGS-MKG-234222"`  |     `"abc"`, `123`      |
+|          enrolment.trainingPartner.uen           |                           The UEN of the training partner.                            |                     String[12]                      |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|          enrolment.trainingPartner.code          |                              The training partner code.                               |                     String[15]                      |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+|                 parameters.page                  |                            The page number of the results.                            |                Non-Negative Integer                 |         `0`         |       `-1`, `abc`       |
+|               parameters.pageSize                |                            The number of results per page.                            |                Non-Negative Integer                 |        `20`         |       `-1`, `abc`       |
+
 #### View Assessment
 
 |   **Data Field**   |           **Value**           |
@@ -1092,6 +1270,12 @@ payload are displayed to the user. The request payload is displayed as is to the
 
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
+
+The parameters needed for this API are as follows:
+
+|        **Field**         |             **Description**             | **Type** |     **Example**     | **Counterexample** |
+|:------------------------:|:---------------------------------------:|:--------:|:-------------------:|:------------------:|
+| Assessment Record Number | The assessment record reference number. |  String  | `"ASM-1912-432432"` |    `""`, `123`     |
 
 ### SkillsFuture Credit Pay
 
@@ -1137,6 +1321,19 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|              **Field**               |         **Description**         |            **Type**            |     **Example**     | **Counterexample** |
+|:------------------------------------:|:-------------------------------:|:------------------------------:|:-------------------:|:------------------:|
+|        claimRequest.course.id        |         The course ID.          |             String             | `"TGS-2016504811"`  |   `"abc"`, `123`   |
+|       claimRequest.course.fee        |         The course fee.         | Non-Negative Float-like String |      `"12.50"`      |   `"abc"`, `123`   |
+| claimRequest.course.runId (optional) |       The course run ID.        |      Integer-like String       |      `"12234"`      |   `"abc"`, `123`   |
+|    claimRequest.course.startDate     |     The course start date.      |      Datetime-like String      |   `"2019-05-22"`    |   `"abc"`, `123`   |
+|     claimRequest.individual.nric     |     The individual's NRIC.      |           String[9]            |    `"T5001072J"`    |   `"abc"`, `123`   |
+|    claimRequest.individual.email     |     The individual's email.     |          Email String          | `"email@email.com"` |   `"abc"`, `123`   |
+|  claimRequest.individual.homeNumber  |  The individual's home number.  |             String             |    `"87654321"`     |   `"abc"`, `123`   |
+| claimRequest.individual.mobileNumber | The individual's mobile number. |             String             |    `"98760000"`     |   `"abc"`, `123`   |
+
 #### SF Credit Claims Payment Request Decryption
 
 |   **Data Field**   |                      **Value**                       |
@@ -1154,6 +1351,12 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|     **Field**      |                                 **Description**                                  |       **Type**        |      **Example**       | **Counterexample** |
+|:------------------:|:--------------------------------------------------------------------------------:|:---------------------:|:----------------------:|:------------------:|
+| claimRequestStatus | The encrypted response from the SF Credit Claims Payment Request Encryption API. | Base64 Encoded String | `"U2FsdGVkX1+...+Q=="` |    `""`, `123`     |
+
 #### Upload Supporting Documents
 
 |   **Data Field**   |                       **Value**                       |
@@ -1170,6 +1373,20 @@ Users must use this API to upload supporting documents for a claim.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|                     **Field**                      |          **Description**          |                                     **Type**                                      |      **Example**       | **Counterexample** |
+|:--------------------------------------------------:|:---------------------------------:|:---------------------------------------------------------------------------------:|:----------------------:|:------------------:|
+|                        nric                        |    The NRIC of the individual.    |                                     String[9]                                     |     `"T5001072J"`      |   `"abc"`, `123`   |
+|                attachments.fileName                |       The name of the file.       |                                      String                                       |    `"File001.doc"`     |   `"abc"`, `123`   |
+|                attachments.fileSize                |       The size of the file.       |                               File Size-like String                               |       `"1.2 MB"`       |   `"abc"`, `123`   |
+|                attachments.fileType                |       The type of the file.       | Literal["pdf", "doc", "docx", "tif", "jpg", "jpeg", "png", "xls", "xlsm", "xlsx"] |        `"doc"`         |   `"abc"`, `123`   |
+| attachments.attachmentId (automatically populated) |     The ID of the attachment.     |                                      String                                       |   `"attachment001"`    |   `"abc"`, `123`   |
+|             attachments.attachmentByte             | The byte array of the attachment. |                         Base64 Encoded String (up to 5MB)                         | `"U2FsdGVkX1+...+Q=="` |   `"abc"`, `123`   |
+
+> [!NOTE]
+> 0 or more attachments are allowed in a single request.
 
 #### View Claim Details
 
@@ -1190,6 +1407,13 @@ payload are displayed to the user. The request payload is displayed as is to the
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
 
+The parameters needed for this API are as follows:
+
+| **Field** |        **Description**         |        **Type**         |  **Example**   | **Counterexample** |
+|:---------:|:------------------------------:|:-----------------------:|:--------------:|:------------------:|
+|   NRIC    |  The NRIC of the individual.   |        String[9]        | `"T5001072J"`  |   `"abc"`, `123`   |
+| Claim ID  | The claim reference ID number. | Integer-like String[10] | `"2000217252"` |    `""`, `123`     |
+
 #### Cancel Claim
 
 |   **Data Field**   |                **Value**                |
@@ -1206,6 +1430,14 @@ Users must use this API to cancel a claim using a provided claim reference numbe
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|         **Field**         |           **Description**            |               **Type**                |  **Example**   | **Counterexample** |
+|:-------------------------:|:------------------------------------:|:-------------------------------------:|:--------------:|:------------------:|
+|           NRIC            |     The NRIC of the individual.      |               String[9]               | `"T5001072J"`  |   `"abc"`, `123`   |
+|         Claim ID          |    The claim reference ID number.    |        Integer-like String[10]        | `"2000217252"` |    `""`, `123`     |
+| Select Cancel Claims Code | The reason for cancelling the claim. | Literal["51", "52", "53", "54", "55"] |     `"51"`     |   `"abc"`, `123`   |
 
 ## DevOps
 
