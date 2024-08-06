@@ -8,10 +8,6 @@ output "dynamodb_table_hash_key" {
   value = "LockID"
 }
 
-output "s3_bucket_name" {
-  value = "ssg-tf-bucket"
-}
-
 # ecr constants
 output "ecr_s3_state_bucket_name" {
   value = "main/ecr.tfstate"

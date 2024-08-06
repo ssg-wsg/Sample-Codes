@@ -7,75 +7,75 @@ Welcome to the SSG-WSG Sample Application Developer Guide!
 * [Table of Contents](#table-of-contents)
 * [Acknowledgements](#acknowledgements)
 * [Introduction](#introduction)
-    * [Notation](#notation)
+   * [Notation](#notation)
 * [Getting Started](#getting-started)
-    * [Minimum Requirements](#minimum-requirements)
-    * [Next Steps](#next-steps)
+   * [Minimum Requirements](#minimum-requirements)
+   * [Next Steps](#next-steps)
 * [Design](#design)
-    * [Architecture](#architecture)
-        * [Entrypoint](#entrypoint)
-        * [User Flow](#user-flow)
-        * [Pages](#pages)
-            * [`Encryption-Decryption`](#encryption-decryption)
-            * [`Courses`](#courses)
-            * [`Enrolment`](#enrolment)
-            * [`Attendance`](#attendance)
-            * [`Assessments`](#assessments)
-            * [`SkillsFuture Credit Pay`](#skillsfuture-credit-pay)
-        * [Core](#core)
-        * [Utils](#utils)
-        * [Tests](#tests)
-    * [AWS Architecture](#aws-architecture)
+   * [Architecture](#architecture)
+      * [Entrypoint](#entrypoint)
+      * [User Flow](#user-flow)
+      * [Pages](#pages)
+         * [`Encryption-Decryption`](#encryption-decryption)
+         * [`Courses`](#courses)
+         * [`Enrolment`](#enrolment)
+         * [`Attendance`](#attendance)
+         * [`Assessments`](#assessments)
+         * [`SkillsFuture Credit Pay`](#skillsfuture-credit-pay)
+      * [Core](#core)
+      * [Utils](#utils)
+      * [Tests](#tests)
+   * [AWS Architecture](#aws-architecture)
 * [Implementation](#implementation)
-    * [Encryption and Decryption](#encryption-and-decryption)
-    * [Courses](#courses-1)
-        * [Course Run by Run Id](#course-run-by-run-id)
-        * [Add Course Runs](#add-course-runs)
-        * [Edit or Delete Course Runs](#edit-or-delete-course-runs)
-        * [View Course Sessions](#view-course-sessions)
-    * [Enrolment](#enrolment-1)
-        * [Create Enrolment](#create-enrolment)
-        * [Update Enrolment](#update-enrolment)
-        * [Cancel Enrolment](#cancel-enrolment)
-        * [Search Enrolment](#search-enrolment)
-        * [View Enrolment](#view-enrolment)
-        * [Update Enrolment Fee Collection](#update-enrolment-fee-collection)
-    * [Attendance](#attendance-1)
-        * [Course Session Attendance](#course-session-attendance)
-        * [Upload Course Session Attendance](#upload-course-session-attendance)
-    * [Assessment](#assessment)
-        * [Create Assessment](#create-assessment)
-        * [Update or Void Assessment](#update-or-void-assessment)
-        * [Find Assessment](#find-assessment)
-        * [View Assessment](#view-assessment)
-    * [SkillsFuture Credit Pay](#skillsfuture-credit-pay-1)
-        * [SF Credit Claims Payment Request Encryption](#sf-credit-claims-payment-request-encryption)
-        * [SF Credit Claims Payment Request Decryption](#sf-credit-claims-payment-request-decryption)
-        * [Upload Supporting Documents](#upload-supporting-documents)
-        * [View Claim Details](#view-claim-details)
-        * [Cancel Claim](#cancel-claim)
+   * [Encryption and Decryption](#encryption-and-decryption)
+   * [Courses](#courses-1)
+      * [Course Run by Run Id](#course-run-by-run-id)
+      * [Add Course Runs](#add-course-runs)
+      * [Edit or Delete Course Runs](#edit-or-delete-course-runs)
+      * [View Course Sessions](#view-course-sessions)
+   * [Enrolment](#enrolment-1)
+      * [Create Enrolment](#create-enrolment)
+      * [Update Enrolment](#update-enrolment)
+      * [Cancel Enrolment](#cancel-enrolment)
+      * [Search Enrolment](#search-enrolment)
+      * [View Enrolment](#view-enrolment)
+      * [Update Enrolment Fee Collection](#update-enrolment-fee-collection)
+   * [Attendance](#attendance-1)
+      * [Course Session Attendance](#course-session-attendance)
+      * [Upload Course Session Attendance](#upload-course-session-attendance)
+   * [Assessment](#assessment)
+      * [Create Assessment](#create-assessment)
+      * [Update or Void Assessment](#update-or-void-assessment)
+      * [Find Assessment](#find-assessment)
+      * [View Assessment](#view-assessment)
+   * [SkillsFuture Credit Pay](#skillsfuture-credit-pay-1)
+      * [SF Credit Claims Payment Request Encryption](#sf-credit-claims-payment-request-encryption)
+      * [SF Credit Claims Payment Request Decryption](#sf-credit-claims-payment-request-decryption)
+      * [Upload Supporting Documents](#upload-supporting-documents)
+      * [View Claim Details](#view-claim-details)
+      * [Cancel Claim](#cancel-claim)
 * [DevOps](#devops)
-    * [AWS Setup](#aws-setup)
-    * [GitHub Setup](#github-setup)
-        * [GitHub Actions Secrets](#github-actions-secrets)
-        * [GitHub Environments](#github-environments)
-        * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
-    * [General Workflow](#general-workflow)
-    * [AWS Workflow](#aws-workflow)
-        * [Production](#production)
-        * [Testing](#testing)
-    * [CI/CD](#cicd)
-        * [Failed Deployment](#failed-deployment)
+   * [AWS Setup](#aws-setup)
+   * [GitHub Setup](#github-setup)
+      * [GitHub Actions Secrets](#github-actions-secrets)
+      * [GitHub Environments](#github-environments)
+      * [GitHub Code Scanning and Dependency Analysis](#github-code-scanning-and-dependency-analysis)
+   * [General Workflow](#general-workflow)
+   * [AWS Workflow](#aws-workflow)
+      * [Production](#production)
+      * [Dev](#dev)
+   * [CI/CD](#cicd)
+      * [Failed Deployment](#failed-deployment)
 * [Logging and Housekeeping](#logging-and-housekeeping)
-    * [Logging](#logging)
-    * [Housekeeping](#housekeeping)
-        * [`start_scheduler()`](#start_scheduler)
-        * [`_clean_temp()`](#_clean_temp)
-        * [Extending tasks to perform](#extending-tasks-to-perform)
+   * [Logging](#logging)
+   * [Housekeeping](#housekeeping)
+      * [`start_scheduler()`](#start_scheduler)
+      * [`_clean_temp()`](#_clean_temp)
+      * [Extending tasks to perform](#extending-tasks-to-perform)
 * [Planned Enhancements](#planned-enhancements)
-    * [In-memory Key Files](#in-memory-key-files)
-    * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
-    * [Go Serverless: Fargate](#go-serverless-fargate)
+   * [In-memory Key Files](#in-memory-key-files)
+   * [Alternative: Change processes to save key files to temporary files](#alternative-change-processes-to-save-key-files-to-temporary-files)
+   * [Go Serverless: Fargate](#go-serverless-fargate)
 * [Conclusion](#conclusion)
 
 ## Acknowledgements
@@ -1040,6 +1040,8 @@ Application. It will also detail some of the existing workflows that are impleme
 You need to set up an AWS Organization account within the SSG API Gateway Organization to create the necessary
 AWS environment to test the application.
 
+This is required to set up the necessary AWS services to host the application on the `dev` environment.
+
 To get started, follow the steps below:
 
 1. Request for an AWS Organization account from an Administrator of the SSG API Gateway Organization.
@@ -1095,36 +1097,17 @@ website to find out more about how you can add secrets to your repository.
 
 #### GitHub Environments
 
-> [!TIP]
-> The approval before deployment behaviour is optional in the testing environment. If you wish to disable it, you may
-> skip the process of creating the `testing` GitHub environment below and instead remove the line
-> `environment: production` from the [`integration.yml`](../../.github/workflows/integration.yml) file.
->
-> The file should look like this after the removal of the line:
-> ```yaml
-> ...
->   main-infra:
->     environment: testing
->     needs:
->       - ecr
->     runs-on: ubuntu-latest
->     name: Create/Maintain Main Infrastructure
-> ...
-> ```
->
-> You will now no longer be required to review and approve deployments to the testing environment.
-
 GitHub Environments allow us to set up environments within our GitHub repository to deploy our application to. They
 also allow us to enforce certain approvals and checks before code can be deployed to the environment.
 
-For testing purposes, you will need to create the `testing` environment.
+For testing purposes, you will need to create the `dev` environment.
 
-To create the `testing` environment, follow the steps below:
+To create the `dev` environment, follow the steps below:
 
 1. Go to the `Settings` tab of the forked repository.
 2. Click on the `Environments` tab on the sidebar.
 3. Click on the `New environment` button.
-4. Enter `testing` as the environment name.
+4. Enter `dev` as the environment name.
 5. Click on the `Configure environment` button.
 6. Click on the `Required reviewers` checkbox. Feel free to add yourself as a reviewer if you wish to enforce checks
    before deployment. Leave it blank if you do not wish to enforce any reviews and checks.
@@ -1135,25 +1118,48 @@ To create the `testing` environment, follow the steps below:
       is used under the [`deploy` directory](../deploy)
 
 > [!NOTE]
-> Even though the secrets are defined in the `testing` environment, make sure to still follow the steps outlined
+> Even though the secrets are defined in the `dev` environment, make sure to still follow the steps outlined
 > above in [GitHub Actions Secrets](#github-actions-secrets) to set up GitHub Action secrets as they will be used
 > in other steps of the build process.
-
-Within the [`.github/workflows/integration.yml`](../../.github/workflows/integration.yml) file,
-replace `environment: production` with `environment: testing`.
 
 The file should now look like this:
 
 ```yaml
 ...
-main-infra:
-  environment: testing
+main-infra-dev:
+  # setting up prod infrastructure should be done on prod only
+  if: github.repository != 'ssg-wsg/Sample-Codes'
+  environment: dev
   needs:
     - ecr
   runs-on: ubuntu-latest
   name: Create/Maintain Main Infrastructure
 ...
 ```
+
+> [!TIP]
+> The approval before deployment behaviour is optional in the testing environment. If you wish to disable it, you may
+> skip the process of creating the `dev` GitHub environment below and instead remove the line
+> `environment: production` from the [`integration.yml`](../../.github/workflows/integration.yml) file.
+>
+> The file should look like this after the removal of the line:
+> 
+> ```yaml
+> ...
+> main-infra-dev:
+>   # setting up prod infrastructure should be done on prod only
+>   if: github.repository != 'ssg-wsg/Sample-Codes'
+>   needs:
+>     - ecr-dev
+>   runs-on: ubuntu-latest
+>   name: Create/Maintain Main Infrastructure
+> ...
+> ```
+>
+> You will now no longer be required to review and approve deployments to the testing environment.
+> 
+> However, **do not modify the configurations for the `prod` environment**, and **do not commit the changes made to
+> the `dev` environment configurations to the upstream `main` branch**.
 
 #### GitHub Code Scanning and Dependency Analysis
 
@@ -1227,14 +1233,18 @@ The general workflow for contributing to the Sample Application is as follows:
    to [this guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
    for more information on how to create a PR. Make sure that the source branch is the branch you created in step 3,
    and the target branch is the `main` or `master` branch in the upstream repository (the Sample-Codes repository).
-7. Allow CI/CD to run and fix any errors that are raised by CI/CD. More information about CI/CD can be found in the
-   [CI/CD](#cicd) section.
+7. Provision your `dev` environment using CI/CD and test the code changes you made within the `dev` environment. More
+   information about CI/CD can be found in the [CI/CD](#cicd) section.
 8. Request a review from a reviewer.
-9. Once the PR is approved and merged, you should pull the changes from the upstream repository to your forked
-   repository to keep your forked repository up to date. Refer
+9. Once the reviewer has ascertained that your code is free of errors, and that the environment is performing as 
+   expected, the reviewer will approve your changes and will request that you migrate the changes made to `dev` over to
+   `production`.
+10. Once the migration is complete, request a review from the reviewer.
+11. Once the PR is approved and merged, you should then pull the changes from the upstream repository to your forked
+12. repository to keep your forked repository up to date. Refer 
    to [this guide](https://www.atlassian.com/git/tutorials/syncing/git-pull)
    for more information on pulling the changes made from the upstream repository to your local repository.
-10. Note that deployments to the upstream branches are only permitted upon approval from a reviewer. You may or may not
+13. Note that deployments to the upstream branches are only permitted upon approval from a reviewer. You may or may not
     require approval for deployments to your own local testing environment based on how you have set up GitHub 
     Environments [above](#github-environments).
 
@@ -1248,17 +1258,21 @@ More information will be provided in the [next section](#cicd) regarding the CI/
 
 The production environment refers to the production AWS account that is set up in the upstream repository.
 
+Terraform code to provision the production environment is found within [deploy/prod](../deploy/prod).
+
 This environment requires approvals before the code can be deployed.
 
 As a developer, you do not have direct access to this environment; you can only access it via pull requests to the
 upstream Sample-Codes repository and changes can only be made after a reviewer approves the pull request.
 
-You should do your testing in the testing environment before deploying to the production environment.
+You should do your testing in the dev environment before deploying to the production environment.
 
-#### Testing
+#### Dev
 
-The testing environment refers to your personal AWS Organization account that is set up in your fork of the upstream
+The dev environment refers to your personal AWS Organization account that is set up in your fork of the upstream
 repository.
+
+Terraform code to provision the dev environment is found within [deploy/dev](../deploy/dev).
 
 This environment may or may not require approvals for deployment, depending on how you have configured your GitHub
 Environments.
@@ -1324,8 +1338,14 @@ The different stages of the CI/CD pipeline are as such:
     1. Start the pipeline on Ubuntu
     2. Execute the "Clone Repository and Execute Terraform Scripts" process as defined above
 
+Depending on the repository where the CI/CD pipeline is run, different scripts corresponding to different environments
+will be executed.
+
+If the repository is the upstream repository, the pipeline will deploy to the `prod` environment. If the repository
+is a forked repository, the pipeline will deploy to the `dev` environment.
+
 > [!WARNING]
-> The deployment process is only permitted once a reviewer approves it.
+> The deployment process to `prod` is only permitted once a reviewer approves it.
 
 Here is a diagram representing the overall flow of processes implemented in the workflow file:
 
@@ -1335,6 +1355,10 @@ Here is a diagram representing the overall flow of processes implemented in the 
 > If the setting up of your GitHub Environment was skipped, the `Approval from reviewers?` process is skipped and
 > the CI/CD pipeline will proceed to `Begin process for setting up main infrastructure`.
 
+> [!CAUTION]
+> Should GitHub Actions not execute the Actions contained within the repository after a fork, you may have to delete
+> the files contained within the `.github/workflows` directory and recommit the files in directory to the repository.
+
 #### Failed Deployment
 
 Should the deployment fail, and you need to destroy the infrastructure, you may need to trigger a manual workflow run
@@ -1342,6 +1366,18 @@ stored in [this file](../../.github/workflows/teardown.yml).
 
 To run a manual workflow, refer
 to [this guide](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow).
+
+Alternatively, if you have the credentials to the AWS account used to provision the infrastructure in `prod` or `dev`,
+you may run the command within the subdirectories of the `deploy` directory (e.g. `deploy/dev/create-ecr`):
+
+```shell
+terraform destroy
+```
+
+More information about the Terraform commands can be found within the [Deployment Guide](Deployment%20Guide.md#terraform).
+
+> [!CAUTION]
+> If you are destroying the `prod` environment, make sure to get explicit approval from a reviewer before doing so!
 
 ## Logging and Housekeeping
 

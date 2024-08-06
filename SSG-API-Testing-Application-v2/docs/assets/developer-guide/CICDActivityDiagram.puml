@@ -47,20 +47,38 @@ endfork
 :Execute Terrascan;
 :Upload Security Report to GitHub;
 
-:Begin process for setting up Terraform backend;
-:Runs on Ubuntu-latest;
-:Clone Repository and Execute Terraform Scripts;
-
-:Begin process for setting up ECR Repository;
-:Runs on Ubuntu-latest;
-:Clone Repository and Execute Terraform Scripts;
-
-if (Approval from reviewers?) then (yes)
-    :Begin process for setting up main infrastructure;
+if (Environment?) then (Production)
+    :Begin process for setting up Terraform Production backend;
     :Runs on Ubuntu-latest;
     :Clone Repository and Execute Terraform Scripts;
-    stop
-else (no)
-    stop
 
+    :Begin process for setting up Production ECR Repository;
+    :Runs on Ubuntu-latest;
+    :Clone Repository and Execute Terraform Scripts;
+
+    if (Approval from reviewers?) then (yes)
+        :Begin process for setting up main infrastructure on Production;
+        :Runs on Ubuntu-latest;
+        :Clone Repository and Execute Terraform Scripts;
+    else (no)
+        stop
+    endif
+else (Dev)
+    :Begin process for setting up Terraform Dev backend;
+    :Runs on Ubuntu-latest;
+    :Clone Repository and Execute Terraform Scripts;
+
+    :Begin process for setting up Dev ECR Repository;
+    :Runs on Ubuntu-latest;
+    :Clone Repository and Execute Terraform Scripts;
+
+    if (Approval from reviewers?) then (yes)
+        :Begin process for setting up main infrastructure on Dev;
+        :Runs on Ubuntu-latest;
+        :Clone Repository and Execute Terraform Scripts;
+    else (no)
+        stop
+    endif
+endif
+stop
 @enduml
