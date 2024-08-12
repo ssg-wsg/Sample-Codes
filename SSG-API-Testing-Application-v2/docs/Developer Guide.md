@@ -527,6 +527,14 @@ We will, however, cover some of the design decisions regarding some of the APIs 
 > More details about the SSG APIs can be found at
 > the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
 
+> [!NOTE]
+> In the documentation below, if a data type is annotated with a value enclosed by a pair of square brackets 
+> (e.g. `[1]`), that means that the type is constrained to a certain length.
+> 
+> For string types, the value enclosed by the square brackets represents the maximum length of the string.
+> 
+> For numerical types, the value enclosed by the square brackets represents the maximum value of the number.
+
 > [!TIP]
 > When an API is declared as "Request Encrypted", it means that you need to **encrypt the payload** with your AES-256
 > key before sending it to the API.
@@ -534,6 +542,7 @@ We will, however, cover some of the design decisions regarding some of the APIs 
 > When an API is declared as "Response Encrypted", it means that the **payload returned by the API is encrypted** with
 > your AES-256 key, and you need to decrypt it before using the data. You can use the same key for both encryption and
 > decryption as AES-256 is a symmetric encryption algorithm.
+
 
 ### Encryption and Decryption
 
@@ -592,6 +601,16 @@ The user must input a valid Course Run ID to view the details of the course run.
 Since neither the request nor response is encrypted, both the request payload and the response payloads are
 read and displayed as is to the user via the UI. No preprocessing needs to be done on the request and response.
 
+The parameters needed for this API are as follows:
+
+| **Field** |                            **Description**                             |      **Type**       | **Example** | **Counterexample** |
+|:---------:|:----------------------------------------------------------------------:|:-------------------:|:-----------:|:------------------:|
+|   runId   | The Course Run ID. This can be obtained from the "Add Course Run" API. | Integer-like String |  `"1234"`   |   `"abc"`, `123`   |
+
+> [!NOTE]
+> Integer-like string represents Strings that contain only numerical digits, or can be directly converted into 
+> an integer using the `int()` function in Python.
+
 #### Add Course Runs
 
 |   **Data Field**   |                 **Value**                 |
@@ -607,6 +626,73 @@ Users must use this API to get a new Course Run ID for testing with the other AP
 
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
+
+The parameters needed for this API are as follows:
+
+|                            **Field**                             |                                               **Description**                                               |                                                               **Type**                                                               |                       **Example**                        |               **Counterexample**                |
+|:----------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------:|:-----------------------------------------------:|
+|                   course.courseReferenceNumber                   |              The Course Reference Number. This can be obtained from the Conformance Test data.              |                                                                String                                                                |               `"XX-1000----K-01-TEST 166"`               |                      `123`                      |
+|                   course.trainingProvider.uen                    |                                                 UEN Number                                                  |                                                                String                                                                |                      `"T08GB0001A"`                      |                      `123`                      |
+|         runs.sequenceNumber (automatically incrementing)         |                          The sequence number of the course runs to add in a batch.                          |                                                               Integer                                                                |                           `1`                            |                  `1.0`, `abc`                   |
+|                  runs.registrationDates.opening                  |                                The opening date of the registration period.                                 |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                  runs.registrationDates.closing                  |                                The closing date of the registration period.                                 |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                      runs.courseDates.start                      |                                        The start date of the course.                                        |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                       runs.courseDates.end                       |                                         The end date of the course.                                         |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                    runs.scheduleInfoType.code                    |                                 The code for the schedule information type.                                 |                                                              String[2]                                                               |                          `"01"`                          |                     `"abc"`                     |
+|                runs.scheduleInfoType.description                 |                             The description for the schedule information type.                              |                                                              String[32]                                                              |                     `"Description"`                      | `123`, `"abcabcabcabcabcabcabcabcabcabcabcabc"` |
+|                        runs.scheduleInfo                         |      The schedule information for the course run. This can be obtained from the Conformance Test data.      |                                                             String[300]                                                              |                 `"Schedule Information"`                 |                      `123`                      |
+|                   runs.venue.block (optional)                    |                              The block of the venue where the course is held.                               |                                                              String[10]                                                              |                       `"Block 1"`                        |                      `123`                      |
+|                   runs.venue.street (optional)                   |                              The street of the venue where the course is held.                              |                                                              String[32]                                                              |                       `"Street 1"`                       |                      `123`                      |
+|                         runs.venue.floor                         |                              The floor of the venue where the course is held.                               |                                                              String[3]                                                               |                       `"Floor 1"`                        |                      `123`                      |
+|                         runs.venue.unit                          |                               The unit of the venue where the course is held.                               |                                                              String[5]                                                               |                        `"Unit 1"`                        |                      `123`                      |
+|                  runs.venue.building (optional)                  |                          The building name of the venue where the course is held.                           |                                                              String[66]                                                              |                      `"Building 1"`                      |                      `123`                      |
+|                      runs.venue.postalCode                       |                           The postal code of the venue where the course is held.                            |                                                              String[6]                                                               |                        `"123456"`                        |                      `123`                      |
+|                         runs.venue.room                          |                               The room of the venue where the course is held.                               |                                                             String[255]                                                              |                        `"Room 1"`                        |                      `123`                      |
+|              runs.venue.wheelChairAccess (optional)              |                                  Whether the venue has wheelchair access.                                   |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|                    runs.intakeSize (optional)                    |                   The maximum number of trainees that can be enrolled in the course run.                    |                                                           Non-zero Integer                                                           |                          `100`                           |               `0`, `100.0`, `abc`               |
+|                    runs.threshold (optional)                     |   The number of trainees that can still be accepted even if the course is full (i.e. a buffer of sorts).    |                                                           Non-zero Integer                                                           |                           `10`                           |                `0`, `0.0`, `abc`                |
+|               runs.registeredUserCount (optional)                |                   The number of trainees that are already registered for the course run.                    |                                                         Non-negative Integer                                                         |                          `100`                           |                `0`, `0.0`, `abc`                |
+|                       runs.modeOfTraining                        |                                  The mode of training for the course run.                                   |                                         Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]                                         |                          `"1"`                           |                     `"abc"`                     |
+|                      runs.courseAdminEmail                       |                               The email address of the course administrator.                                |                                                          Email String[255]                                                           |                   `"email@email.com"`                    |              `"email.com"`, `123`               |
+|                     runs.courseVacancy.code                      |                                      The code for the course vacancy.                                       |                                                        Literal["A", "F", "L"]                                                        |                          `"A"`                           |                  `"X"`, `123`                   |
+|                  runs.courseVacancy.description                  | The description for the course vacancy. This is set directly with the specification of the code in the app. |                                           Literal["Available", "Full", "Limited Vacancy"]                                            |                      `"Available"`                       |            `"Not Available"`, `123`             |
+|                    runs.file.Name (optional)                     |                                    The name of the file to be uploaded.                                     |                                                             String[255]                                                              |                       `"file.txt"`                       |               `"file.txt"`, `123`               |
+|                   runs.file.content (optional)                   |                                   The content of the file to be uploaded.                                   |                                                   File-like Base64 Encoded String                                                    |                      `"iVBORw0..."`                      |                      `123`                      |
+|                     runs.sessions.startDate                      |                                    The start date of the course session.                                    |                                                         Integer-like String                                                          |                       `"20221231"`                       |             `"2022-12-31 00:00:00"`             |
+|                      runs.sessions.endDate                       |                                     The end date of the course session.                                     |                                                         Integer-like String                                                          |                       `"20221231"`                       |             `"2022-12-31 00:00:00"`             |
+|                     runs.sessions.startTime                      |                                    The start time of the course session.                                    |                                                           Time-like String                                                           |                        `"09:00"`                         |                    `"0900"`                     |
+|                      runs.sessions.endTime                       |                                     The end time of the course session.                                     |                                                           Time-like String                                                           |                        `"17:00"`                         |                    `"1700"`                     |
+|                   runs.sessions.modeOfTraining                   |                                The mode of training for the course session.                                 |                                         Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]                                         |                          `"1"`                           |                     `"abc"`                     |
+|               runs.sessions.venue.block (optional)               |                              The block of the venue where the course is held.                               |                                                              String[10]                                                              |                       `"Block 1"`                        |                      `123`                      |
+|              runs.sessions.venue.street (optional)               |                              The street of the venue where the course is held.                              |                                                              String[32]                                                              |                       `"Street 1"`                       |                      `123`                      |
+|                    runs.sessions.venue.floor                     |                              The floor of the venue where the course is held.                               |                                                              String[3]                                                               |                       `"Floor 1"`                        |                      `123`                      |
+|                     runs.sessions.venue.unit                     |                               The unit of the venue where the course is held.                               |                                                              String[5]                                                               |                        `"Unit 1"`                        |                      `123`                      |
+|             runs.sessions.venue.building (optional)              |                          The building name of the venue where the course is held.                           |                                                              String[66]                                                              |                      `"Building 1"`                      |                      `123`                      |
+|                  runs.sessions.venue.postalCode                  |                           The postal code of the venue where the course is held.                            |                                                              String[6]                                                               |                        `"123456"`                        |                      `123`                      |
+|                     runs.sessions.venue.room                     |                               The room of the venue where the course is held.                               |                                                             String[255]                                                              |                        `"Room 1"`                        |                      `123`                      |
+|         runs.sessions.venue.wheelChairAccess (optional)          |                                  Whether the venue has wheelchair access.                                   |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|           runs.sessions.venue.primaryVenue (optional)            |       Whether the venue is the primary venue for the course session. This is set directly in the app.       |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|        runs.linkCourseRunTrainer.trainer.trainerType.code        |                                 The type of the trainer for the course run.                                 |                                                          Literal["1", "2"]                                                           |                          `"1"`                           |                     `"abc"`                     |
+|    runs.linkCourseRunTrainer.trainer.trainerType.description     |                                    The description of the trainer type.                                     |                                                             String[128]                                                              |                     `"Description"`                      |                      `123`                      |
+|         runs.linkCourseRunTrainer.indexNumber (optional)         |                             The index number of the trainer for the course run.                             |                                                           Non-Zero Integer                                                           |                          `1234`                          |             `"abc"`, `"123"`, `-1`              |
+|             runs.linkCourseRunTrainer.id (optional)              |                           The self-defined ID of the trainer for the course run.                            |                                                              String[50]                                                              |                         `"1234"`                         |                      `123`                      |
+|                  runs.linkCourseRunTrainer.name                  |                                   Name of the trainer for the course run.                                   |                                                              String[66]                                                              |                       `"John Doe"`                       |                      `123`                      |
+|                 runs.linkCourseRunTrainer.email                  |                                  Email of the trainer for the course run.                                   |                                                          Email String[320]                                                           |                    `"john@mail.com"`                     |               `"john.com"`, `123`               |
+|                runs.linkCourseRunTrainer.idNumber                |                          The official ID number of the trainer for the course run.                          |                                                              String[50]                                                              |                      `"S1234567A"`                       |                      `123`                      |
+|              runs.linkCourseRunTrainer.idType.code               |                             The ID type code of the trainer for the course run.                             |                                                Literal["SP", "SB", "SO", "FP", "OT"]                                                 |                          `"SP"`                          |                 `"abc"`, `123`                  |
+|           runs.linkCourseRunTrainer.idType.description           |                      The description of the ID type of the trainer for the course run.                      | Literal["Singapore Pink Identification Card", "Singapore Blue Identification Card", "Fin/Work Permit", "Foreign Passport", "Others"] |                     `"Description"`                      |                      `123`                      |
+|             runs.linkCourseRunTrainer.roles.role.id              |                            The ID of the role of the trainer for the course run.                            |                                                            Literal[1, 2]                                                             |                           `1`                            |                      `123`                      |
+|         runs.linkCourseRunTrainer.roles.role.description         |                       The description of the role of the trainer for the course run.                        |                                                    Literal["Trainer", "Assessor"]                                                    |                       `"Trainer"`                        |                      `123`                      |
+|  runs.linkCourseRunTrainer.inTrainingProviderProfile (optional)  |                         Whether the trainer is in the training provider's profile.                          |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|          runs.linkCourseRunTrainer.domainAreaOfPractice          |                       The domain area of practice of the trainer for the course run.                        |                                                             String[1000]                                                             |               `"Domain Area of Practice"`                |                      `123`                      |
+|         runs.linkCourseRunTrainer.experience (optional)          |                              The experience of the trainer for the course run.                              |                                                             String[1000]                                                             |                      `"Experience"`                      |                      `123`                      |
+|         runs.linkCourseRunTrainer.linkedInURL (optional)         |                             The LinkedIn URL of the trainer for the course run.                             |                                                             String[255]                                                              |                     `"linkedin.com"`                     |                      `123`                      |
+|              runs.linkCourseRunTrainer.salutationId              |                            The salutation ID of the trainer for the course run.                             |                                                      Literal[1, 2, 3, 4, 5, 6]                                                       |                           `1`                            |                  `"1"`, `123`                   |
+|         runs.linkCourseRunTrainer.photo.name (optional)          |                          The name of the photo of the trainer for the course run.                           |                                                             String[255]                                                              |                      `"photo.jpg"`                       |              `"photo.jpg"`, `123`               |
+|        runs.linkCourseRunTrainer.photo.content (optional)        |                         The content of the photo of the trainer for the course run.                         |                                                   File-like Base64 Encoded String                                                    |                      `"iVBORw0..."`                      |                      `123`                      |
+| runs.linkCourseRunTrainer.linkedSsecEQAs.description (optional)  | The description of the linked SSEC EQAs of the trainer for the course run. This is set directly in the app. |                                                             String[1000]                                                             |                     `"Description"`                      |                      `123`                      |
+| runs.linkCourseRunTrainer.linkedSsecEQAs.ssecEQA.code (optional) |                     The code of the linked SSEC EQAs of the trainer for the course run.                     |                                                              String[2]                                                               |                          `"12"`                          |                      `123`                      |
+
 
 #### Edit or Delete Course Runs
 
@@ -624,6 +710,85 @@ Users must use this API to edit or delete a Course Run.
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
 
+The parameters needed for the Edit Course Runs API are as follow:
+
+|                             **Field**                              |                                               **Description**                                               |                                                               **Type**                                                               |                       **Example**                        |               **Counterexample**                |
+|:------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------:|:-----------------------------------------------:|
+|                            courseRunId                             |                   The Course Run ID. This can be obtained from the "Add Course Run" API.                    |                                                         Integer-like String                                                          |                         `"1234"`                         |                 `"abc"`, `123`                  |
+|                    course.courseReferenceNumber                    |              The Course Reference Number. This can be obtained from the Conformance Test data.              |                                                                String                                                                |               `"XX-1000----K-01-TEST 166"`               |                      `123`                      |
+|                    course.trainingProvider.uen                     |                                                 UEN Number                                                  |                                                                String                                                                |                      `"T08GB0001A"`                      |                      `123`                      |
+|     runs.sequenceNumber (optional, automatically incrementing)     |                          The sequence number of the course runs to add in a batch.                          |                                                               Integer                                                                |                           `1`                            |                  `1.0`, `abc`                   |
+|                   runs.registrationDates.opening                   |                                The opening date of the registration period.                                 |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                   runs.registrationDates.closing                   |                                The closing date of the registration period.                                 |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                       runs.courseDates.start                       |                                        The start date of the course.                                        |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                        runs.courseDates.end                        |                                         The end date of the course.                                         |                                                               Integer                                                                |                        `20221231`                        |             `"2022-12-31 00:00:00"`             |
+|                     runs.scheduleInfoType.code                     |                                 The code for the schedule information type.                                 |                                                              String[2]                                                               |                          `"01"`                          |                     `"abc"`                     |
+|                 runs.scheduleInfoType.description                  |                             The description for the schedule information type.                              |                                                              String[32]                                                              |                     `"Description"`                      | `123`, `"abcabcabcabcabcabcabcabcabcabcabcabc"` |
+|                    runs.scheduleInfo (optional)                    |      The schedule information for the course run. This can be obtained from the Conformance Test data.      |                                                             String[300]                                                              |                 `"Schedule Information"`                 |                      `123`                      |
+|                    runs.venue.block (optional)                     |                              The block of the venue where the course is held.                               |                                                              String[10]                                                              |                       `"Block 1"`                        |                      `123`                      |
+|                    runs.venue.street (optional)                    |                              The street of the venue where the course is held.                              |                                                              String[32]                                                              |                       `"Street 1"`                       |                      `123`                      |
+|                          runs.venue.floor                          |                              The floor of the venue where the course is held.                               |                                                              String[3]                                                               |                       `"Floor 1"`                        |                      `123`                      |
+|                          runs.venue.unit                           |                               The unit of the venue where the course is held.                               |                                                              String[5]                                                               |                        `"Unit 1"`                        |                      `123`                      |
+|                   runs.venue.building (optional)                   |                          The building name of the venue where the course is held.                           |                                                              String[66]                                                              |                      `"Building 1"`                      |                      `123`                      |
+|                       runs.venue.postalCode                        |                           The postal code of the venue where the course is held.                            |                                                              String[6]                                                               |                        `"123456"`                        |                      `123`                      |
+|                          runs.venue.room                           |                               The room of the venue where the course is held.                               |                                                             String[255]                                                              |                        `"Room 1"`                        |                      `123`                      |
+|               runs.venue.wheelChairAccess (optional)               |                                  Whether the venue has wheelchair access.                                   |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|                     runs.intakeSize (optional)                     |                   The maximum number of trainees that can be enrolled in the course run.                    |                                                           Non-zero Integer                                                           |                          `100`                           |               `0`, `100.0`, `abc`               |
+|                     runs.threshold (optional)                      |   The number of trainees that can still be accepted even if the course is full (i.e. a buffer of sorts).    |                                                           Non-zero Integer                                                           |                           `10`                           |                `0`, `0.0`, `abc`                |
+|                runs.registeredUserCount (optional)                 |                   The number of trainees that are already registered for the course run.                    |                                                         Non-negative Integer                                                         |                          `100`                           |                `0`, `0.0`, `abc`                |
+|                   runs.modeOfTraining (optional)                   |                                  The mode of training for the course run.                                   |                                         Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]                                         |                          `"1"`                           |                     `"abc"`                     |
+|                       runs.courseAdminEmail                        |                               The email address of the course administrator.                                |                                                          Email String[255]                                                           |                   `"email@email.com"`                    |              `"email.com"`, `123`               |
+|                      runs.courseVacancy.code                       |                                      The code for the course vacancy.                                       |                                                        Literal["A", "F", "L"]                                                        |                          `"A"`                           |                  `"X"`, `123`                   |
+|                   runs.courseVacancy.description                   | The description for the course vacancy. This is set directly with the specification of the code in the app. |                                           Literal["Available", "Full", "Limited Vacancy"]                                            |                      `"Available"`                       |            `"Not Available"`, `123`             |
+|                     runs.file.Name (optional)                      |                                    The name of the file to be uploaded.                                     |                                                             String[255]                                                              |                       `"file.txt"`                       |               `"file.txt"`, `123`               |
+|                    runs.file.content (optional)                    |                                   The content of the file to be uploaded.                                   |                                                   File-like Base64 Encoded String                                                    |                      `"iVBORw0..."`                      |                      `123`                      |
+|                 runs.sessions.startDate (optional)                 |                                    The start date of the course session.                                    |                                                         Integer-like String                                                          |                       `"20221231"`                       |             `"2022-12-31 00:00:00"`             |
+|                  runs.sessions.endDate (optional)                  |                                     The end date of the course session.                                     |                                                         Integer-like String                                                          |                       `"20221231"`                       |             `"2022-12-31 00:00:00"`             |
+|                 runs.sessions.startTime (optional)                 |                                    The start time of the course session.                                    |                                                           Time-like String                                                           |                        `"09:00"`                         |                    `"0900"`                     |
+|                  runs.sessions.endTime (optional)                  |                                     The end time of the course session.                                     |                                                           Time-like String                                                           |                        `"17:00"`                         |                    `"1700"`                     |
+|              runs.sessions.modeOfTraining (optional)               |                                The mode of training for the course session.                                 |                                         Literal["1", "2", "3", "4", "5", "6", "7", "8", "9"]                                         |                          `"1"`                           |                     `"abc"`                     |
+|                runs.sessions.venue.block (optional)                |                              The block of the venue where the course is held.                               |                                                              String[10]                                                              |                       `"Block 1"`                        |                      `123`                      |
+|               runs.sessions.venue.street (optional)                |                              The street of the venue where the course is held.                              |                                                              String[32]                                                              |                       `"Street 1"`                       |                      `123`                      |
+|   runs.sessions.venue.floor (optional, unless venue is defined)    |                              The floor of the venue where the course is held.                               |                                                              String[3]                                                               |                       `"Floor 1"`                        |                      `123`                      |
+|    runs.sessions.venue.unit (optional, unless venue is defined)    |                               The unit of the venue where the course is held.                               |                                                              String[5]                                                               |                        `"Unit 1"`                        |                      `123`                      |
+|              runs.sessions.venue.building (optional)               |                          The building name of the venue where the course is held.                           |                                                              String[66]                                                              |                      `"Building 1"`                      |                      `123`                      |
+| runs.sessions.venue.postalCode (optional, unless venue is defined) |                           The postal code of the venue where the course is held.                            |                                                              String[6]                                                               |                        `"123456"`                        |                      `123`                      |
+|    runs.sessions.venue.room (optional, unless venue is defined)    |                               The room of the venue where the course is held.                               |                                                             String[255]                                                              |                        `"Room 1"`                        |                      `123`                      |
+|          runs.sessions.venue.wheelChairAccess (optional)           |                                  Whether the venue has wheelchair access.                                   |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|            runs.sessions.venue.primaryVenue (optional)             |       Whether the venue is the primary venue for the course session. This is set directly in the app.       |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|         runs.linkCourseRunTrainer.trainer.trainerType.code         |                                 The type of the trainer for the course run.                                 |                                                          Literal["1", "2"]                                                           |                          `"1"`                           |                     `"abc"`                     |
+|     runs.linkCourseRunTrainer.trainer.trainerType.description      |                                    The description of the trainer type.                                     |                                                             String[128]                                                              |                     `"Description"`                      |                      `123`                      |
+|          runs.linkCourseRunTrainer.indexNumber (optional)          |                             The index number of the trainer for the course run.                             |                                                           Non-Zero Integer                                                           |                          `1234`                          |             `"abc"`, `"123"`, `-1`              |
+|              runs.linkCourseRunTrainer.id (optional)               |                           The self-defined ID of the trainer for the course run.                            |                                                              String[50]                                                              |                         `"1234"`                         |                      `123`                      |
+|                   runs.linkCourseRunTrainer.name                   |                                   Name of the trainer for the course run.                                   |                                                              String[66]                                                              |                       `"John Doe"`                       |                      `123`                      |
+|                  runs.linkCourseRunTrainer.email                   |                                  Email of the trainer for the course run.                                   |                                                          Email String[320]                                                           |                    `"john@mail.com"`                     |               `"john.com"`, `123`               |
+|                 runs.linkCourseRunTrainer.idNumber                 |                          The official ID number of the trainer for the course run.                          |                                                              String[50]                                                              |                      `"S1234567A"`                       |                      `123`                      |
+|               runs.linkCourseRunTrainer.idType.code                |                             The ID type code of the trainer for the course run.                             |                                                Literal["SP", "SB", "SO", "FP", "OT"]                                                 |                          `"SP"`                          |                 `"abc"`, `123`                  |
+|            runs.linkCourseRunTrainer.idType.description            |                      The description of the ID type of the trainer for the course run.                      | Literal["Singapore Pink Identification Card", "Singapore Blue Identification Card", "Fin/Work Permit", "Foreign Passport", "Others"] |                     `"Description"`                      |                      `123`                      |
+|              runs.linkCourseRunTrainer.roles.role.id               |                            The ID of the role of the trainer for the course run.                            |                                                            Literal[1, 2]                                                             |                           `1`                            |                      `123`                      |
+|          runs.linkCourseRunTrainer.roles.role.description          |                       The description of the role of the trainer for the course run.                        |                                                    Literal["Trainer", "Assessor"]                                                    |                       `"Trainer"`                        |                      `123`                      |
+|   runs.linkCourseRunTrainer.inTrainingProviderProfile (optional)   |                         Whether the trainer is in the training provider's profile.                          |                                                               Boolean                                                                | `true`, `false` (or Python equivalents: `True`, `False`) |                  `123`, `abc`                   |
+|     runs.linkCourseRunTrainer.domainAreaOfPractice (optional)      |                       The domain area of practice of the trainer for the course run.                        |                                                             String[1000]                                                             |               `"Domain Area of Practice"`                |                      `123`                      |
+|          runs.linkCourseRunTrainer.experience (optional)           |                              The experience of the trainer for the course run.                              |                                                             String[1000]                                                             |                      `"Experience"`                      |                      `123`                      |
+|          runs.linkCourseRunTrainer.linkedInURL (optional)          |                             The LinkedIn URL of the trainer for the course run.                             |                                                             String[255]                                                              |                     `"linkedin.com"`                     |                      `123`                      |
+|         runs.linkCourseRunTrainer.salutationId (optional)          |                            The salutation ID of the trainer for the course run.                             |                                                      Literal[1, 2, 3, 4, 5, 6]                                                       |                           `1`                            |                  `"1"`, `123`                   |
+|          runs.linkCourseRunTrainer.photo.name (optional)           |                          The name of the photo of the trainer for the course run.                           |                                                             String[255]                                                              |                      `"photo.jpg"`                       |              `"photo.jpg"`, `123`               |
+|         runs.linkCourseRunTrainer.photo.content (optional)         |                         The content of the photo of the trainer for the course run.                         |                                                   File-like Base64 Encoded String                                                    |                      `"iVBORw0..."`                      |                      `123`                      |
+|  runs.linkCourseRunTrainer.linkedSsecEQAs.description (optional)   | The description of the linked SSEC EQAs of the trainer for the course run. This is set directly in the app. |                                                             String[1000]                                                             |                     `"Description"`                      |                      `123`                      |
+|  runs.linkCourseRunTrainer.linkedSsecEQAs.ssecEQA.code (optional)  |                     The code of the linked SSEC EQAs of the trainer for the course run.                     |                                                              String[2]                                                               |                          `"12"`                          |                      `123`                      |
+
+The parameters needed for the Delete Course Runs API are as follow:
+
+|                             **Field**                              |                                               **Description**                                               |                                                               **Type**                                                               |                       **Example**                        |               **Counterexample**                |
+|:------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------:|:-----------------------------------------------:|
+|                            courseRunId                             |                   The Course Run ID. This can be obtained from the "Add Course Run" API.                    |                                                         Integer-like String                                                          |                         `"1234"`                         |                 `"abc"`, `123`                  |
+|                    course.courseReferenceNumber                    |              The Course Reference Number. This can be obtained from the Conformance Test data.              |                                                                String                                                                |               `"XX-1000----K-01-TEST 166"`               |                      `123`                      |
+|                    course.trainingProvider.uen                     |                                                 UEN Number                                                  |                                                                String                                                                |                      `"T08GB0001A"`                      |                      `123`                      |
+
+> [!NOTE]
+> Integer-like string represents Strings that contain only numerical digits, or can be directly converted into 
+> an integer using the `int()` function in Python.
+
 #### View Course Sessions
 
 |   **Data Field**   |              **Value**               |
@@ -639,6 +804,18 @@ Users must use this API to view the course sessions for a particular Course Run.
 
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
+
+The parameters needed for this API are as follows:
+
+|       **Field**       |                                  **Description**                                  |      **Type**       |         **Example**          |  **Counterexample**  |
+|:---------------------:|:---------------------------------------------------------------------------------:|:-------------------:|:----------------------------:|:--------------------:|
+|         runId         |      The Course Run ID. This can be obtained from the "Add Course Run" API.       | Integer-like String |           `"1234"`           |    `"abc"`, `123`    |
+|          uen          |                         The UEN of the training provider.                         |       String        |        `"T08GB0001A"`        | `"123"`, `123456789` |
+| courseReferenceNumber | The Course Reference Number. This can be obtained from the Conformance Test data. |       String        | `"XX-1000----K-01-TEST 166"` | `"123"`, `123456789` |
+
+> [!NOTE]
+> Integer-like string represents Strings that contain only numerical digits, or can be directly converted into 
+> an integer using the `int()` function in Python.
 
 ### Enrolment
 
@@ -678,6 +855,33 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                                **Field**                                |                                                      **Description**                                                      |                           **Type**                            |     **Example**     |   **Counterexample**    |
+|:-----------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------:|:-------------------:|:-----------------------:|
+|                         enrolment.course.run.id                         |                          The Course Run ID. This can be obtained from the "Add Course Run" API.                           |                    Integer-like String[20]                    |      `"1234"`       |     `"abc"`, `123`      |
+|                        enrolment.referenceNumber                        |                                          The reference number of the enrolment.                                           |                          String[100]                          | `"TGS-0026008-ES"`  |          `123`          |
+|                               trainee.id                                |                                              The official ID of the trainee.                                              |                            String                             |    `"S1234567A"`    |          `123`          |
+|                  enrolment.trainee.fees.discountAmount                  |                                       The amount of discount given to the trainee.                                        |                      Non-Negative Float                       |       `100.0`       |          `abc`          |
+|                 enrolment.trainee.fees.collectionStatus                 |                                       The status of fee collection for the trainee.                                       | Literal["Pending Payment", "Partial Payment", "Full Payment"] | `"Pending Payment"` |         `"abc"`         |
+|                      enrolment.trainee.idType.type                      |                                              The type of ID of the trainee.                                               |               Literal["NRIC", "FIN", "OTHERS"]                |      `"NRIC"`       |     `"abc"`, `123`      |
+|                    enrolment.trainee.sponsorshipType                    |                                         The type of sponsorship for the trainee.                                          |               Literal["EMPLOYER", "INDIVIDUAL"]               |    `"EMPLOYER"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.employer.uen (optional)                |      The UEN of the employer of the trainee. This value is optional **unless trainee.sponsorshipType is EMPLOYER**.       |                          String[50]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|         enrolment.trainee.employer.contact.fullName (optional)          |           The full name of the employer. This value is optional unless **trainee.sponsorshipType is EMPLOYER**.           |                          String[50]                           |    `"John Doe"`     |     `"abc"`, `123`      |
+|       enrolment.trainee.employer.contact.emailAddress (optional)        |         The email address of the employer. This value is optional unless **trainee.sponsorshipType is EMPLOYER**.         |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|  enrolment.trainee.employer.contact.contactNumber.areaCode (optional)   |                      The area code of the employer's contact number. This value **always** optional.                      |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.countryCode (optional) |         The country code of the employer. This value is optional **unless trainee.sponsorshipType is EMPLOYER**.          |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.phoneNumber (optional) | The phone number of the employer's contact number. This value is optional **unless trainee.sponsorshipType is EMPLOYER**. |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|                  enrolment.trainee.fullName (optional)                  |                                               The full name of the trainee.                                               |                          String[200]                          |    `"John Doe"`     |     `"abc"`, `123`      |
+|                      enrolment.trainee.dateOfBirth                      |                                             The date of birth of the trainee.                                             |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                     enrolment.trainee.emailAddress                      |                                             The email address of the trainee.                                             |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|           enrolment.trainee.contactNumber.areaCode (optional)           |                                      The area code of the trainee's contact number.                                       |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+|               enrolment.trainee.contactNumber.countryCode               |                                             The country code of the trainee.                                              |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+|               enrolment.trainee.contactNumber.phoneNumber               |                                     The phone number of the trainee's contact number.                                     |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|               enrolment.trainee.enrolmentDate (optional)                |                               The date of enrolment of the trainee. This value is optional.                               |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                      enrolment.trainingPartner.uen                      |                                             The UEN of the training partner.                                              |                          String[12]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|                     enrolment.trainingPartner.code                      |                                                The training partner code.                                                 |                          String[15]                           |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+
 #### Update Enrolment
 
 |   **Data Field**   |                **Value**                |
@@ -695,6 +899,37 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                                **Field**                                |                            **Description**                             |                           **Type**                            |     **Example**     |   **Counterexample**    |
+|:-----------------------------------------------------------------------:|:----------------------------------------------------------------------:|:-------------------------------------------------------------:|:-------------------:|:-----------------------:|
+|                   enrolment.course.run.id (optional)                    | The Course Run ID. This can be obtained from the "Add Course Run" API. |                    Integer-like String[20]                    |      `"1234"`       |     `"abc"`, `123`      |
+|               enrolment.course.referenceNumber (optional)               |                 The reference number of the enrolment.                 |                          String[100]                          | `"TGS-0026008-ES"`  |          `123`          |
+|                          trainee.id (optional)                          |                    The official ID of the trainee.                     |                            String                             |    `"S1234567A"`    |          `123`          |
+|            enrolment.trainee.fees.discountAmount (optional)             |              The amount of discount given to the trainee.              |                      Non-Negative Float                       |       `100.0`       |          `abc`          |
+|           enrolment.trainee.fees.collectionStatus (optional)            |             The status of fee collection for the trainee.              | Literal["Pending Payment", "Partial Payment", "Full Payment"] | `"Pending Payment"` |         `"abc"`         |
+|                enrolment.trainee.idType.type (optional)                 |                     The type of ID of the trainee.                     |               Literal["NRIC", "FIN", "OTHERS"]                |      `"NRIC"`       |     `"abc"`, `123`      |
+|              enrolment.trainee.sponsorshipType  (optional)              |                The type of sponsorship for the trainee.                |               Literal["EMPLOYER", "INDIVIDUAL"]               |    `"EMPLOYER"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.employer.uen (optional)                |                The UEN of the employer of the trainee.                 |                          String[50]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|         enrolment.trainee.employer.contact.fullName (optional)          |                     The full name of the employer.                     |                          String[50]                           |    `"John Doe"`     |     `"abc"`, `123`      |
+|       enrolment.trainee.employer.contact.emailAddress (optional)        |                   The email address of the employer.                   |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|  enrolment.trainee.employer.contact.contactNumber.areaCode (optional)   |            The area code of the employer's contact number.             |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.countryCode (optional) |                   The country code of the employer.                    |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+| enrolment.trainee.employer.contact.contactNumber.phoneNumber (optional) |           The phone number of the employer's contact number.           |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|                  enrolment.trainee.fullName (optional)                  |                     The full name of the trainee.                      |                          String[200]                          |    `"John Doe"`     |     `"abc"`, `123`      |
+|                enrolment.trainee.dateOfBirth (optional)                 |                   The date of birth of the trainee.                    |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                enrolment.trainee.emailAddress (optional)                |                   The email address of the trainee.                    |                       Email String[100]                       | `"email@email.com"` |  `"email.com"`, `123`   |
+|           enrolment.trainee.contactNumber.areaCode (optional)           |             The area code of the trainee's contact number.             |                          String[10]                           |       `"123"`       |     `"abc"`, `123`      |
+|         enrolment.trainee.contactNumber.countryCode (optional)          |                    The country code of the trainee.                    |                           String[5]                           |       `"65"`        |     `"abc"`, `123`      |
+|         enrolment.trainee.contactNumber.phoneNumber (optional)          |           The phone number of the trainee's contact number.            |                          String[20]                           |      `"12345"`      |     `"abc"`, `123`      |
+|               enrolment.trainee.enrolmentDate (optional)                |     The date of enrolment of the trainee. This value is optional.      |              Integer-like, Datetime-like String               |    `"20221231"`     | `"2022-12-31 00:00:00"` |
+|                enrolment.trainingPartner.uen (optional)                 |                    The UEN of the training partner.                    |                          String[12]                           |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|                enrolment.trainingPartner.code (optional)                |                       The training partner code.                       |                          String[15]                           |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+
+> [!CAUTION]
+> More extensive testing should be done for this API. It seems that many combinations of parameters are not permitted.
+> Currently, we assume that users know exactly what they are editing.
+
 #### Cancel Enrolment
 
 |   **Data Field**   |                **Value**                |
@@ -711,6 +946,13 @@ Users must use this API to cancel an existing enrolment record.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|        **Field**        |                            **Description**                             |      **Type**       | **Example** |      **Counterexample**       |
+|:-----------------------:|:----------------------------------------------------------------------:|:-------------------:|:-----------:|:-----------------------------:|
+|    enrolment.action     |          The action to be performed on the enrolment record.           |  Literal["Cancel"]  | `"Cancel"`  | `"cancel"`, `"update"`, `123` |
+| enrolment.course.run.id | The Course Run ID. This can be obtained from the "Add Course Run" API. | Integer-like String |  `"1234"`   |        `"abc"`, `123`         |
 
 #### Search Enrolment
 
@@ -730,6 +972,28 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                       **Field**                       |                                    **Description**                                    |                                  **Type**                                  |    **Example**     |       **Counterexample**        |
+|:-----------------------------------------------------:|:-------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------:|:------------------:|:-------------------------------:|
+|           meta.lastUpdateDateTo (optional)            |  The end date of the last update date range for the enrolment records to be queried.  |                            Datetime-like String                            |   `"2020-02-01"`   |     `"2020-02-01 00:00:00"`     |
+|          meta.lastUpdateDateFrom (optional)           | The start date of the last update date range for the enrolment records to be queried. |                            Datetime-like String                            |   `"2020-01-01"`   |     `"2020-01-01 00:00:00"`     |
+|                sortBy.field (optional)                |                      The field to sort the enrolment records by.                      |                     Literal["updatedOn", "createdOn"]                      |   `"updatedOn"`    |      `"createdOn"`, `123`       |
+|                sortBy.order (optional)                |                      The order to sort the enrolment records by.                      |                           Literal["asc", "desc"]                           |      `"asc"`       |      `"ascending"`, `123`       |
+|          enrolment.course.run.id (optional)           |        The Course Run ID. This can be obtained from the "Add Course Run" API.         |                          Integer-like String[20]                           |      `"1234"`      |         `"abc"`, `123`          |
+|      enrolment.course.referenceNumber (optional)      |                          The reference number of the course.                          |                                String[100]                                 | `"TGS-0026008-ES"` |              `123`              |
+|              enrolment.status (optional)              |                          The status of the enrolment record.                          |                     Literal["Confirmed", "Cancelled"]                      |   `"Confirmed"`    | `"Pending Confirmation"`, `123` |
+|            enrolment.trainee.id (optional)            |                            The official ID of the trainee.                            |                                 String[20]                                 |   `"S1234567A"`    |              `123`              |
+| enrolment.trainee.fees.feeCollectionStatus (optional) |                       The fee collection status of the trainee.                       | Literal["Pending Payment", "Partial Payment", "Full Payment", "Cancelled"] |  `"Full Payment"`  |       `"Partial"`, `123`        |
+|       enrolment.trainee.idType.type (optional)        |                            The type of ID of the trainee.                             |                      Literal["NRIC", "FIN", "OTHERS"]                      |      `"NRIC"`      |         `"abc"`, `123`          |
+|       enrolment.trainee.employer.uen (optional)       |                        The UEN of the employer of the trainee.                        |                                 String[50]                                 |   `"T08GB0001A"`   |         `"abc"`, `123`          |
+|      enrolment.trainee.enrolmentDate (optional)       |                         The date of enrolment of the trainee.                         |                            Datetime-like String                            |   `"2020-01-01"`   |     `"2022-12-31 00:00:00"`     |
+|     enrolment.trainee.sponsorshipType (optional)      |                       The type of sponsorship for the trainee.                        |                     Literal["EMPLOYER", "INDIVIDUAL"]                      |    `"EMPLOYER"`    |         `"abc"`, `123`          |
+|       enrolment.trainingPartner.uen (optional)        |                           The UEN of the training partner.                            |                                 String[12]                                 |   `"T08GB0001A"`   |         `"abc"`, `123`          |
+|            enrolment.trainingPartner.code             |                              The training partner code.                               |                                 String[15]                                 | `"T08GB0001A-01"`  |         `"abc"`, `123`          |
+|              parameters.page (optional)               |                            The page number of the results.                            |                            Non-Negative Integer                            |        `0`         |           `-1`, `abc`           |
+|                  parameters.pageSize                  |                            The number of results per page.                            |                            Non-Negative Integer                            |        `20`        |           `-1`, `abc`           |
+
 #### View Enrolment
 
 |   **Data Field**   |          **Value**          |
@@ -745,6 +1009,12 @@ Users must use this API to view an enrolment record using a provided enrolment r
 
 Since the response is encrypted but the request is not, the encrypted response payload and decrypted response
 payload are displayed to the user. The request payload is displayed as is to the user.
+
+The parameters needed for this API are as follows:
+
+|        **Field**        |            **Description**             | **Type** |    **Example**     | **Counterexample** |
+|:-----------------------:|:--------------------------------------:|:--------:|:------------------:|:------------------:|
+| Enrolment Record Number | The enrolment record reference number. |  String  | `"TGS-0026008-ES"` |    `""`, `123`     |
 
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
@@ -765,6 +1035,12 @@ Users can use this API to update the enrolment fee collection status of an exist
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|            **Field**            |                **Description**                |                                  **Type**                                  |   **Example**    | **Counterexample** |
+|:-------------------------------:|:---------------------------------------------:|:--------------------------------------------------------------------------:|:----------------:|:------------------:|
+| enrolment.fees.collectionStatus | The status of fee collection for the trainee. | Literal["Pending Payment", "Partial Payment", "Full Payment", "Cancelled"] | `"Full Payment"` | `"Partial"`, `123` |
 
 ### Attendance
 
@@ -807,6 +1083,14 @@ payload are displayed to the user. The request payload is displayed as is to the
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
 
+The parameters needed for this API are as follows:
+
+|        **Field**        |                            **Description**                             |      **Type**       |         **Example**          |  **Counterexample**  |
+|:-----------------------:|:----------------------------------------------------------------------:|:-------------------:|:----------------------------:|:--------------------:|
+| Course Reference Number |                      The course reference number.                      |       String        | `"XX-1000----K-01-TEST 166"` | `"123"`, `123456789` |
+|      Course Run ID      | The Course Run ID. This can be obtained from the `Add Course Run` API. | Integer-like String |           `"1234"`           |    `"abc"`, `123`    |
+|       Session ID        |                 The session ID of the course session.                  | Integer-like String |           `"1234"`           |    `"abc"`, `123`    |
+
 #### Upload Course Session Attendance
 
 |   **Data Field**   |                       **Value**                       |
@@ -822,6 +1106,25 @@ Users must use this API to upload information related to a course session attend
 
 Since the request is encrypted but the response is not, the request payload, along with the encrypted request payload
 is displayed to the user.
+
+The parameters needed for this API are as follows:
+
+|                          **Field**                          |                                   **Description**                                   |               **Type**               |          **Example**          |  **Counterexample**  |
+|:-----------------------------------------------------------:|:-----------------------------------------------------------------------------------:|:------------------------------------:|:-----------------------------:|:--------------------:|
+|                             uen                             |                          The UEN of the training provider.                          |                String                |        `"T08GB0001A"`         | `"123"`, `123456789` |
+|                      course.sessionID                       |                        The session ID of the course session.                        |                String                |     `"TEST 166-41618-S1"`     | `"123"`, `123456789` |
+|                course.attendance.status.code                |                         The status code of the attendance.                          |     Literal["1", "2", "3", "4"]      |             `"1"`             |    `"abc"`, `123`    |
+|                course.attendance.trainee.id                 |                           The official ID of the trainee.                           |              String[5]               |         `"S1234567H"`         | `"123"`, `123456789` |
+|               course.attendance.trainee.name                |                              The name of the trainee.                               |              String[66]              |            `"Tom"`            | `"123"`, `123456789` |
+|         course.attendance.trainee.email (optional)          |                          The email address of the trainee.                          |             String[320]              |      `"email@email.com"`      | `"123"`, `123456789` |
+|            course.attendance.trainee.idType.code            |                           The type of ID of the trainee.                            | Literal["SP", "SB", "SO", "FP, "OT"] |            `"SB"`             |    `"abc"`, `123`    |
+|       course.attendance.trainee.contactNumber.mobile        |                          The mobile number of the trainee.                          |       Non-Negative Integer[15]       |         `"85858585"`          | `"123"`, `123456789` |
+| course.attendance.trainee.contactNumber.areaCode (optional) |                   The area code of the trainee's contact number.                    |           Nullable Integer           |            `"123"`            |    `"abc"`, `123`    |
+|     course.attendance.trainee.contactNumber.countryCode     |                  The country code of the trainee's contact number.                  |         Non-Negative Integer         |            `"65"`             |    `"abc"`, `123`    |
+|               course.attendance.numberOfHours               | The number of hours the trainee attended. This value is bounded between 0.5 to 8.0. |          Non-Negative Float          |             `3.5`             |    `"abc"`, `123`    |
+|            course.attendance.surveyLanguage.code            |                          The language code of the survey.                           |   Literal["EL", "MN", "MY", "TM"]    |            `"EL"`             |    `"abc"`, `123`    |
+|                   course.referenceNumber                    |                         The reference number of the course.                         |                String                | `"XX-TxxxxxxxxN-01-TEST 166"` | `"123"`, `123456789` |
+|                         corppassId                          |                      The CorpPass ID of the training provider.                      |                String                |         `"SxxxxxxxT"`         | `"123"`, `123456789` |
 
 ### Assessment
 
@@ -862,6 +1165,24 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                   **Field**                    |                            **Description**                             |               **Type**                |    **Example**     |   **Counterexample**    |
+|:----------------------------------------------:|:----------------------------------------------------------------------:|:-------------------------------------:|:------------------:|:-----------------------:|
+|          assessment.grade (optional)           |                      The grade of the assessment.                      | Literal["A", "B", "C", "D", "E", "F"] |       `"B"`        |     `"abc"`, `123`      |
+|          assessment.score (optional)           |                      The score of the assessment.                      |          Non-Negative Float           |        `80`        |     `"abc"`, `123`      |
+|            assessment.course.run.id            | The Course Run ID. This can be obtained from the "Add Course Run" API. |        Integer-like String[20]        |      `"1234"`      |     `"abc"`, `123`      |
+|       assessment.course.referenceNumber        |                  The reference number of the course.                   |              String[100]              | `"TGS-0026008-ES"` |          `123`          |
+|               assessment.result                |                     The result of the assessment.                      |   Literal["Pass", "Fail", "Exempt"]   |      `"Pass"`      |     `"abc"`, `123`      |
+|             assessment.trainee.id              |                    The official ID of the trainee.                     |              String[20]               |   `"S1234567A"`    |          `123`          |
+|           assessment.trainee.idType            |                     The type of ID of the trainee.                     |   Literal["NRIC", "FIN", "OTHERS"]    |      `"NRIC"`      |     `"abc"`, `123`      |
+|          assessment.trainee.fullName           |                     The full name of the trainee.                      |              String[200]              |    `"John Doe"`    |     `"abc"`, `123`      |
+|        assessment.skillCode (optional)         |                   The skill code of the assessment.                    |              String[30]               | `"TGS-MKG-234222"` |     `"abc"`, `123`      |
+|           assessment.assessmentDate            |                      The date of the assessment.                       |         Datetime-like String          |   `"2020-05-15"`   | `"2022-12-31 00:00:00"` |
+|         assessment.trainingPartner.uen         |                    The UEN of the training partner.                    |              String[12]               |   `"T16GB0003C"`   |     `"abc"`, `123`      |
+|        assessment.trainingPartner.code         |                   The code of the training partner.                    |              String[15]               | `"T16GB0003C-01"`  |     `"abc"`, `123`      |
+| assessment.conferringInstitute.code (optional) |                 The code of the conferring institute.                  |              String[15]               | `"T16GB0003C-01"`  |     `"abc"`, `123`      |
+
 #### Update or Void Assessment
 
 |   **Data Field**   |                **Value**                |
@@ -878,6 +1199,22 @@ Users must use this API to update or void an existing assessment record.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|               **Field**                |                   **Description**                    |               **Type**                |     **Example**     |   **Counterexample**    |
+|:--------------------------------------:|:----------------------------------------------------:|:-------------------------------------:|:-------------------:|:-----------------------:|
+|      Assessment Reference Number       |       The reference number of the assessment.        |              String[100]              | `"ASM-1912-432432"` |          `123`          |
+|      assessment.grade (optional)       |             The grade of the assessment.             | Literal["A", "B", "C", "D", "E", "F"] |        `"B"`        |     `"abc"`, `123`      |
+|      assessment.score (optional)       |             The score of the assessment.             |          Non-Negative Float           |        `80`         |     `"abc"`, `123`      |
+|    assessment.action (auto-filled)     | The action to be performed on the assessment record. |       Literal["update", "void"]       |     `"update"`      |    `"Update"`, `123`    |
+|      assessment.result (optional)      |            The result of the assessment.             |   Literal["Pass", "Fail", "Exempt"]   |      `"Pass"`       |     `"abc"`, `123`      |
+| assessment.trainee.fullName (optional) |            The full name of the trainee.             |              String[200]              |    `"John Doe"`     |     `"abc"`, `123`      |
+|    assessment.skillCode (optional)     |          The skill code of the assessment.           |              String[30]               | `"TGS-MKG-234222"`  |     `"abc"`, `123`      |
+|  assessment.assessmentDate (optional)  |             The date of the assessment.              |         Datetime-like String          |   `"2020-05-15"`    | `"2022-12-31 00:00:00"` |
+
+> [!NOTE]
+> If you wish to void the assessment, all fields except the Assessment Reference Number and `assessment.action` are optional.
 
 #### Find Assessment
 
@@ -897,6 +1234,24 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|                    **Field**                     |                                    **Description**                                    |                      **Type**                       |     **Example**     |   **Counterexample**    |
+|:------------------------------------------------:|:-------------------------------------------------------------------------------------:|:---------------------------------------------------:|:-------------------:|:-----------------------:|
+|         meta.lastUpdateDateTo (optional)         |  The end date of the last update date range for the enrolment records to be queried.  |                Datetime-like String                 |   `"2020-02-01"`    | `"2020-02-01 00:00:00"` |
+|        meta.lastUpdateDateFrom (optional)        | The start date of the last update date range for the enrolment records to be queried. |                Datetime-like String                 |   `"2020-01-01"`    | `"2020-01-01 00:00:00"` |
+|             sortBy.field (optional)              |                      The field to sort the enrolment records by.                      | Literal["updatedOn", "createdOn", "assessmentDate"] |    `"updatedOn"`    |  `"createdOn"`, `123`   |
+|             sortBy.order (optional)              |                      The order to sort the enrolment records by.                      |               Literal["asc", "desc"]                |       `"asc"`       |  `"ascending"`, `123`   |
+|       assessments.course.run.id (optional)       |        The Course Run ID. This can be obtained from the "Add Course Run" API.         |               Integer-like String[20]               |      `"1234"`       |     `"abc"`, `123`      |
+|  assessments.course.referenceNumber (optional)   |                          The reference number of the course.                          |                     String[50]                      | `"TGS-0026008-ES"`  |          `123`          |
+|        assessments.trainee.id (optional)         |                            The official ID of the trainee.                            |                     String[20]                      |    `"S1234567A"`    |          `123`          |
+| assessments.enrolment.referenceNumber (optional) |                     The reference number of the enrolment record.                     |                       String                        | `"ENR-2001-123414"` |       `""`, `123`       |
+|         assessments.skillCode (optional)         |                           The skill code of the assessment.                           |                     String[30]                      | `"TGS-MKG-234222"`  |     `"abc"`, `123`      |
+|          enrolment.trainingPartner.uen           |                           The UEN of the training partner.                            |                     String[12]                      |   `"T08GB0001A"`    |     `"abc"`, `123`      |
+|          enrolment.trainingPartner.code          |                              The training partner code.                               |                     String[15]                      |  `"T08GB0001A-01"`  |     `"abc"`, `123`      |
+|                 parameters.page                  |                            The page number of the results.                            |                Non-Negative Integer                 |         `0`         |       `-1`, `abc`       |
+|               parameters.pageSize                |                            The number of results per page.                            |                Non-Negative Integer                 |        `20`         |       `-1`, `abc`       |
+
 #### View Assessment
 
 |   **Data Field**   |           **Value**           |
@@ -915,6 +1270,12 @@ payload are displayed to the user. The request payload is displayed as is to the
 
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
+
+The parameters needed for this API are as follows:
+
+|        **Field**         |             **Description**             | **Type** |     **Example**     | **Counterexample** |
+|:------------------------:|:---------------------------------------:|:--------:|:-------------------:|:------------------:|
+| Assessment Record Number | The assessment record reference number. |  String  | `"ASM-1912-432432"` |    `""`, `123`     |
 
 ### SkillsFuture Credit Pay
 
@@ -960,6 +1321,19 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|              **Field**               |         **Description**         |            **Type**            |     **Example**     | **Counterexample** |
+|:------------------------------------:|:-------------------------------:|:------------------------------:|:-------------------:|:------------------:|
+|        claimRequest.course.id        |         The course ID.          |             String             | `"TGS-2016504811"`  |   `"abc"`, `123`   |
+|       claimRequest.course.fee        |         The course fee.         | Non-Negative Float-like String |      `"12.50"`      |   `"abc"`, `123`   |
+| claimRequest.course.runId (optional) |       The course run ID.        |      Integer-like String       |      `"12234"`      |   `"abc"`, `123`   |
+|    claimRequest.course.startDate     |     The course start date.      |      Datetime-like String      |   `"2019-05-22"`    |   `"abc"`, `123`   |
+|     claimRequest.individual.nric     |     The individual's NRIC.      |           String[9]            |    `"T5001072J"`    |   `"abc"`, `123`   |
+|    claimRequest.individual.email     |     The individual's email.     |          Email String          | `"email@email.com"` |   `"abc"`, `123`   |
+|  claimRequest.individual.homeNumber  |  The individual's home number.  |             String             |    `"87654321"`     |   `"abc"`, `123`   |
+| claimRequest.individual.mobileNumber | The individual's mobile number. |             String             |    `"98760000"`     |   `"abc"`, `123`   |
+
 #### SF Credit Claims Payment Request Decryption
 
 |   **Data Field**   |                      **Value**                       |
@@ -977,6 +1351,12 @@ Since both the request and response are encrypted, the request payload, along wi
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
 
+The parameters needed for this API are as follows:
+
+|     **Field**      |                                 **Description**                                  |       **Type**        |      **Example**       | **Counterexample** |
+|:------------------:|:--------------------------------------------------------------------------------:|:---------------------:|:----------------------:|:------------------:|
+| claimRequestStatus | The encrypted response from the SF Credit Claims Payment Request Encryption API. | Base64 Encoded String | `"U2FsdGVkX1+...+Q=="` |    `""`, `123`     |
+
 #### Upload Supporting Documents
 
 |   **Data Field**   |                       **Value**                       |
@@ -993,6 +1373,20 @@ Users must use this API to upload supporting documents for a claim.
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|                     **Field**                      |          **Description**          |                                     **Type**                                      |      **Example**       | **Counterexample** |
+|:--------------------------------------------------:|:---------------------------------:|:---------------------------------------------------------------------------------:|:----------------------:|:------------------:|
+|                        nric                        |    The NRIC of the individual.    |                                     String[9]                                     |     `"T5001072J"`      |   `"abc"`, `123`   |
+|                attachments.fileName                |       The name of the file.       |                                      String                                       |    `"File001.doc"`     |   `"abc"`, `123`   |
+|                attachments.fileSize                |       The size of the file.       |                               File Size-like String                               |       `"1.2 MB"`       |   `"abc"`, `123`   |
+|                attachments.fileType                |       The type of the file.       | Literal["pdf", "doc", "docx", "tif", "jpg", "jpeg", "png", "xls", "xlsm", "xlsx"] |        `"doc"`         |   `"abc"`, `123`   |
+| attachments.attachmentId (automatically populated) |     The ID of the attachment.     |                                      String                                       |   `"attachment001"`    |   `"abc"`, `123`   |
+|             attachments.attachmentByte             | The byte array of the attachment. |                         Base64 Encoded String (up to 5MB)                         | `"U2FsdGVkX1+...+Q=="` |   `"abc"`, `123`   |
+
+> [!NOTE]
+> 0 or more attachments are allowed in a single request.
 
 #### View Claim Details
 
@@ -1013,6 +1407,13 @@ payload are displayed to the user. The request payload is displayed as is to the
 > [!NOTE]
 > Since this API uses an HTTP GET request, the request payload might be empty!
 
+The parameters needed for this API are as follows:
+
+| **Field** |        **Description**         |        **Type**         |  **Example**   | **Counterexample** |
+|:---------:|:------------------------------:|:-----------------------:|:--------------:|:------------------:|
+|   NRIC    |  The NRIC of the individual.   |        String[9]        | `"T5001072J"`  |   `"abc"`, `123`   |
+| Claim ID  | The claim reference ID number. | Integer-like String[10] | `"2000217252"` |    `""`, `123`     |
+
 #### Cancel Claim
 
 |   **Data Field**   |                **Value**                |
@@ -1029,6 +1430,14 @@ Users must use this API to cancel a claim using a provided claim reference numbe
 Since both the request and response are encrypted, the request payload, along with the encrypted request payload
 is displayed to the user. The encrypted response payload and decrypted response payload are also displayed to the
 user.
+
+The parameters needed for this API are as follows:
+
+|         **Field**         |           **Description**            |               **Type**                |  **Example**   | **Counterexample** |
+|:-------------------------:|:------------------------------------:|:-------------------------------------:|:--------------:|:------------------:|
+|           NRIC            |     The NRIC of the individual.      |               String[9]               | `"T5001072J"`  |   `"abc"`, `123`   |
+|         Claim ID          |    The claim reference ID number.    |        Integer-like String[10]        | `"2000217252"` |    `""`, `123`     |
+| Select Cancel Claims Code | The reason for cancelling the claim. | Literal["51", "52", "53", "54", "55"] |     `"51"`     |   `"abc"`, `123`   |
 
 ## DevOps
 
