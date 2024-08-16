@@ -33,6 +33,7 @@ jobs:
         run: terraform destroy -auto-approve
 
   teardown-dev:
+    if: github.repository != 'ssg-wsg/Sample-Codes'
     runs-on: ubuntu-latest
     name: Tear Down Infrastructure (dev)
 
