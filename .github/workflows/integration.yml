@@ -134,6 +134,7 @@ jobs:
   setup-dev:
     # dev setup should occur outside the prod repo
     if: github.repository != 'ssg-wsg/Sample-Codes'
+    environment: dev
     needs:
       - test
     runs-on: ubuntu-latest

@@ -39,7 +39,7 @@ output "ssh_public_key" {
 }
 
 output "az_count" {
-  value = 3
+  value = 1
 }
 
 output "desired_instances_count" {
