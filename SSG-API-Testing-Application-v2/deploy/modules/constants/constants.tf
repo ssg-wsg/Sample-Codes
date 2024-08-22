@@ -39,7 +39,7 @@ output "ssh_public_key" {
 }
 
 output "az_count" {
-  value = 3
+  value = 1
 }
 
 output "desired_instances_count" {
@@ -111,10 +111,6 @@ output "deployment_minimum_healthy_percent" {
 }
 
 output "launch_instance_instance_type" {
-  value = "t2.micro"
-}
-
-output "bastion_host_instance_type" {
   value = "t2.micro"
 }
 

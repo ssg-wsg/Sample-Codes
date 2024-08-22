@@ -83,6 +83,7 @@ jobs:
   setup:
     # prod setup should only occur on the prod repo
     if: github.repository == 'ssg-wsg/Sample-Codes'
+    environment: production
     needs:
       - test
     runs-on: ubuntu-latest
@@ -134,6 +135,7 @@ jobs:
   setup-dev:
     # dev setup should occur outside the prod repo
     if: github.repository != 'ssg-wsg/Sample-Codes'
+    environment: dev
     needs:
       - test
     runs-on: ubuntu-latest
