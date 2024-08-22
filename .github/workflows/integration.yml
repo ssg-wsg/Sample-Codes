@@ -83,6 +83,7 @@ jobs:
   setup:
     # prod setup should only occur on the prod repo
     if: github.repository == 'ssg-wsg/Sample-Codes'
+    environment: production
     needs:
       - test
     runs-on: ubuntu-latest

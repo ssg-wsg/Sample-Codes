@@ -114,10 +114,6 @@ output "launch_instance_instance_type" {
   value = "t2.micro"
 }
 
-output "bastion_host_instance_type" {
-  value = "t2.micro"
-}
-
 output "broadcast_ipv4" {
   value = "0.0.0.0/0"
 }
