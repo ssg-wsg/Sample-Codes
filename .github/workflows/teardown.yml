@@ -3,9 +3,10 @@ name: Tear Down Main Infrastructure
 on: workflow_dispatch
 
 jobs:
-  teardown:
+  teardown-prod:
+    if: github.repository == 'ssg-wsg/Sample-Codes'
     runs-on: ubuntu-latest
-    name: Tear Down Infrastructure
+    name: Tear Down Infrastructure (prod)
 
     steps:
       - name: Checkout Repository
@@ -14,8 +15,46 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Terraform Init
+        id: init
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/prod/main-infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.REGION }}
+        run: terraform init
+      
       - name: Destroy Main Infrastructure
-        working-directory: ./SSG-API-Testing-Application-v2/deploy/main-infrastructure
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/prod/main-infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: terraform destroy -auto-approve
+
+  teardown-dev:
+    if: github.repository != 'ssg-wsg/Sample-Codes'
+    runs-on: ubuntu-latest
+    name: Tear Down Infrastructure (dev)
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        id: init
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/dev/main-infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.REGION }}
+        run: terraform init
+      
+      - name: Destroy Main Infrastructure
+        working-directory: ./SSG-API-Testing-Application-v2/deploy/dev/main-infrastructure
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
