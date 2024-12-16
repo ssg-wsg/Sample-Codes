@@ -34,11 +34,11 @@ def init() -> None:
     if "url" not in st.session_state:
         st.session_state["url"] = None
 
-    if "default_secrets_checkbox" not in st.session_state:
-        st.session_state["default_secrets_checkbox"] = st.session_state["default_secrets"]
-
     if "default_secrets" not in st.session_state:
-        st.session_state["default_secrets"] = None
+        st.session_state["default_secrets"] = False
+
+    if "default_secrets_checkbox" not in st.session_state and "default_secrets" in st.session_state:
+        st.session_state["default_secrets_checkbox"] = st.session_state["default_secrets"]
 
 
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
