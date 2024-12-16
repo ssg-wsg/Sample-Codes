@@ -76,7 +76,7 @@ with view:
     if st.button("Send", key="view_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -212,7 +212,7 @@ with upload:
     if st.button("Send", key="upload_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:

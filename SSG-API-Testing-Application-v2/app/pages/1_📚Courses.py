@@ -34,7 +34,7 @@ from app.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutatio
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import (init, display_config,
-                                       validation_error_handler, does_not_have_keys)
+                                       validation_error_handler, does_not_have_keys, does_not_have_url)
 from app.utils.verify import Validators
 
 # initialise necessary variables
@@ -91,14 +91,14 @@ with view:
     if st.button("Send", key="view-button", type="primary"):
         LOGGER.info("Attempting to send request to View Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(runs) == 0:
             LOGGER.error("Missing Course Run ID!")
             st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
         elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            LOGGER.error("Missing Certificate or Private Keys! (in courses)")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
         else:
@@ -677,7 +677,7 @@ with add:
     if st.button("Send", key="add-button", type="primary") or st.session_state["add-button"]:
         LOGGER.info("Attempting to send request to Add Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -1248,7 +1248,7 @@ with edit_delete:
     if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Edit/Delete Course Run API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -1328,7 +1328,7 @@ with sessions:
     if st.button("Send", key="view-session-button", type="primary"):
         LOGGER.info("Attempting to send request to View Course Sessions API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:

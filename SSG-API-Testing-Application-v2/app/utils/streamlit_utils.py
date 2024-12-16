@@ -135,8 +135,12 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
     return len(errors) == 0
 
-
 def does_not_have_keys() -> bool:
-    """Returns true if both private key and cert keys are present."""
+    """Returns true if either private key or cert keys are missing."""
 
     return st.session_state["key_pem"] is None or st.session_state["cert_pem"] is None
+
+def does_not_have_url() -> bool:
+    """Returns true if url endpoint is missing."""
+
+    return "url" not in st.session_state or st.session_state["url"] is None

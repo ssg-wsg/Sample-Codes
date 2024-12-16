@@ -167,7 +167,7 @@ with create:
     if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Create Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -269,7 +269,7 @@ with update_void:
     if st.button("Send", key="update-void-button", type="primary"):
         LOGGER.info("Attempting to send request to Update/Void Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -403,7 +403,7 @@ with find:
     if st.button("Send", key="search-button", type="primary"):
         LOGGER.info("Attempting to send request to Search Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif does_not_have_keys():
@@ -442,7 +442,7 @@ with view:
     if st.button("Send", key="view-assessment-button", type="primary"):
         LOGGER.info("Attempting to send request to View Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url:
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif arn is None or len(arn) == 0:
