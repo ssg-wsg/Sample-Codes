@@ -34,6 +34,12 @@ def init() -> None:
     if "url" not in st.session_state:
         st.session_state["url"] = None
 
+    if "default_secrets_checkbox" not in st.session_state:
+        st.session_state["default_secrets_checkbox"] = st.session_state["default_secrets"]
+
+    if "default_secrets" not in st.session_state:
+        st.session_state["default_secrets"] = None
+
 
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
 # of this decorator and replace it with the new syntax
@@ -51,6 +57,9 @@ def display_config() -> None:
 
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
+
+    st.header("Defaults")
+    st.code(st.session_state["default_secrets"] if st.session_state["default_secrets"] is not None else "-")
 
     st.header("Encryption Key:")
     st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")

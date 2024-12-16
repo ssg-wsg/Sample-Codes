@@ -74,6 +74,12 @@ if len(st.session_state["uen"]) > 0:
         st.success("**UEN** loaded successfully!", icon="✅")
         st.session_state.update(uen=st.session_state["uen"].upper())  # UENs only have upper case characters
 
+st.checkbox("Tick this if you would like to use encryption key, Certificate and Private Key that we provide",
+                              key="default_secrets_checkbox")
+# logic here because streamlit will delete the session state when navigating to new page
+if st.session_state["default_secrets_checkbox"] is not None:
+    st.session_state["default_secrets"] = st.session_state["default_secrets_checkbox"]
+
 # AES Encryption Key to be loaded outside of a form
 st.session_state["encryption_key"] = st.text_input("Enter in your encryption key", type="password",
                                                    help="Refer to this [guide]("
