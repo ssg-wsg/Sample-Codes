@@ -1,4 +1,4 @@
-# This code is meant to run in AWS Lambda and will retrieve secrets from AWS Parameter Store.
+# This code is meant to run in AWS Lambda and will retrieve secrets from AWS Systems Manager Parameter Store.
 # Use this code snippet in your app.
 # If you need more information about configurations
 # or implementing the sample code, visit the AWS docs:
@@ -21,7 +21,8 @@ header = {
 
 
 def lambda_handler(event, context):
-    secrets = json.loads(get_secret())
+    print(get_secret())
+    return
     cert_pem = create_temp_file(secrets["cert"])
     key_pem = create_temp_file(secrets["key"])
     response = view_course_run(cert_pem, key_pem)
@@ -30,30 +31,27 @@ def lambda_handler(event, context):
 
 def get_secret():
 
-    secret_name = "SampleApp/testing"
+    secret_name = "/SampleApp/"
     region_name = "ap-southeast-1"
 
     # Create a Secrets Manager client
     retrieve_secrets_session = assume_role()
-    session = boto3.session.Session()
-    client = retrieve_secrets_session.client(
-        service_name='secretsmanager',
+    ssm = retrieve_secrets_session.client(
+        service_name='ssm',
         region_name=region_name
     )
-
+    
     try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
+        response = ssm.get_parameters_by_path(
+            Path=secret_name,
+            WithDecryption=True,
         )
     except ClientError as e:
         # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm/client/get_parameters_by_path.html
         raise e
 
-    secret = get_secret_value_response['SecretString']
-
-    # Your code goes here.
-    return secret
+    return response['Parameters']
 
 
 def assume_role():

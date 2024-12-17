@@ -48,3 +48,7 @@ To import dependencies into AWS Lambda, you can add them via custom layers. The 
 
 The minimum dependancy required to run the lambda function provided is:
 - requests 
+
+# References:
+- https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html
+- https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm/client/get_parameters_by_path.html
