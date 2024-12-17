@@ -33,9 +33,14 @@ def get_secret():
     region_name = "ap-southeast-1"
 
     # Create a Secrets Manager client
+<<<<<<< HEAD
     retrieve_secrets_session = assume_role()
     session = boto3.session.Session()
     client = retrieve_secrets_session.client(
+=======
+    session = boto3.session.Session()
+    client = session.client(
+>>>>>>> bd1ab90 (initial commit of retrieve secrets using lambda)
         service_name='secretsmanager',
         region_name=region_name
     )
@@ -52,6 +57,7 @@ def get_secret():
     secret = get_secret_value_response['SecretString']
 
     # Your code goes here.
+<<<<<<< HEAD
     return secret
 
 
@@ -84,3 +90,7 @@ def view_course_run(cert_pem, key_pem):
                         headers=header,
                         verify=certifi.where(),
                         cert=(cert_pem, key_pem))
+=======
+    print(secret)
+    
+>>>>>>> bd1ab90 (initial commit of retrieve secrets using lambda)
