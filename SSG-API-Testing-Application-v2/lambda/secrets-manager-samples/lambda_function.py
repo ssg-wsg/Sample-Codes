@@ -35,7 +35,6 @@ def get_secret():
 
     # Create a Secrets Manager client
     retrieve_secrets_session = assume_role()
-    session = boto3.session.Session()
     client = retrieve_secrets_session.client(
         service_name='secretsmanager',
         region_name=region_name
