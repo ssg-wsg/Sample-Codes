@@ -21,8 +21,8 @@ header = {
 
 
 def lambda_handler(event, context):
-    print(get_secret())
-    return
+    secrets = get_secret()
+
     cert_pem = create_temp_file(secrets["cert"])
     key_pem = create_temp_file(secrets["key"])
     response = view_course_run(cert_pem, key_pem)
@@ -30,7 +30,11 @@ def lambda_handler(event, context):
 
 
 def get_secret():
-
+    ''' 
+    returns a list of parameters found by query 
+    search for your secret using the value stored in the "Name" and "Value" key 
+    see full response syntax at https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameters.html#API_GetParameters_ResponseSyntax 
+    '''
     secret_name = "/SampleApp/"
     region_name = "ap-southeast-1"
 
