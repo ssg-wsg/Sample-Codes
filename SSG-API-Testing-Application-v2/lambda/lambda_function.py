@@ -22,11 +22,14 @@ header = {
 
 def lambda_handler(event, context):
     secrets = get_secret()
+    
+    cert = extract_secret(secrets,"/SampleApp/testing/cert")
+    key = extract_secret(secrets,"/SampleApp/testing/key")    
 
-    cert_pem = create_temp_file(secrets["cert"])
-    key_pem = create_temp_file(secrets["key"])
+    cert_pem = create_temp_file(cert)
+    key_pem = create_temp_file(key)
     response = view_course_run(cert_pem, key_pem)
-    print(response)
+    return(response.content)
 
 
 def get_secret():
@@ -35,7 +38,7 @@ def get_secret():
     search for your secret using the value stored in the "Name" and "Value" key 
     see full response syntax at https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameters.html#API_GetParameters_ResponseSyntax 
     '''
-    secret_name = "/SampleApp/"
+    secret_name = "/SampleApp/testing/"
     region_name = "ap-southeast-1"
 
     # Create a Secrets Manager client
@@ -70,6 +73,21 @@ def assume_role():
                                 aws_session_token=response['Credentials']['SessionToken'])
 
     return new_session
+
+
+def extract_secret(parameters,secret_name):
+    '''
+    iterate through the list of parameters 
+    returns the secret value if exists and none if not found
+    '''
+    if parameters is None:
+        return None
+    
+    for parameter in parameters:
+        if parameter["Name"] == secret_name:
+            return parameter["Value"]
+    
+    return None
 
 
 def create_temp_file(inputStuff):
