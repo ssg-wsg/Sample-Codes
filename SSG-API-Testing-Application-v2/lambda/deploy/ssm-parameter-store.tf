@@ -21,11 +21,11 @@ variable "secrets" {
 }
 
 resource "aws_ssm_parameter" "secrets" {
-  for_each = var.secrets
+  count = length(keys(var.secrets))
 
-  name        = each.key
-  value       = each.value.value
-  description = each.value.description
+  name        = element(keys(var.secrets), count.index)
+  value       = var.secrets[element(keys(var.secrets), count.index)].value
+  description = var.secrets[element(keys(var.secrets), count.index)].description
 
   type = "SecureString"
 }
