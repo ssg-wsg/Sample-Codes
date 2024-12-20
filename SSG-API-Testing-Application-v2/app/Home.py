@@ -74,7 +74,7 @@ if len(st.session_state["uen"]) > 0:
         st.success("**UEN** loaded successfully!", icon="✅")
         st.session_state.update(uen=st.session_state["uen"].upper())  # UENs only have upper case characters
 
-st.checkbox("Tick this if you would like to our sample Encryption key, Certificate and Private Key instead",
+st.checkbox("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead",
             key="default_secrets_checkbox",
             help="You will need to have your own set of credentials when using the APIs in production")
 # logic here because streamlit will delete the session state when navigating to new page
