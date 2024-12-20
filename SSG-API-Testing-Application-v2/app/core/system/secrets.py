@@ -153,5 +153,3 @@ def create_temp_file(inputStuff, saveDir=None):
         f.write(inputStuff)
     return temp_file.name
 
-
-test()
