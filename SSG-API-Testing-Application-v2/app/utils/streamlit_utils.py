@@ -8,6 +8,7 @@ from typing import Union
 from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
+from app.core.system.secrets import Set_Default_Secrets
 
 LOGGER = Logger(__name__)
 
@@ -18,6 +19,7 @@ def init() -> None:
 
     :return: None
     """
+    Set_Default_Secrets()
 
     if "uen" not in st.session_state:
         st.session_state["uen"] = ""
@@ -35,7 +37,7 @@ def init() -> None:
         st.session_state["url"] = None
 
     if "default_secrets" not in st.session_state:
-        st.session_state["default_secrets"] = False
+        st.session_state["default_secrets"] = True
 
     if "default_secrets_checkbox" not in st.session_state and "default_secrets" in st.session_state:
         st.session_state["default_secrets_checkbox"] = st.session_state["default_secrets"]
