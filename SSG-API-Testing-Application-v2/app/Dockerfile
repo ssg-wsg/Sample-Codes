@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Below is an example command to run to set these environment variables needed for default secrets function to be set
 # For more variables, just extend the command with --build-arg <ARG name>=<your value>
 # For more info, see https://docs.docker.com/build/building/variables/#arg-usage-example
-# docker build --build-arg SECRET_PATH="/secret/path/test" --build-arg SECRET_ENCRYPTION_KEY_PATH="/secret/path/test/encrypt" --build-arg SECRET_CERT_PATH="/secret/path/test/cert" --build-arg SECRET_KEY_PATH="/secret/path/test/key" --build-arg ROLE_ARN="arn:aws:iam::123456789012:role/SampleRole" --build-arg REGION_NAME="ap-southeast-1" -t YourImageName .
+# docker build --build-arg SECRET_PATH="/sample/app/test" --build-arg SECRET_ENCRYPTION_KEY_PATH="/sample/app/test/encrypt" --build-arg SECRET_CERT_PATH="/sample/app/test/cert" --build-arg SECRET_KEY_PATH="/sample/app/test/key" --build-arg ROLE_ARN="arn:aws:iam::767397936445:role/SampleAppRetrieveSecret" --build-arg REGION_NAME="ap-southeast-1" -t ssg/sample-app-test .
 
 ARG SECRET_PATH=''
 ENV SECRET_PATH=$SECRET_PATH
