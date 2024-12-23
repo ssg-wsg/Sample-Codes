@@ -11,7 +11,7 @@ from botocore.exceptions import ClientError
 LOGGER = Logger(__name__)
 
 
-# placeholder variables for the environment names where the secrets are stored
+# the environment names where the secrets are stored
 ENV_NAME_ENCRYPT = "default_encryption_key"
 ENV_NAME_CERT = "default_cert_path"
 ENV_NAME_KEY = "default_key_path"
