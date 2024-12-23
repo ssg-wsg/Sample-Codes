@@ -36,6 +36,11 @@ with st.sidebar:
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
+    # TODO: add this temporary button for debugging purpose
+    st.write(st.session_state["secret_fetched"])
+    if st.button("swap session_state secret_fetched"):
+        st.session_state["secret_fetched"] = not st.session_state["secret_fetched"]
+
 st.image("assets/sf.png", width=200)
 st.title("SSG API Sample Application")
 st.markdown("Welcome to the SSG API Sample Application!\n\n"
