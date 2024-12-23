@@ -173,21 +173,17 @@ class HTTPRequestBuilder:
 
         return self.with_header("x-api-version", version)
 
-    def get(self) -> requests.Response:
+    def get(self,cert_pem,key_pem) -> requests.Response:
         """
         Sends a GET request to the endpoint using the relevant certs stored in the session state.
 
         :return: requests.Response object
         """
-
-        if "key_pem" not in st.session_state or "cert_pem" not in st.session_state:
-            raise ValueError("No Key or Certificate files specified!")
-
         return requests.get(self.endpoint,
                             params=self.params,
                             headers=self.header,
                             verify=certifi.where(),
-                            cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
+                            cert=(cert_pem,key_pem))
 
     def post(self) -> requests.Response:
         """

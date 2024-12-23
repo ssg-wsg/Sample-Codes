@@ -20,6 +20,8 @@ from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
+from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+
 # initialise all variables and logger
 init()
 LOGGER = Logger("Home")
@@ -36,11 +38,37 @@ with st.sidebar:
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
-    # TODO: add this temporary button for debugging purpose
-    st.write(st.session_state["secret_fetched"])
-    if st.button("swap session_state secret_fetched"):
-        st.session_state["secret_fetched"] = not st.session_state["secret_fetched"]
+    # TODO: these are temporary items for debugging/testing purpose
+    # if st.button("swap session_state secret_fetched"):
+    #     st.session_state["secret_fetched"] = not st.session_state["secret_fetched"]
+    # st.write(st.session_state["secret_fetched"])
+    # st.write(os.environ.get(ENV_NAME_ENCRYPT,'nothing'))
+    # st.write(os.environ.get(ENV_NAME_CERT,'nothing'))
+    # st.write(os.environ.get(ENV_NAME_KEY,'nothing'))
+    # st.write(st.session_state["cert_pem"])
+    # st.write(st.session_state["key_pem"])
 
+    # if st.button("set defaults to uploaded"):
+    #     os.environ[ENV_NAME_CERT] = st.session_state["cert_pem"]
+    #     os.environ[ENV_NAME_KEY] = st.session_state["key_pem"]
+
+    # if "tempcert" not in st.session_state:
+    #     st.session_state["tempcert"] =''
+    # st.session_state["tempcert"] = st.text_input("enter cert", 
+    #                                                value=st.session_state["tempcert"])
+    # if len(st.session_state["tempcert"]) > 0:
+    #     st.success("loaded cert", icon="✅")
+    #     os.environ[ENV_NAME_CERT] = st.session_state["tempcert"]
+
+    # if "tempkey" not in st.session_state:
+    #     st.session_state["tempkey"] =''
+    # st.session_state["tempkey"] = st.text_input("enter key", 
+    #                                                value=st.session_state["tempkey"])
+    # if len(st.session_state["tempkey"]) > 0:
+    #     st.success("loaded key", icon="✅")
+    #     os.environ[ENV_NAME_KEY] = st.session_state["tempkey"]
+
+    
 st.image("assets/sf.png", width=200)
 st.title("SSG API Sample Application")
 st.markdown("Welcome to the SSG API Sample Application!\n\n"

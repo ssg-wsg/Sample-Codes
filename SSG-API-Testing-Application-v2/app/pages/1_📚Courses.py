@@ -16,6 +16,7 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+import os
 import streamlit as st
 
 from datetime import datetime, date
@@ -36,6 +37,8 @@ from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import (init, display_config,
                                        validation_error_handler, does_not_have_keys, does_not_have_url)
 from app.utils.verify import Validators
+
+from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 # initialise necessary variables
 init()
@@ -97,7 +100,10 @@ with view:
         elif len(runs) == 0:
             LOGGER.error("Missing Course Run ID!")
             st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
-        elif does_not_have_keys():
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error("User chose to use defaults but defaults are not set!")
+            st.error("There are no default secrets set, please provide your own defaults.", icon="🚨")
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys! (in courses)")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
@@ -110,8 +116,13 @@ with view:
                 handle_request(vc)
 
             with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: vc.execute())
+                # pass in the correct secrets based on user choice
+                if st.session_state["default_secrets"]:
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: vc.execute(os.environ.get(ENV_NAME_CERT, ''),os.environ.get(ENV_NAME_KEY, '')))
+                else:
+                    LOGGER.info("Executing request with user's secrets...")
+                    handle_response(lambda: vc.execute(st.session_state["cert_pem"],st.session_state["key_pem"]))
 
 
 with add:
