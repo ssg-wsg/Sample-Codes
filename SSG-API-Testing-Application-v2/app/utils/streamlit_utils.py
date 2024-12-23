@@ -8,7 +8,7 @@ from typing import Union
 from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
-from app.core.system.secrets import Set_Default_Secrets
+from app.core.system.secrets import (Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 LOGGER = Logger(__name__)
 
@@ -19,7 +19,11 @@ def init() -> None:
 
     :return: None
     """
-    Set_Default_Secrets()
+    # if secrets has not been fetched, go and fetch it
+    if "secret_fetched" not in st.session_state:
+        st.session_state["secret_fetched"] = False
+    if not st.session_state["secret_fetched"]:
+        st.session_state["secret_fetched"] = Set_Default_Secrets()
 
     if "uen" not in st.session_state:
         st.session_state["uen"] = ""
