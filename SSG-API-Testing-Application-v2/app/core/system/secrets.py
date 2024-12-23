@@ -21,7 +21,7 @@ def Set_Default_Secrets() -> bool:
     '''
     function to retrieve secrets and store in environment variables
     all variables required needs to be set as environment variables in advance
-    returns defaults are set
+    returns if defaults are set
     '''
     # the path where the items are stored
     secret_path = os.environ.get('SECRET_PATH', '')
