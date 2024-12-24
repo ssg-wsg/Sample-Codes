@@ -20,10 +20,8 @@ def init() -> None:
 
     :return: None
     """
-    # if secrets has not been fetched, go and fetch it
-    if "secret_fetched" not in st.session_state:
-        st.session_state["secret_fetched"] = False
-    if not st.session_state["secret_fetched"]:
+    # if secrets has not been initialised or fetched, go and fetch it
+    if "secret_fetched" not in st.session_state or not st.session_state["secret_fetched"]:
         st.session_state["secret_fetched"] = Set_Default_Secrets()
 
     if "uen" not in st.session_state:

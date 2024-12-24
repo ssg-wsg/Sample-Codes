@@ -186,7 +186,7 @@ class HTTPRequestBuilder:
                             verify=certifi.where(),
                             cert=(cert_pem, key_pem))
 
-    def post(self) -> requests.Response:
+    def post(self, cert_pem, key_pem) -> requests.Response:
         """
         Sends a POST request to the endpoint using the relevant certs stored in the sessions state.
 
@@ -201,7 +201,7 @@ class HTTPRequestBuilder:
                              headers=self.header,
                              data=self.body,
                              verify=certifi.where(),
-                             cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
+                             cert=(cert_pem, key_pem))
 
     def post_encrypted(self, encryption_key, cert_pem, key_pem) -> requests.Response:
         """
