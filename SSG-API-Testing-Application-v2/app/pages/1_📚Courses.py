@@ -108,7 +108,7 @@ with view:
             LOGGER.error(
                 "User chose to use defaults but defaults are not set!")
             st.error(
-                "There are no default secrets set, please provide your own defaults.", icon="🚨")
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
         elif not st.session_state["default_secrets"] and does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys! (in courses)")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
@@ -757,7 +757,7 @@ with add:
             LOGGER.error(
                 "User chose to use defaults but defaults are not set!")
             st.error(
-                "There are no default secrets set, please provide your own defaults.", icon="🚨")
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_keys():
             LOGGER.error(
@@ -1368,7 +1368,7 @@ with edit_delete:
         LOGGER.info(
             "Attempting to send request to Edit/Delete Course Run API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error(
                 "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
@@ -1389,7 +1389,7 @@ with edit_delete:
             LOGGER.error(
                 "User chose to use defaults but defaults are not set!")
             st.error(
-                "There are no default secrets set, please provide your own defaults.", icon="🚨")
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_keys():
             LOGGER.error(
@@ -1483,7 +1483,7 @@ with sessions:
     if st.button("Send", key="view-session-button", type="primary"):
         LOGGER.info("Attempting to send request to View Course Sessions API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error(
                 "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
@@ -1491,16 +1491,21 @@ with sessions:
             LOGGER.error("Missing UEN, request aborted!")
             st.error(
                 "Make sure to fill in your **UEN** before proceeding!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
         elif crn is None or len(crn) == 0:
             st.error(
                 "Make sure to fill in the **Course Reference Number** before proceeding!", icon="🚨")
         elif runs is None or len(runs) == 0:
             st.error(
                 "Make sure to fill in the **Course Run ID** before proceeding!", icon="🚨")
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error("Missing Certificate or Private Keys! (in courses)")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             request, response = st.tabs(["Request", "Response"])
             vcs = ViewCourseSessions(
@@ -1511,5 +1516,12 @@ with sessions:
                 handle_request(vcs)
 
             with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: vcs.execute())
+                # pass in the correct secrets based on user choice
+                if st.session_state["default_secrets"]:
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: vcs.execute(os.environ.get(
+                        ENV_NAME_CERT, ''), os.environ.get(ENV_NAME_KEY, '')))
+                else:
+                    LOGGER.info("Executing request with user's secrets...")
+                    handle_response(lambda: vcs.execute(
+                        st.session_state["cert_pem"], st.session_state["key_pem"]))
