@@ -783,12 +783,16 @@ with add:
                     # pass in the correct secrets based on user choice
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: ac.execute(os.environ.get(ENV_NAME_ENCRYPT, ''), os.environ.get(
-                            ENV_NAME_CERT, ''), os.environ.get(ENV_NAME_KEY, '')))
+                        handle_response(lambda: ac.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
                         LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: ac.execute(
-                            st.session_state["encryption_key"], st.session_state["cert_pem"], st.session_state["key_pem"]))
+                        handle_response(lambda: ac.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with edit_delete:

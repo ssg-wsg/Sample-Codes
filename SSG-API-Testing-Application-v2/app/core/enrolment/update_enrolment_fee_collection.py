@@ -41,11 +41,11 @@ class UpdateEnrolmentFeeCollection(AbstractRequest):
             .with_header("Content-Type", "application/json") \
             .with_body(update_enrolment_fee_collection_info.payload())
 
-    def execute(self) -> requests.Response:
+    def execute(self,encryption_key,cert_pem,key_pem) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.post_encrypted()
+        return self.req.post_encrypted(encryption_key,cert_pem,key_pem)
