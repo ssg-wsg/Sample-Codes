@@ -40,11 +40,13 @@ class Cryptography:
             plaintext = plaintext.encode()
 
         enc_key = b64decode(key)
-        cipher_algo = Cipher(AES(enc_key), CBC(Cryptography.INITIAL_VECTOR), backend=default_backend())
+        cipher_algo = Cipher(AES(enc_key), CBC(
+            Cryptography.INITIAL_VECTOR), backend=default_backend())
         padding_algo = PKCS7(128).padder()
 
         encryptor = cipher_algo.encryptor()
-        padded_plaintext = padding_algo.update(plaintext) + padding_algo.finalize()
+        padded_plaintext = padding_algo.update(
+            plaintext) + padding_algo.finalize()
         ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
 
         encoded_ciphertext = b64encode(ciphertext)
@@ -76,12 +78,14 @@ class Cryptography:
         decoded_ciphertext = b64decode(ciphertext)
 
         enc_key = b64decode(key)
-        cipher_algo = Cipher(AES(enc_key), CBC(Cryptography.INITIAL_VECTOR), backend=default_backend())
+        cipher_algo = Cipher(AES(enc_key), CBC(
+            Cryptography.INITIAL_VECTOR), backend=default_backend())
         padding_algo = PKCS7(128).unpadder()
 
         decryptor = cipher_algo.decryptor()
         plaintext = decryptor.update(decoded_ciphertext) + decryptor.finalize()
-        unpadded_plaintext = padding_algo.update(plaintext) + padding_algo.finalize()
+        unpadded_plaintext = padding_algo.update(
+            plaintext) + padding_algo.finalize()
 
         if return_bytes:
             return unpadded_plaintext

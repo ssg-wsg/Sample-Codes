@@ -39,11 +39,11 @@ class CreateEnrolment(AbstractRequest):
 
         print(enrolment_info.payload())
 
-    def execute(self,encryption_key,cert_pem,key_pem) -> requests.Response:
+    def execute(self, encryption_key, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.post_encrypted(encryption_key,cert_pem,key_pem)
+        return self.req.post_encrypted(encryption_key, cert_pem, key_pem)

@@ -19,6 +19,9 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+from app.core.system.secrets import (
+    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+from app.utils.verify import Validators
 import datetime
 import os
 
@@ -38,11 +41,9 @@ from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableColl
                                 EnrolmentCourseStatus)
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
-from app.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_url, does_not_have_encryption_key, does_not_have_keys
-from app.utils.verify import Validators
+from app.utils.streamlit_utils import (init, display_config, validation_error_handler,
+                                       does_not_have_url, does_not_have_encryption_key, does_not_have_keys)
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 init()
 LOGGER = Logger("Courses API")
@@ -52,7 +53,8 @@ st.set_page_config(page_title="Enrolment", page_icon="🏫")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
@@ -203,7 +205,8 @@ with create:
             help="The trainee's full name",
             key="enrolment-trainee-full-name")
     create_enrolment.trainee_dateOfBirth = st.date_input(label="Trainee Date of Birth",
-                                                         min_value=datetime.date(1900, 1, 1),
+                                                         min_value=datetime.date(
+                                                             1900, 1, 1),
                                                          help="Trainee Date of Birth",
                                                          key="enrolment-trainee-date-of-birth")
     create_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
@@ -238,7 +241,8 @@ with create:
 
     if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
         create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
-                                                               min_value=datetime.date(1900, 1, 1),
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
                                                                help="Trainee Date of Enrolment",
                                                                key="enrolment-trainee-date-of-enrolment")
 
@@ -271,12 +275,13 @@ with create:
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
             LOGGER.error("Missing UEN!")
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
-            
+
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
             st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
@@ -313,7 +318,8 @@ with create:
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: ce.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
                                                            os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
@@ -453,9 +459,11 @@ with update:
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
@@ -493,7 +501,8 @@ with update:
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: ue.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
                                                            os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
@@ -502,7 +511,6 @@ with update:
                                                            st.session_state["cert_pem"],
                                                            st.session_state["key_pem"]),
                                         st.session_state["encryption_key"])
-
 
 
 with cancel:
@@ -532,9 +540,11 @@ with cancel:
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
@@ -558,7 +568,8 @@ with cancel:
             errors, warnings = cancel_enrolment.validate()
 
             if validation_error_handler(errors, warnings):
-                cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
+                cancel_en = CancelEnrolment(
+                    enrolment_reference_num, cancel_enrolment)
 
                 with request:
                     LOGGER.info("Showing preview of request...")
@@ -566,21 +577,23 @@ with cancel:
                         handle_request(cancel_en, os.environ.get(
                             ENV_NAME_ENCRYPT, ''))
                     else:
-                        handle_request(cancel_en, st.session_state["encryption_key"])
+                        handle_request(
+                            cancel_en, st.session_state["encryption_key"])
 
                 with response:
                     # pass in the correct secrets based on user choice
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: cancel_en.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                                                  os.environ.get(
+                                                                      ENV_NAME_CERT, ''),
+                                                                  os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
                         LOGGER.info("Executing request with user's secrets...")
                         handle_response(lambda: cancel_en.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
+                                                                  st.session_state["cert_pem"],
+                                                                  st.session_state["key_pem"]),
                                         st.session_state["encryption_key"])
 
 
@@ -602,7 +615,8 @@ with search:
         if st.checkbox("Specify Last Updated Date From?", key="specify-search-enrolment-last-updated-from"):
             search_enrolment.lastUpdateDateFrom = st.date_input(label="Last Updated Date From",
                                                                 key="search-enrolment-last-updated-from",
-                                                                min_value=datetime.date(1900, 1, 1),
+                                                                min_value=datetime.date(
+                                                                    1900, 1, 1),
                                                                 format="YYYY-MM-DD",
                                                                 help="This parameter is mandatory if retrieveType is "
                                                                      "DELTA. This will return records with last "
@@ -613,7 +627,8 @@ with search:
         if st.checkbox("Specify Last Updated Date To?", key="specify-search-enrolment-last-updated-to"):
             search_enrolment.lastUpdateDateTo = st.date_input(label="Last Updated Date To",
                                                               key="search-enrolment-last-updated-to",
-                                                              min_value=datetime.date(1900, 1, 1),
+                                                              min_value=datetime.date(
+                                                                  1900, 1, 1),
                                                               format="YYYY-MM-DD",
                                                               help="Optional parameter. This will return records up "
                                                                    "till the specified date. Format YYYY-MM-DD.")
@@ -634,7 +649,8 @@ with search:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.sortBy_order = st.selectbox(label="Sort By Order",
                                                          options=SortOrder,
-                                                         format_func=lambda x: str(x),
+                                                         format_func=lambda x: str(
+                                                             x),
                                                          help="Sort order. Ascending - asc, Descending - desc. "
                                                               "Will default to desc if null",
                                                          key="search-enrolment-sort-by-order")
@@ -700,7 +716,8 @@ with search:
 
     if st.checkbox("Specify Enrolment Date?", key="specify-search-enrolment-date"):
         search_enrolment.trainee_enrolmentDate = st.date_input(label="Enrolment Date",
-                                                               min_value=datetime.date(1900, 1, 1),
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
                                                                key="search-enrolment-date",
                                                                format="YYYY-MM-DD",
                                                                help="Enrolment date")
@@ -723,7 +740,8 @@ with search:
             key="search-enrolment-training-partner-uen")
 
         if len(uen) > 0 and not Validators.verify_uen(uen):
-            st.warning("**Training Partner UEN** is not a valid UEN!", icon="⚠️")
+            st.warning(
+                "**Training Partner UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.trainingPartner_uen = uen
 
@@ -761,11 +779,12 @@ with search:
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
-            
+
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
             st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
@@ -802,7 +821,8 @@ with search:
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: se.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
                                                            os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
@@ -832,9 +852,11 @@ with view:
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(ref_num) == 0:
-            st.error("Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
+            st.error(
+                "Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
@@ -870,7 +892,7 @@ with view:
                                     )
                 else:
                     LOGGER.info("Executing request with user's secrets...")
-                    handle_response(lambda: ve.execute(st.session_state["cert_pem"], 
+                    handle_response(lambda: ve.execute(st.session_state["cert_pem"],
                                                        st.session_state["key_pem"]),
                                     st.session_state["encryption_key"]
                                     )
@@ -904,13 +926,16 @@ with update_fee:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-fee-button", type="primary"):
-        LOGGER.info("Attempting to send request to Update Enrolment Fee Collection API...")
+        LOGGER.info(
+            "Attempting to send request to Update Enrolment Fee Collection API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
 
         elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
             LOGGER.error("Invalid AES-256 encryption key provided!")
@@ -933,7 +958,8 @@ with update_fee:
             errors, warnings = update_enrolment_fee_collection.validate()
 
             if validation_error_handler(errors, warnings):
-                eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
+                eufc = UpdateEnrolmentFeeCollection(
+                    enrolment_reference_num, update_enrolment_fee_collection)
 
                 with request:
                     LOGGER.info("Showing preview of request...")
@@ -941,19 +967,21 @@ with update_fee:
                         handle_request(eufc, os.environ.get(
                             ENV_NAME_ENCRYPT, ''))
                     else:
-                        handle_request(eufc, st.session_state["encryption_key"])
+                        handle_request(
+                            eufc, st.session_state["encryption_key"])
 
                 with response:
                     # pass in the correct secrets based on user choice
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: eufc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                                             os.environ.get(
+                                                                 ENV_NAME_CERT, ''),
+                                                             os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
                         LOGGER.info("Executing request with user's secrets...")
                         handle_response(lambda: eufc.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
+                                                             st.session_state["cert_pem"],
+                                                             st.session_state["key_pem"]),
                                         st.session_state["encryption_key"])

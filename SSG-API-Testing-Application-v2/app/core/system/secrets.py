@@ -35,7 +35,8 @@ def Set_Default_Secrets() -> bool:
         LOGGER.error("Environment variable for SECRET_PATH not set")
         return False
     if encryption_key_path == '':
-        LOGGER.error("Environment variable for SECRET_ENCRYPTION_KEY_PATH not set")
+        LOGGER.error(
+            "Environment variable for SECRET_ENCRYPTION_KEY_PATH not set")
         return False
     if cert_path == '':
         LOGGER.error("Environment variable for SECRET_CERT_PATH not set")
@@ -53,7 +54,7 @@ def Set_Default_Secrets() -> bool:
     if region_name == '':
         LOGGER.error("Environment variable for REGION_NAME not set")
         return False
-    
+
     # proceed to fetch secrets
     try:
         secrets = get_secret(secret_path, role_arn, region_name)
@@ -62,15 +63,17 @@ def Set_Default_Secrets() -> bool:
         return False
 
     if secrets is None:
-        LOGGER.error("No secrets found, there may not be items stored under the given secret path in parameter store")
+        LOGGER.error(
+            "No secrets found, there may not be items stored under the given secret path in parameter store")
         return False
 
     # get the items from the secrets response
     encryption_key = extract_secret(secrets, encryption_key_path)
     cert_value = extract_secret(secrets, cert_path)
     key_value = extract_secret(secrets, key_path)
-    if encryption_key is None or cert_value is None or key_value is None: 
-        LOGGER.error("A secret cannot be found. Please check that all secrets are stored in the given path in parameter store")
+    if encryption_key is None or cert_value is None or key_value is None:
+        LOGGER.error(
+            "A secret cannot be found. Please check that all secrets are stored in the given path in parameter store")
         return False
 
     # seperate default cert and key from user provided by storing in current directory
@@ -81,18 +84,20 @@ def Set_Default_Secrets() -> bool:
         os.environ[ENV_NAME_CERT] = cert_pem
         os.environ[ENV_NAME_KEY] = key_pem
     except Exception as e:
-        LOGGER.error(f"Failed to set up environment variables or create temporary files: {str(e)}")
+        LOGGER.error(
+            f"Failed to set up environment variables or create temporary files: {str(e)}")
         return False
 
     return True
 
 
 def get_secret(secret_path, role_arn, region_name):
-    ''' 
-    assumes the role in the region given and returns a list of parameters found by under the secret_path 
-    search for your secret using the value stored in the "Name" and "Value" key 
+    '''
+    assumes the role in the region given and returns a list of parameters found by under the secret_path
+    search for your secret using the value stored in the "Name" and "Value" key
     may return None if no parameters are found
-    see full response syntax at https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameters.html#API_GetParameters_ResponseSyntax 
+    see full response syntax at
+    https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameters.html#API_GetParameters_ResponseSyntax
     '''
     # Create a Secrets Manager client
     retrieve_secrets_session = assume_role(role_arn)
@@ -132,7 +137,7 @@ def assume_role(role_arn):
 
 def extract_secret(parameters, secret_name):
     '''
-    iterate through the list of parameters 
+    iterate through the list of parameters
     returns the secret value if exists and none if not found
     '''
     if parameters is None:
@@ -152,4 +157,3 @@ def create_temp_file(inputStuff, saveDir=None):
     with open(temp_file.name, 'w') as f:
         f.write(inputStuff)
     return temp_file.name
-

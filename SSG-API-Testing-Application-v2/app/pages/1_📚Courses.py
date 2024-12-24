@@ -764,7 +764,7 @@ with add:
                 "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
-        
+
         else:
             errors, warnings = add_runinfo.validate()
 
@@ -785,7 +785,8 @@ with add:
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: ac.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
                                                            os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, ''))
                     else:
@@ -1428,7 +1429,8 @@ with edit_delete:
                     if st.session_state["default_secrets"]:
                         LOGGER.info("Executing request with defaults...")
                         handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(ENV_NAME_CERT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
                                                            os.environ.get(ENV_NAME_KEY, '')),
                                         os.environ.get(ENV_NAME_ENCRYPT, '')
                                         )

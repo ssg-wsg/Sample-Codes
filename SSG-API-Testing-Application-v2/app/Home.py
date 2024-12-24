@@ -20,7 +20,7 @@ from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
 
 # initialise all variables and logger
 init()
@@ -33,42 +33,13 @@ st.set_page_config(page_title="Home", page_icon="🏠")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
-    # TODO: these are temporary items for debugging/testing purpose
-    # if st.button("swap session_state secret_fetched"):
-    #     st.session_state["secret_fetched"] = not st.session_state["secret_fetched"]
-    # st.write(st.session_state["secret_fetched"])
-    # st.write(os.environ.get(ENV_NAME_ENCRYPT,'nothing'))
-    # st.write(os.environ.get(ENV_NAME_CERT,'nothing'))
-    # st.write(os.environ.get(ENV_NAME_KEY,'nothing'))
-    # st.write(st.session_state["cert_pem"])
-    # st.write(st.session_state["key_pem"])
 
-    # if st.button("set defaults to uploaded"):
-    #     os.environ[ENV_NAME_CERT] = st.session_state["cert_pem"]
-    #     os.environ[ENV_NAME_KEY] = st.session_state["key_pem"]
-
-    # if "tempcert" not in st.session_state:
-    #     st.session_state["tempcert"] =''
-    # st.session_state["tempcert"] = st.text_input("enter cert", 
-    #                                                value=st.session_state["tempcert"])
-    # if len(st.session_state["tempcert"]) > 0:
-    #     st.success("loaded cert", icon="✅")
-    #     os.environ[ENV_NAME_CERT] = st.session_state["tempcert"]
-
-    # if "tempkey" not in st.session_state:
-    #     st.session_state["tempkey"] =''
-    # st.session_state["tempkey"] = st.text_input("enter key", 
-    #                                                value=st.session_state["tempkey"])
-    # if len(st.session_state["tempkey"]) > 0:
-    #     st.success("loaded key", icon="✅")
-    #     os.environ[ENV_NAME_KEY] = st.session_state["tempkey"]
-
-    
 st.image("assets/sf.png", width=200)
 st.title("SSG API Sample Application")
 st.markdown("Welcome to the SSG API Sample Application!\n\n"
@@ -105,11 +76,12 @@ if len(st.session_state["uen"]) > 0:
     else:
         LOGGER.info("UEN loaded!")
         st.success("**UEN** loaded successfully!", icon="✅")
-        st.session_state.update(uen=st.session_state["uen"].upper())  # UENs only have upper case characters
+        # UENs only have upper case characters
+        st.session_state.update(uen=st.session_state["uen"].upper())
 
 st.checkbox("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead",
             key="default_secrets_checkbox",
-            help="This is a reminder that you will need to have your own set of credentials when using the APIs in production")
+            help="This is a reminder that you need to have your own credentials when using the APIs in production")
 # logic here because streamlit will delete the session state when navigating to new page
 if st.session_state["default_secrets_checkbox"] is not None:
     st.session_state["default_secrets"] = st.session_state["default_secrets_checkbox"]
@@ -129,7 +101,8 @@ if len(st.session_state["encryption_key"]) > 0:
     else:
         LOGGER.info("Encryption Key loaded!")
         st.success("**Encryption Key** loaded successfully!", icon="✅")
-        st.session_state.update(encryption_key=st.session_state["encryption_key"])
+        st.session_state.update(
+            encryption_key=st.session_state["encryption_key"])
 
 # Credentials need to be loaded in a form to ensure that the pair submitted is valid
 with st.form(key="init_config"):
@@ -155,12 +128,14 @@ with st.form(key="init_config"):
             try:
                 LOGGER.info("Verifying configurations...")
                 # save the byte stream into a temp file to give it a path for passing it to requests
-                st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
+                st.session_state["cert_pem"] = NamedTemporaryFile(
+                    delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["cert_pem"].write(cert_pem.read())
                 st.session_state["cert_pem"] = st.session_state["cert_pem"].name
                 LOGGER.info("Certificate loaded!")
 
-                st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
+                st.session_state["key_pem"] = NamedTemporaryFile(
+                    delete=False, delete_on_close=False, suffix=".pem")
                 st.session_state["key_pem"].write(key_pem.read())
                 st.session_state["key_pem"] = st.session_state["key_pem"].name
                 LOGGER.info("Private key loaded!")
@@ -171,9 +146,11 @@ with st.form(key="init_config"):
                     raise AssertionError("Certificate and private key are not valid! Are you sure that you "
                                          "have uploaded your certificates and private keys properly?")
                 LOGGER.info("Certificate and key verified!")
-                st.success("**Certificate and Key loaded successfully!**\n\n", icon="✅")
+                st.success(
+                    "**Certificate and Key loaded successfully!**\n\n", icon="✅")
             except base64.binascii.Error:
-                LOGGER.error("Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
+                LOGGER.error(
+                    "Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
                 st.error("Certificate or private key is invalid!", icon="🚨")
             except AssertionError as ex:
                 LOGGER.error(ex)

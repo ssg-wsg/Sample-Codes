@@ -47,13 +47,14 @@ class ViewCourseRun(AbstractRequest):
             case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
             case OptionalSelector.NO:
-                self.req = self.req.with_param("includeExpiredCourses", "false")
+                self.req = self.req.with_param(
+                    "includeExpiredCourses", "false")
 
-    def execute(self,cert_pem,key_pem) -> requests.Response:
+    def execute(self, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.get(cert_pem,key_pem)
+        return self.req.get(cert_pem, key_pem)

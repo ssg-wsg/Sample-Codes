@@ -46,11 +46,11 @@ class CourseSessionAttendance(AbstractRequest):
             .with_param("courseReferenceNumber", crn) \
             .with_param("sessionId", session_id)
 
-    def execute(self,cert_pem,key_pem) -> requests.Response:
+    def execute(self, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.get(cert_pem,key_pem)
+        return self.req.get(cert_pem, key_pem)

@@ -32,15 +32,15 @@ class ViewEnrolment(AbstractRequest):
         self.req = HTTPRequestBuilder() \
             .with_endpoint(st.session_state["url"].value,
                            direct_argument=f"/tpg/enrolments/details/"
-                                           f"{enrolment_reference_num}") \
+                           f"{enrolment_reference_num}") \
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json")
 
-    def execute(self,cert_pem,key_pem) -> requests.Response:
+    def execute(self, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.get(cert_pem,key_pem)
+        return self.req.get(cert_pem, key_pem)
