@@ -202,7 +202,7 @@ class HTTPRequestBuilder:
                              verify=certifi.where(),
                              cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
 
-    def post_encrypted(self) -> requests.Response:
+    def post_encrypted(self,encryption_key,cert_pem,key_pem) -> requests.Response:
         """
         Sends an encrypted POST request to the endpoint using the relevant certs stored in the session state.
         Note that we use json=... here to ensure the encrypted payload is automatically form-encoded.
@@ -223,8 +223,8 @@ class HTTPRequestBuilder:
         return requests.post(self.endpoint,
                              params=self.params,
                              headers=self.header,
-                             json=Cryptography.encrypt(json.dumps(self.body), return_bytes=False),
-                             cert=(st.session_state["cert_pem"], st.session_state["key_pem"]))
+                             json=Cryptography.encrypt(encryption_key,json.dumps(self.body), return_bytes=False),
+                             cert=(cert_pem,key_pem))
 
     def repr(self, req_type: HttpMethod) -> str:
         """
@@ -283,7 +283,7 @@ class HTTPRequestBuilder:
         return builder.get()
 
 
-def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -> None:
+def handle_request(rec_obj: AbstractRequest, encryption_key: str = None) -> None:
     """
     Handles the request to be sent to the endpoint and shows the encrypted payload if required.
 
@@ -292,7 +292,7 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
                                be encrypted, then a section to display the encrypted text is displayed.
     """
 
-    if require_encryption:
+    if encryption_key is not None:
         st.subheader("Plaintext Request")
         st.code(repr(rec_obj), language="text")
 
@@ -300,7 +300,7 @@ def handle_request(rec_obj: AbstractRequest, require_encryption: bool = False) -
         try:
             LOGGER.info("Encrypting Request Payload...")
             # decode the object and wrap it to display it properly
-            ciphertext = Cryptography.encrypt(str(rec_obj)).decode()
+            ciphertext = Cryptography.encrypt(encryption_key, str(rec_obj)).decode()
             st.code("\n".join(textwrap.wrap(ciphertext, width=HTTPRequestBuilder.WRAP_LEVEL)), language="text")
         except binascii.Error:
             LOGGER.error("Encryption failed! Aborting request...")

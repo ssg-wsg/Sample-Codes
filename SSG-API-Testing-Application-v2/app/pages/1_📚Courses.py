@@ -35,7 +35,8 @@ from app.core.constants import Month, Vacancy, ModeOfTraining, IdType, Salutatio
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import (init, display_config,
-                                       validation_error_handler, does_not_have_keys, does_not_have_url)
+                                       validation_error_handler, 
+                                       does_not_have_encryption_key, does_not_have_keys, does_not_have_url)
 from app.utils.verify import Validators
 
 from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
@@ -694,9 +695,18 @@ with add:
         elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
             st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
-        elif does_not_have_keys():
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error("User chose to use defaults but defaults are not set!")
+            st.error("There are no default secrets set, please provide your own defaults.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
             LOGGER.error("Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your Certificate and Private Key before proceeding!", icon="🚨")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
         else:
             errors, warnings = add_runinfo.validate()
 
@@ -711,6 +721,15 @@ with add:
                 with response:
                     LOGGER.info("Executing request...")
                     handle_response(lambda: ac.execute())
+
+                with response:
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: vc.execute(os.environ.get(ENV_NAME_CERT, ''),os.environ.get(ENV_NAME_KEY, '')))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: vc.execute(st.session_state["cert_pem"],st.session_state["key_pem"]))
 
 
 with edit_delete:

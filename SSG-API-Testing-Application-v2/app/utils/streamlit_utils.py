@@ -8,7 +8,8 @@ from typing import Union
 from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
-from app.core.system.secrets import (Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+from app.core.system.secrets import (
+    Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 LOGGER = Logger(__name__)
 
@@ -65,16 +66,20 @@ def display_config() -> None:
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
     st.header("Defaults")
-    st.code(st.session_state["default_secrets"] if st.session_state["default_secrets"] is not None else "-")
+    st.code(st.session_state["default_secrets"]
+            if st.session_state["default_secrets"] is not None else "-")
 
     st.header("Encryption Key:")
-    st.code(st.session_state["encryption_key"] if st.session_state["encryption_key"] else "-")
+    st.code(st.session_state["encryption_key"]
+            if st.session_state["encryption_key"] else "-")
 
     st.header("Certificate Key:")
-    st.code(st.session_state["cert_pem"] if st.session_state["cert_pem"] else "-")
+    st.code(st.session_state["cert_pem"]
+            if st.session_state["cert_pem"] else "-")
 
     st.header("Private Key:")
-    st.code(st.session_state["key_pem"] if st.session_state["key_pem"] else "-")
+    st.code(st.session_state["key_pem"]
+            if st.session_state["key_pem"] else "-")
 
 
 def http_code_handler(code: Union[int, str]) -> None:
@@ -123,7 +128,8 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
     if len(warnings) > 0:
         LOGGER.warning("Some fields have warnings, request resumed!")
-        warning_builder = StringBuilder("Some Warnings are raised with your inputs:").newline()
+        warning_builder = StringBuilder(
+            "Some Warnings are raised with your inputs:").newline()
 
         for warning in warnings:
             warning_builder = warning_builder.newline().append(f"- {warning}")
@@ -132,7 +138,8 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
     if len(errors) > 0:
         LOGGER.error("Some fields are missing, request aborted!")
-        error_builder = StringBuilder("Some Errors are detected with your inputs:").newline().newline()
+        error_builder = StringBuilder(
+            "Some Errors are detected with your inputs:").newline().newline()
 
         for error in errors:
             error_builder = error_builder.newline().append(f"- {error}")
@@ -141,10 +148,18 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
     return len(errors) == 0
 
+
+def does_not_have_encryption_key() -> bool:
+    return ("encryption_key" not in st.session_state
+            or st.session_state["encryption_key"] is None
+            or len(st.session_state["encryption_key"]) == 0)
+
+
 def does_not_have_keys() -> bool:
     """Returns true if either private key or cert keys are missing."""
 
     return st.session_state["key_pem"] is None or st.session_state["cert_pem"] is None
+
 
 def does_not_have_url() -> bool:
     """Returns true if url endpoint is missing."""

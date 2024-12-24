@@ -19,27 +19,27 @@ class Cryptography:
     INITIAL_VECTOR: bytes = "SSGAPIInitVector".encode()
 
     @staticmethod
-    def encrypt(plaintext: bytes | str, return_bytes: bool = True, key: str = None) -> bytes | str | None:
+    def encrypt(key: str, plaintext: bytes | str, return_bytes: bool = True) -> bytes | str | None:
         """
         Encrypts a message using AES-256/CBC/PKCS7 and returns the ciphertext.
 
+        :param key: Encryption key to encrypt the plaintext
         :param plaintext: Plaintext Message to be encrypted. If a string is passed as the argument, it will be
                           encoded into a bytes object.
         :param return_bytes: If True, the ciphertext will be returned as a bytes object.
-        :param key: Key to override key stored in session state
         :return: Ciphertext
         """
 
-        if ("encryption_key" not in st.session_state
-                or st.session_state["encryption_key"] is None
-                or len(st.session_state["encryption_key"]) == 0) and not key:
-            # if there are no keys loaded, do not continue
-            raise AttributeError("No encryption key loaded!")
+        # if ("encryption_key" not in st.session_state
+        #         or st.session_state["encryption_key"] is None
+        #         or len(st.session_state["encryption_key"]) == 0) and not key:
+        #     # if there are no keys loaded, do not continue
+        #     raise AttributeError("No encryption key loaded!")
 
         if isinstance(plaintext, str):
             plaintext = plaintext.encode()
 
-        enc_key = b64decode(key if key else st.session_state["encryption_key"])
+        enc_key = b64decode(key)
         cipher_algo = Cipher(AES(enc_key), CBC(Cryptography.INITIAL_VECTOR), backend=default_backend())
         padding_algo = PKCS7(128).padder()
 
