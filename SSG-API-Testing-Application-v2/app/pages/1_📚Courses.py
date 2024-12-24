@@ -740,7 +740,7 @@ with add:
     if st.button("Send", key="add-button", type="primary") or st.session_state["add-button"]:
         LOGGER.info("Attempting to send request to Add Course Run API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error(
                 "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")

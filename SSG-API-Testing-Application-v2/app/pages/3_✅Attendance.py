@@ -25,7 +25,7 @@ from app.core.system.logger import Logger
 
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_keys
+    does_not_have_url, does_not_have_keys
 from app.utils.verify import Validators
 
 # initialise necessary variables
@@ -76,7 +76,7 @@ with view:
     if st.button("Send", key="view_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
@@ -212,7 +212,7 @@ with upload:
     if st.button("Send", key="upload_course_session_attendance_button", type="primary"):
         LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:

@@ -32,7 +32,7 @@ from app.core.credit.upload_document import UploadDocument
 from app.core.constants import CancelClaimsCode, PermittedFileUploadType
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
-from app.utils.streamlit_utils import init, display_config, validation_error_handler
+from app.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
 
 init()
@@ -134,7 +134,7 @@ with encryption:
     if st.button("Send", key="encrypt-button", type="primary"):
         LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Encryption API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         else:
@@ -197,7 +197,7 @@ with decryption:
     if st.button("Send", key="decrypt-button", type="primary"):
         LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Decryption API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         else:
@@ -294,7 +294,7 @@ with upload:
     if st.button("Send", key="upload-button", type="primary"):
         LOGGER.info("Attempting to send request to Upload Supporting Documents API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif claim_id is None or (claim_id is not None and len(claim_id) == 0):
@@ -337,7 +337,7 @@ with view:
     if st.button("Send", key="view-button", type="primary"):
         LOGGER.info("Attempting to send request to View SF Credit Claims API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(nric) == 0:
@@ -392,7 +392,7 @@ with cancel:
     if st.button("Send", key="cancel-button", type="primary"):
         LOGGER.info("Attempting to send request to Cancel SF Credit Claims API...")
 
-        if does_not_have_url:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(claim_id) != 10:
