@@ -311,14 +311,14 @@ def handle_request(rec_obj: AbstractRequest, encryption_key: str = None) -> None
 
 
 def handle_response(throwable: Callable[[], requests.Response],
-                    require_decryption: bool = False) -> dict:
+                    decryption_key: str = None) -> dict:
     """
     Handles the potentially throwing request function and uses Streamlit to display or handle the error.
 
     :param throwable: Function to be called.
                       This function accepts no inputs and may potentially raise an error.
                       This function should also return the response object from the request.
-    :param require_decryption: Boolean indicating whether decryption is required for the returned payload. If the
+    :param decryption_key: Provide a key if decryption is required for the returned payload. If the
                                response should be decrypted, then a section will display the decrypted response.
     """
 
@@ -344,12 +344,12 @@ def handle_response(throwable: Callable[[], requests.Response],
             return
 
         LOGGER.info("Decrypting response...")
-        if require_decryption:
+        if decryption_key is not None:
             st.subheader("Encrypted Response")
             st.code(response.text)
             st.subheader("Decrypted Response")
             try:
-                data = Cryptography.decrypt(response.text).decode()
+                data = Cryptography.decrypt(decryption_key, response.text).decode()
                 json_data = json.loads(data)
                 st.json(json_data)
             except Exception as ex:

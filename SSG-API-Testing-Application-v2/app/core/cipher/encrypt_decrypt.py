@@ -55,27 +55,27 @@ class Cryptography:
         return encoded_ciphertext.decode()
 
     @staticmethod
-    def decrypt(ciphertext: str | bytes, return_bytes: bool = True, key: str = None) -> bytes | str | None:
+    def decrypt(key: str, ciphertext: str | bytes, return_bytes: bool = True) -> bytes | str | None:
         """
         Decrypts an encrypted message and returns the plaintext.
 
+        :param key: Key to decrypt ciphertext
         :param ciphertext: Ciphertext Message to be decrypted. It does not matter if a string or bytes are provided,
                            both will be encoded into a bytes object with base64-decode.
-        :param key: Key to override key stored in session state
         :param return_bytes: If True, the ciphertext will be returned as a bytes object.
         :return: Plaintext Message
         """
 
-        if ("encryption_key" not in st.session_state
-                or st.session_state["encryption_key"] is None
-                or len(st.session_state["encryption_key"]) == 0) and not key:
-            # if there are no keys loaded, do not continue
-            return None
+        # if ("encryption_key" not in st.session_state
+        #         or st.session_state["encryption_key"] is None
+        #         or len(st.session_state["encryption_key"]) == 0) and not key:
+        #     # if there are no keys loaded, do not continue
+        #     return None
 
         # decode the input text into a bytes object
         decoded_ciphertext = b64decode(ciphertext)
 
-        enc_key = b64decode(key if key else st.session_state["encryption_key"])
+        enc_key = b64decode(key)
         cipher_algo = Cipher(AES(enc_key), CBC(Cryptography.INITIAL_VECTOR), backend=default_backend())
         padding_algo = PKCS7(128).unpadder()
 
