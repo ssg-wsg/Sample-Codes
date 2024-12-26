@@ -30,6 +30,7 @@ class Cryptography:
         :return: Ciphertext
         """
 
+        # check if encryption key is set in session state
         # if ("encryption_key" not in st.session_state
         #         or st.session_state["encryption_key"] is None
         #         or len(st.session_state["encryption_key"]) == 0) and not key:
