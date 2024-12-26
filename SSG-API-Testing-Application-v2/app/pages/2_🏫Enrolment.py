@@ -834,6 +834,9 @@ with search:
 
 
 with view:
+    st.info("""Although the documentation states that your *request payloads* needs to be **encrypted**,
+            you can still send **unencrypted** *request payloads*""",
+            icon=":material/warning:")
     st.header("View Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching "
                 "of existing enrolment records")
