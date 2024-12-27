@@ -63,9 +63,13 @@ def display_config() -> None:
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
-    st.header("Defaults")
-    st.code(st.session_state["default_secrets"]
-            if st.session_state["default_secrets"] is not None else "-")
+    defaults_col1, defaults_col2 = st.columns(2)
+    
+    defaults_col1.header("Are defaults secrets set?")
+    defaults_col1.code(st.session_state["secret_fetched"]
+            if st.session_state["secret_fetched"] is not None else "-")
+    defaults_col2.write("Click this button to attempt to refetch default secrets")
+    defaults_col2.button(label="Refetch", help="Click this button to attempt to refetch default secrets")
 
     st.header("Encryption Key:")
     st.code(st.session_state["encryption_key"]
@@ -78,7 +82,6 @@ def display_config() -> None:
     st.header("Private Key:")
     st.code(st.session_state["key_pem"]
             if st.session_state["key_pem"] else "-")
-
 
 def http_code_handler(code: Union[int, str]) -> None:
     """
