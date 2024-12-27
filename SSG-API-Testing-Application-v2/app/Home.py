@@ -81,9 +81,10 @@ if len(st.session_state["uen"]) > 0:
         st.session_state.update(uen=st.session_state["uen"].upper())
 
 # TODO: write something to say that will use default to call api, see if set in configs sidebar
-st.markdown("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead"
-            "This is a reminder that you need to have your own credentials when using the APIs in production")
-# st.button(label="Refetch Secret", key="refetch_button", on_click=Set_Default_Secrets)
+st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
+            "While you may put in your secrets into the boxes below, they are not used when calling the APIs. "
+            "These boxes are meant to emulate the process of uploading your own secrets during onboarding."
+            )
     
 
 # logic here because streamlit will delete the session state when navigating to new page
