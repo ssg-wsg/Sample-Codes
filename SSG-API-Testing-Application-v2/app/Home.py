@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 # append current file path to PATH so that it is discoverable for absolute imports; this must be done
 # before the other files from the same project are imported
@@ -20,7 +21,7 @@ from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
+from app.core.system.secrets import (Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
 
 # initialise all variables and logger
 init()
@@ -79,9 +80,12 @@ if len(st.session_state["uen"]) > 0:
         # UENs only have upper case characters
         st.session_state.update(uen=st.session_state["uen"].upper())
 
-st.checkbox("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead",
-            key="default_secrets_checkbox",
-            help="This is a reminder that you need to have your own credentials when using the APIs in production")
+# TODO: write something to say that will use default to call api, see if set in configs sidebar
+st.markdown("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead"
+            "This is a reminder that you need to have your own credentials when using the APIs in production")
+# st.button(label="Refetch Secret", key="refetch_button", on_click=Set_Default_Secrets)
+    
+
 # logic here because streamlit will delete the session state when navigating to new page
 if st.session_state["default_secrets_checkbox"] is not None:
     st.session_state["default_secrets"] = st.session_state["default_secrets_checkbox"]
