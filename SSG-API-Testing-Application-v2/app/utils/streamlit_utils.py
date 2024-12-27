@@ -22,7 +22,7 @@ def init() -> None:
     """
     # if secrets has not been initialised or fetched, go and fetch it
     if "secret_fetched" not in st.session_state or not st.session_state["secret_fetched"]:
-        st.session_state["secret_fetched"] = Set_Default_Secrets()
+        st.session_state["secret_fetched"] = Set_Default_Secrets(False)
 
     if "uen" not in st.session_state:
         st.session_state["uen"] = ""
@@ -69,7 +69,10 @@ def display_config() -> None:
     defaults_col1.code(st.session_state["secret_fetched"]
             if st.session_state["secret_fetched"] is not None else "-")
     defaults_col2.write("Click this button to attempt to refetch default secrets")
-    defaults_col2.button(label="Refetch", help="Click this button to attempt to refetch default secrets")
+    defaults_col2.button(label="Refetch", 
+                         help="Click this button to attempt to refetch default secrets", 
+                         on_click=Set_Default_Secrets, 
+                         args=(True, ))
 
     st.header("Encryption Key:")
     st.code(st.session_state["encryption_key"]
