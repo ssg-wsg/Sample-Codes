@@ -179,21 +179,11 @@ with create:
             st.error(
                 "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = create_assessment_info.validate()
@@ -204,27 +194,16 @@ with create:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(ec, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(ec, st.session_state["encryption_key"])
+                    handle_request(ec, os.environ.get(
+                        ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(
-                                                               ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: ec.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 
 with update_void:
@@ -320,21 +299,11 @@ with update_void:
             st.error("Make sure that you have entered in your **Assessment Reference Number** before proceeding!",
                      icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = update_void_assessment.validate()
@@ -346,27 +315,16 @@ with update_void:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(uva, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(uva, st.session_state["encryption_key"])
+                    handle_request(uva, os.environ.get(
+                        ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: uva.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                            os.environ.get(
-                                                                ENV_NAME_CERT, ''),
-                                                            os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: uva.execute(st.session_state["encryption_key"],
-                                                            st.session_state["cert_pem"],
-                                                            st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: uva.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 
 with find:
@@ -484,21 +442,11 @@ with find:
             st.error(
                 "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = search_assessment.validate()
@@ -509,28 +457,16 @@ with find:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(sa, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(sa, st.session_state["encryption_key"])
+                    handle_request(sa, os.environ.get(
+                        ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: sa.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(
-                                                               ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: sa.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
-
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: sa.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 with view:
     st.header("View Assessment")
@@ -559,21 +495,11 @@ with view:
             st.error(
                 "Please enter in the **Assessment Reference Number**!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -584,15 +510,8 @@ with view:
                 handle_request(va)
 
             with response:
-                # pass in the correct secrets based on user choice
-                if st.session_state["default_secrets"]:
-                    LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: va.execute(os.environ.get(
-                                                           ENV_NAME_CERT, ''),
-                                                       os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
-                else:
-                    LOGGER.info("Executing request with user's secrets...")
-                    handle_response(lambda: va.execute(st.session_state["cert_pem"],
-                                                       st.session_state["key_pem"]),
-                                    st.session_state["encryption_key"])
+                LOGGER.info("Executing request with defaults...")
+                handle_response(lambda: va.execute(os.environ.get(
+                                                        ENV_NAME_CERT, ''),
+                                                    os.environ.get(ENV_NAME_KEY, '')),
+                                os.environ.get(ENV_NAME_ENCRYPT, ''))
