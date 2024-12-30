@@ -147,6 +147,10 @@ with st.form(key="init_config"):
                 LOGGER.info("Certificate and key verified!")
                 st.success(
                     "**Certificate and Key loaded successfully!**\n\n", icon="✅")
+                
+                LOGGER.info("Removing certificate and key after verifying")
+                os.remove(st.session_state["cert_pem"])
+                os.remove(st.session_state["key_pem"])
             except base64.binascii.Error:
                 LOGGER.error(
                     "Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
