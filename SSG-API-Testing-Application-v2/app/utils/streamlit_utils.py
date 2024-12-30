@@ -9,7 +9,7 @@ from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
 from app.core.system.secrets import (
-    Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+    Refetch_secrets, Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 LOGGER = Logger(__name__)
 
@@ -23,6 +23,8 @@ def init() -> None:
     # if secrets has not been initialised or fetched, go and fetch it
     if "secret_fetched" not in st.session_state or not st.session_state["secret_fetched"]:
         st.session_state["secret_fetched"] = Set_Default_Secrets(False)
+    if "last_fetched" not in st.session_state:
+        st.session_state["last_fetched"] = float(0)
 
     if "uen" not in st.session_state:
         st.session_state["uen"] = ""
@@ -65,7 +67,7 @@ def display_config() -> None:
     defaults_col2.write("Please click this button to attempt to refetch default secrets")
     defaults_col2.button(label="Refetch secrets", 
                          help="If this button does not work, please try again later", 
-                         on_click=Set_Default_Secrets, 
+                         on_click=Refetch_secrets, 
                          args=(True, ))
 
     st.header("Encryption Key:")

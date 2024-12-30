@@ -2,6 +2,7 @@
 # The implementation is derived from the sample provided in the 'lambda' directory
 
 import os
+import streamlit as st
 from tempfile import NamedTemporaryFile
 import time  # noqa: E402
 from app.core.system.logger import Logger
@@ -19,6 +20,25 @@ ENV_NAME_KEY = "default_key_path"
 
 # flag to check if refetching is in progress, blank value in variable means 'false'
 ENV_FLAG_REFETCH = "currently_fetching"
+ENV_FLAG_LAST_FETCHED = "last_fetched"
+
+
+def Refetch_secrets(refetch: bool) -> bool:
+    ''' callback function for the refetch button '''
+    if st.session_state["last_fetched"] < last_fetched():
+        LOGGER.info("Will reuse previously fetched default secrets")
+        st.session_state["secret_fetched"] = True
+        st.session_state["last_fetched"] = time.time()
+        return True
+
+    if Set_Default_Secrets(refetch):
+        LOGGER.info("Refetched default secrets succeeded")
+        st.session_state["secret_fetched"] = True
+        return True
+    else:
+        LOGGER.info("Refetched default secrets failed")
+        st.session_state["secret_fetched"] = False
+        return False
 
 
 def Set_Default_Secrets(refetch: bool) -> bool:
@@ -29,7 +49,7 @@ def Set_Default_Secrets(refetch: bool) -> bool:
     If you do not choose to refetch, function will only set secrets if they are not set.
     If refetch is successful, clears previous secrets.
     :param refetch: should the function refetch secrets
-    :return: whether defaults are set
+    :return: whether defaults are avaliable to use
     '''
     if currently_fetching():
         LOGGER.warning("Abort fetching of secrets. It is already in progress")
@@ -38,7 +58,7 @@ def Set_Default_Secrets(refetch: bool) -> bool:
     if not refetch and are_secrets_set():
         LOGGER.warning("Abort refetching of secrets as they are already set. "
                        "Please use the refetch option if refetching is desired.")
-        return False
+        return True
 
     swap_fetching_flag()
     LOGGER.info("Attempting to fetch secrets")
@@ -113,6 +133,7 @@ def Set_Default_Secrets(refetch: bool) -> bool:
                 f"Failed to set up environment variables or create temporary files: {str(e)}")
             return False
 
+        os.environ[ENV_FLAG_LAST_FETCHED] = str(time.time())
         return True
 
     finally:
@@ -127,6 +148,10 @@ def are_secrets_set() -> bool:
 
 def currently_fetching() -> bool:
     return bool(os.environ.get(ENV_FLAG_REFETCH, ''))
+
+
+def last_fetched() -> float:
+    return float(os.environ.get(ENV_FLAG_LAST_FETCHED, '0'))
 
 
 def swap_fetching_flag():
