@@ -82,7 +82,7 @@ if len(st.session_state["uen"]) > 0:
 
 st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
             "While you may put in your secrets into the boxes below, they are not used when calling the APIs. "
-            "These boxes are meant to emulate the process of uploading your own secrets during onboarding."
+            "These are meant to emulate the process of uploading your own secrets during onboarding."
             )    
 
 # AES Encryption Key to be loaded outside of a form
