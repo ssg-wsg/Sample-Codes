@@ -80,16 +80,10 @@ if len(st.session_state["uen"]) > 0:
         # UENs only have upper case characters
         st.session_state.update(uen=st.session_state["uen"].upper())
 
-# TODO: write something to say that will use default to call api, see if set in configs sidebar
 st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
             "While you may put in your secrets into the boxes below, they are not used when calling the APIs. "
             "These boxes are meant to emulate the process of uploading your own secrets during onboarding."
-            )
-    
-
-# logic here because streamlit will delete the session state when navigating to new page
-if st.session_state["default_secrets_checkbox"] is not None:
-    st.session_state["default_secrets"] = st.session_state["default_secrets_checkbox"]
+            )    
 
 # AES Encryption Key to be loaded outside of a form
 st.session_state["encryption_key"] = st.text_input("Enter in your encryption key", type="password",

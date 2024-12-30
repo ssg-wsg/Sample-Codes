@@ -17,8 +17,8 @@ class Endpoints(Enum):
     """Enum representing the endpoints that users can connect to."""
 
     UAT = "https://uat-api.ssg-wsg.sg"
-    PRODUCTION = "https://api.ssg-wsg.sg"
-    MOCK = "https://mock-api.ssg-wsg.sg"
+    # PRODUCTION = "https://api.ssg-wsg.sg"
+    # MOCK = "https://mock-api.ssg-wsg.sg"
 
 
 class Vacancy(Enum):
