@@ -21,7 +21,7 @@ from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-from app.core.system.secrets import (Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
+from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
 
 # initialise all variables and logger
 init()
