@@ -64,7 +64,7 @@ def display_config() -> None:
             if st.session_state["secret_fetched"] is not None else "-")
     defaults_col2.write("Please click this button to attempt to refetch default secrets")
     defaults_col2.button(label="Refetch secrets", 
-                         help="Click this button to attempt to refetch default secrets", 
+                         help="If this button does not work, please try again later", 
                          on_click=Set_Default_Secrets, 
                          args=(True, ))
 
