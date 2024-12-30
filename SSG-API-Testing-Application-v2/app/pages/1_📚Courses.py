@@ -106,7 +106,7 @@ with view:
             st.error("Key in your **Course Run ID** to proceed!", icon="🚨")
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
         # elif not st.session_state["default_secrets"] and does_not_have_keys():
@@ -745,7 +745,7 @@ with add:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
@@ -1362,11 +1362,9 @@ with edit_delete:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
 
         else:
             errors, warnings = runinfo.validate()
@@ -1458,7 +1456,7 @@ with sessions:
             
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 

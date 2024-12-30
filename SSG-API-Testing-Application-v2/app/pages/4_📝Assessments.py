@@ -181,7 +181,7 @@ with create:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
@@ -301,7 +301,7 @@ with update_void:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
@@ -444,7 +444,7 @@ with find:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
@@ -497,7 +497,7 @@ with view:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 

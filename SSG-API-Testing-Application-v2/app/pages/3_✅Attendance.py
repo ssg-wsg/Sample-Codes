@@ -107,7 +107,7 @@ with view:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
@@ -248,7 +248,7 @@ with upload:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "There are default secrets loaded!")
+                "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
