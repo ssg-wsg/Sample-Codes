@@ -19,6 +19,7 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import datetime
+import os
 
 import streamlit as st
 
@@ -34,6 +35,9 @@ from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
+
+from app.core.system.secrets import (
+    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 init()
 LOGGER = Logger("SkillsFuture Credit Pay")
@@ -137,6 +141,13 @@ with encryption:
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+
+        elif not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "There are no default secrets loaded!")
+            st.error(
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+
         else:
             errors, warnings = encrypt.validate()
 
@@ -145,10 +156,17 @@ with encryption:
                 request, response = st.tabs(["Request", "Response"])
 
                 with request:
-                    handle_request(enc, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(enc, os.environ.get(ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    handle_response(lambda: enc.execute(), require_decryption=True)
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: enc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, '')
+                                    )
 
     st.divider()
     st.subheader("Form POST Encrypted Payload")
@@ -200,6 +218,13 @@ with decryption:
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+
+        elif not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "There are no default secrets loaded!")
+            st.error(
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+
         else:
             errors, warnings = decrypt.validate()
 
@@ -208,10 +233,16 @@ with decryption:
                 request, response = st.tabs(["Request", "Response"])
 
                 with request:
-                    handle_request(dec, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(dec, os.environ.get(ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    handle_response(lambda: dec.execute(), require_decryption=True)
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: dec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 with upload:
     st.header("Upload Supporting Documents")
@@ -300,6 +331,13 @@ with upload:
         elif claim_id is None or (claim_id is not None and len(claim_id) == 0):
             LOGGER.error("No Claim ID provided!")
             st.error("Invalid Claim ID!", icon="🚨")
+
+        elif not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "There are no default secrets loaded!")
+            st.error(
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+
         else:
             errors, warnings = upload_doc.validate()
 
@@ -308,10 +346,17 @@ with upload:
                 request, response = st.tabs(["Request", "Response"])
 
                 with request:
-                    handle_request(ud, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    handle_request(ud, os.environ.get(ENV_NAME_ENCRYPT, ''))
 
                 with response:
-                    handle_response(lambda: ud.execute(), require_decryption=True)
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: ud.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+
 
 with view:
     st.header("View Claim Details")
@@ -344,15 +389,27 @@ with view:
             st.error("Invalid **NRIC** number!", icon="🚨")
         elif len(claim_id) != 10:
             st.error("Invalid **Claims ID**!", icon="🚨")
+
+        elif not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "There are no default secrets loaded!")
+            st.error(
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+            
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewClaims(nric, claim_id)
 
             with request:
+                LOGGER.info("Showing preview of request...")
                 handle_request(vc)
 
             with response:
-                handle_response(lambda: vc.execute(), require_decryption=True)
+                LOGGER.info("Executing request with defaults...")
+                handle_response(lambda: vc.execute(os.environ.get(
+                                                        ENV_NAME_CERT, ''),
+                                                    os.environ.get(ENV_NAME_KEY, '')),
+                                os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 with cancel:
     st.header("Cancel Claim")
@@ -397,6 +454,13 @@ with cancel:
             st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(claim_id) != 10:
             st.error("Invalid **Claims ID**!", icon="🚨")
+
+        elif not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "There are no default secrets loaded!")
+            st.error(
+                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+
         else:
             if validation_error_handler(*(cancel_claims.validate())):
                 cc = CancelClaims(claim_id, cancel_claims)
@@ -406,4 +470,9 @@ with cancel:
                     handle_request(cc)
 
                 with response:
-                    handle_response(lambda: cc.execute(), require_decryption=True)
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: cc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                        os.environ.get(
+                                                            ENV_NAME_CERT, ''),
+                                                        os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
