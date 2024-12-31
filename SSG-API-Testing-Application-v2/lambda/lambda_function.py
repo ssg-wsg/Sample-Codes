@@ -25,6 +25,7 @@ region_name = "ap-southeast-1"
 
 # parameters that the view courses api call requires
 course_run_id = "340121"
+
 endpoint = f"https://uat-api.ssg-wsg.sg/courses/courseRuns/id/{course_run_id}"
 params = {"includeExpiredCourses": "true"}
 header = {

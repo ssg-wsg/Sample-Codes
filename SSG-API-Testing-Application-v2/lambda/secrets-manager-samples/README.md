@@ -8,7 +8,8 @@ The lambda function is given the role `SampleAppLambda` with the policies below:
 
 ```
 {
-"Version": "2012-10-17","Statement": [
+"Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
