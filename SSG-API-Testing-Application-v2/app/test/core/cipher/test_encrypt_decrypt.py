@@ -14,7 +14,7 @@ class TestEncryptDecrypt(unittest.TestCase):
         plaintext = "Hello, World!"
         ciphertext = b'FqhnvlhHlHszFIi0AVhqzQ=='
 
-        encrypted = Cryptography.encrypt(plaintext, key=self.KEY)
+        encrypted = Cryptography.encrypt(self.KEY, plaintext)
         self.assertNotEqual(plaintext, encrypted)
         self.assertEqual(ciphertext, encrypted)
 
@@ -22,12 +22,12 @@ class TestEncryptDecrypt(unittest.TestCase):
         plaintext = b"Hello, World!"
         ciphertext = b'FqhnvlhHlHszFIi0AVhqzQ=='
 
-        decrypted = Cryptography.decrypt(ciphertext, key=self.KEY)
+        decrypted = Cryptography.decrypt(self.KEY, ciphertext)
         self.assertEqual(plaintext, decrypted)
 
     def test_symmetry(self):
         plaintext = b"Hello, World!"
-        encrypted = Cryptography.encrypt(plaintext, key=self.KEY)
-        decrypted = Cryptography.decrypt(encrypted, key=self.KEY)
+        encrypted = Cryptography.encrypt(self.KEY, plaintext)
+        decrypted = Cryptography.decrypt(self.KEY, encrypted)
 
         self.assertEqual(plaintext, decrypted)

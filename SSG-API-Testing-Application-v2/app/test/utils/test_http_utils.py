@@ -78,19 +78,19 @@ class TestHttpUtils(unittest.TestCase):
         builder = HTTPRequestBuilder()
 
         with self.assertRaises(ValueError):
-            builder.get()
+            builder.get("cert.pem", "key.pem")
 
     def test_post(self):
         builder = HTTPRequestBuilder()
 
         with self.assertRaises(ValueError):
-            builder.post()
+            builder.post("cert.pem", "key.pem")
 
     def test_post_encrypted(self):
         builder = HTTPRequestBuilder()
 
         with self.assertRaises(ValueError):
-            builder.post_encrypted()
+            builder.post_encrypted("encryptionKey==", "cert.pem", "key.pem")
 
     def test_repr(self):
         post1 = "POST None\n\nHeaders\n-------\naccept: application/json\n\nBody\n-------\n{}\n"

@@ -39,11 +39,11 @@ class ViewAssessment(AbstractRequest):
             .with_header("accept", "application/json") \
             .with_header("Content-Type", "application/json")
 
-    def execute(self) -> requests.Response:
+    def execute(self, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.get()
+        return self.req.get(cert_pem, key_pem)

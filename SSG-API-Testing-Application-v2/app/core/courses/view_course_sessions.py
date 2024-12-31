@@ -54,21 +54,24 @@ class ViewCourseSessions(AbstractRequest):
 
         if session_month is not None and session_year is not None:
             if session_month.value[0] < 10:
-                self.req = self.req.with_param("sessionMonth", f"0{session_month.value[0]}{session_year}")
+                self.req = self.req.with_param(
+                    "sessionMonth", f"0{session_month.value[0]}{session_year}")
             else:
-                self.req = self.req.with_param("sessionMonth", f"{session_month.value[0]}{session_year}")
+                self.req = self.req.with_param(
+                    "sessionMonth", f"{session_month.value[0]}{session_year}")
 
         match include_expired:
             case OptionalSelector.YES:
                 self.req = self.req.with_param("includeExpiredCourses", "true")
             case OptionalSelector.NO:
-                self.req = self.req.with_param("includeExpiredCourses", "false")
+                self.req = self.req.with_param(
+                    "includeExpiredCourses", "false")
 
-    def execute(self) -> requests.Response:
+    def execute(self, cert_pem, key_pem) -> requests.Response:
         """
         Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.get()
+        return self.req.get(cert_pem, key_pem)

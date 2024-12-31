@@ -17,6 +17,7 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import datetime
+import os
 
 import streamlit as st
 
@@ -31,8 +32,11 @@ from app.core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessme
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_keys
+    does_not_have_url, does_not_have_keys, does_not_have_encryption_key
 from app.utils.verify import Validators
+
+from app.core.system.secrets import (
+    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 # initialise necessary variables
 init()
@@ -42,7 +46,8 @@ st.set_page_config(page_title="Assessments", page_icon="📝")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
@@ -60,7 +65,8 @@ create, update_void, find, view = st.tabs([
 
 with create:
     st.header("Create Assessment")
-    st.markdown("You can use this API to create an assessment record for trainees enrolled in your courses.")
+    st.markdown(
+        "You can use this API to create an assessment record for trainees enrolled in your courses.")
     if st.session_state["uen"] is None:
         st.warning("**Create Assessment requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
@@ -152,7 +158,8 @@ with create:
                                                  help="The outcome of the assessment, specified as pass or fail",
                                                  key="create-assessment-result")
     create_assessment_info.assessmentDate = st.date_input(label="Select Assessment Date",
-                                                          min_value=datetime.date(1900, 1, 1),
+                                                          min_value=datetime.date(
+                                                              1900, 1, 1),
                                                           help="Date the assessment was conducted",
                                                           key="create-assessment-date")
 
@@ -167,13 +174,27 @@ with create:
     if st.button("Send", key="edit-button", type="primary"):
         LOGGER.info("Attempting to send request to Create Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
+
         else:
             errors, warnings = create_assessment_info.validate()
 
@@ -183,21 +204,39 @@ with create:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ec, require_encryption=True)
+                    if st.session_state["default_secrets"]:
+                        handle_request(ec, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(ec, st.session_state["encryption_key"])
 
                 with response:
-                    LOGGER.info("Executing request...")
-                    handle_response(lambda: ec.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: ec.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with update_void:
     st.header("Update/Void Assessment")
-    st.markdown("You can use this API to update or void an assessment record for trainees enrolled in your courses.")
+    st.markdown(
+        "You can use this API to update or void an assessment record for trainees enrolled in your courses.")
 
     update_void_assessment = UpdateVoidAssessmentInfo()
     update_void_assessment.action = st.selectbox(label="Select Action to Perform",
                                                  options=AssessmentUpdateVoidActions,
-                                                 format_func=lambda x: str(x).upper(),
+                                                 format_func=lambda x: str(
+                                                     x).upper(),
                                                  help="Select UPDATE to update an assessment record, and "
                                                       "VOID to void an assessment record",
                                                  key="update-void-assessment-action")
@@ -239,7 +278,8 @@ with update_void:
         if col3.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
             update_void_assessment.result = col3.selectbox(label="Select Result",
                                                            options=Results,
-                                                           format_func=lambda x: str(x),
+                                                           format_func=lambda x: str(
+                                                               x),
                                                            help="The outcome of the assessment, specified as pass, "
                                                                 "fail or exempt",
                                                            key="update-void-assessment-result")
@@ -254,7 +294,8 @@ with update_void:
 
         if st.checkbox("Update Assessment Date?", key="will-update-void-assessment-date"):
             update_void_assessment.assessmentDate = st.date_input(label="Select Assessment Date",
-                                                                  min_value=datetime.date(1900, 1, 1),
+                                                                  min_value=datetime.date(
+                                                                      1900, 1, 1),
                                                                   help="Date the assessment was conducted",
                                                                   key="update-void-assessment-date")
 
@@ -267,38 +308,71 @@ with update_void:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-void-button", type="primary"):
-        LOGGER.info("Attempting to send request to Update/Void Assessment API...")
+        LOGGER.info(
+            "Attempting to send request to Update/Void Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(assessment_ref_num) == 0:
             LOGGER.error("Missing Assessment Reference Number!")
             st.error("Make sure that you have entered in your **Assessment Reference Number** before proceeding!",
                      icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             errors, warnings = update_void_assessment.validate()
 
             if validation_error_handler(errors, warnings):
                 request, response = st.tabs(["Request", "Response"])
-                uva = UpdateVoidAssessment(assessment_ref_num, update_void_assessment)
+                uva = UpdateVoidAssessment(
+                    assessment_ref_num, update_void_assessment)
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(uva, require_encryption=True)
+                    if st.session_state["default_secrets"]:
+                        handle_request(uva, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(uva, st.session_state["encryption_key"])
 
                 with response:
-                    LOGGER.info("Executing request...")
-                    handle_response(lambda: uva.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: uva.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                            os.environ.get(
+                                                                ENV_NAME_CERT, ''),
+                                                            os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: uva.execute(st.session_state["encryption_key"],
+                                                            st.session_state["cert_pem"],
+                                                            st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with find:
     st.header("Find Assessments")
-    st.markdown("You can use this API to find/search/query for an assessment record.")
+    st.markdown(
+        "You can use this API to find/search/query for an assessment record.")
     search_assessment = SearchAssessmentInfo()
 
     st.subheader("Query Parameters")
@@ -317,7 +391,8 @@ with find:
     if col1.checkbox("Specify Sort By Field?", key="search-sort-by-field"):
         search_assessment.sortBy_field = col1.selectbox(label="Select Sort By Field",
                                                         options=SortField,
-                                                        format_func=lambda x: str(x),
+                                                        format_func=lambda x: str(
+                                                            x),
                                                         help="Field to sort by. Available fields:\n"
                                                              "- 'updatedOn'\n"
                                                              "- 'createdOn'\n"
@@ -327,7 +402,8 @@ with find:
     if col2.checkbox("Specify Sort Order?", key="search-sort-order"):
         search_assessment.sortBy_order = col2.selectbox(label="Select Sort Order",
                                                         options=SortOrder,
-                                                        format_func=lambda x: str(x),
+                                                        format_func=lambda x: str(
+                                                            x),
                                                         help="Sort order",
                                                         key="search-sort-by-order-input")
 
@@ -403,13 +479,27 @@ with find:
     if st.button("Send", key="search-button", type="primary"):
         LOGGER.info("Attempting to send request to Search Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
+
         else:
             errors, warnings = search_assessment.validate()
 
@@ -419,16 +509,33 @@ with find:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(sa, require_encryption=True)
+                    if st.session_state["default_secrets"]:
+                        handle_request(sa, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(sa, st.session_state["encryption_key"])
 
                 with response:
-                    LOGGER.info("Executing request...")
-                    handle_response(lambda: sa.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: sa.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: sa.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with view:
     st.header("View Assessment")
-    st.markdown("You can use this API to view an assessment record for trainees enrolled in your courses.")
+    st.markdown(
+        "You can use this API to view an assessment record for trainees enrolled in your courses.")
 
     arn = st.text_input(label="Enter the Assessment Reference Number",
                         max_chars=100,
@@ -442,16 +549,32 @@ with view:
     if st.button("Send", key="view-assessment-button", type="primary"):
         LOGGER.info("Attempting to send request to View Assessment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif arn is None or len(arn) == 0:
-            LOGGER.error("No Assessment Reference Number provide! Request aborted...")
-            st.error("Please enter in the **Assessment Reference Number**!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            LOGGER.error(
+                "No Assessment Reference Number provide! Request aborted...")
+            st.error(
+                "Please enter in the **Assessment Reference Number**!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
             va = ViewAssessment(arn)
@@ -461,5 +584,15 @@ with view:
                 handle_request(va)
 
             with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: va.execute(), require_decryption=True)
+                # pass in the correct secrets based on user choice
+                if st.session_state["default_secrets"]:
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: va.execute(os.environ.get(
+                                                           ENV_NAME_CERT, ''),
+                                                       os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                else:
+                    LOGGER.info("Executing request with user's secrets...")
+                    handle_response(lambda: va.execute(st.session_state["cert_pem"],
+                                                       st.session_state["key_pem"]),
+                                    st.session_state["encryption_key"])

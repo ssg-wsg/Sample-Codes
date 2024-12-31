@@ -19,7 +19,11 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+from app.core.system.secrets import (
+    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+from app.utils.verify import Validators
 import datetime
+import os
 
 import streamlit as st
 
@@ -37,8 +41,9 @@ from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableColl
                                 EnrolmentCourseStatus)
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
-from app.utils.streamlit_utils import init, display_config, validation_error_handler
-from app.utils.verify import Validators
+from app.utils.streamlit_utils import (init, display_config, validation_error_handler,
+                                       does_not_have_url, does_not_have_encryption_key, does_not_have_keys)
+
 
 init()
 LOGGER = Logger("Courses API")
@@ -48,7 +53,8 @@ st.set_page_config(page_title="Enrolment", page_icon="🏫")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
@@ -199,7 +205,8 @@ with create:
             help="The trainee's full name",
             key="enrolment-trainee-full-name")
     create_enrolment.trainee_dateOfBirth = st.date_input(label="Trainee Date of Birth",
-                                                         min_value=datetime.date(1900, 1, 1),
+                                                         min_value=datetime.date(
+                                                             1900, 1, 1),
                                                          help="Trainee Date of Birth",
                                                          key="enrolment-trainee-date-of-birth")
     create_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
@@ -234,7 +241,8 @@ with create:
 
     if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
         create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
-                                                               min_value=datetime.date(1900, 1, 1),
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
                                                                help="Trainee Date of Enrolment",
                                                                key="enrolment-trainee-date-of-enrolment")
 
@@ -265,13 +273,31 @@ with create:
     if st.button("Send", key="create-button", type="primary"):
         LOGGER.info("Attempting to send request to Create Enrolment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"] and not create_enrolment.has_overridden_uen():
             LOGGER.error("Missing UEN!")
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             errors, warnings = create_enrolment.validate()
 
@@ -280,10 +306,28 @@ with create:
                 ce = CreateEnrolment(create_enrolment)
 
                 with request:
-                    handle_request(ce, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    if st.session_state["default_secrets"]:
+                        handle_request(ce, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(ce, st.session_state["encryption_key"])
 
                 with response:
-                    handle_response(lambda: ce.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: ce.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: ce.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with update:
@@ -413,11 +457,30 @@ with update:
     if st.button("Send", key="update-button", type="primary"):
         LOGGER.info("Attempting to send request to Update Enrolment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             errors, warnings = update_enrolment.validate()
 
@@ -426,10 +489,28 @@ with update:
                 ue = UpdateEnrolment(enrolment_reference_num, update_enrolment)
 
                 with request:
-                    handle_request(ue, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    if st.session_state["default_secrets"]:
+                        handle_request(ue, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(ue, st.session_state["encryption_key"])
 
                 with response:
-                    handle_response(lambda: ue.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: ue.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: ue.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with cancel:
@@ -457,24 +538,63 @@ with cancel:
     if st.button("Send", key="cancel-button", type="primary"):
         LOGGER.info("Attempting to send request to Cancel Enrolment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
 
             errors, warnings = cancel_enrolment.validate()
 
             if validation_error_handler(errors, warnings):
-                cancel_en = CancelEnrolment(enrolment_reference_num, cancel_enrolment)
+                cancel_en = CancelEnrolment(
+                    enrolment_reference_num, cancel_enrolment)
 
                 with request:
-                    handle_request(cancel_en, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    if st.session_state["default_secrets"]:
+                        handle_request(cancel_en, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(
+                            cancel_en, st.session_state["encryption_key"])
 
                 with response:
-                    handle_response(lambda: cancel_en.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: cancel_en.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                                  os.environ.get(
+                                                                      ENV_NAME_CERT, ''),
+                                                                  os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: cancel_en.execute(st.session_state["encryption_key"],
+                                                                  st.session_state["cert_pem"],
+                                                                  st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with search:
@@ -495,7 +615,8 @@ with search:
         if st.checkbox("Specify Last Updated Date From?", key="specify-search-enrolment-last-updated-from"):
             search_enrolment.lastUpdateDateFrom = st.date_input(label="Last Updated Date From",
                                                                 key="search-enrolment-last-updated-from",
-                                                                min_value=datetime.date(1900, 1, 1),
+                                                                min_value=datetime.date(
+                                                                    1900, 1, 1),
                                                                 format="YYYY-MM-DD",
                                                                 help="This parameter is mandatory if retrieveType is "
                                                                      "DELTA. This will return records with last "
@@ -506,7 +627,8 @@ with search:
         if st.checkbox("Specify Last Updated Date To?", key="specify-search-enrolment-last-updated-to"):
             search_enrolment.lastUpdateDateTo = st.date_input(label="Last Updated Date To",
                                                               key="search-enrolment-last-updated-to",
-                                                              min_value=datetime.date(1900, 1, 1),
+                                                              min_value=datetime.date(
+                                                                  1900, 1, 1),
                                                               format="YYYY-MM-DD",
                                                               help="Optional parameter. This will return records up "
                                                                    "till the specified date. Format YYYY-MM-DD.")
@@ -527,7 +649,8 @@ with search:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.sortBy_order = st.selectbox(label="Sort By Order",
                                                          options=SortOrder,
-                                                         format_func=lambda x: str(x),
+                                                         format_func=lambda x: str(
+                                                             x),
                                                          help="Sort order. Ascending - asc, Descending - desc. "
                                                               "Will default to desc if null",
                                                          key="search-enrolment-sort-by-order")
@@ -593,7 +716,8 @@ with search:
 
     if st.checkbox("Specify Enrolment Date?", key="specify-search-enrolment-date"):
         search_enrolment.trainee_enrolmentDate = st.date_input(label="Enrolment Date",
-                                                               min_value=datetime.date(1900, 1, 1),
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
                                                                key="search-enrolment-date",
                                                                format="YYYY-MM-DD",
                                                                help="Enrolment date")
@@ -616,7 +740,8 @@ with search:
             key="search-enrolment-training-partner-uen")
 
         if len(uen) > 0 and not Validators.verify_uen(uen):
-            st.warning("**Training Partner UEN** is not a valid UEN!", icon="⚠️")
+            st.warning(
+                "**Training Partner UEN** is not a valid UEN!", icon="⚠️")
 
         search_enrolment.trainingPartner_uen = uen
 
@@ -652,12 +777,30 @@ with search:
     if st.button("Send", key="search-button", type="primary"):
         LOGGER.info("Attempting to send request to Search Enrolment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif st.session_state["uen"] is None and not search_enrolment.has_overridden_uen():
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             errors, warnings = search_enrolment.validate()
 
@@ -666,13 +809,34 @@ with search:
                 se = SearchEnrolment(search_enrolment)
 
                 with request:
-                    handle_request(se, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    if st.session_state["default_secrets"]:
+                        handle_request(se, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(se, st.session_state["encryption_key"])
 
                 with response:
-                    handle_response(lambda: se.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: se.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                           os.environ.get(
+                                                               ENV_NAME_CERT, ''),
+                                                           os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: se.execute(st.session_state["encryption_key"],
+                                                           st.session_state["cert_pem"],
+                                                           st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
 
 
 with view:
+    st.info("""Although the documentation states that your *request payloads* needs to be **encrypted**,
+            you can still send **unencrypted** *request payloads*""",
+            icon=":material/warning:")
     st.header("View Enrolment")
     st.markdown("SSG will allow the creation of enrolment records, as well as updating, cancelling and searching "
                 "of existing enrolment records")
@@ -689,20 +853,52 @@ with view:
     if st.button("Send", key="view-button", type="primary"):
         LOGGER.info("Attempting to send request to View Enrolment API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(ref_num) == 0:
-            st.error("Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
+            st.error(
+                "Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
             ve = ViewEnrolment(ref_num)
 
             with request:
+                LOGGER.info("Showing preview of request...")
                 handle_request(ve)
 
             with response:
-                handle_response(lambda: ve.execute(), require_decryption=True)
+                # pass in the correct secrets based on user choice
+                if st.session_state["default_secrets"]:
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: ve.execute(os.environ.get(ENV_NAME_CERT, ''),
+                                                       os.environ.get(ENV_NAME_KEY, '')),
+                                    os.environ.get(ENV_NAME_ENCRYPT, '')
+                                    )
+                else:
+                    LOGGER.info("Executing request with user's secrets...")
+                    handle_response(lambda: ve.execute(st.session_state["cert_pem"],
+                                                       st.session_state["key_pem"]),
+                                    st.session_state["encryption_key"]
+                                    )
 
 
 with update_fee:
@@ -733,22 +929,62 @@ with update_fee:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="update-fee-button", type="primary"):
-        LOGGER.info("Attempting to send request to Update Enrolment Fee Collection API...")
+        LOGGER.info(
+            "Attempting to send request to Update Enrolment Fee Collection API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(enrolment_reference_num) == 0:
-            st.error("Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
+            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
+                     icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
             errors, warnings = update_enrolment_fee_collection.validate()
 
             if validation_error_handler(errors, warnings):
-                eufc = UpdateEnrolmentFeeCollection(enrolment_reference_num, update_enrolment_fee_collection)
+                eufc = UpdateEnrolmentFeeCollection(
+                    enrolment_reference_num, update_enrolment_fee_collection)
 
                 with request:
-                    handle_request(eufc, require_encryption=True)
+                    LOGGER.info("Showing preview of request...")
+                    if st.session_state["default_secrets"]:
+                        handle_request(eufc, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(
+                            eufc, st.session_state["encryption_key"])
 
                 with response:
-                    handle_response(lambda: eufc.execute(), require_decryption=True)
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: eufc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                             os.environ.get(
+                                                                 ENV_NAME_CERT, ''),
+                                                             os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: eufc.execute(st.session_state["encryption_key"],
+                                                             st.session_state["cert_pem"],
+                                                             st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])

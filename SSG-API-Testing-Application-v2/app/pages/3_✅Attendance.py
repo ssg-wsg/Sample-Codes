@@ -14,6 +14,7 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+import os
 import streamlit as st
 
 from app.core.attendance.course_session_attendance import CourseSessionAttendance
@@ -25,8 +26,11 @@ from app.core.system.logger import Logger
 
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_keys
+    does_not_have_url, does_not_have_keys, does_not_have_encryption_key
 from app.utils.verify import Validators
+
+from app.core.system.secrets import (
+    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
 # initialise necessary variables
 init()
@@ -36,7 +40,8 @@ st.set_page_config(page_title="Attendance", page_icon="✅")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
@@ -48,7 +53,8 @@ st.markdown("The Attendance API allows you effortlessly retrieve and update the 
 st.info("**Course Session Attendance returns *encrypted responses* while the Upload Course Session Attendance "
         "requires encrypted *request payloads*!**", icon="ℹ️")
 
-view, upload = st.tabs(["Course Session Attendance", "Upload Course Session Attendance"])
+view, upload = st.tabs(
+    ["Course Session Attendance", "Upload Course Session Attendance"])
 
 with view:
     st.header("Course Session Attendance")
@@ -59,7 +65,8 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
-    crn = st.text_input("Key in the Course Reference Number", key="crn-view-sessions")
+    crn = st.text_input("Key in the Course Reference Number",
+                        key="crn-view-sessions")
     runs = st.text_input("Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
@@ -74,27 +81,46 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="view_course_session_attendance_button", type="primary"):
-        LOGGER.info("Attempting to send request to Retrieve Course Session Attendance API...")
+        LOGGER.info(
+            "Attempting to send request to Retrieve Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif len(runs) == 0:
             LOGGER.error("Missing Course Run ID, request aborted!")
-            st.error("Make sure to specify your **Course Run ID** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to specify your **Course Run ID** before proceeding!", icon="🚨")
         elif len(crn) == 0:
             LOGGER.error("Missing Course Reference Number, request aborted!")
-            st.error("Make sure to specify your **Course Reference Number** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to specify your **Course Reference Number** before proceeding!", icon="🚨")
         elif len(session_id) == 0:
             LOGGER.error("Missing Session ID, request aborted!")
-            st.error("Make sure to specify your **Session ID** before proceeding!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error(
+                "Make sure to specify your **Session ID** before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = CourseSessionAttendance(runs, crn, session_id)
@@ -104,8 +130,15 @@ with view:
                 handle_request(vc)
 
             with response:
-                LOGGER.info("Executing request...")
-                handle_response(lambda: vc.execute(), require_decryption=True)
+                # pass in the correct secrets based on user choice
+                if st.session_state["default_secrets"]:
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: vc.execute(os.environ.get(ENV_NAME_CERT, ''),
+                                                       os.environ.get(ENV_NAME_KEY, '')))
+                else:
+                    LOGGER.info("Executing request with user's secrets...")
+                    handle_response(lambda: vc.execute(st.session_state["cert_pem"],
+                                                       st.session_state["key_pem"]))
 
 
 with upload:
@@ -145,7 +178,8 @@ with upload:
     with col1:
         uploadAttendance.trainee_id_type = st.selectbox(label="Enter Trainee ID Type",
                                                         options=IdType,
-                                                        format_func=lambda x: str(x),
+                                                        format_func=lambda x: str(
+                                                            x),
                                                         key="trainee-id-type-upload-attendance")
 
     with col2:
@@ -210,21 +244,38 @@ with upload:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="upload_course_session_attendance_button", type="primary"):
-        LOGGER.info("Attempting to send request to Upload Course Session Attendance API...")
+        LOGGER.info(
+            "Attempting to send request to Upload Course Session Attendance API...")
 
-        if "url" not in st.session_state or st.session_state["url"] is None:
+        if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif not st.session_state["uen"]:
             LOGGER.error("Missing UEN, request aborted!")
-            st.error("Make sure to fill in your **UEN** before proceeding!", icon="🚨")
+            st.error(
+                "Make sure to fill in your **UEN** before proceeding!", icon="🚨")
         elif not runs:
             LOGGER.error("Missing Course Run ID, request aborted!")
-            st.error("Make sure to fill in your **Course Run ID** before proceeding!", icon="🚨")
-        elif does_not_have_keys():
-            LOGGER.error("Missing Certificate or Private Keys!")
+            st.error(
+                "Make sure to fill in your **Course Run ID** before proceeding!", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
+            LOGGER.error("Invalid AES-256 encryption key provided!")
+            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
+
+        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+            LOGGER.error(
+                "User chose to use defaults but defaults are not set!")
+            st.error(
+                "There are no default secrets set, please provide your own secrets.", icon="🚨")
+
+        elif not st.session_state["default_secrets"] and does_not_have_keys():
+            LOGGER.error(
+                "Missing Certificate or Private Keys, request aborted!")
             st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
                      icon="🚨")
+
         else:
             errors, warnings = uploadAttendance.validate()
 
@@ -234,8 +285,24 @@ with upload:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(uca, require_encryption=True)
+                    if st.session_state["default_secrets"]:
+                        handle_request(uca, os.environ.get(
+                            ENV_NAME_ENCRYPT, ''))
+                    else:
+                        handle_request(uca, st.session_state["encryption_key"])
 
                 with response:
-                    LOGGER.info("Executing request...")
-                    handle_response(lambda: uca.execute())
+                    # pass in the correct secrets based on user choice
+                    if st.session_state["default_secrets"]:
+                        LOGGER.info("Executing request with defaults...")
+                        handle_response(lambda: uca.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                                                            os.environ.get(
+                                                                ENV_NAME_CERT, ''),
+                                                            os.environ.get(ENV_NAME_KEY, '')),
+                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    else:
+                        LOGGER.info("Executing request with user's secrets...")
+                        handle_response(lambda: uca.execute(st.session_state["encryption_key"],
+                                                            st.session_state["cert_pem"],
+                                                            st.session_state["key_pem"]),
+                                        st.session_state["encryption_key"])
