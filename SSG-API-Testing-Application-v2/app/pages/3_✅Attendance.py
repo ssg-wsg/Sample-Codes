@@ -124,7 +124,8 @@ with view:
             with response:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: vc.execute(os.environ.get(ENV_NAME_CERT, ''),
-                                                    os.environ.get(ENV_NAME_KEY, '')))
+                                                    os.environ.get(ENV_NAME_KEY, '')),
+                                os.environ.get(ENV_NAME_ENCRYPT, ''))
 
 
 with upload:
@@ -266,11 +267,11 @@ with upload:
                     handle_request(uca, os.environ.get(
                         ENV_NAME_ENCRYPT, ''))
 
+                # TODO: check that dont need to decrypt
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: uca.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        os.environ.get(ENV_NAME_KEY, '')))
                     
