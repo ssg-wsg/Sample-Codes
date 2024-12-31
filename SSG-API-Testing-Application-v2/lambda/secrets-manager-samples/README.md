@@ -55,3 +55,10 @@ The role that the lambda function will assume when retrieving the secret from AW
 
 > [!NOTE]
 > You can choose to remove the `AWSLambdaBasicExecutionRole` policy from the `SampleAppRetrieveSecret` role if logging to CloudWatch is not required. This ensures the role adheres to the principle of least privilege by only granting the permissions necessary for its task.
+
+References:
+- https://docs.aws.amazon.com/secretsmanager/latest/userguide/hardcoded.html
+- https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets-python-sdk.html
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version
+- https://www.youtube.com/watch?v=3N0tGKwvBdA
