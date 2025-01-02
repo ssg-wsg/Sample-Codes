@@ -191,6 +191,18 @@ with encryption:
         help="Click to download the HTML form for submission!",
         on_click=lambda: LOGGER.info("Downloading HTML form for submission..."),
         type="primary")
+    
+    st.write("Below is the form if you do not wish to download it")
+    st.write("""
+<h1>SkillsFuture Credit Payment Request Form</h1>
+<p>Enter in the encrypted payload below and click "Submit" to send the request to the API!</p>
+<form action="https://uat.sfc.myskillsfuture.gov.sg/sfc2-ind/api/individual/sfcpayment/claim/submit/gateway"
+       method="post" target="_blank">
+     <textarea id="encryptedPayload" name="encryptedPayload" rows="10" cols="100"></textarea>
+     <br>
+     <input type="submit" href="#" formtarget="_blank" value="Submit">
+ </form>
+""", unsafe_allow_html=True)
 
 with decryption:
     st.header("SF Credit Claims Payment Request Decryption")

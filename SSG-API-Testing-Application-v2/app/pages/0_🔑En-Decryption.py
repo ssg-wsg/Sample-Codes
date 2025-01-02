@@ -29,7 +29,7 @@ st.markdown("This page helps you to experiment with the AES-256 encryption algor
             "your AES key to encrypt or decrypt messages!")
 
 st.header("AES Key")
-st.markdown("Enter in your AES key or reuse the AES key provided in the Home page!")
+st.markdown("Enter in your AES key!")
 
 key = st.text_input(label="AES Key",
                     type="password",
