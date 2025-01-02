@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 # append current file path to PATH so that it is discoverable for absolute imports; this must be done
 # before the other files from the same project are imported
@@ -10,10 +9,10 @@ sys.path.append(os.path.dirname(FILE_LOC))
 
 # ignore E402 rule for this part only
 import base64  # noqa: E402
+from tempfile import NamedTemporaryFile  # noqa: E402
+
 import streamlit as st  # noqa: E402
 import streamlit_nested_layout  # noqa: E402
-
-from tempfile import NamedTemporaryFile  # noqa: E402
 
 from app.utils.streamlit_utils import init, display_config  # noqa: E402
 from app.utils.verify import Validators  # noqa: E402
@@ -48,12 +47,13 @@ st.markdown("Welcome to the SSG API Sample Application!\n\n"
             "components of the SSG API suite!")
 
 st.subheader("Configurations")
-st.markdown("Before you continue, make sure to fill up the following configuration details needed for the demo app! "
-            "Failure to enter in any one of these variables may **prevent you from fully exploring all features "
-            "of the app**!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
+st.markdown("Before you continue, make sure to fill up the following configuration details below "
+            "or you **may not be able to fully explore all features of the app**!\n\n"
+            "You can view your configurations at any time by clicking on the `Configs` button on the "
             "sidebar!")
 
-st.subheader(f"API Endpoint (UAT): {Endpoints.UAT.value}")
+st.subheader("API Endpoint:")
+st.markdown(f"We will be using a UAT endpoint ({Endpoints.UAT.value}) throughout the app")
 # st.markdown("Select the endpoint you wish to connect to!")
 # st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
 #                                        options=Endpoints,
