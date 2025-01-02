@@ -83,7 +83,7 @@ if len(st.session_state["uen"]) > 0:
 st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
             "While you may put in your secrets into the boxes below, they are not used when calling the APIs. "
             "These are meant to emulate the process of uploading your own secrets during onboarding."
-            )    
+            )
 
 # AES Encryption Key to be loaded outside of a form
 st.session_state["encryption_key"] = st.text_input("Enter in your encryption key", type="password",
@@ -147,7 +147,7 @@ with st.form(key="init_config"):
                 LOGGER.info("Certificate and key verified!")
                 st.success(
                     "**Certificate and Key loaded successfully!**\n\n", icon="✅")
-                
+
                 LOGGER.info("Removing certificate and key after verifying")
                 os.remove(st.session_state["cert_pem"])
                 os.remove(st.session_state["key_pem"])
