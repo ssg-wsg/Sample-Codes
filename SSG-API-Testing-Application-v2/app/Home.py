@@ -53,11 +53,11 @@ st.markdown("Before you continue, make sure to fill up the following configurati
             "of the app**!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
             "sidebar!")
 
-st.subheader("API Endpoint")
-st.markdown("Select the endpoint you wish to connect to!")
-st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
-                                       options=Endpoints,
-                                       format_func=lambda endpoint: endpoint.name)
+st.subheader(f"API Endpoint (UAT): {Endpoints.UAT.value}")
+# st.markdown("Select the endpoint you wish to connect to!")
+# st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
+#                                        options=Endpoints,
+#                                        format_func=lambda endpoint: endpoint.name)
 
 st.subheader("UEN and Keys")
 st.markdown("Key in your UEN number, as well as your encryption keys, certificate key (`.pem`) and private key "

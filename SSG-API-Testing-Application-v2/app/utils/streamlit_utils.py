@@ -8,6 +8,7 @@ from typing import Union
 from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
+from app.core.constants import Endpoints  # noqa: E402
 from app.core.system.secrets import (
     Refetch_secrets, Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
@@ -38,8 +39,7 @@ def init() -> None:
     if "key_pem" not in st.session_state:
         st.session_state["key_pem"] = None
 
-    if "url" not in st.session_state:
-        st.session_state["url"] = None
+    st.session_state["url"] = Endpoints.UAT
 
 
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
