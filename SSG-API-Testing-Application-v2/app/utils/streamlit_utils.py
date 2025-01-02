@@ -9,6 +9,7 @@ from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
 from app.core.constants import Endpoints  # noqa: E402
+from app.core.testdata import TestData  # noqa: E402
 from app.core.system.secrets import (
     Refetch_secrets, Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
 
@@ -28,7 +29,7 @@ def init() -> None:
         st.session_state["last_fetched"] = float(0)
 
     if "uen" not in st.session_state:
-        st.session_state["uen"] = ""
+        st.session_state["uen"] = TestData.UEN.value
 
     if "encryption_key" not in st.session_state:
         st.session_state["encryption_key"] = ""
@@ -152,6 +153,7 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
 
 def does_not_have_encryption_key() -> bool:
+    """Returns true if user encryption key is missing"""
     return ("encryption_key" not in st.session_state
             or st.session_state["encryption_key"] is None
             or len(st.session_state["encryption_key"]) == 0)

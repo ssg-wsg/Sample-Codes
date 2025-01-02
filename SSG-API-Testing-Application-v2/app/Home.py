@@ -53,7 +53,8 @@ st.markdown("Before you continue, make sure to fill up the following configurati
             "sidebar!")
 
 st.subheader("API Endpoint:")
-st.markdown(f"We will be using a UAT endpoint ({Endpoints.UAT.value}) throughout the app")
+st.markdown(f"We will be using a UAT endpoint ({
+            Endpoints.UAT.value}) throughout the app")
 # st.markdown("Select the endpoint you wish to connect to!")
 # st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
 #                                        options=Endpoints,
@@ -81,7 +82,7 @@ if len(st.session_state["uen"]) > 0:
         st.session_state.update(uen=st.session_state["uen"].upper())
 
 st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
-            "While you may put in your secrets into the boxes below, they are not used when calling the APIs. "
+            "While you may put in your secrets into the boxes below to be validated, they are not used when calling the APIs. "
             "These are meant to emulate the process of uploading your own secrets during onboarding."
             )
 
@@ -142,8 +143,10 @@ with st.form(key="init_config"):
                 LOGGER.info("Verifying certificate and key...")
                 if not Validators.verify_cert_private_key(st.session_state["cert_pem"], st.session_state["key_pem"]):
                     LOGGER.error("Certificate and private key are not valid!")
+                    st.session_state["cert_pem"] = "Error"
+                    st.session_state["key_pem"] = "Error"
                     raise AssertionError("Certificate and private key are not valid! Are you sure that you "
-                                         "have uploaded your certificates and private keys properly?")
+                                     "have uploaded your certificates and private keys properly?")
                 LOGGER.info("Certificate and key verified!")
                 st.success(
                     "**Certificate and Key loaded successfully!**\n\n", icon="✅")
@@ -151,6 +154,10 @@ with st.form(key="init_config"):
                 LOGGER.info("Removing certificate and key after verifying")
                 os.remove(st.session_state["cert_pem"])
                 os.remove(st.session_state["key_pem"])
+                # rename to something appropriate since only validation is done
+                st.session_state["cert_pem"] = "Valid Certificate"
+                st.session_state["key_pem"] = "Valid Private Key"
+
             except base64.binascii.Error:
                 LOGGER.error(
                     "Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")
