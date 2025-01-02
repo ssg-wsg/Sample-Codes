@@ -109,10 +109,7 @@ with view:
                 "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-        # elif not st.session_state["default_secrets"] and does_not_have_keys():
-        #     LOGGER.error("Missing Certificate or Private Keys! (in courses)")
-        #     st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-        #              icon="🚨")
+
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewCourseRun(runs, include_expired)
