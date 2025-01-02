@@ -96,7 +96,7 @@ def http_code_handler(code: Union[int, str]) -> None:
     if isinstance(code, str):
         try:
             code = int(code)
-        except ValueError | TypeError:
+        except (ValueError, TypeError):
             raise ValueError("Code must be an integer or string")
 
     base_str = "**Response Code:**"
