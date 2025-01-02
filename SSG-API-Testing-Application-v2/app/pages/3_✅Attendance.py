@@ -155,7 +155,7 @@ with upload:
     st.subheader("Attendance Information")
     uploadAttendance.status_code = st.selectbox(label="Enter the Attendance Status Code",
                                                 options=Attendance,
-                                                format_func=lambda x: str(x),
+                                                format_func=str,
                                                 key="attendance-status-code-upload-attendance")
 
     st.subheader("Trainee Information")
@@ -218,7 +218,7 @@ with upload:
     uploadAttendance.surveyLanguage_code = st.selectbox(
         label="Enter Survey Language",
         options=SurveyLanguage,
-        format_func=lambda x: str(x),
+        format_func=str,
         key="language-upload-attendance")
 
     st.divider()

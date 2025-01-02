@@ -39,8 +39,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
-    if st.button("Dev debugger"):
-        display_debug()
+    display_debug()
 
 
 st.image("assets/sf.png", width=200)
@@ -48,6 +47,9 @@ st.title("SSG API Sample Application")
 st.markdown("Welcome to the SSG API Sample Application!\n\n"
             "Select any one of the pages on the left sidebar to view sample codes for each of the different crucial "
             "components of the SSG API suite!")
+
+st.warning("This app is just for you to try out before you choose to subscribe "
+           "where you will have the support of our team during onboarding. ")
 
 st.subheader("Configurations")
 st.markdown("Before you continue, make sure to fill up the following configuration details below "

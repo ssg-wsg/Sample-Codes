@@ -446,7 +446,7 @@ with cancel:
 
     cancel_claims.cancel_claims_code = st.selectbox(label="Select Cancel Claims Code",
                                                     options=CancelClaimsCode,
-                                                    format_func=lambda x: str(x),
+                                                    format_func=str,
                                                     key="view-claims-cancel-claim-code")
 
     st.divider()

@@ -153,7 +153,7 @@ with create:
 
     create_assessment_info.result = st.selectbox(label="Select Result",
                                                  options=Results,
-                                                 format_func=lambda x: str(x),
+                                                 format_func=str,
                                                  help="The outcome of the assessment, specified as pass or fail",
                                                  key="create-assessment-result")
     create_assessment_info.assessmentDate = st.date_input(label="Select Assessment Date",

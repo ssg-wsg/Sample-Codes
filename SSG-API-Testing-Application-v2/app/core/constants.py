@@ -35,7 +35,7 @@ class Vacancy(Enum):
 class OptionalSelector(Enum):
     """Enum representing a selector that permits empty responses."""
 
-    NIL = ("Select a value", None)
+    NIL = ("Choose to leave empty", None)
     YES = ("Yes", True)
     NO = ("No", False)
 
