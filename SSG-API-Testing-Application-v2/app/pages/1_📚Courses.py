@@ -36,11 +36,10 @@ from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import (init, display_config,
                                        validation_error_handler,
-                                       does_not_have_encryption_key, does_not_have_keys, does_not_have_url)
+                                       does_not_have_encryption_key, does_not_have_keys, does_not_have_url, display_debug)
 from app.utils.verify import Validators
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
 
 # initialise necessary variables
 init()
@@ -55,6 +54,9 @@ with st.sidebar:
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
+
+    if st.button("Dev debugger"):
+        display_debug()
 
 st.image("assets/sf.png", width=200)
 st.title("Courses API")
@@ -120,8 +122,7 @@ with view:
 
             with response:
                 LOGGER.info("Executing request with defaults...")
-                handle_response(lambda: vc.execute(os.environ.get(
-                    ENV_NAME_CERT, ''), os.environ.get(ENV_NAME_KEY, '')))
+                handle_response(lambda: vc.execute(Secrets.get_cert(), Secrets.get_private_key()))
 
 
 with add:
@@ -142,7 +143,7 @@ with add:
     add_runinfo = AddRunInfo()
     include_expired = st.selectbox(label="Include expired courses?",
                                    options=OptionalSelector,
-                                   format_func=lambda x: str(x),
+                                   format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="add-view-expired")
     add_runinfo.crid = st.text_input(label="Key in the Course Reference Number",
@@ -755,16 +756,15 @@ with add:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ac, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(ac, Secrets.get_encryption_key())
 
                 with response:
                     # pass in the correct secrets based on user choice
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ac.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_response(lambda: ac.execute(Secrets.get_encryption_key(),
+                                                        Secrets.get_cert(),
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with edit_delete:
@@ -1377,15 +1377,15 @@ with edit_delete:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ec, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(ec, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, '')
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key()
                                     )
 
 
@@ -1469,4 +1469,4 @@ with sessions:
             with response:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: vcs.execute(os.environ.get(
-                    ENV_NAME_CERT, ''), os.environ.get(ENV_NAME_KEY, '')))
+                    ENV_NAME_CERT, ''), Secrets.get_private_key()))

@@ -11,7 +11,7 @@ from app.utils.string_utils import StringBuilder
 from app.core.constants import Endpoints  # noqa: E402
 from app.core.testdata import TestData  # noqa: E402
 from app.core.system.secrets import (
-    Refetch_secrets, Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+    Refetch_secrets, Set_Default_Secrets)
 
 LOGGER = Logger(__name__)
 
@@ -96,8 +96,8 @@ def http_code_handler(code: Union[int, str]) -> None:
     if isinstance(code, str):
         try:
             code = int(code)
-        except (ValueError, TypeError):
-            raise ValueError("Code must be an integer or string")
+        except (ValueError, TypeError) as e:
+            raise ValueError("Code must be an integer or string") from e
 
     base_str = "**Response Code:**"
 
@@ -169,3 +169,23 @@ def does_not_have_url() -> bool:
     """Returns true if url endpoint is missing."""
 
     return "url" not in st.session_state or st.session_state["url"] is None
+
+
+def display_debug() -> None:
+    """Change the loaded configuration variables."""
+
+    st.header("UEN")
+    dev_uen = st.text_input(label="UEN", value=st.session_state["uen"])
+    st.session_state["uen"] = dev_uen
+
+    st.header("Encryption Key:")
+    st.code(st.session_state["encryption_key"]
+            if st.session_state["encryption_key"] else "-")
+
+    st.header("Certificate Key:")
+    st.code(st.session_state["cert_pem"]
+            if st.session_state["cert_pem"] else "-")
+
+    st.header("Private Key:")
+    st.code(st.session_state["key_pem"]
+            if st.session_state["key_pem"] else "-")

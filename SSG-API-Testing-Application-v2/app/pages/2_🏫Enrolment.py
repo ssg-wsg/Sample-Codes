@@ -19,8 +19,7 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
 from app.utils.verify import Validators
 import datetime
 import os
@@ -299,16 +298,16 @@ with create:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ce, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(ce, Secrets.get_encryption_key())
 
                 with response:
                     # pass in the correct secrets based on user choice
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ce.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: ce.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with update:
@@ -468,11 +467,11 @@ with update:
                     
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ue.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: ue.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with cancel:
@@ -527,16 +526,16 @@ with cancel:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(cancel_en, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(cancel_en, Secrets.get_encryption_key())
 
                 with response:
                     # pass in the correct secrets based on user choice
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: cancel_en.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: cancel_en.execute(Secrets.get_encryption_key(),
                                                                 os.environ.get(
                                                                     ENV_NAME_CERT, ''),
-                                                                os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                                Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with search:
@@ -744,15 +743,15 @@ with search:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(se, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(se, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: se.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: se.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with view:
@@ -798,9 +797,9 @@ with view:
 
             with response:
                 LOGGER.info("Executing request with defaults...")
-                handle_response(lambda: ve.execute(os.environ.get(ENV_NAME_CERT, ''),
-                                                    os.environ.get(ENV_NAME_KEY, '')),
-                                os.environ.get(ENV_NAME_ENCRYPT, '')
+                handle_response(lambda: ve.execute(Secrets.get_cert(),
+                                                    Secrets.get_private_key()),
+                                Secrets.get_encryption_key()
                                 )
 
 
@@ -866,8 +865,8 @@ with update_fee:
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: eufc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: eufc.execute(Secrets.get_encryption_key(),
                                                             os.environ.get(
                                                                 ENV_NAME_CERT, ''),
-                                                            os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                            Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())

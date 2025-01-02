@@ -36,8 +36,7 @@ from app.utils.http_utils import handle_response, handle_request
 from app.utils.streamlit_utils import init, display_config, validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
 
 init()
 LOGGER = Logger("SkillsFuture Credit Pay")
@@ -157,15 +156,15 @@ with encryption:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(enc, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(enc, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: enc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: enc.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, '')
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key()
                                     )
 
     st.divider()
@@ -246,15 +245,15 @@ with decryption:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(dec, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(dec, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: dec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: dec.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 with upload:
     st.header("Upload Supporting Documents")
@@ -359,15 +358,15 @@ with upload:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ud, os.environ.get(ENV_NAME_ENCRYPT, ''))
+                    handle_request(ud, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ud.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: ud.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with view:
@@ -420,8 +419,8 @@ with view:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: vc.execute(os.environ.get(
                                                         ENV_NAME_CERT, ''),
-                                                    os.environ.get(ENV_NAME_KEY, '')),
-                                os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                    Secrets.get_private_key()),
+                                Secrets.get_encryption_key())
 
 with cancel:
     st.header("Cancel Claim")
@@ -483,8 +482,8 @@ with cancel:
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: cc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: cc.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())

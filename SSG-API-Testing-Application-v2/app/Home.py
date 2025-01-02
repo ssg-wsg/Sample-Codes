@@ -14,13 +14,13 @@ from tempfile import NamedTemporaryFile  # noqa: E402
 import streamlit as st  # noqa: E402
 import streamlit_nested_layout  # noqa: E402
 
-from app.utils.streamlit_utils import init, display_config  # noqa: E402
+from app.utils.streamlit_utils import init, display_config, display_debug  # noqa: E402
 from app.utils.verify import Validators  # noqa: E402
 from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
+import app.core.system.secrets as Secrets  # noqa: E402
 
 # initialise all variables and logger
 init()
@@ -38,6 +38,9 @@ with st.sidebar:
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
+
+    if st.button("Dev debugger"):
+        display_debug()
 
 
 st.image("assets/sf.png", width=200)

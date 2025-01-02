@@ -23,6 +23,21 @@ ENV_FLAG_REFETCH = "currently_fetching"
 ENV_FLAG_LAST_FETCHED = "last_fetched"
 
 
+def get_encryption_key():
+    '''Returns encryption key set by default'''
+    return os.environ.get(ENV_NAME_ENCRYPT, '')
+
+
+def get_cert():
+    '''Returns certificate set by default'''
+    return os.environ.get(ENV_NAME_CERT, '')
+
+
+def get_private_key():
+    '''Returns private key set by default'''
+    return os.environ.get(ENV_NAME_KEY, '')
+
+
 def Refetch_secrets(refetch: bool) -> bool:
     ''' callback function for the refetch button '''
     if st.session_state["last_fetched"] < last_fetched():
@@ -118,8 +133,8 @@ def Set_Default_Secrets(refetch: bool) -> bool:
             return False
 
         # delete old files that you no longer need, continue even if cannot delete
-        delete_file(os.environ.get(ENV_NAME_CERT, ''))
-        delete_file(os.environ.get(ENV_NAME_KEY, ''))
+        delete_file(get_cert())
+        delete_file(get_private_key())
 
         # seperate default cert and key from user provided by storing in current directory
         try:
@@ -141,9 +156,9 @@ def Set_Default_Secrets(refetch: bool) -> bool:
 
 
 def are_secrets_set() -> bool:
-    return os.environ.get(ENV_NAME_ENCRYPT, '') != '' and \
-        os.environ.get(ENV_NAME_CERT, '') != '' and \
-        os.environ.get(ENV_NAME_KEY, '') != ''
+    return get_encryption_key() != '' and \
+        get_cert() != '' and \
+        get_private_key() != ''
 
 
 def currently_fetching() -> bool:

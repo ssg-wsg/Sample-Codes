@@ -35,8 +35,7 @@ from app.utils.streamlit_utils import init, display_config, validation_error_han
     does_not_have_url, does_not_have_keys, does_not_have_encryption_key
 from app.utils.verify import Validators
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
 
 # initialise necessary variables
 init()
@@ -199,11 +198,11 @@ with create:
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ec.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with update_void:
@@ -320,11 +319,11 @@ with update_void:
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: uva.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: uva.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with find:
@@ -462,11 +461,11 @@ with find:
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: sa.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
+                    handle_response(lambda: sa.execute(Secrets.get_encryption_key(),
                                                         os.environ.get(
                                                             ENV_NAME_CERT, ''),
-                                                        os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                        Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 with view:
     st.header("View Assessment")
@@ -513,5 +512,5 @@ with view:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: va.execute(os.environ.get(
                                                         ENV_NAME_CERT, ''),
-                                                    os.environ.get(ENV_NAME_KEY, '')),
-                                os.environ.get(ENV_NAME_ENCRYPT, ''))
+                                                    Secrets.get_private_key()),
+                                Secrets.get_encryption_key())
