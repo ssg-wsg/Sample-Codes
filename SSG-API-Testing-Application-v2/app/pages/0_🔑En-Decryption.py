@@ -61,7 +61,7 @@ else:
             LOGGER.info("Encrypting message...")
 
             try:
-                encrypt_out = Cryptography.encrypt(encrypt_in, return_bytes=False, key=key)
+                encrypt_out = Cryptography.encrypt(key, encrypt_in, return_bytes=False)
             except Exception as ex:
                 LOGGER.error(f"Encryption failed with: {ex}")
                 col1.error("Message is invalid or key is incorrect!", icon="🚨")
@@ -83,7 +83,7 @@ else:
             LOGGER.info("Decrypting message...")
 
             try:
-                decrypt_out = Cryptography.decrypt(decrypt_in, return_bytes=False, key=key)
+                decrypt_out = Cryptography.decrypt(key, decrypt_in, return_bytes=False)
             except Exception as ex:
                 LOGGER.error(f"Decryption failed with: {ex}")
                 col1.error("Ciphertext is invalid or key is incorrect!", icon="🚨")
