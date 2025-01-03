@@ -1436,12 +1436,13 @@ with sessions:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="sessions-view-expired")
-    crn = st.text_input("Key in the Course Reference Number",
+    set_default("view-sessions-crn", TestData.COURSE_REFERENCE_NUMBER.value)
+    crn = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                         help="Reference number for the course of interest. Encode the course reference number "
                              "as it may contains some special characters which could be blocked by the Gateway",
                         key="view-sessions-crn")
 
-    runs = st.text_input("Enter Course Run ID",
+    runs = st.text_input("\* Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="view-sessions-course-run-id")
