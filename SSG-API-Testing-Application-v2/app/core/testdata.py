@@ -5,11 +5,6 @@ import datetime
 from enum import Enum
 import streamlit as st
 
-def set_default(widget_key: str, default_value):
-    # '''prefill the value into an unmodified text box'''
-    # if widget_key not in st.session_state or not st.session_state[widget_key]:
-    #     st.session_state[widget_key] = default_value
-    pass
 
 class TestData(Enum):
     """Enum containing all test data"""
