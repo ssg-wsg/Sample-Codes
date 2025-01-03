@@ -87,7 +87,7 @@ with view:
                                    key="view-expired")
     
     set_default("view-course-run-id", TestData.COURSE_RUN_NUMBER.value)
-    runs = st.text_input(label=f"Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    runs = st.text_input(label=f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                          help="The Course Run Id is used as a parameter for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="view-course-run-id")
@@ -148,7 +148,7 @@ with add:
                                    key="add-view-expired")
     
     set_default("add-crn",TestData.COURSE_REFERENCE_NUMBER.value)
-    add_runinfo.crid = st.text_input(label=f"Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    add_runinfo.crid = st.text_input(label=f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                      help="Reference number for the course of interest. "
                                           "Encode the course reference number as it may contains "
                                           "some special characters which could be blocked by the Gateway",
@@ -209,7 +209,7 @@ with add:
 
             st.markdown("#### Schedule Info Type")
             set_default(f"add-schedule-code-{run}","01")
-            indiv_run.schedule_info_type_code = st.text_input(label="Schedule Code *",
+            indiv_run.schedule_info_type_code = st.text_input(label="\* Schedule Code",
                                                               key=f"add-schedule-code-{
                                                                   run}",
                                                               help="Course run schedule info code",
@@ -217,7 +217,7 @@ with add:
                                                               max_chars=2)
             
             set_default(f"add-schedule-description-{run}","Description")
-            indiv_run.schedule_info_type_description = st.text_area(label="Schedule Description *",
+            indiv_run.schedule_info_type_description = st.text_area(label="\* Schedule Description",
                                                                     key=f"add-schedule-description-{
                                                                         run}",
                                                                     help="Course run schedule info description",
@@ -225,7 +225,7 @@ with add:
                                                                     max_chars=32)
             
             set_default(f"add-schedule-info-{run}","Sat / 5 Sats / 9am - 6pm")
-            indiv_run.schedule_info = st.text_input(label="Schedule Info *",
+            indiv_run.schedule_info = st.text_input(label="\* Schedule Info",
                                                     key=f"add-schedule-info-{
                                                         run}",
                                                     help="Course run schedule info",
@@ -265,20 +265,24 @@ with add:
                                                             help="Indication that the course run location is "
                                                                  "wheelchair accessible")
 
-            indiv_run.floor = st.text_input(label="Floor",
+            set_default(f"add-venue-floor-{run}","12")
+            indiv_run.floor = st.text_input(label="\* Floor",
                                             key=f"add-venue-floor-{run}",
                                             help="Course run floor",
                                             max_chars=3)
-            indiv_run.unit = st.text_input(label="Unit",
+            set_default(f"add-venue-unit-{run}","123")
+            indiv_run.unit = st.text_input(label="\* Unit",
                                            key=f"add-venue-unit-{run}",
                                            help="Course run unit",
                                            max_chars=5)
-            indiv_run.postal_code = st.text_input(label="Postal Code",
+            set_default(f"add-venue-postal-code-{run}","600600")
+            indiv_run.postal_code = st.text_input(label="\* Postal Code",
                                                   key=f"add-venue-postal-code-{
                                                       run}",
                                                   help="Course run postal code",
                                                   max_chars=6)
-            indiv_run.room = st.text_input(label="Room",
+            set_default(f"add-venue-room-{run}","12A")
+            indiv_run.room = st.text_input(label="\* Room",
                                            key=f"add-venue-room-{run}",
                                            help="Course run room",
                                            max_chars=255)
@@ -311,25 +315,31 @@ with add:
                     help="Course run registered user count. This number cannot be more than `intake size + threshold`")
 
             st.markdown("#### Course Admin Details")
-            indiv_run.mode_of_training = st.selectbox(label="Mode of Training",
+            indiv_run.mode_of_training = st.selectbox(label="\* Mode of Training",
                                                       key=f"add-mode-of-training-{
                                                           run}",
                                                       help="Mode of training code",
                                                       options=ModeOfTraining,
+                                                      index=3,
                                                       format_func=str)
+            LOGGER.info("before email")
+            set_default(f"add-course-admin-email-{run}","test@test.com")
             indiv_run.course_admin_email = st.text_input(
-                label="Course Admin Email",
+                label="\* Course Admin Email",
                 key=f"add-course-admin-email-{run}",
                 help="Course admin email is under course run level that can receive the email from 'QR code "
                      "Attendance Taking', 'Course Attendance with error' and 'Trainer information not updated'",
                 max_chars=255)
 
+            LOGGER.info("before validate")
             if len(indiv_run.course_admin_email) > 0:
+                LOGGER.info("before validate lib")
                 if not Validators.verify_email(indiv_run.course_admin_email):
                     st.warning("Email format is not valid!", icon="⚠️")
+            LOGGER.info("after validate")
 
             st.markdown("#### Course Vacancy Details")
-            indiv_run.course_vacancy = st.selectbox(label="Course Vacancy",
+            indiv_run.course_vacancy = st.selectbox(label="\* Course Vacancy",
                                                     key=f"add-course-vacancy-{
                                                         run}",
                                                     options=Vacancy,
@@ -365,7 +375,7 @@ with add:
             num_sessions: int = st.number_input(label="Key in the number of sessions in the Course Run",
                                                 key=f"add-num-session-{run}",
                                                 min_value=0,
-                                                value=0)
+                                                value=1)
 
             if num_sessions > 0:
                 st.divider()
@@ -376,8 +386,9 @@ with add:
 
                     st.markdown(f"##### Session {i + 1}")
                     runsession.mode_of_training = st.selectbox(
-                        label="Mode of Training",
+                        label="\* Mode of Training",
                         options=ModeOfTraining,
+                        index=3,
                         help="Mode of training code",
                         format_func=str,
                         key=f"add-session-mode-of-training_{i}-{run}")
@@ -431,8 +442,7 @@ with add:
                                                                 .time())
 
                         st.info(f"End date of course session is automatically set to "
-                                f"**{runsession.get_start_date()
-                                     }**\n\nStart and end time set to "
+                                f"**{runsession.get_start_date()}**\n\nStart and end time set to "
                                 f"**12:00 AM to 11:59 PM** respectively", icon="ℹ️")
                     else:
                         with col1:
@@ -455,6 +465,7 @@ with add:
 
                     st.markdown("###### Venue")
                     if st.checkbox("Specify Venue Block?", key=f"specify-add-session-venue-block-{i}-{run}"):
+                        set_default(f"add-session-venue-block-{i}-{run}", "12")
                         runsession.block = st.text_input(label="Block",
                                                          key=f"add-session-venue-block-{
                                                              i}-{run}",
@@ -462,6 +473,7 @@ with add:
                                                          max_chars=10)
 
                     if st.checkbox("Specify Venue Street", key=f"specify-add-session-venue-street-{i}-{run}"):
+                        set_default(f"add-session-venue-street-{i}-{run}", "Street 12")
                         runsession.street = st.text_input(label="Street",
                                                           key=f"add-session-venue-street-{
                                                               i}-{run}",
@@ -469,6 +481,7 @@ with add:
                                                           max_chars=32)
 
                     if st.checkbox("Specify Venue Building", key=f"specify-add-session-venue-building-{i}-{run}"):
+                        set_default(f"add-session-venue-building-{i}-{run}", "Building ABC")
                         runsession.building = st.text_input(label="Building",
                                                             key=f"add-session-venue-building-{
                                                                 i}-{run}",
@@ -495,24 +508,24 @@ with add:
                                  "API will pick the venue information from course run and update to session venue",
                             key=f"add-session-venue-primary-venue-{i}-{run}")
 
-                    runsession.floor = st.text_input(label="Floor",
-                                                     key=f"add-session-floor-{
-                                                         i}-{run}",
+                    set_default(f"add-session-floor-{i}-{run}","12")
+                    runsession.floor = st.text_input(label="\* Floor",
+                                                     key=f"add-session-floor-{i}-{run}",
                                                      help="Course run floor",
                                                      max_chars=3)
-                    runsession.unit = st.text_input(label="Unit",
-                                                    key=f"add-session-venue-unit-{
-                                                        i}-{run}",
+                    set_default(f"add-session-venue-unit-{i}-{run}","123")
+                    runsession.unit = st.text_input(label="\* Unit",
+                                                    key=f"add-session-venue-unit-{i}-{run}",
                                                     help="Course run unit",
                                                     max_chars=5)
-                    runsession.postal_code = st.text_input(label="Postal Code",
-                                                           key=f"add-session-venue-postal-code-{
-                                                               i}-{run}",
+                    set_default(f"add-session-venue-postal-code-{i}-{run}","600600")
+                    runsession.postal_code = st.text_input(label="\* Postal Code",
+                                                           key=f"add-session-venue-postal-code-{i}-{run}",
                                                            help="Course run postal code",
                                                            max_chars=6)
-                    runsession.room = st.text_input(label="Room",
-                                                    key=f"add-session-venue-room-{
-                                                        i}-{run}",
+                    set_default(f"add-session-venue-room-{i}-{run}","12A")
+                    runsession.room = st.text_input(label="\* Room",
+                                                    key=f"add-session-venue-room-{i}-{run}",
                                                     help="Course run room",
                                                     max_chars=255)
 
@@ -533,7 +546,7 @@ with add:
             num_trainers: int = st.number_input(label="Key in the number of trainers in the Course Run",
                                                 key=f"add-num-trainers-{run}",
                                                 min_value=0,
-                                                value=0)
+                                                value=1)
 
             if num_trainers > 0:
                 st.divider()
@@ -553,9 +566,9 @@ with add:
 
                     st.markdown("###### Trainer Particulars")
                     if code == TrainerType.EXISTING:
+                        set_default(f"add-trainer-id-number-{i}-{run}",TestData.TRAINER_ID.value)
                         runtrainer.trainer_idNumber = st.text_input(label="Trainer ID Number",
-                                                                    key=f"add-trainer-id-number-{
-                                                                        i}-{run}",
+                                                                    key=f"add-trainer-id-number-{i}-{run}",
                                                                     help="This refers to the NRIC/FIN/Passport "
                                                                          "number of the trainer.",
                                                                     max_chars=50)
@@ -839,6 +852,7 @@ with edit_delete:
                                                     help="Mode of training code",
                                                     format_func=str)
 
+        set_default("edit-course-admin-email","test@test.com")
         runinfo.course_admin_email = st.text_input(label="Course Admin Email",
                                                    key="edit-course-admin-email",
                                                    help="Course admin email is under course run level "
@@ -846,10 +860,9 @@ with edit_delete:
                                                         "Attendance Taking', 'Course Atendance with error'"
                                                         " and 'Trainer information not updated'",
                                                    max_chars=255)
-
         if len(runinfo.course_admin_email) > 0:
             if not Validators.verify_email(runinfo.course_admin_email):
-                st.warning(f"Email format is not valid!", icon="⚠️")
+                st.warning("Email format is not valid!", icon="⚠️")
 
         st.markdown("#### Course Vacancy Details")
         runinfo.vacancy = st.selectbox(label="Vacancy Code",
@@ -940,18 +953,22 @@ with edit_delete:
                                                       help="Indication that the course run location is "
                                                            "wheelchair accessible")
 
+        set_default("edit-venue-floor","12")
         runinfo.floor = st.text_input(label="Floor",
                                       key="edit-venue-floor",
                                       help="Course run floor",
                                       max_chars=3)
+        set_default("edit-venue-unit","123")
         runinfo.unit = st.text_input(label="Unit",
                                      key="edit-venue-unit",
                                      help="Course run unit",
                                      max_chars=5)
+        set_default("edit-venue-postal-code","600600")
         runinfo.postal_code = st.text_input(label="Postal Code",
                                             key="edit-venue-postal-code",
                                             help="Course run postal code",
                                             max_chars=6)
+        set_default("edit-venue-room","12A")
         runinfo.room = st.text_input(label="Room",
                                      key="edit-venue-room",
                                      help="Course run room",
@@ -1149,7 +1166,7 @@ with edit_delete:
             num_trainer: int = st.number_input(label="Key in the number of trainers in the Course Run",
                                                key="edit-num-trainers",
                                                min_value=0,
-                                               value=0)
+                                               value=1)
 
             for i in range(num_trainer):
                 with st.expander(f"Trainer {i + 1}", expanded=True if i == 0 else False):
