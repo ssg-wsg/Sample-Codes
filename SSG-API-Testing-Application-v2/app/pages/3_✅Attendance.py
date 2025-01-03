@@ -270,7 +270,6 @@ with upload:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: uca.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()))
                     

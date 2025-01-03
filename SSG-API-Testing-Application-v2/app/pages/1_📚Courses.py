@@ -1392,8 +1392,7 @@ with edit_delete:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key()
                                     )
@@ -1478,5 +1477,4 @@ with sessions:
 
             with response:
                 LOGGER.info("Executing request with defaults...")
-                handle_response(lambda: vcs.execute(os.environ.get(
-                    ENV_NAME_CERT, ''), Secrets.get_private_key()))
+                handle_response(lambda: vcs.execute(Secrets.get_cert(), Secrets.get_private_key()))

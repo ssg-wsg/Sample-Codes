@@ -199,8 +199,7 @@ with create:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
@@ -320,8 +319,7 @@ with update_void:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: uva.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
@@ -462,8 +460,7 @@ with find:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: sa.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
@@ -510,7 +507,6 @@ with view:
 
             with response:
                 LOGGER.info("Executing request with defaults...")
-                handle_response(lambda: va.execute(os.environ.get(
-                                                        ENV_NAME_CERT, ''),
+                handle_response(lambda: va.execute(Secrets.get_cert(),
                                                     Secrets.get_private_key()),
                                 Secrets.get_encryption_key())

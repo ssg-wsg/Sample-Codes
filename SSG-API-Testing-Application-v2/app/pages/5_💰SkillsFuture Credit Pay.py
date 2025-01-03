@@ -45,7 +45,8 @@ st.set_page_config(page_title="SkillsFuture Credit Pay", page_icon="💰")
 
 with st.sidebar:
     st.header("View Configs")
-    st.markdown("Click the `Configs` button to view your loaded configurations at any time!")
+    st.markdown(
+        "Click the `Configs` button to view your loaded configurations at any time!")
 
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
@@ -135,11 +136,13 @@ with encryption:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="encrypt-button", type="primary"):
-        LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Encryption API...")
+        LOGGER.info(
+            "Attempting to send request to SF Credit Claims Payment Request Encryption API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
@@ -161,8 +164,7 @@ with encryption:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: enc.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key()
                                     )
@@ -188,9 +190,10 @@ with encryption:
         mime="text/html",
         key="download-html-form",
         help="Click to download the HTML form for submission!",
-        on_click=lambda: LOGGER.info("Downloading HTML form for submission..."),
+        on_click=lambda: LOGGER.info(
+            "Downloading HTML form for submission..."),
         type="primary")
-    
+
     st.write("Below is the form if you do not wish to download it")
     st.write("""
 <h1>SkillsFuture Credit Payment Request Form</h1>
@@ -224,11 +227,13 @@ with decryption:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="decrypt-button", type="primary"):
-        LOGGER.info("Attempting to send request to SF Credit Claims Payment Request Decryption API...")
+        LOGGER.info(
+            "Attempting to send request to SF Credit Claims Payment Request Decryption API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
@@ -250,8 +255,7 @@ with decryption:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: dec.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
+                                                        Secrets.get_cert(),
                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
@@ -295,11 +299,13 @@ with upload:
             if st.checkbox("Specify Attachment ID?", key=f"specify-file-attachment-id-{file}",
                            help="If not specified, attachment ID will be automatically generated!"):
                 doc.attachment_id = st.text_input(label="Attachment ID",
-                                                  key=f"file-attachment-id-{file}",
+                                                  key=f"file-attachment-id-{
+                                                      file}",
                                                   help="Refers to the unique ID for each attachment.")
             else:
                 doc.attachment_id = f"attachment{file}"
-                st.info(f"Attachment ID (**{doc.attachment_id}**) is automatically generated!", icon="ℹ️")
+                st.info(
+                    f"Attachment ID (**{doc.attachment_id}**) is automatically generated!", icon="ℹ️")
 
             doc.file_type = st.selectbox(label="File Type",
                                          key=f"file-type-{file}",
@@ -310,7 +316,8 @@ with upload:
                                                     accept_multiple_files=False,
                                                     type=doc.file_type.value)
             if doc.has_file():
-                st.info(f"File Size is Automatically set to: **{doc.get_formatted_size()}**!", icon="ℹ️")
+                st.info(
+                    f"File Size is Automatically set to: **{doc.get_formatted_size()}**!", icon="ℹ️")
                 doc.file_size = doc.get_formatted_size()
 
             if st.checkbox("Override File Size?", key=f"specify-override-file-size-{file}"):
@@ -334,11 +341,13 @@ with upload:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="upload-button", type="primary"):
-        LOGGER.info("Attempting to send request to Upload Supporting Documents API...")
+        LOGGER.info(
+            "Attempting to send request to Upload Supporting Documents API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif claim_id is None or (claim_id is not None and len(claim_id) == 0):
             LOGGER.error("No Claim ID provided!")
             st.error("Invalid Claim ID!", icon="🚨")
@@ -363,15 +372,15 @@ with upload:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ud.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
 with view:
     st.header("View Claim Details")
-    st.markdown("Training Providers can retrieve the details of an individual’s claim by calling this API.")
+    st.markdown(
+        "Training Providers can retrieve the details of an individual’s claim by calling this API.")
 
     nric = st.text_input(label="NRIC",
                          key="view-claims-nric",
@@ -391,11 +400,13 @@ with view:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="view-button", type="primary"):
-        LOGGER.info("Attempting to send request to View SF Credit Claims API...")
+        LOGGER.info(
+            "Attempting to send request to View SF Credit Claims API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(nric) == 0:
             st.error("Invalid **NRIC** number!", icon="🚨")
         elif len(claim_id) != 10:
@@ -406,7 +417,7 @@ with view:
                 "There are no default secrets loaded!")
             st.error(
                 "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-            
+
         else:
             request, response = st.tabs(["Request", "Response"])
             vc = ViewClaims(nric, claim_id)
@@ -417,9 +428,8 @@ with view:
 
             with response:
                 LOGGER.info("Executing request with defaults...")
-                handle_response(lambda: vc.execute(os.environ.get(
-                                                        ENV_NAME_CERT, ''),
-                                                    Secrets.get_private_key()),
+                handle_response(lambda: vc.execute(Secrets.get_cert(),
+                                                   Secrets.get_private_key()),
                                 Secrets.get_encryption_key())
 
 with cancel:
@@ -458,11 +468,13 @@ with cancel:
     st.markdown("Click the `Send` button below to send the request to the API!")
 
     if st.button("Send", key="cancel-button", type="primary"):
-        LOGGER.info("Attempting to send request to Cancel SF Credit Claims API...")
+        LOGGER.info(
+            "Attempting to send request to Cancel SF Credit Claims API...")
 
         if does_not_have_url():
             LOGGER.error("Missing Endpoint URL!")
-            st.error("Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
+            st.error(
+                "Missing Endpoint URL! Navigate to the Home page to set up the URL!", icon="🚨")
         elif len(claim_id) != 10:
             st.error("Invalid **Claims ID**!", icon="🚨")
 
@@ -483,7 +495,6 @@ with cancel:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: cc.execute(Secrets.get_encryption_key(),
-                                                        os.environ.get(
-                                                            ENV_NAME_CERT, ''),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
