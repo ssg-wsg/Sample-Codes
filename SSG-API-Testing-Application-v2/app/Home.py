@@ -20,7 +20,6 @@ from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-import app.core.system.secrets as Secrets  # noqa: E402
 from app.core.testdata import TestData  # noqa: E402
 
 # initialise all variables and logger

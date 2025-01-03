@@ -24,7 +24,6 @@ from app.core.testdata import (TestData, set_default)  # noqa: E402
 
 from app.utils.verify import Validators
 import datetime
-import os
 
 import streamlit as st
 
@@ -169,7 +168,7 @@ with create:
 
         if len(create_enrolment.employer_emailAddress) > 0 and \
                 not Validators.verify_email(create_enrolment.employer_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -216,7 +215,7 @@ with create:
                                                           key="enrolment-trainee-email-address")
     if len(create_enrolment.trainee_emailAddress) > 0 and \
             not Validators.verify_email(create_enrolment.trainee_emailAddress):
-        st.warning(f"Email format is not valid!", icon="⚠️")
+        st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -365,7 +364,7 @@ with update:
 
         if len(update_enrolment.employer_emailAddress) > 0 and \
                 not Validators.verify_email(update_enrolment.employer_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -401,7 +400,7 @@ with update:
 
         if len(update_enrolment.trainee_emailAddress) > 0 and \
                 not Validators.verify_email(update_enrolment.trainee_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
     if col1.checkbox("Specify Trainee Phone Number Area Code",
@@ -463,8 +462,7 @@ with update:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ue, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(ue, Secrets.get_encryption_key())
                     
                 with response:
                     LOGGER.info("Executing request with defaults...")
@@ -589,8 +587,7 @@ with search:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.sortBy_order = st.selectbox(label="Sort By Order",
                                                          options=SortOrder,
-                                                         format_func=lambda x: str(
-                                                             x),
+                                                         format_func=str,
                                                          help="Sort order. Ascending - asc, Descending - desc. "
                                                               "Will default to desc if null",
                                                          key="search-enrolment-sort-by-order")
@@ -858,8 +855,7 @@ with update_fee:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(eufc, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(eufc, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
