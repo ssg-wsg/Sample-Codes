@@ -20,6 +20,8 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import app.core.system.secrets as Secrets
+from app.core.testdata import (TestData, set_default)  # noqa: E402
+
 from app.utils.verify import Validators
 import datetime
 import os
@@ -41,7 +43,7 @@ from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableColl
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
 from app.utils.streamlit_utils import (init, display_config, validation_error_handler,
-                                       does_not_have_url, does_not_have_encryption_key, does_not_have_keys)
+                                       does_not_have_url)
 
 
 init()
@@ -65,8 +67,8 @@ st.markdown("Integration with the Enrolment APIs enable enrolment records to be 
             "searching and viewing of enrolment records!")
 st.info("**This API requires your *request payloads* to be encrypted and will return *encrypted responses*!**",
         icon="ℹ️")
-st.info("To scroll through the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or you "
-        "can use the arrow keys to navigate between the tabs!", icon="ℹ️")
+st.info("To navigate between the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or "
+        "use the arrow keys!", icon="ℹ️")
 
 create, update, cancel, search, view, update_fee = st.tabs([
     "Create Enrolment", "Update Enrolment", "Cancel Enrolment", "Search Enrolment", "View Enrolment",

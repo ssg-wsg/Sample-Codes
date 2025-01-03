@@ -40,6 +40,7 @@ with st.sidebar:
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
+    # uncomment the line below if you need the debug menu
     display_debug()
 
 
