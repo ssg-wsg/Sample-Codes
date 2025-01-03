@@ -20,7 +20,7 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import app.core.system.secrets as Secrets
-from app.core.testdata import (TestData, set_default)  # noqa: E402
+from app.core.testdata import TestData  # noqa: E402
 
 from app.utils.verify import Validators
 import datetime
@@ -87,30 +87,16 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    create_enrolment.course_referenceNumber = st.text_input(label="Course Reference Number",
+    create_enrolment.course_referenceNumber = st.text_input(label=f"\* Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                            value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
-    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
+    create_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
                                                    help="SSG-generated Unique ID for the course run",
                                                    key="enrolment-course-run-id",
                                                    max_chars=20)
-
-    st.subheader("Trainee Info")
-    col1, col2 = st.columns(2)
-    create_enrolment.trainee_idType = col1.selectbox(label="Trainee ID Type",
-                                                     options=IdTypeSummary,
-                                                     format_func=lambda x: x.value,
-                                                     help="Trainee ID Type",
-                                                     key="enrolment-id-type")
-    create_enrolment.trainee_id = col2.text_input(label="Trainee ID",
-                                                  help="Trainee's government-issued ID number",
-                                                  key="enrolment-trainee-id")
-
-    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
-            and not Validators.verify_nric(create_enrolment.trainee_id):
-        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     st.markdown("#### Payment Info")
     if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
@@ -131,6 +117,76 @@ with create:
                                                                        "payment of the course fees to the "
                                                                        "training partner",
                                                                   key="enrolment-trainee-fees-collection-status")
+    
+    st.subheader("Trainee Info")
+    col1, col2 = st.columns(2)
+    create_enrolment.trainee_idType = col1.selectbox(label="Trainee ID Type",
+                                                     options=IdTypeSummary,
+                                                     format_func=lambda x: x.value,
+                                                     help="Trainee ID Type",
+                                                     key="enrolment-id-type")
+    create_enrolment.trainee_id = col2.text_input(label=f"\* Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
+                                                  value=TestData.TRAINEE_ID.value,
+                                                  help="Trainee's government-issued ID number",
+                                                  key="enrolment-trainee-id")
+
+    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
+            and not Validators.verify_nric(create_enrolment.trainee_id):
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
+
+    st.markdown("#### Trainee Particulars")
+    create_enrolment.trainee_fullName = st.text_input(label="\* Trainee Full Name",
+                                                      value=TestData.TRAINEE_NAME.value,
+                                                      max_chars=200,
+                                                      help="The trainee's full name",
+                                                      key="enrolment-trainee-full-name")
+    
+    create_enrolment.trainee_dateOfBirth = st.date_input(label=f"\* Trainee Date of Birth (Sample data: {TestData.TRAINEE_DOB.value})",
+                                                         value=TestData.TRAINEE_DOB.value,
+                                                         min_value=datetime.date(
+                                                             1900, 1, 1),
+                                                         help="Trainee Date of Birth",
+                                                         key="enrolment-trainee-date-of-birth")
+    
+    create_enrolment.trainee_emailAddress = st.text_input(label="\* Trainee Email Address",
+                                                          value=TestData.EMAIL.value,
+                                                          max_chars=100,
+                                                          help="The trainee's email address",
+                                                          key="enrolment-trainee-email-address")
+    if len(create_enrolment.trainee_emailAddress) > 0 and \
+            not Validators.verify_email(create_enrolment.trainee_emailAddress):
+        st.warning("Email format is not valid!", icon="⚠️")
+
+    col1, col2, col3 = st.columns(3)
+
+    if col1.checkbox("Specify Trainee Phone Number Area Code",
+                     key="specify-enrolment-trainee-phone-number-area-code"):
+        create_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Area Code",
+                                                                          max_chars=10,
+                                                                          help="Area code of the phone number",
+                                                                          key="enrolment-trainee-phone-number-area-"
+                                                                              "code")
+
+    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="\* Trainee Country Code",
+                                                                         value=TestData.COUNTRYCODE.value,
+                                                                         max_chars=5,
+                                                                         help="Country code of the phone number",
+                                                                         key="enrolment-trainee-phone-number-"
+                                                                             "country-code")
+
+    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="\* Trainee Phone Number",
+                                                                         value=TestData.PHONE.value,
+                                                                         max_chars=20,
+                                                                         help="The phone number",
+                                                                         key="enrolment-trainee-phone-number-"
+                                                                             "phone-number")
+
+    if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
+        create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
+                                                               help="Trainee Date of Enrolment",
+                                                               key="enrolment-trainee-date-of-enrolment")
 
     st.markdown("#### Employer Info")
     create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
@@ -140,7 +196,8 @@ with create:
 
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
-        uen = st.text_input(label="Employer UEN",
+        uen = st.text_input(label=f"\* Employer UEN (Sample data: {TestData.EMPLOYER_UEN.value})",
+                            value=TestData.EMPLOYER_UEN.value,
                             max_chars=50,
                             help="Employer organisation's UEN",
                             key="enrolment-employer-uen")
@@ -153,7 +210,8 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.employer_fullName = st.text_input(
-            label="Employer Full Name",
+            label="\* Employer Full Name",
+            value=TestData.EMPLOYER_NAME.value,
             max_chars=50,
             help="The employer contact's person name",
             key="enrolment-employer-contact-full-name")
@@ -161,7 +219,8 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
         create_enrolment.employer_emailAddress = st.text_input(
-            label="Employer Email Address",
+            label="\* Employer Email Address",
+            value=TestData.EMAIL.value,
             max_chars=100,
             help="The employer contact's email address",
             key="enrolment-employer-contact-email-address")
@@ -184,7 +243,8 @@ with create:
             or col2.checkbox("Specify Employer Phone Number Country Code",
                              key="specify-enrolment-employer-contact-number-country-code"):
         create_enrolment.employer_countryCode = col2.text_input(
-            label="Employer Contact Number Country",
+            label="\* Employer Contact Number Country",
+            value=TestData.COUNTRYCODE.value,
             max_chars=5,
             help="Country code of the phone number",
             key="enrolment-employer-contact-number-country-code")
@@ -192,62 +252,14 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
         create_enrolment.employer_phoneNumber = col3.text_input(
-            label="Employer Phone Number",
+            label="\* Employer Phone Number",
+            value=TestData.PHONE.value,
             max_chars=20,
             help="The phone number",
             key="enrolment-employer-contact-number-phone-number")
 
-    st.markdown("#### Trainee Particulars")
-    if st.checkbox("Specify Trainee Full Name?", key="specify-enrolment-trainee-full-name"):
-        create_enrolment.trainee_fullName = st.text_input(
-            label="Trainee Full Name",
-            max_chars=200,
-            help="The trainee's full name",
-            key="enrolment-trainee-full-name")
-    create_enrolment.trainee_dateOfBirth = st.date_input(label="Trainee Date of Birth",
-                                                         min_value=datetime.date(
-                                                             1900, 1, 1),
-                                                         help="Trainee Date of Birth",
-                                                         key="enrolment-trainee-date-of-birth")
-    create_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
-                                                          max_chars=100,
-                                                          help="The trainee's email address",
-                                                          key="enrolment-trainee-email-address")
-    if len(create_enrolment.trainee_emailAddress) > 0 and \
-            not Validators.verify_email(create_enrolment.trainee_emailAddress):
-        st.warning("Email format is not valid!", icon="⚠️")
-
-    col1, col2, col3 = st.columns(3)
-
-    if col1.checkbox("Specify Trainee Phone Number Area Code",
-                     key="specify-enrolment-trainee-phone-number-area-code"):
-        create_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Area Code",
-                                                                          max_chars=10,
-                                                                          help="Area code of the phone number",
-                                                                          key="enrolment-trainee-phone-number-area-"
-                                                                              "code")
-
-    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Country Code",
-                                                                         max_chars=5,
-                                                                         help="Country code of the phone number",
-                                                                         key="enrolment-trainee-phone-number-"
-                                                                             "country-code")
-
-    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
-                                                                         max_chars=20,
-                                                                         help="The phone number",
-                                                                         key="enrolment-trainee-phone-number-"
-                                                                             "phone-number")
-
-    if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
-        create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
-                                                               min_value=datetime.date(
-                                                                   1900, 1, 1),
-                                                               help="Trainee Date of Enrolment",
-                                                               key="enrolment-trainee-date-of-enrolment")
-
     st.subheader("Training Partner Info")
-    uen = st.text_input(label="Training Partner UEN",
+    uen = st.text_input(label="\* Training Partner UEN",
                         key="enrolment-training-partner-uen",
                         value=st.session_state["uen"] if "uen" in st.session_state else "",
                         max_chars=12)
@@ -257,7 +269,8 @@ with create:
     elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
-    create_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
+    create_enrolment.trainingPartner_code = st.text_input(label="\* Training Partner Code",
+                                                          value=(st.session_state["uen"]+"-01") if "uen" in st.session_state else "",
                                                           max_chars=15,
                                                           help="Code for the training partner conducting the course "
                                                                "for which the trainee is enrolled",

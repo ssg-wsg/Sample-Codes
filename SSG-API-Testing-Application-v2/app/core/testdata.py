@@ -3,7 +3,6 @@ Contains test data to provide to users
 """
 import datetime
 from enum import Enum
-import streamlit as st
 
 
 class TestData(Enum):
@@ -23,9 +22,10 @@ class TestData(Enum):
     EMPLOYER_UEN = "201000372W"
     EMPLOYER_NAME = "Stephen Chua"
 
-    TRAINEE_ID = "S0808315J"
+    TRAINEE_ID = "S7020587D"
     TRAINEE_NAME = "Aileen Chong"
-    TRAINEE_DOB = datetime.date(1970, 6, 19) # 1970/06/19
+    TRAINEE_DOB = datetime.date(1969, 3, 8)
+    
     TRAINER_ID = "S0808315J"
     
     VENUE_POSTAL = "408533"
