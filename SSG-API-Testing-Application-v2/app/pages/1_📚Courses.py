@@ -16,7 +16,6 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-import os
 import streamlit as st
 
 from datetime import datetime, date
@@ -322,7 +321,7 @@ with add:
                                                       options=ModeOfTraining,
                                                       index=3,
                                                       format_func=str)
-            LOGGER.info("before email")
+            
             set_default(f"add-course-admin-email-{run}","test@test.com")
             indiv_run.course_admin_email = st.text_input(
                 label="\* Course Admin Email",
@@ -331,12 +330,9 @@ with add:
                      "Attendance Taking', 'Course Attendance with error' and 'Trainer information not updated'",
                 max_chars=255)
 
-            LOGGER.info("before validate")
             if len(indiv_run.course_admin_email) > 0:
-                LOGGER.info("before validate lib")
                 if not Validators.verify_email(indiv_run.course_admin_email):
                     st.warning("Email format is not valid!", icon="⚠️")
-            LOGGER.info("after validate")
 
             st.markdown("#### Course Vacancy Details")
             indiv_run.course_vacancy = st.selectbox(label="\* Course Vacancy",
@@ -566,8 +562,8 @@ with add:
 
                     st.markdown("###### Trainer Particulars")
                     if code == TrainerType.EXISTING:
-                        set_default(f"add-trainer-id-number-{i}-{run}",TestData.TRAINER_ID.value)
-                        runtrainer.trainer_idNumber = st.text_input(label="Trainer ID Number",
+                        set_default(f"add-trainer-id-number-{i}-{run}", TestData.TRAINER_ID.value)
+                        runtrainer.trainer_idNumber = st.text_input(label=f"\* Trainer ID Number (Sample data: {TestData.TRAINER_ID.value})",
                                                                     key=f"add-trainer-id-number-{i}-{run}",
                                                                     help="This refers to the NRIC/FIN/Passport "
                                                                          "number of the trainer.",
