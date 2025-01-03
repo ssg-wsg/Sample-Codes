@@ -798,7 +798,7 @@ with edit_delete:
     # ===== BASIC RUN INFO ===== #
     st.subheader("`run` details")
     st.markdown("Note that `registrationDates`, `courseDates`, `scheduleInfoType`, `scheduleInfo`, "
-                "`courseVacancy`, `modeOfTraining` are required for this update action!")
+                "`courseVacancy`, `modeOfTraining` are required for the update action!")
 
     # create a store for the parameters to pass into the backend
     # safe as there are only 2 options for this, and it is filled up later
@@ -820,13 +820,14 @@ with edit_delete:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="edit-view-expired")
-    runinfo.crid = st.text_input("Key in the Course Reference Number",
+    set_default("crn_edit", TestData.COURSE_REFERENCE_NUMBER.value)
+    runinfo.crid = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                  help="Reference number for the course of interest. Encode the course "
                                       "reference number as it may contains some special characters which "
                                       "could be blocked by the Gateway.",
                                  key="crn_edit")
 
-    runs = st.text_input(label="Enter Course Run ID",
+    runs = st.text_input(label="\* Enter Course Run ID",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="edit-course-run-id")
@@ -1407,9 +1408,7 @@ with edit_delete:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
                                                         Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
-                                    Secrets.get_encryption_key()
-                                    )
+                                                        Secrets.get_private_key()))
 
 
 with sessions:
