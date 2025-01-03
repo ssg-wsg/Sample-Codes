@@ -828,7 +828,7 @@ with edit_delete:
                                       "could be blocked by the Gateway.",
                                  key="crn_edit")
 
-    runs = st.text_input(label="\* Enter Course Run ID",
+    runs = st.text_input(label="\* Enter Course Run ID (You will get this value after you add a couse run)",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="edit-course-run-id")
@@ -1044,7 +1044,7 @@ with edit_delete:
 
                     st.markdown(f"##### Session {i + 1}")
                     if st.checkbox("Specify Session ID?", key=f"specify-edit-session-id-{i}"):
-                        runsession.session_id = st.text_input(label="Course session ID",
+                        runsession.session_id = st.text_input(label="Course session ID (You will get this by viewing course run session after adding a course run)",
                                                               key=f"edit-session-id-{i}",
                                                               help="Course session ID",
                                                               max_chars=300)
@@ -1442,7 +1442,7 @@ with sessions:
                              "as it may contains some special characters which could be blocked by the Gateway",
                         key="view-sessions-crn")
 
-    runs = st.text_input("\* Enter Course Run ID",
+    runs = st.text_input("\* Enter Course Run ID (You will get this value after you add a couse run)",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="view-sessions-course-run-id")
