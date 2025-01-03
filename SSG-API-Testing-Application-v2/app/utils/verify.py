@@ -5,8 +5,6 @@ This file contains verification functions for fields in the Sample Application.
 import re
 
 import OpenSSL.crypto
-from dns.resolver import NoResolverConfiguration
-from email_validator import EmailSyntaxError, validate_email, EmailUndeliverableError, EmailNotValidError
 
 
 class Validators:
@@ -185,17 +183,25 @@ class Validators:
         if not isinstance(email, str):
             raise ValueError("Email must be a string!")
 
-        try:
-            validate_email(email)
-            return True
-        except EmailSyntaxError:
-            # there is something wrong with the email string
-            return False
-        except EmailUndeliverableError:
-            # the email address is invalid
-            return False
-        except EmailNotValidError:
-            return False
-        except NoResolverConfiguration:
-            # unable to resolve DNS, might be an internet issue
-            return False
+        # This block of code is for reference only
+        # It uses the email-validator 2.1.2 
+        # which validates emails but is not necessary the purpose of the sample app
+
+        # from dns.resolver import NoResolverConfiguration
+        # from email_validator import EmailSyntaxError, validate_email, EmailUndeliverableError, EmailNotValidError
+        # try:
+        #     validate_email(email)
+        #     return True
+        # except EmailSyntaxError:
+        #     # there is something wrong with the email string
+        #     return False
+        # except EmailUndeliverableError:
+        #     # the email address is invalid
+        #     return False
+        # except EmailNotValidError:
+        #     return False
+        # except NoResolverConfiguration:
+        #     # unable to resolve DNS, might be an internet issue
+        #     return False
+
+        return re.match("[^@]+@[^@]+\.[^@]+", email)
