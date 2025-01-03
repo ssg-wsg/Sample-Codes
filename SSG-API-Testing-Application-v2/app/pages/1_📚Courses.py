@@ -778,7 +778,8 @@ with add:
                     handle_request(ac, Secrets.get_encryption_key())
 
                 with response:
-                    # pass in the correct secrets based on user choice
+                    st.info("If you encounter an error that course run already exist. "
+                            "Please try changing the start and end dates to create a unique course run.")
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ac.execute(Secrets.get_encryption_key(),
                                                         Secrets.get_cert(),
