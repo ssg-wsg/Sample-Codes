@@ -20,4 +20,3 @@ class TestData(Enum):
     TRAINER_ID = "S0808315J"
     TRAINEE_ID = "TGS-2020000697-835457-S1"
     VENUE_POSTAL = "408533"
-    

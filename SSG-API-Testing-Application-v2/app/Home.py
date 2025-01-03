@@ -21,6 +21,7 @@ from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
 import app.core.system.secrets as Secrets  # noqa: E402
+from app.core.testdata import TestData  # noqa: E402
 
 # initialise all variables and logger
 init()
@@ -48,7 +49,7 @@ st.markdown("Welcome to the SSG API Sample Application!\n\n"
             "Select any one of the pages on the left sidebar to view sample codes for each of the different crucial "
             "components of the SSG API suite!")
 
-st.warning("This app is just for you to try out before you choose to subscribe "
+st.warning("This app is just for you to try out with sample data before you choose to subscribe "
            "where you will have the support of our team during onboarding. ")
 
 st.subheader("Configurations")
@@ -58,8 +59,7 @@ st.markdown("Before you continue, make sure to fill up the following configurati
             "sidebar!")
 
 st.subheader("API Endpoint:")
-st.markdown(f"We will be using a UAT endpoint ({
-            Endpoints.UAT.value}) throughout the app")
+st.markdown(f"We will be using the UAT endpoint ({Endpoints.UAT.value}) throughout the app")
 # st.markdown("Select the endpoint you wish to connect to!")
 # st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
 #                                        options=Endpoints,
@@ -70,7 +70,7 @@ st.markdown("Key in your UEN number, as well as your encryption keys, certificat
             "(`.pem`) below!")
 
 # UEN to be loaded outside of a form
-st.session_state["uen"] = st.text_input(label="Enter in your UEN",
+st.session_state["uen"] = st.text_input(label=f"Enter in your UEN (Sample data: {TestData.UEN.value})",
                                         help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
                                              "to identify your organisation.",
                                         value=st.session_state["uen"])
