@@ -74,15 +74,15 @@ def display_config() -> None:
                          on_click=Refetch_secrets,
                          args=(True, ))
 
-    st.header("Encryption Key:")
+    st.header("Encryption Key (Will not be used):")
     st.code(st.session_state["encryption_key"]
             if st.session_state["encryption_key"] else "-")
 
-    st.header("Certificate Key:")
+    st.header("Certificate Key (Will not be used):")
     st.code(st.session_state["cert_pem"]
             if st.session_state["cert_pem"] else "-")
 
-    st.header("Private Key:")
+    st.header("Private Key (Will not be used):")
     st.code(st.session_state["key_pem"]
             if st.session_state["key_pem"] else "-")
 

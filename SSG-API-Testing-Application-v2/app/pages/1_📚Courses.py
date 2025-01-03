@@ -779,7 +779,7 @@ with add:
 
                 with response:
                     st.info("If you encounter an error that course run already exist. "
-                            "Please try changing the start and end dates to create a unique course run.",
+                            "Please try changing the default values to create a unique course run.",
                             icon="ℹ️")
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ac.execute(Secrets.get_encryption_key(),
@@ -1414,7 +1414,7 @@ with edit_delete:
 
                 with response:
                     st.info("If you encounter an error that course run already exist. "
-                            "Please try changing updating the default values to create a unique course run.",
+                            "Please try changing the default values to create a unique course run.",
                             icon="ℹ️")
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
