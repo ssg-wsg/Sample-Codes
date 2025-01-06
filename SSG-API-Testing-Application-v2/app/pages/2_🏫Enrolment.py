@@ -779,7 +779,8 @@ with view:
                 "of existing enrolment records")
 
     st.subheader("Reference Number")
-    ref_num = st.text_input(label="Enter Enrolment Record Reference Number",
+    ref_num = st.text_input(label=f"\* Enter Enrolment Record Reference Number (Sample data: {TestData.ENROLMENT_ID.value})",
+                            value=TestData.ENROLMENT_ID.value,
                             help="SSG-generated unique reference number for the enrolment record",
                             key="view-enrolment-reference-number")
 
