@@ -454,12 +454,14 @@ with cancel:
                 "For more technical details, do visit [https://github.com/SSG-WSG](https://github.com/SSG-WSG)")
     cancel_claims = CancelClaimsInfo()
 
-    claim_id = st.text_input(label="Claim ID",
+    claim_id = st.text_input(label="\* Claim ID (You can get this after submitting a claim via the "
+                                   "SkillsFuture Credit Payment Request Form on the first tab)",
                              key="cancel-claims-claim-id",
                              max_chars=10,
                              help="Unique identifier of the submitted claim. Must be exactly 10 digits.")
 
-    cancel_claims.nric = st.text_input(label="NRIC",
+    cancel_claims.nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+                                       value=TestData.TRAINEE_ID.value,
                                        key="cancel-claims-nric",
                                        max_chars=9,
                                        help="NRIC of the individual")
