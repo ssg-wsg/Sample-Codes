@@ -223,7 +223,7 @@ with update_void:
                                                  key="update-void-assessment-action")
 
     st.subheader("Course Info")
-    assessment_ref_num = st.text_input(label="Enter the Assessment Reference Number",
+    assessment_ref_num = st.text_input(label="\* Enter the Assessment Reference Number (You will get this when you create a assessment record)",
                                        max_chars=100,
                                        help="Assessment reference number in the "
                                             "Training Partners Gateway",
@@ -232,7 +232,7 @@ with update_void:
     if update_void_assessment.is_update():
         st.subheader("Trainee Info")
         if st.checkbox("Update Trainee Full Name?", key="update-void-trainee-info"):
-            update_void_assessment.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
+            update_void_assessment.trainee_fullName = st.text_input(label=f"Enter the Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
                                                                     max_chars=200,
                                                                     help="The individual's full name",
                                                                     key="update-void-assessment-trainee-full-name")
@@ -265,7 +265,7 @@ with update_void:
                                                            key="update-void-assessment-result")
 
         if st.checkbox("Update Skill Code?", key="will-update-void-assessment-skill-code"):
-            update_void_assessment.skillCode = st.text_input(label="Enter the Skill Code",
+            update_void_assessment.skillCode = st.text_input(label=f"Enter the Skill Code (Sample data: {TestData.SKILL_CODE.value})",
                                                              max_chars=30,
                                                              help="The competency or skill code assessed for the "
                                                                   "course, derived from the course data in the "
