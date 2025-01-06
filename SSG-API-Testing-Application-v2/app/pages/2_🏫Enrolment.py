@@ -660,8 +660,8 @@ with search:
                                                                               "payment of the course fees "
                                                                               "to the training partner")
 
-    if st.checkbox("Specify Employee UEN?", key="specify-search-enrolment-employee-uen"):
-        uen = st.text_input(label="Employee UEN",
+    if st.checkbox("Specify Employer UEN?", key="specify-search-enrolment-employee-uen"):
+        uen = st.text_input(label="Employer UEN",
                             key="search-enrolment-employee-uen",
                             max_chars=50,
                             help="Employer organisation's UEN number")
