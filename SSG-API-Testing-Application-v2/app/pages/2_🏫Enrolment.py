@@ -330,11 +330,11 @@ with update:
 
     update_enrolment = UpdateEnrolmentInfo()
 
-    update_enrolment.course_run_id = st.text_input(label="Course Run ID",
+    update_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
                                                    help="SSG-generated Unique ID for the course run",
                                                    key="update-enrolment-course-run-id",
                                                    max_chars=20)
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-enrolment-reference-number")
 
@@ -360,10 +360,49 @@ with update:
                                                                       key="update-enrolment-trainee-fees-"
                                                                           "collection-status")
 
+    st.markdown("#### Trainee Particulars")
+    if st.checkbox("Specify Trainee Email Address?", key="specify-update-enrolment-trainee-email-address"):
+        update_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
+                                                              value=TestData.EMAIL.value,
+                                                              max_chars=100,
+                                                              help="The trainee's email address",
+                                                              key="update-enrolment-trainee-email-address")
+
+        if len(update_enrolment.trainee_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.trainee_emailAddress):
+            st.warning("Email format is not valid!", icon="⚠️")
+
+    col1, col2, col3 = st.columns(3)
+    if col1.checkbox("Specify Trainee Phone Number Area Code",
+                     key="specify-update-enrolment-trainee-phone-number-area-code"):
+        update_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Phone Number Area Code",
+                                                                          max_chars=10,
+                                                                          help="Area code of the phone number",
+                                                                          key="update-enrolment-trainee-phone-number"
+                                                                              "-area-code")
+    if col2.checkbox("Specify Trainee Phone Number Country Code",
+                     key="specify-update-enrolment-trainee-phone-number-country-code"):
+        update_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Contact Number Country",
+                                                                             value=TestData.COUNTRYCODE.value,
+                                                                             max_chars=5,
+                                                                             help="Country code of the phone number",
+                                                                             key="update-enrolment-trainee-phone-"
+                                                                                 "number-country-code")
+
+    if col3.checkbox("Specify Trainee Phone Number Country Code",
+                     key="specify-update-enrolment-trainee-phone-number-phone-number"):
+        update_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
+                                                                             value=TestData.PHONE.value,
+                                                                             max_chars=20,
+                                                                             help="The phone number",
+                                                                             key="update-enrolment-trainee-phone-"
+                                                                                 "number-phone-number")
+        
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer Full Name?", key="specify-update-enrolment-employer-contact-full-name"):
         update_enrolment.employer_fullName = st.text_input(
             label="Employer Full Name",
+            value=TestData.EMPLOYER_NAME.value,
             max_chars=50,
             help="The employer contact's person name",
             key="update-enrolment-employer-contact-full-name")
@@ -371,6 +410,7 @@ with update:
     if st.checkbox("Specify Employer Email Address?", key="specify-update-enrolment-employer-contact-email-address"):
         update_enrolment.employer_emailAddress = st.text_input(
             label="Employer Email Address",
+            value=TestData.EMAIL.value,
             max_chars=100,
             help="The employer contact's email address",
             key="update-enrolment-employer-contact-email-address")
@@ -393,6 +433,7 @@ with update:
                      key="specify-update-enrolment-employer-contact-number-country-code"):
         update_enrolment.employer_countryCode = col2.text_input(
             label="Employer Contact Number Country",
+            value=TestData.COUNTRYCODE.value,
             max_chars=5,
             help="Country code of the phone number",
             key="update-enrolment-employer-contact-number-country-code")
@@ -400,44 +441,10 @@ with update:
     if col3.checkbox("Specify Employer Phone Number?", key="specify-update-enrolment-employer-contact-phone-number"):
         update_enrolment.employer_phoneNumber = col3.text_input(
             label="Employer Phone Number",
+            value=TestData.PHONE.value,
             max_chars=20,
             help="The phone number",
             key="update-enrolment-employer-contact-number-phone-number")
-
-    st.markdown("#### Trainee Particulars")
-    if st.checkbox("Specify Trainee Email Address?", key="specify-update-enrolment-trainee-email-address"):
-        update_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
-                                                              max_chars=100,
-                                                              help="The trainee's email address",
-                                                              key="update-enrolment-trainee-email-address")
-
-        if len(update_enrolment.trainee_emailAddress) > 0 and \
-                not Validators.verify_email(update_enrolment.trainee_emailAddress):
-            st.warning("Email format is not valid!", icon="⚠️")
-
-    col1, col2, col3 = st.columns(3)
-    if col1.checkbox("Specify Trainee Phone Number Area Code",
-                     key="specify-update-enrolment-trainee-phone-number-area-code"):
-        update_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Phone Number Area Code",
-                                                                          max_chars=10,
-                                                                          help="Area code of the phone number",
-                                                                          key="update-enrolment-trainee-phone-number"
-                                                                              "-area-code")
-    if col2.checkbox("Specify Trainee Phone Number Country Code",
-                     key="specify-update-enrolment-trainee-phone-number-country-code"):
-        update_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Contact Number Country",
-                                                                             max_chars=5,
-                                                                             help="Country code of the phone number",
-                                                                             key="update-enrolment-trainee-phone-"
-                                                                                 "number-country-code")
-
-    if col3.checkbox("Specify Trainee Phone Number Country Code",
-                     key="specify-update-enrolment-trainee-phone-number-phone-number"):
-        update_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
-                                                                             max_chars=20,
-                                                                             help="The phone number",
-                                                                             key="update-enrolment-trainee-phone-"
-                                                                                 "number-phone-number")
 
     st.divider()
     st.subheader("Preview Request Body")
