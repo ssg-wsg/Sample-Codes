@@ -224,7 +224,8 @@ with decryption:
         st.session_state["decryption-request-payload"] = TestData.SFC_DECRYPT.value
 
     decrypt = DecryptPayloadInfo()
-    decrypt.encrypted_request = st.text_area(label="Enter Encrypted Request",
+    decrypt.encrypted_request = st.text_area(label="\* Enter Encrypted Request (Click the button above for "
+                                                   "sample data if you are unable to use the SFC form in the previous tab)",
                                              key="decryption-request-payload",
                                              help="The payload consist of the information to be decrypted.")
     
