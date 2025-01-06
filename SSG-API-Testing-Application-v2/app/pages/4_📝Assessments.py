@@ -17,7 +17,6 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import datetime
-import os
 
 import streamlit as st
 
@@ -31,11 +30,12 @@ from app.core.models.assessments import CreateAssessmentInfo, UpdateVoidAssessme
     SearchAssessmentInfo
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_response, handle_request
-from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_url, does_not_have_keys, does_not_have_encryption_key
+from app.utils.streamlit_utils import init, display_config, \
+    validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
 
 import app.core.system.secrets as Secrets
+from app.core.testdata import TestData  # noqa: E402
 
 # initialise necessary variables
 init()
@@ -111,7 +111,7 @@ with create:
 
     if create_assessment_info.trainee_idType != IdTypeSummary.OTHERS and len(create_assessment_info.trainee_id) > 0 \
             and not Validators.verify_nric(create_assessment_info.trainee_id):
-        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
                                                             max_chars=200,
@@ -193,8 +193,7 @@ with create:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(ec, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(ec, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
@@ -255,8 +254,7 @@ with update_void:
         if col3.checkbox("Update Assessment Result?", key="update-void-assessment-results"):
             update_void_assessment.result = col3.selectbox(label="Select Result",
                                                            options=Results,
-                                                           format_func=lambda x: str(
-                                                               x),
+                                                           format_func=str,
                                                            help="The outcome of the assessment, specified as pass, "
                                                                 "fail or exempt",
                                                            key="update-void-assessment-result")
@@ -313,8 +311,7 @@ with update_void:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(uva, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(uva, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
@@ -346,8 +343,7 @@ with find:
     if col1.checkbox("Specify Sort By Field?", key="search-sort-by-field"):
         search_assessment.sortBy_field = col1.selectbox(label="Select Sort By Field",
                                                         options=SortField,
-                                                        format_func=lambda x: str(
-                                                            x),
+                                                        format_func=str,
                                                         help="Field to sort by. Available fields:\n"
                                                              "- 'updatedOn'\n"
                                                              "- 'createdOn'\n"
@@ -357,8 +353,7 @@ with find:
     if col2.checkbox("Specify Sort Order?", key="search-sort-order"):
         search_assessment.sortBy_order = col2.selectbox(label="Select Sort Order",
                                                         options=SortOrder,
-                                                        format_func=lambda x: str(
-                                                            x),
+                                                        format_func=str,
                                                         help="Sort order",
                                                         key="search-sort-by-order-input")
 
@@ -454,8 +449,7 @@ with find:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(sa, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(sa, Secrets.get_encryption_key())
 
                 with response:
                     LOGGER.info("Executing request with defaults...")
