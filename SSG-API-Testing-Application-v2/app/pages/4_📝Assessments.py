@@ -375,26 +375,29 @@ with find:
 
     st.subheader("Assessment Query Parameters")
     if st.checkbox("Specify Course Run ID?", key="search-course-run-id"):
-        search_assessment.courseRunId = st.text_input(label="Select Course Run ID",
+        search_assessment.courseRunId = st.text_input(label=f"Select Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                      value=TestData.COURSE_RUN_NUMBER.value,
                                                       help="The ID for the course run, configured in My SkillsFuture",
                                                       key="search-course-run-id-input",
                                                       max_chars=20)
 
     if st.checkbox("Specify Course Reference Number?", key="search-course-reference-number"):
-        search_assessment.courseReferenceNumber = st.text_input(label="Select Course Reference Number",
+        search_assessment.courseReferenceNumber = st.text_input(label=f"Select Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                                value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                                 max_chars=50,
                                                                 help="The course reference number of the course in "
                                                                      "the Training Partners Gateway course registry",
                                                                 key="search-course-reference-number-input")
 
     if st.checkbox("Specify Trainee ID?", key="search-trainee-id"):
-        search_assessment.trainee_id_ = st.text_input(label="Select Trainee ID Number",
+        search_assessment.trainee_id_ = st.text_input(label=f"Select Trainee ID Number (Sample data: {TestData.TRAINEE_NAME.value})",
+                                                      value=TestData.TRAINEE_NAME.value,
                                                       max_chars=20,
                                                       help="Government-issued ID number",
                                                       key="search-trainee-id-input")
 
     if st.checkbox("Specify Enrolment Reference Number?", key="search-enrolment-reference-number"):
-        search_assessment.enrolment_referenceNumber = st.text_input(label="Select Enrolment Reference Number",
+        search_assessment.enrolment_referenceNumber = st.text_input(label="Select Enrolment Reference Number (You will get this value after creating an enrolment record)",
                                                                     help="The reference number of the associated "
                                                                          "enrolment in the Training Partners "
                                                                          "Gateway, if applicable",
