@@ -393,7 +393,8 @@ with view:
     st.markdown(
         "Training Providers can retrieve the details of an individual’s claim by calling this API.")
 
-    nric = st.text_input(label="NRIC",
+    nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+                         value=TestData.TRAINEE_ID.value,
                          key="view-claims-nric",
                          max_chars=9,
                          help="NRIC of the individual")
@@ -401,7 +402,8 @@ with view:
     if len(nric) > 0 and not Validators.verify_nric(nric):
         st.warning("**NRIC format** is not valid!", icon="⚠️")
 
-    claim_id = st.text_input(label="Claim ID",
+    claim_id = st.text_input(label="\* Claim ID (You can get this after submitting a claim via the "
+                                   "SkillsFuture Credit Payment Request Form on the first tab)",
                              key="view-claims-claim-id",
                              max_chars=10,
                              help="Unique identifier of the submitted claim. Must be exactly 10 digits.")
