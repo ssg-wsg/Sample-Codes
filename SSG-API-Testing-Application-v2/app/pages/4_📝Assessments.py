@@ -401,7 +401,8 @@ with find:
                                                                     key="search-enrolment-reference-number-input")
 
     if st.checkbox("Specify Skill Code?", key="search-skill-code"):
-        search_assessment.skillCode = st.text_input(label="Enter the Skill Code",
+        search_assessment.skillCode = st.text_input(label=f"\* Enter the Skill Code (Sample data: {TestData.SKILL_CODE.value})",
+                                                    value=TestData.SKILL_CODE.value,
                                                     max_chars=30,
                                                     help="The competency or skill code assessed for the course, "
                                                          "derived from the course data in the Training Partners "
@@ -409,7 +410,7 @@ with find:
                                                     key="search-skill-code-input")
 
     st.subheader("Training Partner Parameters")
-    search_assessment.trainingPartner_uen = st.text_input(label="Enter the Training Partner UEN",
+    search_assessment.trainingPartner_uen = st.text_input(label=f"\* Enter the Training Partner UEN (Sample data: {TestData.UEN.value})",
                                                           max_chars=12,
                                                           value=("" if st.session_state["uen"] is None
                                                                  else st.session_state["uen"]),
@@ -417,7 +418,8 @@ with find:
                                                                "conducting the course for which the assessment "
                                                                "result is being submitted")
 
-    search_assessment.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+    search_assessment.trainingPartner_code = st.text_input(label=f"\* Enter the Training Partner Code (Sample data: {TestData.TPCODE.value})",
+                                                           value=(st.session_state["uen"]+"-01") if st.session_state["uen"] is not None else "",
                                                            max_chars=15,
                                                            help="Code for the training partner conducting the "
                                                                 "course for which the trainee is enrolled",
