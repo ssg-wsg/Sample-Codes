@@ -829,13 +829,14 @@ with update_fee:
                 "of existing enrolment records")
 
     update_enrolment_fee_collection = UpdateEnrolmentFeeCollectionInfo()
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-fee-collection-enrolment-reference-number")
 
     update_enrolment_fee_collection.trainee_fees_collectionStatus = (
         st.selectbox(label="Trainee Fees Collection Status",
                      options=CancellableCollectionStatus,
+                     index=1,
                      format_func=lambda x: x.value,
                      help="Status of the trainee's or employer's payment of the course fees to the training "
                           "partner",
