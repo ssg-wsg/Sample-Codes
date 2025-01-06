@@ -73,25 +73,28 @@ with create:
     create_assessment_info = CreateAssessmentInfo()
     if st.checkbox("Override Training Partner UEN?", key="specify-create-assessment-tp-uen",
                    help="If specified, this will override the UEN provided under the Home page!"):
-        create_assessment_info.trainingPartner_uen = st.text_input(label="Training Partner UEN",
+        create_assessment_info.trainingPartner_uen = st.text_input(label=f"\* Training Partner UEN (Sample data: {TestData.UEN.value})",
                                                                    key="create-assessment-tp-uen",
                                                                    value=("" if st.session_state["uen"] is None
                                                                           else st.session_state["uen"]),
                                                                    max_chars=12)
 
-    create_assessment_info.trainingPartner_code = st.text_input(label="Enter the Training Partner Code",
+    create_assessment_info.trainingPartner_code = st.text_input(label=f"\* Enter the Training Partner Code (Sample data: {TestData.TPCODE.value})",
+                                                                value=TestData.TPCODE.value,
                                                                 max_chars=15,
                                                                 help="Code for the training partner conducting the "
                                                                      "course for which the assessment result is "
                                                                      "being submitted",
                                                                 key="create-assessment-training-partner-code")
     st.subheader("Course Info")
-    create_assessment_info.course_referenceNumber = st.text_input(label="Enter the Course Reference Number",
+    create_assessment_info.course_referenceNumber = st.text_input(label=f"\* Enter the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                                  value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                                   max_chars=100,
                                                                   help="The course reference number as in the "
                                                                        "Training Partners Gateway course registry",
                                                                   key="create-assessment-reference-number")
-    create_assessment_info.course_runId = st.text_input(label="Enter the Course Run ID",
+    create_assessment_info.course_runId = st.text_input(label=f"\* Enter the Course Run ID (Sample data: {TestData.ASSESSMENT_COURSE_RUN.value})",
+                                                        value=TestData.ASSESSMENT_COURSE_RUN.value,
                                                         max_chars=20,
                                                         help="The ID for the course run",
                                                         key="create-assessment-run-id")
@@ -103,7 +106,8 @@ with create:
                                                            format_func=lambda x: x.value,
                                                            help="This describes the type of ID provided",
                                                            key="create-assessment-trainee-id-type")
-    create_assessment_info.trainee_id = col2.text_input(label="Enter the Trainee ID Number",
+    create_assessment_info.trainee_id = col2.text_input(label=f"\* Enter the Trainee ID Number (Sample data: {TestData.TRAINEE_ID.value})",
+                                                        value=TestData.TRAINEE_ID.value,
                                                         max_chars=20,
                                                         help="This is the individual's government-issued "
                                                              "ID number",
@@ -113,7 +117,8 @@ with create:
             and not Validators.verify_nric(create_assessment_info.trainee_id):
         st.warning("**ID Number** may not be valid!", icon="⚠️")
 
-    create_assessment_info.trainee_fullName = st.text_input(label="Enter the Trainee Full Name",
+    create_assessment_info.trainee_fullName = st.text_input(label=f"\* Enter the Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
+                                                            value=TestData.TRAINEE_NAME.value,
                                                             max_chars=200,
                                                             help="This is the individual's full name",
                                                             key="create-assessment-trainee-full-name")
