@@ -93,8 +93,10 @@ with create:
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
-    create_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
-                                                   help="SSG-generated Unique ID for the course run",
+    create_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG-generated Unique ID for the course run",
                                                    key="enrolment-course-run-id",
                                                    max_chars=20)
 
@@ -330,8 +332,10 @@ with update:
 
     update_enrolment = UpdateEnrolmentInfo()
 
-    update_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
-                                                   help="SSG-generated Unique ID for the course run",
+    update_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG-generated Unique ID for the course run",
                                                    key="update-enrolment-course-run-id",
                                                    max_chars=20)
     enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
@@ -502,8 +506,10 @@ with cancel:
                                             help="SSG enrolment reference number",
                                             key="cancel-enrolment-enrolment-reference-number")
 
-    cancel_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
-                                                   help="SSG Course Run ID",
+    cancel_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG generated course Run ID",
                                                    key="cancel-enrolment-course-run-id")
 
     st.divider()
@@ -614,9 +620,11 @@ with search:
 
     st.subheader("Enrolment Info")
     if st.checkbox("Specify Course Run ID?", key="specify-search-enrolment-course-run-id"):
-        search_enrolment.course_run_id = st.text_input(label="Course Run ID (You will get this value after you add a couse run)",
+        search_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                       value=TestData.COURSE_RUN_NUMBER.value,
                                                        key="search-enrolment-course-run-id",
-                                                       help="The ID for the course run",
+                                                       help="The ID for the course run.\n\n"
+                                                            "You will get this value after you add a couse run.",                                                            
                                                        max_chars=20)
 
     if st.checkbox("Specify Enrolment Reference Number?", key="specify-search-enrolment-enrolment-reference-number"):
