@@ -474,7 +474,8 @@ with view:
     st.markdown(
         "You can use this API to view an assessment record for trainees enrolled in your courses.")
 
-    arn = st.text_input(label="Enter the Assessment Reference Number",
+    arn = st.text_input(label=f"\* Enter the Assessment Reference Number (Sample data: {TestData.ASSESSMENT_ID.value})",
+                        value=TestData.ASSESSMENT_ID.value,
                         max_chars=100,
                         help="Assessment reference number",
                         key="view-assessment-reference-number")
