@@ -135,7 +135,7 @@ with create:
         st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     st.markdown("#### Trainee Particulars")
-    create_enrolment.trainee_fullName = st.text_input(label="\* Trainee Full Name",
+    create_enrolment.trainee_fullName = st.text_input(label=f"\* Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
                                                       value=TestData.TRAINEE_NAME.value,
                                                       max_chars=200,
                                                       help="The trainee's full name",
@@ -259,7 +259,7 @@ with create:
             key="enrolment-employer-contact-number-phone-number")
 
     st.subheader("Training Partner Info")
-    uen = st.text_input(label="\* Training Partner UEN",
+    uen = st.text_input(label=f"\* Training Partner UEN (Sample data: {TestData.UEN.value})",
                         key="enrolment-training-partner-uen",
                         value=st.session_state["uen"] if "uen" in st.session_state else "",
                         max_chars=12)
@@ -269,7 +269,7 @@ with create:
     elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
-    create_enrolment.trainingPartner_code = st.text_input(label="\* Training Partner Code",
+    create_enrolment.trainingPartner_code = st.text_input(label=f"\* Training Partner Code (Sample data: {TestData.TPCODE.value})",
                                                           value=(st.session_state["uen"]+"-01") if "uen" in st.session_state else "",
                                                           max_chars=15,
                                                           help="Code for the training partner conducting the course "
@@ -614,13 +614,13 @@ with search:
 
     st.subheader("Enrolment Info")
     if st.checkbox("Specify Course Run ID?", key="specify-search-enrolment-course-run-id"):
-        search_enrolment.course_run_id = st.text_input(label="Course Run ID",
+        search_enrolment.course_run_id = st.text_input(label="Course Run ID (You will get this value after you add a couse run)",
                                                        key="search-enrolment-course-run-id",
                                                        help="The ID for the course run",
                                                        max_chars=20)
 
     if st.checkbox("Specify Enrolment Reference Number?", key="specify-search-enrolment-enrolment-reference-number"):
-        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number",
+        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number (You will get this value after you create an enrolment)",
                                                                 key="search-enrolment-enrolment-reference-number",
                                                                 help="The Enrolment Reference Number",
                                                                 max_chars=100)
@@ -643,6 +643,7 @@ with search:
     with col6:
         if st.checkbox("Specify Trainee ID?", key="specify-search-enrolment-trainee-id"):
             search_enrolment.trainee_id = st.text_input(label="Trainee ID",
+                                                        value=TestData.TRAINEE_ID.value,
                                                         key="search-enrolment-trainee-id",
                                                         help="Trainee's government-issued ID number",
                                                         max_chars=20)
@@ -662,6 +663,7 @@ with search:
 
     if st.checkbox("Specify Employer UEN?", key="specify-search-enrolment-employee-uen"):
         uen = st.text_input(label="Employer UEN",
+                            value=TestData.EMPLOYER_UEN.value,
                             key="search-enrolment-employee-uen",
                             max_chars=50,
                             help="Employer organisation's UEN number")
@@ -689,7 +691,8 @@ with search:
     if st.checkbox("Specify Training Partner UEN?", key="specify-search-enrolment-training-partner-uen",
                    help="If specified, this will override the UEN number provided under the Home page!"):
         uen = st.text_input(
-            label="Training Partner UEN",
+            label=f"Training Partner UEN (Sample data: {TestData.UEN.value})",
+            value=st.session_state["uen"] if "uen" in st.session_state else "",
             max_chars=12,
             help="UEN of the training partner organisation conducting the course for "
                  "which the trainee is enrolled. Must match UEN passed in the header.\n\n"
@@ -702,7 +705,8 @@ with search:
 
         search_enrolment.trainingPartner_uen = uen
 
-    search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
+    search_enrolment.trainingPartner_code = st.text_input(label=f"Training Partner Code (Sample data: {TestData.TPCODE.value}",
+                                                          value=(st.session_state["uen"]+"-01") if "uen" in st.session_state else "",
                                                           key="search-enrolment-training-partner-code",
                                                           max_chars=15,
                                                           help="Code for the training partner conducting the "
