@@ -368,6 +368,7 @@ with find:
                                              help="Page number of page displayed, starting from 0",
                                              key="search-page-number")
     search_assessment.pageSize = st.number_input(label="Page Size",
+                                                 value=3,
                                                  min_value=1,
                                                  max_value=100,
                                                  help="The number of items to be displayed on one page.",
