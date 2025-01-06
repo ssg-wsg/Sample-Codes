@@ -498,11 +498,11 @@ with cancel:
                 "existing enrolment records")
 
     cancel_enrolment = CancelEnrolmentInfo()
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="cancel-enrolment-enrolment-reference-number")
 
-    cancel_enrolment.course_run_id = st.text_input(label="Course Run ID",
+    cancel_enrolment.course_run_id = st.text_input(label="\* Course Run ID (You will get this value after you add a couse run)",
                                                    help="SSG Course Run ID",
                                                    key="cancel-enrolment-course-run-id")
 
