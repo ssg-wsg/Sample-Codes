@@ -18,6 +18,7 @@ class TestData(Enum):
     
     EMAIL = "test@test.com"
     COUNTRYCODE = "+65"
+    COUNTRYCODE_INT = 65
     PHONE = "98765432"
     
     CORPPASS = "S1449757I"

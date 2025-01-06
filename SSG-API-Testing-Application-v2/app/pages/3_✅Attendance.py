@@ -144,16 +144,22 @@ with upload:
 
     uploadAttendance = UploadAttendanceInfo()
 
-    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
+    uploadAttendance.referenceNumber = st.text_input(label=f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                     value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                      key="crn-upload-attendance-sessions")
-    runs = st.text_input(label="Enter Course Run ID",
-                         help="The Course Run Id is used as a URL for GET Request Call"
+    runs = st.text_input(label=f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                         value=TestData.COURSE_RUN_NUMBER.value,
+                         help="You will get this value after you add a couse run.\n\n"
+                              "The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
+    uploadAttendance.corppassId = st.text_input(label=f"\* Key in your CorpPass Number (Sample data: {TestData.CORPPASS.value})",
+                                                value=TestData.CORPPASS.value,
                                                 key="corppass-upload-attendance-sessions")
-    uploadAttendance.sessionId = st.text_input(label="Enter Session ID",
-                                               help="The course session ID to be retrieved; encode this parameter "
+    uploadAttendance.sessionId = st.text_input(label=f"\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+                                               value=TestData.COURSE_SESSION_NUMBER.value,
+                                               help="You can get this using the \"View Course Sessions\" API after adding a couse run.\n\n"
+                                                    "The course session ID to be retrieved; encode this parameter "
                                                     "to ensure that special characters will not be blocked by the "
                                                     "Gateway",
                                                key="session_id_upload_attendance")
@@ -170,12 +176,12 @@ with upload:
     with col1:
         uploadAttendance.trainee_id_type = st.selectbox(label="Enter Trainee ID Type",
                                                         options=IdType,
-                                                        format_func=lambda x: str(
-                                                            x),
+                                                        format_func=str,
                                                         key="trainee-id-type-upload-attendance")
 
     with col2:
-        uploadAttendance.trainee_id = st.text_input(label="Enter Trainee ID",
+        uploadAttendance.trainee_id = st.text_input(label=f"\* Enter Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
+                                                    value=TestData.TRAINEE_ID.value,
                                                     help="The ID of the trainee",
                                                     max_chars=50,
                                                     key="trainee-id-upload-attendance")
@@ -185,22 +191,25 @@ with upload:
             and not Validators.verify_nric(uploadAttendance.trainee_id):
         st.warning(f"**ID Number** may not be valid!", icon="⚠️")
 
-    uploadAttendance.trainee_name = st.text_input(label="Enter Trainee Name",
+    uploadAttendance.trainee_name = st.text_input(label=f"\* Enter Trainee Name (Sample data: {TestData.TRAINEE_NAME.value})",
+                                                  value=TestData.TRAINEE_NAME.value,
                                                   help="Name of the trainee",
                                                   max_chars=66,
                                                   key="trainee-name-upload-attendance")
 
     if st.checkbox("Specify Trainee Email?", key="specify-trainee-email-upload-attendance"):
         uploadAttendance.trainee_email = st.text_input(label="Enter Trainee Email",
+                                                       value=TestData.EMAIL.value,
                                                        help="Email of the trainee; either email or contact number is "
                                                             "necessary",
                                                        max_chars=320,
                                                        key="trainee-email-upload-attendance")
 
         if len(uploadAttendance.trainee_email) > 0 and not Validators.verify_email(uploadAttendance.trainee_email):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
-    uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
+    uploadAttendance.contactNumber_mobile = st.text_input(label="\* Enter Mobile Number of Trainee",
+                                                          value=TestData.PHONE.value,
                                                           max_chars=15,
                                                           key="contact-number-mobile-upload-attendance")
 
@@ -211,9 +220,9 @@ with upload:
                                                                   value=0)
 
     uploadAttendance.contactNumber_countryCode = st.number_input(label="Enter Mobile Number Country Code",
+                                                                 value=TestData.COUNTRYCODE_INT.value,
                                                                  min_value=0,
-                                                                 max_value=999,
-                                                                 value=65)
+                                                                 max_value=999)
 
     st.subheader("Course Information")
     uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
@@ -269,8 +278,7 @@ with upload:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    handle_request(uca, os.environ.get(
-                        ENV_NAME_ENCRYPT, ''))
+                    handle_request(uca, Secrets.get_encryption_key())
 
                 # TODO: check that dont need to decrypt
                 with response:
@@ -278,4 +286,3 @@ with upload:
                     handle_response(lambda: uca.execute(Secrets.get_encryption_key(),
                                                         Secrets.get_cert(),
                                                         Secrets.get_private_key()))
-                    
