@@ -220,11 +220,14 @@ with decryption:
                 "payload. Consumers can use the decrypted payload's content on their application's transaction "
                 "confirmation page.")
 
+    if st.button("Use sample payload", help="Click this if you want to use our sample data in the box below"):
+        st.session_state["decryption-request-payload"] = TestData.SFC_DECRYPT.value
+
     decrypt = DecryptPayloadInfo()
     decrypt.encrypted_request = st.text_area(label="Enter Encrypted Request",
                                              key="decryption-request-payload",
                                              help="The payload consist of the information to be decrypted.")
-
+    
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
