@@ -14,7 +14,6 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-import os
 import streamlit as st
 
 from app.core.attendance.course_session_attendance import CourseSessionAttendance
@@ -189,7 +188,7 @@ with upload:
     if (uploadAttendance.trainee_id_type != IdType.OTHERS
             or uploadAttendance.trainee_id_type != IdType.FOREIGN_PASSPORT) and len(uploadAttendance.trainee_id) \
             and not Validators.verify_nric(uploadAttendance.trainee_id):
-        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     uploadAttendance.trainee_name = st.text_input(label=f"\* Enter Trainee Name (Sample data: {TestData.TRAINEE_NAME.value})",
                                                   value=TestData.TRAINEE_NAME.value,
@@ -280,7 +279,6 @@ with upload:
                     LOGGER.info("Showing preview of request...")
                     handle_request(uca, Secrets.get_encryption_key())
 
-                # TODO: check that dont need to decrypt
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: uca.execute(Secrets.get_encryption_key(),
