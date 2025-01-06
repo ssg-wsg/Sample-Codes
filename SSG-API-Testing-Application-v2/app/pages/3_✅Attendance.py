@@ -25,11 +25,12 @@ from app.core.models.attendance import UploadAttendanceInfo
 from app.core.system.logger import Logger
 
 from app.utils.http_utils import handle_response, handle_request
-from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_url, does_not_have_keys, does_not_have_encryption_key
+from app.utils.streamlit_utils import init, display_config, \
+    validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
 
 import app.core.system.secrets as Secrets
+from app.core.testdata import TestData  # noqa: E402
 
 # initialise necessary variables
 init()
