@@ -46,7 +46,7 @@ else:
     LOGGER.info("Valid AES-256 key detected!")
     st.header("Message Encryption/Decryption")
     st.markdown("Select the toggle to switch between encryption and decryption mode!")
-    encrypt = st.toggle(label="Encrypt Mode")
+    encrypt = st.toggle(label="Encrypt Mode", value=True)
 
     if encrypt:
         LOGGER.info("Encryption mode set...")
