@@ -128,7 +128,7 @@ with add:
     st.header("Add Course Runs")
     st.markdown(
         "You can use this API to add/publish one or more course runs with sessions.")
-    st.info("Please note that it may take up to 15 minutes for your course to be reflected in the other API calls")
+    st.warning("Take note that it may take up to 15 minutes for course runs to be reflected in the other UAT APIs", icon="⚠️")
 
     if st.session_state["uen"] is None:
         st.warning("**Add Course Runs requires your UEN to proceed. Make sure that you have loaded it up "
