@@ -179,7 +179,7 @@ with encryption:
     st.divider()
     st.subheader("Form POST Encrypted Payload")
     st.markdown("After obtaining the encrypted payload, download the HTML form below, open it within your browser, "
-                "and paste the encrypted payload into the field in the HTML form.")
+                "and paste the **'claimRequest'** value into the field in the HTML form.")
 
     st.download_button(
         "Download HTML Form",
