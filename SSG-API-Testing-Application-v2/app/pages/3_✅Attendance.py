@@ -65,14 +65,19 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
-    crn = st.text_input("Key in the Course Reference Number",
+    crn = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                        value=TestData.COURSE_REFERENCE_NUMBER.value,
                         key="crn-view-sessions")
-    runs = st.text_input("Enter Course Run ID",
-                         help="The Course Run Id is used as a URL for GET Request Call"
+    runs = st.text_input(f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                         value=TestData.COURSE_RUN_NUMBER.value,
+                         help="You will get this value after you add a couse run.\n\n"
+                              "The Course Run ID is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    session_id = st.text_input("Enter Session ID",
-                               help="The course session ID to be retrieved; encode this parameter to ensure that "
+    session_id = st.text_input(f"\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+                               value=TestData.COURSE_SESSION_NUMBER.value,
+                               help="You can get this using the \"View Course Sessions\" API after adding a couse run.\n\n"
+                                    "This field specifies the course session ID to be retrieved; encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
                                key="session-id-view-attendance")
 
