@@ -37,11 +37,12 @@ from app.utils.streamlit_utils import init, display_config, validation_error_han
 from app.utils.verify import Validators
 
 import app.core.system.secrets as Secrets
+from app.core.testdata import TestData  # noqa: E402
 
 init()
 LOGGER = Logger("SkillsFuture Credit Pay")
 
-st.set_page_config(page_title="SkillsFuture Credit Pay", page_icon="💰")
+# st.set_page_config(page_title="SkillsFuture Credit Pay", page_icon="💰")
 
 with st.sidebar:
     st.header("View Configs")
@@ -74,15 +75,17 @@ with encryption:
 
     st.subheader("Course Details")
     if st.checkbox("Specify Course Run ID?", key="specify-encryption-course-details-course-run-id"):
-        encrypt.course_run_id = st.text_input(label="Course Run ID",
+        encrypt.course_run_id = st.text_input(label=f"Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                              value=TestData.COURSE_RUN_NUMBER.value,
                                               key="encryption-course-details-course-run-id",
                                               help="Unique ID of the course run.")
 
-    encrypt.course_id = st.text_input(label="Course ID",
+    encrypt.course_id = st.text_input(label=f"\* Enter Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                      value=TestData.COURSE_REFERENCE_NUMBER.value,
                                       key="encryption-course-details-course-id",
                                       help="Unique ID of the run.")
 
-    encrypt.course_fee = st.number_input(label="Course Fee",
+    encrypt.course_fee = st.number_input(label="\* Course Fee",
                                          key="encryption-course-details-course-fee",
                                          help="Course Fee. Please ensure that the amount is in the currency "
                                               "format (i.e. with 2 decimal places).",
@@ -96,7 +99,8 @@ with encryption:
                                        format="YYYY-MM-DD")
 
     st.subheader("Individual Details")
-    encrypt.nric = st.text_input(label="NRIC",
+    encrypt.nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+                                 value=TestData.TRAINEE_ID.value,
                                  key="encryption-individual-nric",
                                  max_chars=9,
                                  help="Refers to the NRIC of the individual submitting the SFC Payment Request.")
@@ -104,18 +108,21 @@ with encryption:
     if len(encrypt.nric) > 0 and not Validators.verify_nric(encrypt.nric):
         st.warning("NRIC format is not valid!", icon="⚠️")
 
-    encrypt.email = st.text_input(label="Email",
+    encrypt.email = st.text_input(label="\* Email",
+                                  value=TestData.EMAIL.value,
                                   key="encryption-individual-email",
                                   help="Email address of the individual.")
 
     if len(encrypt.email) > 0 and not Validators.verify_email(encrypt.email):
         st.warning("Email format is not valid!", icon="⚠️")
 
-    encrypt.home_number = st.text_input(label="Home Number",
+    encrypt.home_number = st.text_input(label="\* Home Number",
+                                        value=TestData.PHONE.value,
                                         key="encryption-individual-home-number",
                                         help="Home number of the individual. This is a mandatory field if "
                                              "mobile number is not provided.")
-    encrypt.mobile_number = st.text_input(label="Mobile Number",
+    encrypt.mobile_number = st.text_input(label="\* Mobile Number",
+                                          value=TestData.PHONE.value,
                                           key="encryption-individual-mobile-number",
                                           help="Mobile number of the individual. This is a mandatory field if "
                                                "home number is not provided.")
