@@ -106,7 +106,7 @@ with create:
                                                            format_func=lambda x: x.value,
                                                            help="This describes the type of ID provided",
                                                            key="create-assessment-trainee-id-type")
-    create_assessment_info.trainee_id = col2.text_input(label=f"\* Enter the Trainee ID Number (Sample data: {TestData.TRAINEE_ID.value})",
+    create_assessment_info.trainee_id = col2.text_input(label=f"\* Trainee ID Number (Sample data: {TestData.TRAINEE_ID.value})",
                                                         value=TestData.TRAINEE_ID.value,
                                                         max_chars=20,
                                                         help="This is the individual's government-issued "
