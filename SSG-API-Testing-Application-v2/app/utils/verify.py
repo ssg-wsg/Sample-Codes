@@ -204,4 +204,4 @@ class Validators:
         #     # unable to resolve DNS, might be an internet issue
         #     return False
 
-        return re.match("[^@]+@[^@]+\.[^@]+", email)
+        return re.match("^[^@]+@[^@]+\.[^@]+", email)
