@@ -124,8 +124,8 @@ class Validators:
         except OpenSSL.crypto.Error:
             # if cert/key not in the valid format
             return False
-        except Exception:
-            raise
+        except Exception as e:
+            raise e from e
 
     @staticmethod
     def verify_nric(nric: str):

@@ -17,7 +17,6 @@ functions to clean up the request body and send requests that contains only non-
 """
 
 import datetime
-import os
 
 import streamlit as st
 

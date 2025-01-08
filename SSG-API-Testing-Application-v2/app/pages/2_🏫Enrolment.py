@@ -24,7 +24,6 @@ from app.core.testdata import TestData  # noqa: E402
 
 from app.utils.verify import Validators
 import datetime
-import os
 
 import streamlit as st
 

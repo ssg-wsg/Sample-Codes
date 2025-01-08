@@ -16,7 +16,6 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-import os
 import streamlit as st
 
 from datetime import datetime, date
@@ -819,8 +818,8 @@ with edit_delete:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="edit-view-expired")
-    runinfo.crid = st.text_input(f"\\* Key in the Course Reference Number "
-                                 "(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    runinfo.crid = st.text_input("\\* Key in the Course Reference Number "
+                                 f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                  value=TestData.COURSE_REFERENCE_NUMBER.value,
                                  help="Reference number for the course of interest. Encode the course "
                                       "reference number as it may contains some special characters which "
