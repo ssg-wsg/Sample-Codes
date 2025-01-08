@@ -40,7 +40,7 @@ with st.sidebar:
         display_config()
 
     # uncomment the line below if you need the debug menu
-    display_debug()
+    # display_debug()
 
 
 st.image("assets/sf.png", width=200)
