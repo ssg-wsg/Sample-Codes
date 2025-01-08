@@ -40,6 +40,9 @@ def get_private_key():
 
 def Refetch_secrets(refetch: bool) -> bool:
     ''' callback function for the refetch button '''
+    # the retry to refetch last fetched should be automatic since streamlit will 
+    # reload the entire page after basically every user interaction
+    # i.e. user dont need to specifically click on the button
     if st.session_state["last_fetched"] < last_fetched():
         LOGGER.info("Will reuse previously fetched default secrets")
         st.session_state["secret_fetched"] = True
