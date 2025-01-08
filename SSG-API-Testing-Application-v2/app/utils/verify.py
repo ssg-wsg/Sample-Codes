@@ -184,7 +184,7 @@ class Validators:
             raise ValueError("Email must be a string!")
 
         # This block of code is for reference only
-        # It uses the email-validator 2.1.2 
+        # It uses the email-validator 2.1.2
         # which validates emails but is not necessary the purpose of the sample app
 
         # from dns.resolver import NoResolverConfiguration
@@ -204,4 +204,4 @@ class Validators:
         #     # unable to resolve DNS, might be an internet issue
         #     return False
 
-        return re.match("^[^@]+@[^@]+\.[^@]+", email)
+        return re.match(r"^[^@]+@[^@]+\.[^@]+", email)

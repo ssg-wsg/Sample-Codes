@@ -86,9 +86,11 @@ if len(st.session_state["uen"]) > 0:
         # UENs only have upper case characters
         st.session_state.update(uen=st.session_state["uen"].upper())
 
-st.markdown("Since this app is serving as a sample, we are providing a set of secrets for you to use.\n\n"
-            "While you may put in your secrets into the boxes below to be validated, they are not used when calling the APIs. "
-            "These are meant to emulate the process of uploading your own secrets during onboarding."
+st.markdown("Since this app is serving as a sample, we are providing "
+            "a set of secrets for you to use.\n\n"
+            "While you may put in your secrets into the boxes below to be validated, "
+            "they are not used when calling the APIs. These are meant to emulate "
+            "the process of uploading your own secrets during onboarding."
             )
 
 # AES Encryption Key to be loaded outside of a form
@@ -151,7 +153,7 @@ with st.form(key="init_config"):
                     st.session_state["cert_pem"] = "Error"
                     st.session_state["key_pem"] = "Error"
                     raise AssertionError("Certificate and private key are not valid! Are you sure that you "
-                                     "have uploaded your certificates and private keys properly?")
+                                         "have uploaded your certificates and private keys properly?")
                 LOGGER.info("Certificate and key verified!")
                 st.success(
                     "**Certificate and Key loaded successfully!**\n\n", icon="✅")

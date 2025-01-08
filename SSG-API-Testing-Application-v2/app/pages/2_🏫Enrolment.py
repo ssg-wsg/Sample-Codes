@@ -88,13 +88,17 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    create_enrolment.course_referenceNumber = st.text_input(label=f"\* Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    create_enrolment.course_referenceNumber = st.text_input(label="\\* Course Reference Number "
+                                                            f"(Sample data: {
+                                                                TestData.COURSE_REFERENCE_NUMBER.value})",
                                                             value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
-    create_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    create_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {
+                                                       TestData.COURSE_RUN_NUMBER.value})",
                                                    value=TestData.COURSE_RUN_NUMBER.value,
                                                    help="You will get this value after you add a couse run.\n\n"
                                                         "SSG-generated Unique ID for the course run",
@@ -120,7 +124,7 @@ with create:
                                                                        "payment of the course fees to the "
                                                                        "training partner",
                                                                   key="enrolment-trainee-fees-collection-status")
-    
+
     st.subheader("Trainee Info")
     col1, col2 = st.columns(2)
     create_enrolment.trainee_idType = col1.selectbox(label="Trainee ID Type",
@@ -128,7 +132,7 @@ with create:
                                                      format_func=lambda x: x.value,
                                                      help="Trainee ID Type",
                                                      key="enrolment-id-type")
-    create_enrolment.trainee_id = col2.text_input(label=f"\* Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
+    create_enrolment.trainee_id = col2.text_input(label=f"\\* Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
                                                   value=TestData.TRAINEE_ID.value,
                                                   help="Trainee's government-issued ID number",
                                                   key="enrolment-trainee-id")
@@ -138,20 +142,22 @@ with create:
         st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     st.markdown("#### Trainee Particulars")
-    create_enrolment.trainee_fullName = st.text_input(label=f"\* Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
+    create_enrolment.trainee_fullName = st.text_input(label="\\* Trainee Full Name "
+                                                      f"(Sample data: {TestData.TRAINEE_NAME.value})",
                                                       value=TestData.TRAINEE_NAME.value,
                                                       max_chars=200,
                                                       help="The trainee's full name",
                                                       key="enrolment-trainee-full-name")
-    
-    create_enrolment.trainee_dateOfBirth = st.date_input(label=f"\* Trainee Date of Birth (Sample data: {TestData.TRAINEE_DOB.value})",
+
+    create_enrolment.trainee_dateOfBirth = st.date_input(label="\\* Trainee Date of Birth "
+                                                         f"(Sample data: {TestData.TRAINEE_DOB.value})",
                                                          value=TestData.TRAINEE_DOB.value,
                                                          min_value=datetime.date(
                                                              1900, 1, 1),
                                                          help="Trainee Date of Birth",
                                                          key="enrolment-trainee-date-of-birth")
-    
-    create_enrolment.trainee_emailAddress = st.text_input(label="\* Trainee Email Address",
+
+    create_enrolment.trainee_emailAddress = st.text_input(label="\\* Trainee Email Address",
                                                           value=TestData.EMAIL.value,
                                                           max_chars=100,
                                                           help="The trainee's email address",
@@ -170,14 +176,14 @@ with create:
                                                                           key="enrolment-trainee-phone-number-area-"
                                                                               "code")
 
-    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="\* Trainee Country Code",
+    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="\\* Trainee Country Code",
                                                                          value=TestData.COUNTRYCODE.value,
                                                                          max_chars=5,
                                                                          help="Country code of the phone number",
                                                                          key="enrolment-trainee-phone-number-"
                                                                              "country-code")
 
-    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="\* Trainee Phone Number",
+    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="\\* Trainee Phone Number",
                                                                          value=TestData.PHONE.value,
                                                                          max_chars=20,
                                                                          help="The phone number",
@@ -199,7 +205,7 @@ with create:
 
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
-        uen = st.text_input(label=f"\* Employer UEN (Sample data: {TestData.EMPLOYER_UEN.value})",
+        uen = st.text_input(label=f"\\* Employer UEN (Sample data: {TestData.EMPLOYER_UEN.value})",
                             value=TestData.EMPLOYER_UEN.value,
                             max_chars=50,
                             help="Employer organisation's UEN",
@@ -213,7 +219,7 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.employer_fullName = st.text_input(
-            label="\* Employer Full Name",
+            label="\\* Employer Full Name",
             value=TestData.EMPLOYER_NAME.value,
             max_chars=50,
             help="The employer contact's person name",
@@ -222,7 +228,7 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
         create_enrolment.employer_emailAddress = st.text_input(
-            label="\* Employer Email Address",
+            label="\\* Employer Email Address",
             value=TestData.EMAIL.value,
             max_chars=100,
             help="The employer contact's email address",
@@ -246,7 +252,7 @@ with create:
             or col2.checkbox("Specify Employer Phone Number Country Code",
                              key="specify-enrolment-employer-contact-number-country-code"):
         create_enrolment.employer_countryCode = col2.text_input(
-            label="\* Employer Contact Number Country",
+            label="\\* Employer Contact Number Country",
             value=TestData.COUNTRYCODE.value,
             max_chars=5,
             help="Country code of the phone number",
@@ -255,14 +261,14 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
         create_enrolment.employer_phoneNumber = col3.text_input(
-            label="\* Employer Phone Number",
+            label="\\* Employer Phone Number",
             value=TestData.PHONE.value,
             max_chars=20,
             help="The phone number",
             key="enrolment-employer-contact-number-phone-number")
 
     st.subheader("Training Partner Info")
-    uen = st.text_input(label=f"\* Training Partner UEN (Sample data: {TestData.UEN.value})",
+    uen = st.text_input(label=f"\\* Training Partner UEN (Sample data: {TestData.UEN.value})",
                         key="enrolment-training-partner-uen",
                         value=st.session_state["uen"] if "uen" in st.session_state else "",
                         max_chars=12)
@@ -272,11 +278,13 @@ with create:
     elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
-    create_enrolment.trainingPartner_code = st.text_input(label=f"\* Training Partner Code (Sample data: {TestData.TPCODE.value})",
-                                                          value=(st.session_state["uen"]+"-01") if "uen" in st.session_state else "",
+    create_enrolment.trainingPartner_code = st.text_input(label="\\* Training Partner Code "
+                                                          f"(Sample data: {TestData.TPCODE.value})",
+                                                          value=(st.session_state["uen"] + "-01") if
+                                                                "uen" in st.session_state else "",
                                                           max_chars=15,
-                                                          help="Code for the training partner conducting the course "
-                                                               "for which the trainee is enrolled",
+                                                          help="Code for the training partner conducting the "
+                                                               "course for which the trainee is enrolled",
                                                           key="enrolment-training-partner-code")
     st.divider()
     st.subheader("Preview Request Body")
@@ -302,9 +310,8 @@ with create:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = create_enrolment.validate()
@@ -321,8 +328,8 @@ with create:
                     # pass in the correct secrets based on user choice
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ce.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
@@ -333,13 +340,15 @@ with update:
 
     update_enrolment = UpdateEnrolmentInfo()
 
-    update_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    update_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                                                    value=TestData.COURSE_RUN_NUMBER.value,
                                                    help="You will get this value after you add a couse run.\n\n"
                                                         "SSG-generated Unique ID for the course run",
                                                    key="update-enrolment-course-run-id",
                                                    max_chars=20)
-    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-enrolment-reference-number")
 
@@ -402,7 +411,7 @@ with update:
                                                                              help="The phone number",
                                                                              key="update-enrolment-trainee-phone-"
                                                                                  "number-phone-number")
-        
+
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer Full Name?", key="specify-update-enrolment-employer-contact-full-name"):
         update_enrolment.employer_fullName = st.text_input(
@@ -474,9 +483,8 @@ with update:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = update_enrolment.validate()
@@ -488,12 +496,12 @@ with update:
                 with request:
                     LOGGER.info("Showing preview of request...")
                     handle_request(ue, Secrets.get_encryption_key())
-                    
+
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ue.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
@@ -503,11 +511,13 @@ with cancel:
                 "existing enrolment records")
 
     cancel_enrolment = CancelEnrolmentInfo()
-    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="cancel-enrolment-enrolment-reference-number")
 
-    cancel_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    cancel_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                                                    value=TestData.COURSE_RUN_NUMBER.value,
                                                    help="You will get this value after you add a couse run.\n\n"
                                                         "SSG generated course Run ID",
@@ -536,9 +546,8 @@ with cancel:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -557,8 +566,8 @@ with cancel:
                     # pass in the correct secrets based on user choice
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: cancel_en.execute(Secrets.get_encryption_key(),
-                                                                Secrets.get_cert(),
-                                                                Secrets.get_private_key()),
+                                                              Secrets.get_cert(),
+                                                              Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
@@ -621,15 +630,18 @@ with search:
 
     st.subheader("Enrolment Info")
     if st.checkbox("Specify Course Run ID?", key="specify-search-enrolment-course-run-id"):
-        search_enrolment.course_run_id = st.text_input(label=f"\* Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+        search_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                       f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                                                        value=TestData.COURSE_RUN_NUMBER.value,
                                                        key="search-enrolment-course-run-id",
                                                        help="The ID for the course run.\n\n"
-                                                            "You will get this value after you add a couse run.",                                                            
+                                                            "You will get this value after you add a couse run.",
                                                        max_chars=20)
 
     if st.checkbox("Specify Enrolment Reference Number?", key="specify-search-enrolment-enrolment-reference-number"):
-        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number (You will get this value after you create an enrolment)",
+        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number "
+                                                                "(You will get this value after "
+                                                                "you create an enrolment)",
                                                                 key="search-enrolment-enrolment-reference-number",
                                                                 help="The Enrolment Reference Number",
                                                                 max_chars=100)
@@ -714,8 +726,10 @@ with search:
 
         search_enrolment.trainingPartner_uen = uen
 
-    search_enrolment.trainingPartner_code = st.text_input(label=f"Training Partner Code (Sample data: {TestData.TPCODE.value}",
-                                                          value=(st.session_state["uen"]+"-01") if "uen" in st.session_state else "",
+    search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code "
+                                                          f"(Sample data: {TestData.TPCODE.value}",
+                                                          value=(st.session_state["uen"] + "-01") if
+                                                                "uen" in st.session_state else "",
                                                           key="search-enrolment-training-partner-code",
                                                           max_chars=15,
                                                           help="Code for the training partner conducting the "
@@ -759,9 +773,8 @@ with search:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = search_enrolment.validate()
@@ -777,8 +790,8 @@ with search:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: se.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
@@ -791,7 +804,8 @@ with view:
                 "of existing enrolment records")
 
     st.subheader("Reference Number")
-    ref_num = st.text_input(label=f"\* Enter Enrolment Record Reference Number (Sample data: {TestData.ENROLMENT_ID.value})",
+    ref_num = st.text_input(label="\\* Enter Enrolment Record Reference Number "
+                            f"(Sample data: {TestData.ENROLMENT_ID.value})",
                             value=TestData.ENROLMENT_ID.value,
                             help="SSG-generated unique reference number for the enrolment record",
                             key="view-enrolment-reference-number")
@@ -815,9 +829,8 @@ with view:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -830,7 +843,7 @@ with view:
             with response:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: ve.execute(Secrets.get_cert(),
-                                                    Secrets.get_private_key()),
+                                                   Secrets.get_private_key()),
                                 Secrets.get_encryption_key()
                                 )
 
@@ -841,7 +854,8 @@ with update_fee:
                 "of existing enrolment records")
 
     update_enrolment_fee_collection = UpdateEnrolmentFeeCollectionInfo()
-    enrolment_reference_num = st.text_input(label="\* Enrolment Reference Number (You will get this value after you create an enrolment)",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-fee-collection-enrolment-reference-number")
 
@@ -879,9 +893,8 @@ with update_fee:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -898,6 +911,6 @@ with update_fee:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: eufc.execute(Secrets.get_encryption_key(),
-                                                            Secrets.get_cert(),
-                                                            Secrets.get_private_key()),
+                                                         Secrets.get_cert(),
+                                                         Secrets.get_private_key()),
                                     Secrets.get_encryption_key())

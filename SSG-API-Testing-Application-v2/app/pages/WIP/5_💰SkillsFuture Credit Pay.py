@@ -74,17 +74,19 @@ with encryption:
 
     st.subheader("Course Details")
     if st.checkbox("Specify Course Run ID?", key="specify-encryption-course-details-course-run-id"):
-        encrypt.course_run_id = st.text_input(label=f"Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+        encrypt.course_run_id = st.text_input(label="Course Run ID "
+                                              f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                                               value=TestData.COURSE_RUN_NUMBER.value,
                                               key="encryption-course-details-course-run-id",
                                               help="Unique ID of the course run.")
 
-    encrypt.course_id = st.text_input(label=f"\* Enter Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    encrypt.course_id = st.text_input(label="\\* Enter Course Reference Number "
+                                      f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                       value=TestData.COURSE_REFERENCE_NUMBER.value,
                                       key="encryption-course-details-course-id",
                                       help="Unique ID of the run.")
 
-    encrypt.course_fee = st.number_input(label="\* Course Fee",
+    encrypt.course_fee = st.number_input(label="\\* Course Fee",
                                          key="encryption-course-details-course-fee",
                                          help="Course Fee. Please ensure that the amount is in the currency "
                                               "format (i.e. with 2 decimal places).",
@@ -98,7 +100,7 @@ with encryption:
                                        format="YYYY-MM-DD")
 
     st.subheader("Individual Details")
-    encrypt.nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+    encrypt.nric = st.text_input(label=f"\\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
                                  value=TestData.TRAINEE_ID.value,
                                  key="encryption-individual-nric",
                                  max_chars=9,
@@ -107,7 +109,7 @@ with encryption:
     if len(encrypt.nric) > 0 and not Validators.verify_nric(encrypt.nric):
         st.warning("NRIC format is not valid!", icon="⚠️")
 
-    encrypt.email = st.text_input(label="\* Email",
+    encrypt.email = st.text_input(label="\\* Email",
                                   value=TestData.EMAIL.value,
                                   key="encryption-individual-email",
                                   help="Email address of the individual.")
@@ -115,12 +117,12 @@ with encryption:
     if len(encrypt.email) > 0 and not Validators.verify_email(encrypt.email):
         st.warning("Email format is not valid!", icon="⚠️")
 
-    encrypt.home_number = st.text_input(label="\* Home Number",
+    encrypt.home_number = st.text_input(label="\\* Home Number",
                                         value=TestData.PHONE.value,
                                         key="encryption-individual-home-number",
                                         help="Home number of the individual. This is a mandatory field if "
                                              "mobile number is not provided.")
-    encrypt.mobile_number = st.text_input(label="\* Mobile Number",
+    encrypt.mobile_number = st.text_input(label="\\* Mobile Number",
                                           value=TestData.PHONE.value,
                                           key="encryption-individual-mobile-number",
                                           help="Mobile number of the individual. This is a mandatory field if "
@@ -154,7 +156,8 @@ with encryption:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = encrypt.validate()
@@ -223,11 +226,12 @@ with decryption:
         st.session_state["decryption-request-payload"] = TestData.SFC_DECRYPT.value
 
     decrypt = DecryptPayloadInfo()
-    decrypt.encrypted_request = st.text_area(label="\* Enter Encrypted Request (Click the button above for "
-                                                   "sample data if you are unable to use the SFC form in the previous tab)",
+    decrypt.encrypted_request = st.text_area(label="\\* Enter Encrypted Request (Click the button above for "
+                                                   "sample data if you are unable to use the SFC form in "
+                                                   "the previous tab)",
                                              key="decryption-request-payload",
                                              help="The payload consist of the information to be decrypted.")
-    
+
     st.divider()
     st.subheader("Preview Request Body")
     with st.expander("Request Body"):
@@ -249,7 +253,8 @@ with decryption:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = decrypt.validate()
@@ -366,7 +371,8 @@ with upload:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = upload_doc.validate()
@@ -392,7 +398,7 @@ with view:
     st.markdown(
         "Training Providers can retrieve the details of an individual’s claim by calling this API.")
 
-    nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+    nric = st.text_input(label=f"\\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
                          value=TestData.TRAINEE_ID.value,
                          key="view-claims-nric",
                          max_chars=9,
@@ -401,7 +407,7 @@ with view:
     if len(nric) > 0 and not Validators.verify_nric(nric):
         st.warning("**NRIC format** is not valid!", icon="⚠️")
 
-    claim_id = st.text_input(label="\* Claim ID (You can get this after submitting a claim via the "
+    claim_id = st.text_input(label="\\* Claim ID (You can get this after submitting a claim via the "
                                    "SkillsFuture Credit Payment Request Form on the first tab)",
                              key="view-claims-claim-id",
                              max_chars=10,
@@ -428,7 +434,8 @@ with view:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -453,13 +460,13 @@ with cancel:
                 "For more technical details, do visit [https://github.com/SSG-WSG](https://github.com/SSG-WSG)")
     cancel_claims = CancelClaimsInfo()
 
-    claim_id = st.text_input(label="\* Claim ID (You can get this after submitting a claim via the "
+    claim_id = st.text_input(label="\\* Claim ID (You can get this after submitting a claim via the "
                                    "SkillsFuture Credit Payment Request Form on the first tab)",
                              key="cancel-claims-claim-id",
                              max_chars=10,
                              help="Unique identifier of the submitted claim. Must be exactly 10 digits.")
 
-    cancel_claims.nric = st.text_input(label=f"\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
+    cancel_claims.nric = st.text_input(label=f"\\* NRIC (Sample data: {TestData.TRAINEE_ID.value})",
                                        value=TestData.TRAINEE_ID.value,
                                        key="cancel-claims-nric",
                                        max_chars=9,
@@ -496,7 +503,8 @@ with cancel:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             if validation_error_handler(*(cancel_claims.validate())):

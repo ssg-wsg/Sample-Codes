@@ -74,13 +74,15 @@ with create:
     create_assessment_info = CreateAssessmentInfo()
     if st.checkbox("Override Training Partner UEN?", key="specify-create-assessment-tp-uen",
                    help="If specified, this will override the UEN provided under the Home page!"):
-        create_assessment_info.trainingPartner_uen = st.text_input(label=f"\* Training Partner UEN (Sample data: {TestData.UEN.value})",
+        create_assessment_info.trainingPartner_uen = st.text_input(label="\\* Training Partner UEN "
+                                                                   f"(Sample data: {TestData.UEN.value})",
                                                                    key="create-assessment-tp-uen",
                                                                    value=("" if st.session_state["uen"] is None
                                                                           else st.session_state["uen"]),
                                                                    max_chars=12)
 
-    create_assessment_info.trainingPartner_code = st.text_input(label=f"\* Enter the Training Partner Code (Sample data: {TestData.TPCODE.value})",
+    create_assessment_info.trainingPartner_code = st.text_input(label="\\* Enter the Training Partner Code "
+                                                                f"(Sample data: {TestData.TPCODE.value})",
                                                                 value=TestData.TPCODE.value,
                                                                 max_chars=15,
                                                                 help="Code for the training partner conducting the "
@@ -88,13 +90,16 @@ with create:
                                                                      "being submitted",
                                                                 key="create-assessment-training-partner-code")
     st.subheader("Course Info")
-    create_assessment_info.course_referenceNumber = st.text_input(label=f"\* Enter the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    create_assessment_info.course_referenceNumber = st.text_input(label="\\* Enter the Course Reference Number "
+                                                                  "(Sample data: "
+                                                                  f"{TestData.COURSE_REFERENCE_NUMBER.value})",
                                                                   value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                                   max_chars=100,
                                                                   help="The course reference number as in the "
                                                                        "Training Partners Gateway course registry",
                                                                   key="create-assessment-reference-number")
-    create_assessment_info.course_runId = st.text_input(label=f"\* Enter the Course Run ID (Sample data: {TestData.ASSESSMENT_COURSE_RUN.value})",
+    create_assessment_info.course_runId = st.text_input(label="\\* Enter the Course Run ID "
+                                                        f"(Sample data: {TestData.ASSESSMENT_COURSE_RUN.value})",
                                                         value=TestData.ASSESSMENT_COURSE_RUN.value,
                                                         max_chars=20,
                                                         help="The ID for the course run",
@@ -107,7 +112,8 @@ with create:
                                                            format_func=lambda x: x.value,
                                                            help="This describes the type of ID provided",
                                                            key="create-assessment-trainee-id-type")
-    create_assessment_info.trainee_id = col2.text_input(label=f"\* Trainee ID Number (Sample data: {TestData.TRAINEE_ID.value})",
+    create_assessment_info.trainee_id = col2.text_input(label="\\* Trainee ID Number "
+                                                        f"(Sample data: {TestData.TRAINEE_ID.value})",
                                                         value=TestData.TRAINEE_ID.value,
                                                         max_chars=20,
                                                         help="This is the individual's government-issued "
@@ -118,7 +124,8 @@ with create:
             and not Validators.verify_nric(create_assessment_info.trainee_id):
         st.warning("**ID Number** may not be valid!", icon="⚠️")
 
-    create_assessment_info.trainee_fullName = st.text_input(label=f"\* Enter the Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
+    create_assessment_info.trainee_fullName = st.text_input(label="\\* Enter the Trainee Full Name "
+                                                            f"(Sample data: {TestData.TRAINEE_NAME.value})",
                                                             value=TestData.TRAINEE_NAME.value,
                                                             max_chars=200,
                                                             help="This is the individual's full name",
@@ -188,7 +195,8 @@ with create:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = create_assessment_info.validate()
@@ -204,8 +212,8 @@ with create:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 
@@ -224,7 +232,8 @@ with update_void:
                                                  key="update-void-assessment-action")
 
     st.subheader("Course Info")
-    assessment_ref_num = st.text_input(label="\* Enter the Assessment Reference Number (You will get this when you create a assessment record)",
+    assessment_ref_num = st.text_input(label="\\* Enter the Assessment Reference Number "
+                                       "(You will get this when you create a assessment record)",
                                        max_chars=100,
                                        help="Assessment reference number in the "
                                             "Training Partners Gateway",
@@ -233,7 +242,8 @@ with update_void:
     if update_void_assessment.is_update():
         st.subheader("Trainee Info")
         if st.checkbox("Update Trainee Full Name?", key="update-void-trainee-info"):
-            update_void_assessment.trainee_fullName = st.text_input(label=f"Enter the Trainee Full Name (Sample data: {TestData.TRAINEE_NAME.value})",
+            update_void_assessment.trainee_fullName = st.text_input(label="Enter the Trainee Full Name "
+                                                                    f"(Sample data: {TestData.TRAINEE_NAME.value})",
                                                                     max_chars=200,
                                                                     help="The individual's full name",
                                                                     key="update-void-assessment-trainee-full-name")
@@ -266,7 +276,8 @@ with update_void:
                                                            key="update-void-assessment-result")
 
         if st.checkbox("Update Skill Code?", key="will-update-void-assessment-skill-code"):
-            update_void_assessment.skillCode = st.text_input(label=f"Enter the Skill Code (Sample data: {TestData.SKILL_CODE.value})",
+            update_void_assessment.skillCode = st.text_input(label="Enter the Skill Code (Sample data: "
+                                                             f"{TestData.SKILL_CODE.value})",
                                                              max_chars=30,
                                                              help="The competency or skill code assessed for the "
                                                                   "course, derived from the course data in the "
@@ -305,7 +316,8 @@ with update_void:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = update_void_assessment.validate()
@@ -377,14 +389,16 @@ with find:
 
     st.subheader("Assessment Query Parameters")
     if st.checkbox("Specify Course Run ID?", key="search-course-run-id"):
-        search_assessment.courseRunId = st.text_input(label=f"Select Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+        search_assessment.courseRunId = st.text_input(label="Select Course Run ID "
+                                                      f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                                                       value=TestData.COURSE_RUN_NUMBER.value,
                                                       help="The ID for the course run, configured in My SkillsFuture",
                                                       key="search-course-run-id-input",
                                                       max_chars=20)
 
     if st.checkbox("Specify Course Reference Number?", key="search-course-reference-number"):
-        search_assessment.courseReferenceNumber = st.text_input(label=f"Select Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+        search_assessment.courseReferenceNumber = st.text_input(label="Select Course Reference Number (Sample data: "
+                                                                f"{TestData.COURSE_REFERENCE_NUMBER.value})",
                                                                 value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                                 max_chars=50,
                                                                 help="The course reference number of the course in "
@@ -392,21 +406,25 @@ with find:
                                                                 key="search-course-reference-number-input")
 
     if st.checkbox("Specify Trainee ID?", key="search-trainee-id"):
-        search_assessment.trainee_id_ = st.text_input(label=f"Select Trainee ID Number (Sample data: {TestData.TRAINEE_NAME.value})",
+        search_assessment.trainee_id_ = st.text_input(label="Select Trainee ID Number "
+                                                      f"(Sample data: {TestData.TRAINEE_NAME.value})",
                                                       value=TestData.TRAINEE_NAME.value,
                                                       max_chars=20,
                                                       help="Government-issued ID number",
                                                       key="search-trainee-id-input")
 
     if st.checkbox("Specify Enrolment Reference Number?", key="search-enrolment-reference-number"):
-        search_assessment.enrolment_referenceNumber = st.text_input(label="Select Enrolment Reference Number (You will get this value after creating an enrolment record)",
+        search_assessment.enrolment_referenceNumber = st.text_input(label="Select Enrolment Reference Number "
+                                                                    "(You will get this value after creating "
+                                                                    "an enrolment record)",
                                                                     help="The reference number of the associated "
                                                                          "enrolment in the Training Partners "
                                                                          "Gateway, if applicable",
                                                                     key="search-enrolment-reference-number-input")
 
     if st.checkbox("Specify Skill Code?", key="search-skill-code"):
-        search_assessment.skillCode = st.text_input(label=f"\* Enter the Skill Code (Sample data: {TestData.SKILL_CODE.value})",
+        search_assessment.skillCode = st.text_input(label="\\* Enter the Skill Code "
+                                                    f"(Sample data: {TestData.SKILL_CODE.value})",
                                                     value=TestData.SKILL_CODE.value,
                                                     max_chars=30,
                                                     help="The competency or skill code assessed for the course, "
@@ -415,7 +433,8 @@ with find:
                                                     key="search-skill-code-input")
 
     st.subheader("Training Partner Parameters")
-    search_assessment.trainingPartner_uen = st.text_input(label=f"\* Enter the Training Partner UEN (Sample data: {TestData.UEN.value})",
+    search_assessment.trainingPartner_uen = st.text_input(label="\\* Enter the Training Partner UEN "
+                                                          f"(Sample data: {TestData.UEN.value})",
                                                           max_chars=12,
                                                           value=("" if st.session_state["uen"] is None
                                                                  else st.session_state["uen"]),
@@ -423,8 +442,10 @@ with find:
                                                                "conducting the course for which the assessment "
                                                                "result is being submitted")
 
-    search_assessment.trainingPartner_code = st.text_input(label=f"\* Enter the Training Partner Code (Sample data: {TestData.TPCODE.value})",
-                                                           value=(st.session_state["uen"]+"-01") if st.session_state["uen"] is not None else "",
+    search_assessment.trainingPartner_code = st.text_input(label="\\* Enter the Training Partner Code "
+                                                           f"(Sample data: {TestData.TPCODE.value})",
+                                                           value=(st.session_state["uen"] + "-01") if
+                                                                 st.session_state["uen"] is not None else "",
                                                            max_chars=15,
                                                            help="Code for the training partner conducting the "
                                                                 "course for which the trainee is enrolled",
@@ -450,7 +471,8 @@ with find:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = search_assessment.validate()
@@ -466,8 +488,8 @@ with find:
                 with response:
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: sa.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
                                     Secrets.get_encryption_key())
 
 with view:
@@ -475,7 +497,8 @@ with view:
     st.markdown(
         "You can use this API to view an assessment record for trainees enrolled in your courses.")
 
-    arn = st.text_input(label=f"\* Enter the Assessment Reference Number (Sample data: {TestData.ASSESSMENT_ID.value})",
+    arn = st.text_input(label="\\* Enter the Assessment Reference Number "
+                        f"(Sample data: {TestData.ASSESSMENT_ID.value})",
                         value=TestData.ASSESSMENT_ID.value,
                         max_chars=100,
                         help="Assessment reference number",
@@ -502,7 +525,8 @@ with view:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -515,5 +539,5 @@ with view:
             with response:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: va.execute(Secrets.get_cert(),
-                                                    Secrets.get_private_key()),
+                                                   Secrets.get_private_key()),
                                 Secrets.get_encryption_key())

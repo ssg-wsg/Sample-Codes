@@ -40,7 +40,7 @@ def get_private_key():
 
 def Refetch_secrets(refetch: bool) -> bool:
     ''' callback function for the refetch button '''
-    # the retry to refetch last fetched should be automatic since streamlit will 
+    # the retry to refetch last fetched should be automatic since streamlit will
     # reload the entire page after basically every user interaction
     # i.e. user dont need to specifically click on the button
     if st.session_state["last_fetched"] < last_fetched():
@@ -132,7 +132,8 @@ def Set_Default_Secrets(refetch: bool) -> bool:
         key_value = extract_secret(secrets, key_path)
         if encryption_key is None or cert_value is None or key_value is None:
             LOGGER.error(
-                "A secret cannot be found. Please check that all secrets are stored in the given path in parameter store")
+                "A secret cannot be found. Please check that all "
+                "secrets are stored in the given path in parameter store")
             return False
 
         # delete old files that you no longer need, continue even if cannot delete

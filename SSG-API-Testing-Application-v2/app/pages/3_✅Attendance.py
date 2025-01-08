@@ -65,19 +65,22 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
-    crn = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    crn = st.text_input("\\* Key in the Course Reference Number "
+                        f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                         value=TestData.COURSE_REFERENCE_NUMBER.value,
                         key="crn-view-sessions")
-    runs = st.text_input(f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    runs = st.text_input(f"\\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                          value=TestData.COURSE_RUN_NUMBER.value,
                          help="You will get this value after you add a couse run.\n\n"
                               "The Course Run ID is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    session_id = st.text_input(f"\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+    session_id = st.text_input(f"\\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
                                value=TestData.COURSE_SESSION_NUMBER.value,
-                               help="You can get this using the \"View Course Sessions\" API after adding a couse run.\n\n"
-                                    "This field specifies the course session ID to be retrieved; encode this parameter to ensure that "
+                               help="You can get this using the \"View Course Sessions\" API after "
+                                    "adding a couse run.\n\n"
+                                    "This field specifies the course session ID to be retrieved; "
+                                    "encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
                                key="session-id-view-attendance")
 
@@ -114,9 +117,8 @@ with view:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -129,7 +131,7 @@ with view:
             with response:
                 LOGGER.info("Executing request with defaults...")
                 handle_response(lambda: vc.execute(Secrets.get_cert(),
-                                                    Secrets.get_private_key()),
+                                                   Secrets.get_private_key()),
                                 Secrets.get_encryption_key())
 
 
@@ -144,21 +146,25 @@ with upload:
 
     uploadAttendance = UploadAttendanceInfo()
 
-    uploadAttendance.referenceNumber = st.text_input(label=f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    uploadAttendance.referenceNumber = st.text_input(label="\\* Key in the Course Reference Number "
+                                                     f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                                      value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                      key="crn-upload-attendance-sessions")
-    runs = st.text_input(label=f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+    runs = st.text_input(label=f"\\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                          value=TestData.COURSE_RUN_NUMBER.value,
                          help="You will get this value after you add a couse run.\n\n"
                               "The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.corppassId = st.text_input(label=f"\* Key in your CorpPass Number (Sample data: {TestData.CORPPASS.value})",
+    uploadAttendance.corppassId = st.text_input(label="\\* Key in your CorpPass Number "
+                                                f"(Sample data: {TestData.CORPPASS.value})",
                                                 value=TestData.CORPPASS.value,
                                                 key="corppass-upload-attendance-sessions")
-    uploadAttendance.sessionId = st.text_input(label=f"\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+    uploadAttendance.sessionId = st.text_input(label="\\* Enter Session ID "
+                                               f"(Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
                                                value=TestData.COURSE_SESSION_NUMBER.value,
-                                               help="You can get this using the \"View Course Sessions\" API after adding a couse run.\n\n"
+                                               help="You can get this using the \"View Course Sessions\" API after"
+                                                    " adding a couse run.\n\n"
                                                     "The course session ID to be retrieved; encode this parameter "
                                                     "to ensure that special characters will not be blocked by the "
                                                     "Gateway",
@@ -180,7 +186,8 @@ with upload:
                                                         key="trainee-id-type-upload-attendance")
 
     with col2:
-        uploadAttendance.trainee_id = st.text_input(label=f"\* Enter Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
+        uploadAttendance.trainee_id = st.text_input(label="\\* Enter Trainee ID "
+                                                    f"(Sample data: {TestData.TRAINEE_ID.value})",
                                                     value=TestData.TRAINEE_ID.value,
                                                     help="The ID of the trainee",
                                                     max_chars=50,
@@ -191,7 +198,8 @@ with upload:
             and not Validators.verify_nric(uploadAttendance.trainee_id):
         st.warning("**ID Number** may not be valid!", icon="⚠️")
 
-    uploadAttendance.trainee_name = st.text_input(label=f"\* Enter Trainee Name (Sample data: {TestData.TRAINEE_NAME.value})",
+    uploadAttendance.trainee_name = st.text_input(label="\\* Enter Trainee Name "
+                                                  f"(Sample data: {TestData.TRAINEE_NAME.value})",
                                                   value=TestData.TRAINEE_NAME.value,
                                                   help="Name of the trainee",
                                                   max_chars=66,
@@ -208,7 +216,7 @@ with upload:
         if len(uploadAttendance.trainee_email) > 0 and not Validators.verify_email(uploadAttendance.trainee_email):
             st.warning("Email format is not valid!", icon="⚠️")
 
-    uploadAttendance.contactNumber_mobile = st.text_input(label="\* Enter Mobile Number of Trainee",
+    uploadAttendance.contactNumber_mobile = st.text_input(label="\\* Enter Mobile Number of Trainee",
                                                           value=TestData.PHONE.value,
                                                           max_chars=15,
                                                           key="contact-number-mobile-upload-attendance")
@@ -265,9 +273,8 @@ with upload:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
-
-
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = uploadAttendance.validate()

@@ -85,8 +85,8 @@ with view:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="view-expired")
-    
-    runs = st.text_input(label=f"\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+
+    runs = st.text_input(label=f"\\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
                          value=TestData.COURSE_RUN_NUMBER.value,
                          help="The Course Run Id is used as a parameter for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
@@ -110,7 +110,8 @@ with view:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -128,7 +129,8 @@ with view:
 with add:
     st.header("Add Course Runs")
     st.markdown("You can use this API to add/publish one or more course runs with sessions.")
-    st.warning("Take note that it may take up to 15 minutes for course runs to be reflected in the other UAT APIs", icon="⚠️")
+    st.warning("Take note that it may take up to 15 minutes for "
+               "course runs to be reflected in the other UAT APIs", icon="⚠️")
 
     if st.session_state["uen"] is None:
         st.warning("**Add Course Runs requires your UEN to proceed. Make sure that you have loaded it up "
@@ -146,8 +148,9 @@ with add:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="add-view-expired")
-    
-    add_runinfo.crid = st.text_input(label=f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+
+    add_runinfo.crid = st.text_input(label="\\* Key in the Course Reference Number "
+                                     f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                      value=TestData.COURSE_REFERENCE_NUMBER.value,
                                      help="Reference number for the course of interest. "
                                           "Encode the course reference number as it may contains "
@@ -208,21 +211,21 @@ with add:
                                                                "(timezone - UTC+08:00))")
 
             st.markdown("#### Schedule Info Type")
-            indiv_run.schedule_info_type_code = st.text_input(label="\* Schedule Code",
+            indiv_run.schedule_info_type_code = st.text_input(label="\\* Schedule Code",
                                                               value="01",
                                                               key=f"add-schedule-code-{run}",
                                                               help="Course run schedule info code",
                                                               placeholder="01",
                                                               max_chars=2)
-            
-            indiv_run.schedule_info_type_description = st.text_area(label="\* Schedule Description",
+
+            indiv_run.schedule_info_type_description = st.text_area(label="\\* Schedule Description",
                                                                     value="Description",
                                                                     key=f"add-schedule-description-{run}",
                                                                     help="Course run schedule info description",
                                                                     placeholder="Description",
                                                                     max_chars=32)
-            
-            indiv_run.schedule_info = st.text_input(label="\* Schedule Info",
+
+            indiv_run.schedule_info = st.text_input(label="\\* Schedule Info",
                                                     value="Sat / 5 Sats / 9am - 6pm",
                                                     key=f"add-schedule-info-{run}",
                                                     help="Course run schedule info",
@@ -262,23 +265,23 @@ with add:
                                                             help="Indication that the course run location is "
                                                                  "wheelchair accessible")
 
-            indiv_run.floor = st.text_input(label="\* Floor",
+            indiv_run.floor = st.text_input(label="\\* Floor",
                                             value="12",
                                             key=f"add-venue-floor-{run}",
                                             help="Course run floor",
                                             max_chars=3)
-            indiv_run.unit = st.text_input(label="\* Unit",
+            indiv_run.unit = st.text_input(label="\\* Unit",
                                            value="123",
                                            key=f"add-venue-unit-{run}",
                                            help="Course run unit",
                                            max_chars=5)
-            indiv_run.postal_code = st.text_input(label="\* Postal Code",
+            indiv_run.postal_code = st.text_input(label="\\* Postal Code",
                                                   value=TestData.VENUE_POSTAL.value,
                                                   key=f"add-venue-postal-code-{
                                                       run}",
                                                   help="Course run postal code",
                                                   max_chars=6)
-            indiv_run.room = st.text_input(label="\* Room",
+            indiv_run.room = st.text_input(label="\\* Room",
                                            value="12A",
                                            key=f"add-venue-room-{run}",
                                            help="Course run room",
@@ -312,16 +315,16 @@ with add:
                     help="Course run registered user count. This number cannot be more than `intake size + threshold`")
 
             st.markdown("#### Course Admin Details")
-            indiv_run.mode_of_training = st.selectbox(label="\* Mode of Training",
+            indiv_run.mode_of_training = st.selectbox(label="\\* Mode of Training",
                                                       key=f"add-mode-of-training-{
                                                           run}",
                                                       help="Mode of training code",
                                                       options=ModeOfTraining,
                                                       index=3,
                                                       format_func=str)
-            
+
             indiv_run.course_admin_email = st.text_input(
-                label="\* Course Admin Email",
+                label="\\* Course Admin Email",
                 value=TestData.EMAIL.value,
                 key=f"add-course-admin-email-{run}",
                 help="Course admin email is under course run level that can receive the email from 'QR code "
@@ -333,7 +336,7 @@ with add:
                     st.warning("Email format is not valid!", icon="⚠️")
 
             st.markdown("#### Course Vacancy Details")
-            indiv_run.course_vacancy = st.selectbox(label="\* Course Vacancy",
+            indiv_run.course_vacancy = st.selectbox(label="\\* Course Vacancy",
                                                     key=f"add-course-vacancy-{run}",
                                                     options=Vacancy,
                                                     format_func=str,
@@ -379,7 +382,7 @@ with add:
 
                     st.markdown(f"##### Session {i + 1}")
                     runsession.mode_of_training = st.selectbox(
-                        label="\* Mode of Training",
+                        label="\\* Mode of Training",
                         options=ModeOfTraining,
                         index=3,
                         help="Mode of training code",
@@ -501,22 +504,22 @@ with add:
                                  "API will pick the venue information from course run and update to session venue",
                             key=f"add-session-venue-primary-venue-{i}-{run}")
 
-                    runsession.floor = st.text_input(label="\* Floor",
+                    runsession.floor = st.text_input(label="\\* Floor",
                                                      value="12",
                                                      key=f"add-session-floor-{i}-{run}",
                                                      help="Course run floor",
                                                      max_chars=3)
-                    runsession.unit = st.text_input(label="\* Unit",
+                    runsession.unit = st.text_input(label="\\* Unit",
                                                     value="123",
                                                     key=f"add-session-venue-unit-{i}-{run}",
                                                     help="Course run unit",
                                                     max_chars=5)
-                    runsession.postal_code = st.text_input(label="\* Postal Code",
+                    runsession.postal_code = st.text_input(label="\\* Postal Code",
                                                            value=TestData.VENUE_POSTAL.value,
                                                            key=f"add-session-venue-postal-code-{i}-{run}",
                                                            help="Course run postal code",
                                                            max_chars=6)
-                    runsession.room = st.text_input(label="\* Room",
+                    runsession.room = st.text_input(label="\\* Room",
                                                     value="12A",
                                                     key=f"add-session-venue-room-{i}-{run}",
                                                     help="Course run room",
@@ -559,7 +562,8 @@ with add:
 
                     st.markdown("###### Trainer Particulars")
                     if code == TrainerType.EXISTING:
-                        runtrainer.trainer_idNumber = st.text_input(label=f"\* Trainer ID Number (Sample data: {TestData.TRAINER_ID.value})",
+                        runtrainer.trainer_idNumber = st.text_input(label="\\* Trainer ID Number "
+                                                                    f"(Sample data: {TestData.TRAINER_ID.value})",
                                                                     value=TestData.TRAINER_ID.value,
                                                                     key=f"add-trainer-id-number-{i}-{run}",
                                                                     help="This refers to the NRIC/FIN/Passport "
@@ -757,7 +761,8 @@ with add:
 
         elif not st.session_state["secret_fetched"]:
             LOGGER.error("There are no default secrets loaded!")
-            st.error("There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+            st.error("There are no default secrets set, please try to "
+                     "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = add_runinfo.validate()
@@ -776,8 +781,8 @@ with add:
                             icon="ℹ️")
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ac.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()))
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()))
 
 
 with edit_delete:
@@ -814,14 +819,15 @@ with edit_delete:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="edit-view-expired")
-    runinfo.crid = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    runinfo.crid = st.text_input(f"\\* Key in the Course Reference Number "
+                                 "(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                                  value=TestData.COURSE_REFERENCE_NUMBER.value,
                                  help="Reference number for the course of interest. Encode the course "
                                       "reference number as it may contains some special characters which "
                                       "could be blocked by the Gateway.",
                                  key="crn_edit")
 
-    runs = st.text_input(label="\* Enter Course Run ID (You will get this value after you add a couse run)",
+    runs = st.text_input(label="\\* Enter Course Run ID (You will get this value after you add a couse run)",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="edit-course-run-id")
@@ -845,7 +851,7 @@ with edit_delete:
                                                     help="Mode of training code",
                                                     format_func=str)
 
-        runinfo.course_admin_email = st.text_input(label="\* Course Admin Email",
+        runinfo.course_admin_email = st.text_input(label="\\* Course Admin Email",
                                                    value=TestData.EMAIL.value,
                                                    key="edit-course-admin-email",
                                                    help="Course admin email is under course run level "
@@ -901,7 +907,7 @@ with edit_delete:
                                                          "(timezone - UTC+08:00))")
 
         st.markdown("#### Schedule Info Type")
-        runinfo.schedule_info_type_code = st.text_input(label="\* Schedule Code",
+        runinfo.schedule_info_type_code = st.text_input(label="\\* Schedule Code",
                                                         value="01",
                                                         key="edit-schedule-info-type-code",
                                                         max_chars=2,
@@ -952,22 +958,22 @@ with edit_delete:
                                                       help="Indication that the course run location is "
                                                            "wheelchair accessible")
 
-        runinfo.floor = st.text_input(label="\* Floor",
+        runinfo.floor = st.text_input(label="\\* Floor",
                                       value="12",
                                       key="edit-venue-floor",
                                       help="Course run floor",
                                       max_chars=3)
-        runinfo.unit = st.text_input(label="\* Unit",
+        runinfo.unit = st.text_input(label="\\* Unit",
                                      value="123",
                                      key="edit-venue-unit",
                                      help="Course run unit",
                                      max_chars=5)
-        runinfo.postal_code = st.text_input(label="\* Postal Code",
+        runinfo.postal_code = st.text_input(label="\\* Postal Code",
                                             value=TestData.VENUE_POSTAL.value,
                                             key="edit-venue-postal-code",
                                             help="Course run postal code",
                                             max_chars=6)
-        runinfo.room = st.text_input(label="\* Room",
+        runinfo.room = st.text_input(label="\\* Room",
                                      value="12A",
                                      key="edit-venue-room",
                                      help="Course run room",
@@ -981,7 +987,7 @@ with edit_delete:
                                                   min_value=0,
                                                   help="Course run intake size. It represents the max number "
                                                        "of pax for a class")
-            
+
         if st.checkbox("Specify Threshold?", key="specify-edit-threshold"):
             runinfo.threshold = st.number_input(label="Threshold",
                                                 key="edit-threshold",
@@ -1037,7 +1043,9 @@ with edit_delete:
 
                     st.markdown(f"##### Session {i + 1}")
                     if st.checkbox("Specify Session ID?", key=f"specify-edit-session-id-{i}"):
-                        runsession.session_id = st.text_input(label="Course session ID (You will get this by viewing course run session after adding a course run)",
+                        runsession.session_id = st.text_input(label="Course session ID (You will get this "
+                                                              "by viewing course run session after "
+                                                              "adding a course run)",
                                                               key=f"edit-session-id-{i}",
                                                               help="Course session ID",
                                                               max_chars=300)
@@ -1127,22 +1135,22 @@ with edit_delete:
                                 key=f"edit-session-venue-primary-venue-{i}"
                             )
 
-                        runsession.floor = st.text_input(label="\* Floor",
+                        runsession.floor = st.text_input(label="\\* Floor",
                                                          value="12",
                                                          key=f"edit-session-venue-floor{i}",
                                                          help="Course run floor",
                                                          max_chars=3)
-                        runsession.unit = st.text_input(label="\* Unit",
+                        runsession.unit = st.text_input(label="\\* Unit",
                                                         value="123",
                                                         key=f"edit-session-venue-unit-{i}",
                                                         help="Course run unit",
                                                         max_chars=5)
-                        runsession.postal_code = st.text_input(label="\* Postal Code",
+                        runsession.postal_code = st.text_input(label="\\* Postal Code",
                                                                value=TestData.VENUE_POSTAL.value,
                                                                key=f"edit-session-venue-postal-code-{i}",
                                                                help="Course run postal code",
                                                                max_chars=6)
-                        runsession.room = st.text_input(label="\* Room",
+                        runsession.room = st.text_input(label="\\* Room",
                                                         value="12A",
                                                         key=f"edit-session-venue-room-{i}",
                                                         help="Course run room",
@@ -1183,7 +1191,8 @@ with edit_delete:
 
                     st.markdown("###### Trainer Particulars")
                     if code == TrainerType.EXISTING:
-                        runtrainer.trainer_idNumber = st.text_input(label=f"\* Trainer ID Number (Sample data: {TestData.TRAINER_ID.value})",
+                        runtrainer.trainer_idNumber = st.text_input(label="\\* Trainer ID Number "
+                                                                    f"(Sample data: {TestData.TRAINER_ID.value})",
                                                                     value=TestData.TRAINER_ID.value,
                                                                     key=f"edit-trainer-trainer-id-number-{i}",
                                                                     help="This refers to the NRIC/FIN/Passport "
@@ -1193,7 +1202,7 @@ with edit_delete:
                         if runtrainer.trainer_idNumber is not None and len(runtrainer.trainer_idNumber) > 0 \
                                 and not Validators.verify_nric(runtrainer.trainer_idNumber):
                             st.warning("**ID Number** format may not valid!", icon="⚠️")
-                            
+
                     elif code == TrainerType.NEW:
                         if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
                             runtrainer.index_number = st.number_input(
@@ -1387,7 +1396,8 @@ with edit_delete:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = runinfo.validate()
@@ -1411,8 +1421,8 @@ with edit_delete:
                             icon="ℹ️")
                     LOGGER.info("Executing request with defaults...")
                     handle_response(lambda: ec.execute(Secrets.get_encryption_key(),
-                                                        Secrets.get_cert(),
-                                                        Secrets.get_private_key()))
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()))
 
 
 with sessions:
@@ -1429,13 +1439,14 @@ with sessions:
                                    format_func=str,
                                    help="Indicate whether retrieve expired course or not",
                                    key="sessions-view-expired")
-    crn = st.text_input(f"\* Key in the Course Reference Number (Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+    crn = st.text_input("\\* Key in the Course Reference Number "
+                        f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
                         value=TestData.COURSE_REFERENCE_NUMBER.value,
                         help="Reference number for the course of interest. Encode the course reference number "
                              "as it may contains some special characters which could be blocked by the Gateway",
                         key="view-sessions-crn")
 
-    runs = st.text_input("\* Enter Course Run ID (You will get this value after you add a couse run)",
+    runs = st.text_input("\\* Enter Course Run ID (You will get this value after you add a couse run)",
                          help="The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="view-sessions-course-run-id")
@@ -1477,12 +1488,13 @@ with sessions:
         elif runs is None or len(runs) == 0:
             st.error(
                 "Make sure to fill in the **Course Run ID** before proceeding!", icon="🚨")
-            
+
         elif not st.session_state["secret_fetched"]:
             LOGGER.error(
                 "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])

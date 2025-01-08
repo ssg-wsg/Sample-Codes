@@ -12,8 +12,9 @@ from app.utils.string_utils import StringBuilder
 
 from app.core.constants import Endpoints  # noqa: E402
 from app.core.testdata import TestData  # noqa: E402
-from app.core.system.secrets import (
-    ENV_NAME_CERT, ENV_NAME_ENCRYPT, ENV_NAME_KEY, Refetch_secrets, Set_Default_Secrets, get_cert, get_encryption_key, get_private_key)
+from app.core.system.secrets import (ENV_NAME_CERT, ENV_NAME_ENCRYPT, ENV_NAME_KEY,
+                                     Refetch_secrets, Set_Default_Secrets, get_cert,
+                                     get_encryption_key, get_private_key)
 
 LOGGER = Logger(__name__)
 
@@ -184,18 +185,17 @@ def display_debug() -> None:
     LOGGER.info("Debug is loading")
     st.header("Encryption Key:")
     st.session_state["encryption_key"] = st.text_input("Encryption key",
-                                                   value=st.session_state["encryption_key"])
+                                                       value=st.session_state["encryption_key"])
     os.environ[ENV_NAME_ENCRYPT] = st.session_state["encryption_key"]
     st.code(get_encryption_key())
-    
+
     st.header("Certificate Key:")
     cert_pem = st.file_uploader(label="Certificate Key",
                                 type=["pem"],
                                 accept_multiple_files=False,
                                 key="cert_dev")
     if cert_pem is not None:
-        st.session_state["cert_pem"] = NamedTemporaryFile(
-                        delete=False, delete_on_close=False, suffix=".pem")
+        st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
         st.session_state["cert_pem"].write(cert_pem.read())
         st.session_state["cert_pem"] = st.session_state["cert_pem"].name
         os.environ[ENV_NAME_CERT] = st.session_state["cert_pem"]
@@ -207,8 +207,7 @@ def display_debug() -> None:
                                accept_multiple_files=False,
                                key="key_dev")
     if key_pem is not None:
-        st.session_state["key_pem"] = NamedTemporaryFile(
-                        delete=False, delete_on_close=False, suffix=".pem")
+        st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
         st.session_state["key_pem"].write(key_pem.read())
         st.session_state["key_pem"] = st.session_state["key_pem"].name
         os.environ[ENV_NAME_KEY] = st.session_state["key_pem"]
