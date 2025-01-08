@@ -14,6 +14,7 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+import os
 import streamlit as st
 
 from app.core.attendance.course_session_attendance import CourseSessionAttendance

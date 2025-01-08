@@ -44,6 +44,12 @@ def init() -> None:
 
     st.session_state["url"] = Endpoints.UAT
 
+    if "default_secrets" not in st.session_state:
+        st.session_state["default_secrets"] = True
+
+    if "default_secrets_checkbox" not in st.session_state and "default_secrets" in st.session_state:
+        st.session_state["default_secrets_checkbox"] = st.session_state["default_secrets"]
+
 
 # this is an experimental feature, should it become part of the mainstream API, make sure to deprecate the use
 # of this decorator and replace it with the new syntax

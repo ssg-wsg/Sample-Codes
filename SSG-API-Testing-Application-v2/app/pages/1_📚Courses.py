@@ -16,6 +16,7 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
+import os
 import streamlit as st
 
 from datetime import datetime, date
@@ -126,8 +127,7 @@ with view:
 
 with add:
     st.header("Add Course Runs")
-    st.markdown(
-        "You can use this API to add/publish one or more course runs with sessions.")
+    st.markdown("You can use this API to add/publish one or more course runs with sessions.")
     st.warning("Take note that it may take up to 15 minutes for course runs to be reflected in the other UAT APIs", icon="⚠️")
 
     if st.session_state["uen"] is None:
@@ -210,24 +210,21 @@ with add:
             st.markdown("#### Schedule Info Type")
             indiv_run.schedule_info_type_code = st.text_input(label="\* Schedule Code",
                                                               value="01",
-                                                              key=f"add-schedule-code-{
-                                                                  run}",
+                                                              key=f"add-schedule-code-{run}",
                                                               help="Course run schedule info code",
                                                               placeholder="01",
                                                               max_chars=2)
             
             indiv_run.schedule_info_type_description = st.text_area(label="\* Schedule Description",
                                                                     value="Description",
-                                                                    key=f"add-schedule-description-{
-                                                                        run}",
+                                                                    key=f"add-schedule-description-{run}",
                                                                     help="Course run schedule info description",
                                                                     placeholder="Description",
                                                                     max_chars=32)
             
             indiv_run.schedule_info = st.text_input(label="\* Schedule Info",
                                                     value="Sat / 5 Sats / 9am - 6pm",
-                                                    key=f"add-schedule-info-{
-                                                        run}",
+                                                    key=f"add-schedule-info-{run}",
                                                     help="Course run schedule info",
                                                     placeholder="Sat / 5 Sats / 9am - 6pm",
                                                     max_chars=300)
@@ -337,8 +334,7 @@ with add:
 
             st.markdown("#### Course Vacancy Details")
             indiv_run.course_vacancy = st.selectbox(label="\* Course Vacancy",
-                                                    key=f"add-course-vacancy-{
-                                                        run}",
+                                                    key=f"add-course-vacancy-{run}",
                                                     options=Vacancy,
                                                     format_func=str,
                                                     help="Course run vacancy status")
@@ -439,7 +435,8 @@ with add:
                                                                 .time())
 
                         st.info(f"End date of course session is automatically set to "
-                                f"**{runsession.get_start_date()}**\n\nStart and end time set to "
+                                f"**{runsession.get_start_date()
+                                     }**\n\nStart and end time set to "
                                 f"**12:00 AM to 11:59 PM** respectively", icon="ℹ️")
                     else:
                         with col1:
@@ -472,8 +469,7 @@ with add:
                     if st.checkbox("Specify Venue Street", key=f"specify-add-session-venue-street-{i}-{run}"):
                         runsession.street = st.text_input(label="Street",
                                                           value="Street 12",
-                                                          key=f"add-session-venue-street-{
-                                                              i}-{run}",
+                                                          key=f"add-session-venue-street-{i}-{run}",
                                                           help="Course run street",
                                                           max_chars=32)
 
@@ -603,8 +599,7 @@ with add:
                                                                  max_chars=320)
                         if len(runtrainer.trainer_email) > 0:
                             if not Validators.verify_email(runtrainer.trainer_email):
-                                st.warning(
-                                    "Email format is not valid!", icon="⚠️")
+                                st.warning("Email format is not valid!", icon="⚠️")
 
                         st.markdown("###### Trainer ID")
                         col1, col2 = st.columns(2)
@@ -626,8 +621,7 @@ with add:
 
                             if runtrainer.trainer_idType != IdType.OTHERS and len(runtrainer.trainer_idNumber) > 0 \
                                     and not Validators.verify_nric(runtrainer.trainer_idNumber):
-                                st.warning(
-                                    "**ID Number** format may not valid!", icon="⚠️")
+                                st.warning("**ID Number** format may not valid!", icon="⚠️")
 
                         st.markdown("###### Trainer Roles\n"
                                     "Select one or more of the roles below!")
@@ -762,10 +756,8 @@ with add:
                 "Make sure to fill in your **UEN** before proceeding!", icon="🚨")
 
         elif not st.session_state["secret_fetched"]:
-            LOGGER.error(
-                "There are no default secrets loaded!")
-            st.error(
-                "There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
+            LOGGER.error("There are no default secrets loaded!")
+            st.error("There are no default secrets set, please try to refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = add_runinfo.validate()
@@ -1200,8 +1192,8 @@ with edit_delete:
 
                         if runtrainer.trainer_idNumber is not None and len(runtrainer.trainer_idNumber) > 0 \
                                 and not Validators.verify_nric(runtrainer.trainer_idNumber):
-                            st.warning(
-                                "**ID Number** format may not valid!", icon="⚠️")
+                            st.warning("**ID Number** format may not valid!", icon="⚠️")
+                            
                     elif code == TrainerType.NEW:
                         if st.checkbox("Specify Trainer Index Number?", key=f"edit-trainer-trainer-index-{i}"):
                             runtrainer.index_number = st.number_input(
