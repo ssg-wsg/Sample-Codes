@@ -438,7 +438,7 @@ The structure of the component is as such:
 * [`enrolment`](../app/core/enrolment): Contains classes that are used to interact with the Enrolment API
 * [`models`](../app/core/models): Contains classes that are used to create objects to hold data used in the different
   APIs
-* [`system`](../app/core/system): Contains classes that are used to handle system-level operations and logging
+* [`system`](../app/core/system): Contains classes that are used to handle system-level operations such as retrieving secrets and logging
 
 * [`testdata.py`](../app/core/testdata.py): Contains sample data that are autofilled in the input fields of the different pages
 
