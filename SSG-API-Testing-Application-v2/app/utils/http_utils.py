@@ -346,7 +346,8 @@ def handle_response(throwable: Callable[[], requests.Response],
             st.header("Error Message")
             try:
                 data = json.loads(response.text)
-                st.code(Cryptography.decrypt(data["error"]).decode("utf-8"))
+                st.json(Cryptography.decrypt(decryption_key, data["error"]).decode("utf-8"))
+
             except Exception:
                 # replace the unicode characters with the utf-8 encoded characters
                 st.code(response.text.replace(r"\u003D", "="))
@@ -358,8 +359,7 @@ def handle_response(throwable: Callable[[], requests.Response],
             st.code(response.text)
             st.subheader("Decrypted Response")
             try:
-                data = Cryptography.decrypt(
-                    decryption_key, response.text).decode()
+                data = Cryptography.decrypt(decryption_key, response.text).decode()
                 json_data = json.loads(data)
                 st.json(json_data)
             except Exception as ex:

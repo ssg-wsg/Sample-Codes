@@ -14,7 +14,6 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-import os
 import streamlit as st
 
 from app.core.attendance.course_session_attendance import CourseSessionAttendance
@@ -25,12 +24,12 @@ from app.core.models.attendance import UploadAttendanceInfo
 from app.core.system.logger import Logger
 
 from app.utils.http_utils import handle_response, handle_request
-from app.utils.streamlit_utils import init, display_config, validation_error_handler, \
-    does_not_have_url, does_not_have_keys, does_not_have_encryption_key
+from app.utils.streamlit_utils import init, display_config, \
+    validation_error_handler, does_not_have_url
 from app.utils.verify import Validators
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
+from app.core.testdata import TestData  # noqa: E402
 
 # initialise necessary variables
 init()
@@ -65,14 +64,22 @@ with view:
         st.warning("**Course Session Attendance API requires your UEN to proceed. Make sure that you have loaded it up "
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
-    crn = st.text_input("Key in the Course Reference Number",
+    crn = st.text_input("\\* Key in the Course Reference Number "
+                        f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                        value=TestData.COURSE_REFERENCE_NUMBER.value,
                         key="crn-view-sessions")
-    runs = st.text_input("Enter Course Run ID",
-                         help="The Course Run Id is used as a URL for GET Request Call"
+    runs = st.text_input(f"\\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                         value=TestData.COURSE_RUN_NUMBER.value,
+                         help="You will get this value after you add a couse run.\n\n"
+                              "The Course Run ID is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-view-attendance")
-    session_id = st.text_input("Enter Session ID",
-                               help="The course session ID to be retrieved; encode this parameter to ensure that "
+    session_id = st.text_input(f"\\* Enter Session ID (Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+                               value=TestData.COURSE_SESSION_NUMBER.value,
+                               help="You can get this using the \"View Course Sessions\" API after "
+                                    "adding a couse run.\n\n"
+                                    "This field specifies the course session ID to be retrieved; "
+                                    "encode this parameter to ensure that "
                                     "special characters will not be blocked by the Gateway",
                                key="session-id-view-attendance")
 
@@ -105,21 +112,12 @@ with view:
             st.error(
                 "Make sure to specify your **Session ID** before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -130,15 +128,10 @@ with view:
                 handle_request(vc)
 
             with response:
-                # pass in the correct secrets based on user choice
-                if st.session_state["default_secrets"]:
-                    LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: vc.execute(os.environ.get(ENV_NAME_CERT, ''),
-                                                       os.environ.get(ENV_NAME_KEY, '')))
-                else:
-                    LOGGER.info("Executing request with user's secrets...")
-                    handle_response(lambda: vc.execute(st.session_state["cert_pem"],
-                                                       st.session_state["key_pem"]))
+                LOGGER.info("Executing request with defaults...")
+                handle_response(lambda: vc.execute(Secrets.get_cert(),
+                                                   Secrets.get_private_key()),
+                                Secrets.get_encryption_key())
 
 
 with upload:
@@ -152,16 +145,26 @@ with upload:
 
     uploadAttendance = UploadAttendanceInfo()
 
-    uploadAttendance.referenceNumber = st.text_input(label="Key in the Course Reference Number",
+    uploadAttendance.referenceNumber = st.text_input(label="\\* Key in the Course Reference Number "
+                                                     f"(Sample data: {TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                     value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                      key="crn-upload-attendance-sessions")
-    runs = st.text_input(label="Enter Course Run ID",
-                         help="The Course Run Id is used as a URL for GET Request Call"
+    runs = st.text_input(label=f"\\* Enter Course Run ID (Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                         value=TestData.COURSE_RUN_NUMBER.value,
+                         help="You will get this value after you add a couse run.\n\n"
+                              "The Course Run Id is used as a URL for GET Request Call"
                               "Example: https://api.ssg-wsg.sg/courses/runs/{runId}",
                          key="course-run-id-upload-attendance")
-    uploadAttendance.corppassId = st.text_input(label="Key in your CorpPass Number",
+    uploadAttendance.corppassId = st.text_input(label="\\* Key in your CorpPass Number "
+                                                f"(Sample data: {TestData.CORPPASS.value})",
+                                                value=TestData.CORPPASS.value,
                                                 key="corppass-upload-attendance-sessions")
-    uploadAttendance.sessionId = st.text_input(label="Enter Session ID",
-                                               help="The course session ID to be retrieved; encode this parameter "
+    uploadAttendance.sessionId = st.text_input(label="\\* Enter Session ID "
+                                               f"(Sample data: {TestData.COURSE_SESSION_NUMBER.value})",
+                                               value=TestData.COURSE_SESSION_NUMBER.value,
+                                               help="You can get this using the \"View Course Sessions\" API after"
+                                                    " adding a couse run.\n\n"
+                                                    "The course session ID to be retrieved; encode this parameter "
                                                     "to ensure that special characters will not be blocked by the "
                                                     "Gateway",
                                                key="session_id_upload_attendance")
@@ -169,7 +172,7 @@ with upload:
     st.subheader("Attendance Information")
     uploadAttendance.status_code = st.selectbox(label="Enter the Attendance Status Code",
                                                 options=Attendance,
-                                                format_func=lambda x: str(x),
+                                                format_func=str,
                                                 key="attendance-status-code-upload-attendance")
 
     st.subheader("Trainee Information")
@@ -178,12 +181,13 @@ with upload:
     with col1:
         uploadAttendance.trainee_id_type = st.selectbox(label="Enter Trainee ID Type",
                                                         options=IdType,
-                                                        format_func=lambda x: str(
-                                                            x),
+                                                        format_func=str,
                                                         key="trainee-id-type-upload-attendance")
 
     with col2:
-        uploadAttendance.trainee_id = st.text_input(label="Enter Trainee ID",
+        uploadAttendance.trainee_id = st.text_input(label="\\* Enter Trainee ID "
+                                                    f"(Sample data: {TestData.TRAINEE_ID.value})",
+                                                    value=TestData.TRAINEE_ID.value,
                                                     help="The ID of the trainee",
                                                     max_chars=50,
                                                     key="trainee-id-upload-attendance")
@@ -191,24 +195,28 @@ with upload:
     if (uploadAttendance.trainee_id_type != IdType.OTHERS
             or uploadAttendance.trainee_id_type != IdType.FOREIGN_PASSPORT) and len(uploadAttendance.trainee_id) \
             and not Validators.verify_nric(uploadAttendance.trainee_id):
-        st.warning(f"**ID Number** may not be valid!", icon="⚠️")
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
-    uploadAttendance.trainee_name = st.text_input(label="Enter Trainee Name",
+    uploadAttendance.trainee_name = st.text_input(label="\\* Enter Trainee Name "
+                                                  f"(Sample data: {TestData.TRAINEE_NAME.value})",
+                                                  value=TestData.TRAINEE_NAME.value,
                                                   help="Name of the trainee",
                                                   max_chars=66,
                                                   key="trainee-name-upload-attendance")
 
     if st.checkbox("Specify Trainee Email?", key="specify-trainee-email-upload-attendance"):
         uploadAttendance.trainee_email = st.text_input(label="Enter Trainee Email",
+                                                       value=TestData.EMAIL.value,
                                                        help="Email of the trainee; either email or contact number is "
                                                             "necessary",
                                                        max_chars=320,
                                                        key="trainee-email-upload-attendance")
 
         if len(uploadAttendance.trainee_email) > 0 and not Validators.verify_email(uploadAttendance.trainee_email):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
-    uploadAttendance.contactNumber_mobile = st.text_input(label="Enter Mobile Number of Trainee",
+    uploadAttendance.contactNumber_mobile = st.text_input(label="\\* Enter Mobile Number of Trainee",
+                                                          value=TestData.PHONE.value,
                                                           max_chars=15,
                                                           key="contact-number-mobile-upload-attendance")
 
@@ -219,9 +227,9 @@ with upload:
                                                                   value=0)
 
     uploadAttendance.contactNumber_countryCode = st.number_input(label="Enter Mobile Number Country Code",
+                                                                 value=TestData.COUNTRYCODE_INT.value,
                                                                  min_value=0,
-                                                                 max_value=999,
-                                                                 value=65)
+                                                                 max_value=999)
 
     st.subheader("Course Information")
     uploadAttendance.numberOfHours = st.number_input(label="Enter number of hours",
@@ -232,7 +240,7 @@ with upload:
     uploadAttendance.surveyLanguage_code = st.selectbox(
         label="Enter Survey Language",
         options=SurveyLanguage,
-        format_func=lambda x: str(x),
+        format_func=str,
         key="language-upload-attendance")
 
     st.divider()
@@ -260,21 +268,12 @@ with upload:
             st.error(
                 "Make sure to fill in your **Course Run ID** before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = uploadAttendance.validate()
@@ -285,24 +284,10 @@ with upload:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(uca, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(uca, st.session_state["encryption_key"])
+                    handle_request(uca, Secrets.get_encryption_key())
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: uca.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                            os.environ.get(
-                                                                ENV_NAME_CERT, ''),
-                                                            os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: uca.execute(st.session_state["encryption_key"],
-                                                            st.session_state["cert_pem"],
-                                                            st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: uca.execute(Secrets.get_encryption_key(),
+                                                        Secrets.get_cert(),
+                                                        Secrets.get_private_key()))

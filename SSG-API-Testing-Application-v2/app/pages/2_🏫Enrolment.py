@@ -19,11 +19,11 @@ It is important to note that optional fields are always hidden behind a Streamli
 functions to clean up the request body and send requests that contains only non-null fields.
 """
 
-from app.core.system.secrets import (
-    ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+import app.core.system.secrets as Secrets
+from app.core.testdata import TestData  # noqa: E402
+
 from app.utils.verify import Validators
 import datetime
-import os
 
 import streamlit as st
 
@@ -42,7 +42,7 @@ from app.core.constants import (IdTypeSummary, CollectionStatus, CancellableColl
 from app.core.system.logger import Logger
 from app.utils.http_utils import handle_request, handle_response
 from app.utils.streamlit_utils import (init, display_config, validation_error_handler,
-                                       does_not_have_url, does_not_have_encryption_key, does_not_have_keys)
+                                       does_not_have_url)
 
 
 init()
@@ -66,8 +66,8 @@ st.markdown("Integration with the Enrolment APIs enable enrolment records to be 
             "searching and viewing of enrolment records!")
 st.info("**This API requires your *request payloads* to be encrypted and will return *encrypted responses*!**",
         icon="ℹ️")
-st.info("To scroll through the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or you "
-        "can use the arrow keys to navigate between the tabs!", icon="ℹ️")
+st.info("To navigate between the different tabs below, you can hold `Shift` and scroll with your mouse scroll, or "
+        "use the arrow keys!", icon="ℹ️")
 
 create, update, cancel, search, view, update_fee = st.tabs([
     "Create Enrolment", "Update Enrolment", "Cancel Enrolment", "Search Enrolment", "View Enrolment",
@@ -87,30 +87,22 @@ with create:
                    "properly under the Home page before proceeding!**", icon="⚠️")
 
     st.subheader("Course Info")
-    create_enrolment.course_referenceNumber = st.text_input(label="Course Reference Number",
+    create_enrolment.course_referenceNumber = st.text_input(label="\\* Course Reference Number "
+                                                            f"(Sample data: {
+                                                                TestData.COURSE_REFERENCE_NUMBER.value})",
+                                                            value=TestData.COURSE_REFERENCE_NUMBER.value,
                                                             help="SSG-generated Unique reference number for the "
                                                                  "course",
                                                             key="enrolment-course-reference-number",
                                                             max_chars=100)
-    create_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                   help="SSG-generated Unique ID for the course run",
+    create_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {
+                                                       TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG-generated Unique ID for the course run",
                                                    key="enrolment-course-run-id",
                                                    max_chars=20)
-
-    st.subheader("Trainee Info")
-    col1, col2 = st.columns(2)
-    create_enrolment.trainee_idType = col1.selectbox(label="Trainee ID Type",
-                                                     options=IdTypeSummary,
-                                                     format_func=lambda x: x.value,
-                                                     help="Trainee ID Type",
-                                                     key="enrolment-id-type")
-    create_enrolment.trainee_id = col2.text_input(label="Trainee ID",
-                                                  help="Trainee's government-issued ID number",
-                                                  key="enrolment-trainee-id")
-
-    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
-            and not Validators.verify_nric(create_enrolment.trainee_id):
-        st.warning("**ID Number** may not be valid!", icon="⚠️")
 
     st.markdown("#### Payment Info")
     if st.checkbox("Specify Fee Discount Amount?", key="specify-enrolment-trainee-fees-discount-amount"):
@@ -132,6 +124,78 @@ with create:
                                                                        "training partner",
                                                                   key="enrolment-trainee-fees-collection-status")
 
+    st.subheader("Trainee Info")
+    col1, col2 = st.columns(2)
+    create_enrolment.trainee_idType = col1.selectbox(label="Trainee ID Type",
+                                                     options=IdTypeSummary,
+                                                     format_func=lambda x: x.value,
+                                                     help="Trainee ID Type",
+                                                     key="enrolment-id-type")
+    create_enrolment.trainee_id = col2.text_input(label=f"\\* Trainee ID (Sample data: {TestData.TRAINEE_ID.value})",
+                                                  value=TestData.TRAINEE_ID.value,
+                                                  help="Trainee's government-issued ID number",
+                                                  key="enrolment-trainee-id")
+
+    if create_enrolment.trainee_idType != IdTypeSummary.OTHERS and len(create_enrolment.trainee_id) > 0 \
+            and not Validators.verify_nric(create_enrolment.trainee_id):
+        st.warning("**ID Number** may not be valid!", icon="⚠️")
+
+    st.markdown("#### Trainee Particulars")
+    create_enrolment.trainee_fullName = st.text_input(label="\\* Trainee Full Name "
+                                                      f"(Sample data: {TestData.TRAINEE_NAME.value})",
+                                                      value=TestData.TRAINEE_NAME.value,
+                                                      max_chars=200,
+                                                      help="The trainee's full name",
+                                                      key="enrolment-trainee-full-name")
+
+    create_enrolment.trainee_dateOfBirth = st.date_input(label="\\* Trainee Date of Birth "
+                                                         f"(Sample data: {TestData.TRAINEE_DOB.value})",
+                                                         value=TestData.TRAINEE_DOB.value,
+                                                         min_value=datetime.date(
+                                                             1900, 1, 1),
+                                                         help="Trainee Date of Birth",
+                                                         key="enrolment-trainee-date-of-birth")
+
+    create_enrolment.trainee_emailAddress = st.text_input(label="\\* Trainee Email Address",
+                                                          value=TestData.EMAIL.value,
+                                                          max_chars=100,
+                                                          help="The trainee's email address",
+                                                          key="enrolment-trainee-email-address")
+    if len(create_enrolment.trainee_emailAddress) > 0 and \
+            not Validators.verify_email(create_enrolment.trainee_emailAddress):
+        st.warning("Email format is not valid!", icon="⚠️")
+
+    col1, col2, col3 = st.columns(3)
+
+    if col1.checkbox("Specify Trainee Phone Number Area Code",
+                     key="specify-enrolment-trainee-phone-number-area-code"):
+        create_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Area Code",
+                                                                          max_chars=10,
+                                                                          help="Area code of the phone number",
+                                                                          key="enrolment-trainee-phone-number-area-"
+                                                                              "code")
+
+    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="\\* Trainee Country Code",
+                                                                         value=TestData.COUNTRYCODE.value,
+                                                                         max_chars=5,
+                                                                         help="Country code of the phone number",
+                                                                         key="enrolment-trainee-phone-number-"
+                                                                             "country-code")
+
+    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="\\* Trainee Phone Number",
+                                                                         value=TestData.PHONE.value,
+                                                                         max_chars=20,
+                                                                         help="The phone number",
+                                                                         key="enrolment-trainee-phone-number-"
+                                                                             "phone-number")
+
+    if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
+        create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
+                                                               min_value=datetime.date(
+                                                                   1900, 1, 1),
+                                                               help="Trainee Date of Enrolment",
+                                                               key="enrolment-trainee-date-of-enrolment")
+
     st.markdown("#### Employer Info")
     create_enrolment.trainee_sponsorshipType = st.selectbox(label="Trainee Sponsorship Type",
                                                             options=SponsorshipType,
@@ -140,7 +204,8 @@ with create:
 
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer UEN?", key="specify-enrolment-employer-uen"):
-        uen = st.text_input(label="Employer UEN",
+        uen = st.text_input(label=f"\\* Employer UEN (Sample data: {TestData.EMPLOYER_UEN.value})",
+                            value=TestData.EMPLOYER_UEN.value,
                             max_chars=50,
                             help="Employer organisation's UEN",
                             key="enrolment-employer-uen")
@@ -153,7 +218,8 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Full Name?", key="specify-enrolment-employer-contact-full-name"):
         create_enrolment.employer_fullName = st.text_input(
-            label="Employer Full Name",
+            label="\\* Employer Full Name",
+            value=TestData.EMPLOYER_NAME.value,
             max_chars=50,
             help="The employer contact's person name",
             key="enrolment-employer-contact-full-name")
@@ -161,14 +227,15 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or st.checkbox("Specify Employer Email Address?", key="specify-enrolment-employer-contact-email-address"):
         create_enrolment.employer_emailAddress = st.text_input(
-            label="Employer Email Address",
+            label="\\* Employer Email Address",
+            value=TestData.EMAIL.value,
             max_chars=100,
             help="The employer contact's email address",
             key="enrolment-employer-contact-email-address")
 
         if len(create_enrolment.employer_emailAddress) > 0 and \
                 not Validators.verify_email(create_enrolment.employer_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -184,7 +251,8 @@ with create:
             or col2.checkbox("Specify Employer Phone Number Country Code",
                              key="specify-enrolment-employer-contact-number-country-code"):
         create_enrolment.employer_countryCode = col2.text_input(
-            label="Employer Contact Number Country",
+            label="\\* Employer Contact Number Country",
+            value=TestData.COUNTRYCODE.value,
             max_chars=5,
             help="Country code of the phone number",
             key="enrolment-employer-contact-number-country-code")
@@ -192,62 +260,14 @@ with create:
     if create_enrolment.trainee_sponsorshipType == SponsorshipType.EMPLOYER \
             or col3.checkbox("Specify Employer Phone Number?", key="specify-enrolment-employer-contact-phone-number"):
         create_enrolment.employer_phoneNumber = col3.text_input(
-            label="Employer Phone Number",
+            label="\\* Employer Phone Number",
+            value=TestData.PHONE.value,
             max_chars=20,
             help="The phone number",
             key="enrolment-employer-contact-number-phone-number")
 
-    st.markdown("#### Trainee Particulars")
-    if st.checkbox("Specify Trainee Full Name?", key="specify-enrolment-trainee-full-name"):
-        create_enrolment.trainee_fullName = st.text_input(
-            label="Trainee Full Name",
-            max_chars=200,
-            help="The trainee's full name",
-            key="enrolment-trainee-full-name")
-    create_enrolment.trainee_dateOfBirth = st.date_input(label="Trainee Date of Birth",
-                                                         min_value=datetime.date(
-                                                             1900, 1, 1),
-                                                         help="Trainee Date of Birth",
-                                                         key="enrolment-trainee-date-of-birth")
-    create_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
-                                                          max_chars=100,
-                                                          help="The trainee's email address",
-                                                          key="enrolment-trainee-email-address")
-    if len(create_enrolment.trainee_emailAddress) > 0 and \
-            not Validators.verify_email(create_enrolment.trainee_emailAddress):
-        st.warning(f"Email format is not valid!", icon="⚠️")
-
-    col1, col2, col3 = st.columns(3)
-
-    if col1.checkbox("Specify Trainee Phone Number Area Code",
-                     key="specify-enrolment-trainee-phone-number-area-code"):
-        create_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Area Code",
-                                                                          max_chars=10,
-                                                                          help="Area code of the phone number",
-                                                                          key="enrolment-trainee-phone-number-area-"
-                                                                              "code")
-
-    create_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Country Code",
-                                                                         max_chars=5,
-                                                                         help="Country code of the phone number",
-                                                                         key="enrolment-trainee-phone-number-"
-                                                                             "country-code")
-
-    create_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
-                                                                         max_chars=20,
-                                                                         help="The phone number",
-                                                                         key="enrolment-trainee-phone-number-"
-                                                                             "phone-number")
-
-    if st.checkbox("Specify Trainee Date of Enrolment?", key="specify-enrolment-trainee-date-of-enrolment"):
-        create_enrolment.trainee_enrolmentDate = st.date_input(label="Trainee Date of Enrolment",
-                                                               min_value=datetime.date(
-                                                                   1900, 1, 1),
-                                                               help="Trainee Date of Enrolment",
-                                                               key="enrolment-trainee-date-of-enrolment")
-
     st.subheader("Training Partner Info")
-    uen = st.text_input(label="Training Partner UEN",
+    uen = st.text_input(label=f"\\* Training Partner UEN (Sample data: {TestData.UEN.value})",
                         key="enrolment-training-partner-uen",
                         value=st.session_state["uen"] if "uen" in st.session_state else "",
                         max_chars=12)
@@ -257,10 +277,13 @@ with create:
     elif uen is not None and len(uen) > 0 and Validators.verify_uen(uen):
         create_enrolment.trainingPartner_uen = uen
 
-    create_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
+    create_enrolment.trainingPartner_code = st.text_input(label="\\* Training Partner Code "
+                                                          f"(Sample data: {TestData.TPCODE.value})",
+                                                          value=(st.session_state["uen"] + "-01") if
+                                                                "uen" in st.session_state else "",
                                                           max_chars=15,
-                                                          help="Code for the training partner conducting the course "
-                                                               "for which the trainee is enrolled",
+                                                          help="Code for the training partner conducting the "
+                                                               "course for which the trainee is enrolled",
                                                           key="enrolment-training-partner-code")
     st.divider()
     st.subheader("Preview Request Body")
@@ -282,21 +305,12 @@ with create:
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = create_enrolment.validate()
@@ -307,27 +321,15 @@ with create:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(ce, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(ce, st.session_state["encryption_key"])
+                    handle_request(ce, Secrets.get_encryption_key())
 
                 with response:
                     # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: ce.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(
-                                                               ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: ce.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: ce.execute(Secrets.get_encryption_key(),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with update:
@@ -337,11 +339,15 @@ with update:
 
     update_enrolment = UpdateEnrolmentInfo()
 
-    update_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                   help="SSG-generated Unique ID for the course run",
+    update_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG-generated Unique ID for the course run",
                                                    key="update-enrolment-course-run-id",
                                                    max_chars=20)
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-enrolment-reference-number")
 
@@ -367,10 +373,49 @@ with update:
                                                                       key="update-enrolment-trainee-fees-"
                                                                           "collection-status")
 
+    st.markdown("#### Trainee Particulars")
+    if st.checkbox("Specify Trainee Email Address?", key="specify-update-enrolment-trainee-email-address"):
+        update_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
+                                                              value=TestData.EMAIL.value,
+                                                              max_chars=100,
+                                                              help="The trainee's email address",
+                                                              key="update-enrolment-trainee-email-address")
+
+        if len(update_enrolment.trainee_emailAddress) > 0 and \
+                not Validators.verify_email(update_enrolment.trainee_emailAddress):
+            st.warning("Email format is not valid!", icon="⚠️")
+
+    col1, col2, col3 = st.columns(3)
+    if col1.checkbox("Specify Trainee Phone Number Area Code",
+                     key="specify-update-enrolment-trainee-phone-number-area-code"):
+        update_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Phone Number Area Code",
+                                                                          max_chars=10,
+                                                                          help="Area code of the phone number",
+                                                                          key="update-enrolment-trainee-phone-number"
+                                                                              "-area-code")
+    if col2.checkbox("Specify Trainee Phone Number Country Code",
+                     key="specify-update-enrolment-trainee-phone-number-country-code"):
+        update_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Contact Number Country",
+                                                                             value=TestData.COUNTRYCODE.value,
+                                                                             max_chars=5,
+                                                                             help="Country code of the phone number",
+                                                                             key="update-enrolment-trainee-phone-"
+                                                                                 "number-country-code")
+
+    if col3.checkbox("Specify Trainee Phone Number Country Code",
+                     key="specify-update-enrolment-trainee-phone-number-phone-number"):
+        update_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
+                                                                             value=TestData.PHONE.value,
+                                                                             max_chars=20,
+                                                                             help="The phone number",
+                                                                             key="update-enrolment-trainee-phone-"
+                                                                                 "number-phone-number")
+
     st.markdown("#### Employer Info")
     if st.checkbox("Specify Employer Full Name?", key="specify-update-enrolment-employer-contact-full-name"):
         update_enrolment.employer_fullName = st.text_input(
             label="Employer Full Name",
+            value=TestData.EMPLOYER_NAME.value,
             max_chars=50,
             help="The employer contact's person name",
             key="update-enrolment-employer-contact-full-name")
@@ -378,13 +423,14 @@ with update:
     if st.checkbox("Specify Employer Email Address?", key="specify-update-enrolment-employer-contact-email-address"):
         update_enrolment.employer_emailAddress = st.text_input(
             label="Employer Email Address",
+            value=TestData.EMAIL.value,
             max_chars=100,
             help="The employer contact's email address",
             key="update-enrolment-employer-contact-email-address")
 
         if len(update_enrolment.employer_emailAddress) > 0 and \
                 not Validators.verify_email(update_enrolment.employer_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
+            st.warning("Email format is not valid!", icon="⚠️")
 
     col1, col2, col3 = st.columns(3)
 
@@ -400,6 +446,7 @@ with update:
                      key="specify-update-enrolment-employer-contact-number-country-code"):
         update_enrolment.employer_countryCode = col2.text_input(
             label="Employer Contact Number Country",
+            value=TestData.COUNTRYCODE.value,
             max_chars=5,
             help="Country code of the phone number",
             key="update-enrolment-employer-contact-number-country-code")
@@ -407,44 +454,10 @@ with update:
     if col3.checkbox("Specify Employer Phone Number?", key="specify-update-enrolment-employer-contact-phone-number"):
         update_enrolment.employer_phoneNumber = col3.text_input(
             label="Employer Phone Number",
+            value=TestData.PHONE.value,
             max_chars=20,
             help="The phone number",
             key="update-enrolment-employer-contact-number-phone-number")
-
-    st.markdown("#### Trainee Particulars")
-    if st.checkbox("Specify Trainee Email Address?", key="specify-update-enrolment-trainee-email-address"):
-        update_enrolment.trainee_emailAddress = st.text_input(label="Trainee Email Address",
-                                                              max_chars=100,
-                                                              help="The trainee's email address",
-                                                              key="update-enrolment-trainee-email-address")
-
-        if len(update_enrolment.trainee_emailAddress) > 0 and \
-                not Validators.verify_email(update_enrolment.trainee_emailAddress):
-            st.warning(f"Email format is not valid!", icon="⚠️")
-
-    col1, col2, col3 = st.columns(3)
-    if col1.checkbox("Specify Trainee Phone Number Area Code",
-                     key="specify-update-enrolment-trainee-phone-number-area-code"):
-        update_enrolment.trainee_contactNumber_areaCode = col1.text_input(label="Trainee Phone Number Area Code",
-                                                                          max_chars=10,
-                                                                          help="Area code of the phone number",
-                                                                          key="update-enrolment-trainee-phone-number"
-                                                                              "-area-code")
-    if col2.checkbox("Specify Trainee Phone Number Country Code",
-                     key="specify-update-enrolment-trainee-phone-number-country-code"):
-        update_enrolment.trainee_contactNumber_countryCode = col2.text_input(label="Trainee Contact Number Country",
-                                                                             max_chars=5,
-                                                                             help="Country code of the phone number",
-                                                                             key="update-enrolment-trainee-phone-"
-                                                                                 "number-country-code")
-
-    if col3.checkbox("Specify Trainee Phone Number Country Code",
-                     key="specify-update-enrolment-trainee-phone-number-phone-number"):
-        update_enrolment.trainee_contactNumber_phoneNumber = col3.text_input(label="Trainee Phone Number",
-                                                                             max_chars=20,
-                                                                             help="The phone number",
-                                                                             key="update-enrolment-trainee-phone-"
-                                                                                 "number-phone-number")
 
     st.divider()
     st.subheader("Preview Request Body")
@@ -465,21 +478,12 @@ with update:
             st.error(
                 "Make sure to fill in your enrolment reference number before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = update_enrolment.validate()
@@ -490,27 +494,14 @@ with update:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(ue, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(ue, st.session_state["encryption_key"])
+                    handle_request(ue, Secrets.get_encryption_key())
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: ue.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(
-                                                               ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: ue.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: ue.execute(Secrets.get_encryption_key(),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with cancel:
@@ -519,12 +510,16 @@ with cancel:
                 "existing enrolment records")
 
     cancel_enrolment = CancelEnrolmentInfo()
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="cancel-enrolment-enrolment-reference-number")
 
-    cancel_enrolment.course_run_id = st.text_input(label="Course Run ID",
-                                                   help="SSG Course Run ID",
+    cancel_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                   f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                   value=TestData.COURSE_RUN_NUMBER.value,
+                                                   help="You will get this value after you add a couse run.\n\n"
+                                                        "SSG generated course Run ID",
                                                    key="cancel-enrolment-course-run-id")
 
     st.divider()
@@ -546,21 +541,12 @@ with cancel:
             st.error(
                 "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -573,28 +559,15 @@ with cancel:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(cancel_en, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(
-                            cancel_en, st.session_state["encryption_key"])
+                    handle_request(cancel_en, Secrets.get_encryption_key())
 
                 with response:
                     # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: cancel_en.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                                  os.environ.get(
-                                                                      ENV_NAME_CERT, ''),
-                                                                  os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: cancel_en.execute(st.session_state["encryption_key"],
-                                                                  st.session_state["cert_pem"],
-                                                                  st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: cancel_en.execute(Secrets.get_encryption_key(),
+                                                              Secrets.get_cert(),
+                                                              Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with search:
@@ -649,21 +622,25 @@ with search:
         if st.checkbox("Specify Sort By Order?", key="specify-search-enrolment-sort-by-order"):
             search_enrolment.sortBy_order = st.selectbox(label="Sort By Order",
                                                          options=SortOrder,
-                                                         format_func=lambda x: str(
-                                                             x),
+                                                         format_func=str,
                                                          help="Sort order. Ascending - asc, Descending - desc. "
                                                               "Will default to desc if null",
                                                          key="search-enrolment-sort-by-order")
 
     st.subheader("Enrolment Info")
     if st.checkbox("Specify Course Run ID?", key="specify-search-enrolment-course-run-id"):
-        search_enrolment.course_run_id = st.text_input(label="Course Run ID",
+        search_enrolment.course_run_id = st.text_input(label="\\* Course Run ID "
+                                                       f"(Sample data: {TestData.COURSE_RUN_NUMBER.value})",
+                                                       value=TestData.COURSE_RUN_NUMBER.value,
                                                        key="search-enrolment-course-run-id",
-                                                       help="The ID for the course run",
+                                                       help="The ID for the course run.\n\n"
+                                                            "You will get this value after you add a couse run.",
                                                        max_chars=20)
 
     if st.checkbox("Specify Enrolment Reference Number?", key="specify-search-enrolment-enrolment-reference-number"):
-        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number",
+        search_enrolment.course_referenceNumber = st.text_input(label="Enrolment Reference Number "
+                                                                "(You will get this value after "
+                                                                "you create an enrolment)",
                                                                 key="search-enrolment-enrolment-reference-number",
                                                                 help="The Enrolment Reference Number",
                                                                 max_chars=100)
@@ -686,6 +663,7 @@ with search:
     with col6:
         if st.checkbox("Specify Trainee ID?", key="specify-search-enrolment-trainee-id"):
             search_enrolment.trainee_id = st.text_input(label="Trainee ID",
+                                                        value=TestData.TRAINEE_ID.value,
                                                         key="search-enrolment-trainee-id",
                                                         help="Trainee's government-issued ID number",
                                                         max_chars=20)
@@ -703,8 +681,9 @@ with search:
                                                                               "payment of the course fees "
                                                                               "to the training partner")
 
-    if st.checkbox("Specify Employee UEN?", key="specify-search-enrolment-employee-uen"):
-        uen = st.text_input(label="Employee UEN",
+    if st.checkbox("Specify Employer UEN?", key="specify-search-enrolment-employee-uen"):
+        uen = st.text_input(label="Employer UEN",
+                            value=TestData.EMPLOYER_UEN.value,
                             key="search-enrolment-employee-uen",
                             max_chars=50,
                             help="Employer organisation's UEN number")
@@ -732,7 +711,8 @@ with search:
     if st.checkbox("Specify Training Partner UEN?", key="specify-search-enrolment-training-partner-uen",
                    help="If specified, this will override the UEN number provided under the Home page!"):
         uen = st.text_input(
-            label="Training Partner UEN",
+            label=f"Training Partner UEN (Sample data: {TestData.UEN.value})",
+            value=st.session_state["uen"] if "uen" in st.session_state else "",
             max_chars=12,
             help="UEN of the training partner organisation conducting the course for "
                  "which the trainee is enrolled. Must match UEN passed in the header.\n\n"
@@ -745,7 +725,10 @@ with search:
 
         search_enrolment.trainingPartner_uen = uen
 
-    search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code",
+    search_enrolment.trainingPartner_code = st.text_input(label="Training Partner Code "
+                                                          f"(Sample data: {TestData.TPCODE.value}",
+                                                          value=(st.session_state["uen"] + "-01") if
+                                                                "uen" in st.session_state else "",
                                                           key="search-enrolment-training-partner-code",
                                                           max_chars=15,
                                                           help="Code for the training partner conducting the "
@@ -785,21 +768,12 @@ with search:
             st.error("Make sure to fill in your UEN via the **Home page** or via the **Specify Training Partner UEN**"
                      " before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             errors, warnings = search_enrolment.validate()
@@ -810,27 +784,14 @@ with search:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(se, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(se, st.session_state["encryption_key"])
+                    handle_request(se, Secrets.get_encryption_key())
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: se.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                           os.environ.get(
-                                                               ENV_NAME_CERT, ''),
-                                                           os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: se.execute(st.session_state["encryption_key"],
-                                                           st.session_state["cert_pem"],
-                                                           st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: se.execute(Secrets.get_encryption_key(),
+                                                       Secrets.get_cert(),
+                                                       Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())
 
 
 with view:
@@ -842,7 +803,9 @@ with view:
                 "of existing enrolment records")
 
     st.subheader("Reference Number")
-    ref_num = st.text_input(label="Enter Enrolment Record Reference Number",
+    ref_num = st.text_input(label="\\* Enter Enrolment Record Reference Number "
+                            f"(Sample data: {TestData.ENROLMENT_ID.value})",
+                            value=TestData.ENROLMENT_ID.value,
                             help="SSG-generated unique reference number for the enrolment record",
                             key="view-enrolment-reference-number")
 
@@ -861,21 +824,12 @@ with view:
             st.error(
                 "Please enter a valid **Enrolment Record Reference Number**!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -886,19 +840,11 @@ with view:
                 handle_request(ve)
 
             with response:
-                # pass in the correct secrets based on user choice
-                if st.session_state["default_secrets"]:
-                    LOGGER.info("Executing request with defaults...")
-                    handle_response(lambda: ve.execute(os.environ.get(ENV_NAME_CERT, ''),
-                                                       os.environ.get(ENV_NAME_KEY, '')),
-                                    os.environ.get(ENV_NAME_ENCRYPT, '')
-                                    )
-                else:
-                    LOGGER.info("Executing request with user's secrets...")
-                    handle_response(lambda: ve.execute(st.session_state["cert_pem"],
-                                                       st.session_state["key_pem"]),
-                                    st.session_state["encryption_key"]
-                                    )
+                LOGGER.info("Executing request with defaults...")
+                handle_response(lambda: ve.execute(Secrets.get_cert(),
+                                                   Secrets.get_private_key()),
+                                Secrets.get_encryption_key()
+                                )
 
 
 with update_fee:
@@ -907,13 +853,15 @@ with update_fee:
                 "of existing enrolment records")
 
     update_enrolment_fee_collection = UpdateEnrolmentFeeCollectionInfo()
-    enrolment_reference_num = st.text_input(label="Enrolment Reference Number",
+    enrolment_reference_num = st.text_input(label="\\* Enrolment Reference Number "
+                                            "(You will get this value after you create an enrolment)",
                                             help="SSG enrolment reference number",
                                             key="update-enrolment-fee-collection-enrolment-reference-number")
 
     update_enrolment_fee_collection.trainee_fees_collectionStatus = (
         st.selectbox(label="Trainee Fees Collection Status",
                      options=CancellableCollectionStatus,
+                     index=1,
                      format_func=lambda x: x.value,
                      help="Status of the trainee's or employer's payment of the course fees to the training "
                           "partner",
@@ -940,21 +888,12 @@ with update_fee:
             st.error(
                 "Make sure to fill in your **Enrolment Reference Number** before proceeding!", icon="🚨")
 
-        elif not st.session_state["default_secrets"] and does_not_have_encryption_key():
-            LOGGER.error("Invalid AES-256 encryption key provided!")
-            st.error("Invalid **AES-256 Encryption Key** provided!", icon="🚨")
-
-        elif st.session_state["default_secrets"] and not st.session_state["secret_fetched"]:
+        elif not st.session_state["secret_fetched"]:
             LOGGER.error(
-                "User chose to use defaults but defaults are not set!")
+                "There are no default secrets loaded!")
             st.error(
-                "There are no default secrets set, please provide your own secrets.", icon="🚨")
-
-        elif not st.session_state["default_secrets"] and does_not_have_keys():
-            LOGGER.error(
-                "Missing Certificate or Private Keys, request aborted!")
-            st.error("Make sure that you have uploaded your **Certificate and Private Key** before proceeding!",
-                     icon="🚨")
+                "There are no default secrets set, please try to "
+                "refetch them via the config button in the side bar.", icon="🚨")
 
         else:
             request, response = st.tabs(["Request", "Response"])
@@ -966,25 +905,11 @@ with update_fee:
 
                 with request:
                     LOGGER.info("Showing preview of request...")
-                    if st.session_state["default_secrets"]:
-                        handle_request(eufc, os.environ.get(
-                            ENV_NAME_ENCRYPT, ''))
-                    else:
-                        handle_request(
-                            eufc, st.session_state["encryption_key"])
+                    handle_request(eufc, Secrets.get_encryption_key())
 
                 with response:
-                    # pass in the correct secrets based on user choice
-                    if st.session_state["default_secrets"]:
-                        LOGGER.info("Executing request with defaults...")
-                        handle_response(lambda: eufc.execute(os.environ.get(ENV_NAME_ENCRYPT, ''),
-                                                             os.environ.get(
-                                                                 ENV_NAME_CERT, ''),
-                                                             os.environ.get(ENV_NAME_KEY, '')),
-                                        os.environ.get(ENV_NAME_ENCRYPT, ''))
-                    else:
-                        LOGGER.info("Executing request with user's secrets...")
-                        handle_response(lambda: eufc.execute(st.session_state["encryption_key"],
-                                                             st.session_state["cert_pem"],
-                                                             st.session_state["key_pem"]),
-                                        st.session_state["encryption_key"])
+                    LOGGER.info("Executing request with defaults...")
+                    handle_response(lambda: eufc.execute(Secrets.get_encryption_key(),
+                                                         Secrets.get_cert(),
+                                                         Secrets.get_private_key()),
+                                    Secrets.get_encryption_key())

@@ -17,8 +17,8 @@ class Endpoints(Enum):
     """Enum representing the endpoints that users can connect to."""
 
     UAT = "https://uat-api.ssg-wsg.sg"
-    PRODUCTION = "https://api.ssg-wsg.sg"
-    MOCK = "https://mock-api.ssg-wsg.sg"
+    # PRODUCTION = "https://api.ssg-wsg.sg"
+    # MOCK = "https://mock-api.ssg-wsg.sg"
 
 
 class Vacancy(Enum):
@@ -35,7 +35,7 @@ class Vacancy(Enum):
 class OptionalSelector(Enum):
     """Enum representing a selector that permits empty responses."""
 
-    NIL = ("Select a value", None)
+    NIL = ("Choose to leave empty", None)
     YES = ("Yes", True)
     NO = ("No", False)
 

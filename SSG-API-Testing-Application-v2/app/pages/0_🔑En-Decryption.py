@@ -29,7 +29,7 @@ st.markdown("This page helps you to experiment with the AES-256 encryption algor
             "your AES key to encrypt or decrypt messages!")
 
 st.header("AES Key")
-st.markdown("Enter in your AES key or reuse the AES key provided in the Home page!")
+st.markdown("Enter in your AES key!")
 
 key = st.text_input(label="AES Key",
                     type="password",
@@ -46,7 +46,7 @@ else:
     LOGGER.info("Valid AES-256 key detected!")
     st.header("Message Encryption/Decryption")
     st.markdown("Select the toggle to switch between encryption and decryption mode!")
-    encrypt = st.toggle(label="Encrypt Mode")
+    encrypt = st.toggle(label="Encrypt Mode", value=True)
 
     if encrypt:
         LOGGER.info("Encryption mode set...")
@@ -61,7 +61,7 @@ else:
             LOGGER.info("Encrypting message...")
 
             try:
-                encrypt_out = Cryptography.encrypt(encrypt_in, return_bytes=False, key=key)
+                encrypt_out = Cryptography.encrypt(key, encrypt_in, return_bytes=False)
             except Exception as ex:
                 LOGGER.error(f"Encryption failed with: {ex}")
                 col1.error("Message is invalid or key is incorrect!", icon="🚨")
@@ -83,7 +83,7 @@ else:
             LOGGER.info("Decrypting message...")
 
             try:
-                decrypt_out = Cryptography.decrypt(decrypt_in, return_bytes=False, key=key)
+                decrypt_out = Cryptography.decrypt(key, decrypt_in, return_bytes=False)
             except Exception as ex:
                 LOGGER.error(f"Decryption failed with: {ex}")
                 col1.error("Ciphertext is invalid or key is incorrect!", icon="🚨")

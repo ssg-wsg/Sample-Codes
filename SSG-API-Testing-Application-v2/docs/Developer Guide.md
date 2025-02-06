@@ -216,7 +216,7 @@ We will explore in greater detail each of the components in the following sectio
 The entrypoint to the application is the `Home.py` file located in the `app` directory.
 
 This file is a special page that is initially rendered when the application is first run. It provides users with the
-opportunity to enter their credentials to authenticate themselves with the APIs and to access the other non-Home
+opportunity to enter their credentials to validate them before they start the onboarding process and to access the other non-Home
 pages, that will be described below under [Pages](#Pages).
 
 To start the application, run the following command within the [`app`](../app) directory:
@@ -283,7 +283,9 @@ The following diagram showcases how a user might interact with the application:
 
 1. The server is started
 2. User makes an HTTP/HTTPS connection to the server
-3. While the server is active,
+3. Server checks if there are 'default' secrets fetched from AWS Parameter Store.
+    1. It will fetch them if the server does not have them.
+4. While the server is active,
     1. When the user interacts with the frontend UI elements, HTTP requests are sent to the server
     2. The request triggers a change on the frontend
     3. This frontend change (usually) triggers a backend action
@@ -312,6 +314,8 @@ The 6 non-Home pages in the application are contained in this component:
 
 Each page of the application either showcases a certain functionality required for the application or utilises a
 particular set of SSG APIs.
+
+Test data are provided for most of the fields for the user to use. Please see `testdata.py` in the 'core' module.
 
 More information about the APIs is provided on
 the [SSG Developer Portal](https://developer.ssg-wsg.gov.sg/webapp/api-discovery).
@@ -400,6 +404,8 @@ The class diagram of classes involved in the creation of this page is as follows
 
 ##### `SkillsFuture Credit Pay`
 
+Currently this page has been 'disabled' as additional work is required to ensure that it is functioning. You can choose to shift the `5_💰SkillsFuture Credit Pay.py` file from the `WIP` folder to the `pages` folder in order to interact with it.
+
 This page allows users to call the SkillsFuture Credit Pay API. More specifically, users can call the following APIs:
 
 * Payment Request Encryption
@@ -432,7 +438,9 @@ The structure of the component is as such:
 * [`enrolment`](../app/core/enrolment): Contains classes that are used to interact with the Enrolment API
 * [`models`](../app/core/models): Contains classes that are used to create objects to hold data used in the different
   APIs
-* [`system`](../app/core/system): Contains classes that are used to handle system-level operations and logging
+* [`system`](../app/core/system): Contains classes that are used to handle system-level operations such as retrieving secrets and logging
+
+* [`testdata.py`](../app/core/testdata.py): Contains sample data that are autofilled in the input fields of the different pages
 
 The following class diagram showcases the classes involved in the core component, as well as the connections between the
 classes:
@@ -485,10 +493,10 @@ The structure of the component is as such:
 
 ### AWS Architecture
 
-This application is also hosted on AWS. More information about the AWS cloud architecture is provided in the
+This application is also hosted on AWS. More information about the full AWS cloud architecture is provided in the
 [Deployment Guide](Deployment%20Guide.md).
 
-For this Sample Application, we will be using the following Services provided by AWS:
+For the full deployment of this Sample Application, we will be using the following Services provided by AWS:
 
 * Amazon Elastic Container Registry (ECR)
 * Amazon Elastic Container Service (ECS)
@@ -497,6 +505,11 @@ For this Sample Application, we will be using the following Services provided by
 * Amazon Simple Storage Service (S3)
 * Amazon CloudWatch
 * VPC, Subnets, Route Tables, Internet Gateway, NAT Gateway, Elastic IPs (not services, but core components of AWS)
+
+For the deployment of this Sample Application for testing purpose, we will be using a minimal number of services provided by AWS:
+
+* Amazon Elastic Compute Cloud (EC2)
+* Amazon System Manager Parameter Store
 
 ## Implementation
 
@@ -1497,6 +1510,15 @@ For CI/CD to work, make sure to add the following secrets to your repository:
 * `AWS_ACCESS_KEY_ID`: The Access Key ID for your AWS account
 * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key for your AWS account
 
+For the building of the Docker image, make sure to pass the following variables either hardcoded or via your repository secrets:
+
+* `SECRET_PATH`: The root path that contains all the secrets in parameter store. This is what the server will use to query when retrieving secrets from parameter store.
+* `SECRET_ENCRYPTION_KEY_PATH`: The actual path to the encryption key. The code will look for this value in the response from parameter store.
+* `SECRET_CERT_PATH`: The actual path to the certificate. The code will look for this value in the response from parameter store.
+* `SECRET_KEY_PATH`: The actual path to the private key. The code will look for this value in the response from parameter store.
+* `ROLE_ARN`: The arn of the role that the code will assume when retrieving secrets from parameter store.
+* `REGION_NAME`: The region where the secrets are stored.
+
 Head over to [this](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions?tool=webui)
 website to find out more about how you can add secrets to your repository.
 
@@ -1525,6 +1547,7 @@ To create the `dev` environment, follow the steps below:
     * `AWS_SECRET_ACCESS_KEY`: The Secret Access Key of your AWS account obtained above
     * `AWS_REGION`: The AWS region that you want to deploy the application to. This should correspond to the region that
       is used under the [`deploy` directory](../deploy)
+    * Also include the secrets regarding building the docker image specified in the [GitHub Actions Secrets](#github-actions-secrets) section if those variables are not hardcoded.
 
 > [!NOTE]
 > Even though the secrets are defined in the `dev` environment, make sure to still follow the steps outlined
@@ -1843,6 +1866,8 @@ lack of the need to write explicit multithreading/concurrent code to execute cro
 
 #### `start_scheduler()`
 
+This method is due to be deprecated as we no longer use or keep any user provided certificate and key. Thus, no scheduled clean up job is required.
+
 `start_scheduler()` is the main method used to start the scheduler. The following details the steps taken when the
 method is called:
 
@@ -1884,6 +1909,7 @@ Currently, the application saves the uploaded key files to the local filesystem.
 sensitive and anyone with access to the filesystem can potentially access the key files. Saving it in memory will
 make it more difficult for attackers to gain access to the key files, as they will need to have access to the memory
 space of the application, which is difficult without root access.
+From my research, 'monkey patching' of the requests function may help to achieve this.
 
 ### Alternative: Change processes to save key files to temporary files
 
@@ -1899,6 +1925,12 @@ maintain the EC2 instances to ensure that they are up-to-date and secure.
 
 By using Fargate, we can eliminate the need to maintain the OS and the underlying infrastructure, as AWS will handle
 it for us. We only need to focus on the application itself.
+
+### Go Serverless: Lambda
+
+Similar to the above, Lambda may be sufficient to host a Sample App while also not charging when no users are using our instances.
+
+However, some refactoring will be needed to ensure that the current code can be run in lambda functions.
 
 ## Conclusion
 

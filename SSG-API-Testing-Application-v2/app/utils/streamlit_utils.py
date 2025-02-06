@@ -2,14 +2,19 @@
 This file contains utility functions and values to initialise Streamlit session variables.
 """
 
+import os
+from tempfile import NamedTemporaryFile
 import streamlit as st
 
 from typing import Union
 from app.core.system.logger import Logger
 from app.utils.string_utils import StringBuilder
 
-from app.core.system.secrets import (
-    Set_Default_Secrets, ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)
+from app.core.constants import Endpoints  # noqa: E402
+from app.core.testdata import TestData  # noqa: E402
+from app.core.system.secrets import (ENV_NAME_CERT, ENV_NAME_ENCRYPT, ENV_NAME_KEY,
+                                     Refetch_secrets, Set_Default_Secrets, get_cert,
+                                     get_encryption_key, get_private_key)
 
 LOGGER = Logger(__name__)
 
@@ -22,10 +27,12 @@ def init() -> None:
     """
     # if secrets has not been initialised or fetched, go and fetch it
     if "secret_fetched" not in st.session_state or not st.session_state["secret_fetched"]:
-        st.session_state["secret_fetched"] = Set_Default_Secrets()
+        st.session_state["secret_fetched"] = Set_Default_Secrets(False)
+    if "last_fetched" not in st.session_state:
+        st.session_state["last_fetched"] = float(0)
 
     if "uen" not in st.session_state:
-        st.session_state["uen"] = ""
+        st.session_state["uen"] = TestData.UEN.value
 
     if "encryption_key" not in st.session_state:
         st.session_state["encryption_key"] = ""
@@ -36,8 +43,7 @@ def init() -> None:
     if "key_pem" not in st.session_state:
         st.session_state["key_pem"] = None
 
-    if "url" not in st.session_state:
-        st.session_state["url"] = None
+    st.session_state["url"] = Endpoints.UAT
 
     if "default_secrets" not in st.session_state:
         st.session_state["default_secrets"] = True
@@ -63,19 +69,27 @@ def display_config() -> None:
     st.header("UEN")
     st.code(st.session_state["uen"] if st.session_state["uen"] else "-")
 
-    st.header("Defaults")
-    st.code(st.session_state["default_secrets"]
-            if st.session_state["default_secrets"] is not None else "-")
+    defaults_col1, defaults_col2 = st.columns(2)
 
-    st.header("Encryption Key:")
+    defaults_col1.header("Are defaults secrets set?")
+    defaults_col1.code(st.session_state["secret_fetched"]
+                       if st.session_state["secret_fetched"] is not None else "-")
+    defaults_col2.write(
+        "Please click this button to attempt to refetch default secrets")
+    defaults_col2.button(label="Refetch secrets",
+                         help="If this button does not work, please try again later",
+                         on_click=Refetch_secrets,
+                         args=(True, ))
+
+    st.header("Encryption Key (Will not be used):")
     st.code(st.session_state["encryption_key"]
             if st.session_state["encryption_key"] else "-")
 
-    st.header("Certificate Key:")
+    st.header("Certificate Key (Will not be used):")
     st.code(st.session_state["cert_pem"]
             if st.session_state["cert_pem"] else "-")
 
-    st.header("Private Key:")
+    st.header("Private Key (Will not be used):")
     st.code(st.session_state["key_pem"]
             if st.session_state["key_pem"] else "-")
 
@@ -91,8 +105,8 @@ def http_code_handler(code: Union[int, str]) -> None:
     if isinstance(code, str):
         try:
             code = int(code)
-        except ValueError | TypeError:
-            raise ValueError("Code must be an integer or string")
+        except (ValueError, TypeError) as e:
+            raise ValueError("Code must be an integer or string") from e
 
     base_str = "**Response Code:**"
 
@@ -148,6 +162,7 @@ def validation_error_handler(errors: list[str], warnings: list[str]) -> bool:
 
 
 def does_not_have_encryption_key() -> bool:
+    """Returns true if user encryption key is missing"""
     return ("encryption_key" not in st.session_state
             or st.session_state["encryption_key"] is None
             or len(st.session_state["encryption_key"]) == 0)
@@ -163,3 +178,37 @@ def does_not_have_url() -> bool:
     """Returns true if url endpoint is missing."""
 
     return "url" not in st.session_state or st.session_state["url"] is None
+
+
+def display_debug() -> None:
+    """Change the loaded configuration variables."""
+    LOGGER.info("Debug is loading")
+    st.header("Encryption Key:")
+    st.session_state["encryption_key"] = st.text_input("Encryption key",
+                                                       value=st.session_state["encryption_key"])
+    os.environ[ENV_NAME_ENCRYPT] = st.session_state["encryption_key"]
+    st.code(get_encryption_key())
+
+    st.header("Certificate Key:")
+    cert_pem = st.file_uploader(label="Certificate Key",
+                                type=["pem"],
+                                accept_multiple_files=False,
+                                key="cert_dev")
+    if cert_pem is not None:
+        st.session_state["cert_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
+        st.session_state["cert_pem"].write(cert_pem.read())
+        st.session_state["cert_pem"] = st.session_state["cert_pem"].name
+        os.environ[ENV_NAME_CERT] = st.session_state["cert_pem"]
+    st.code(get_cert())
+
+    st.header("Private Key:")
+    key_pem = st.file_uploader(label="Private Key",
+                               type=["pem"],
+                               accept_multiple_files=False,
+                               key="key_dev")
+    if key_pem is not None:
+        st.session_state["key_pem"] = NamedTemporaryFile(delete=False, delete_on_close=False, suffix=".pem")
+        st.session_state["key_pem"].write(key_pem.read())
+        st.session_state["key_pem"] = st.session_state["key_pem"].name
+        os.environ[ENV_NAME_KEY] = st.session_state["key_pem"]
+    st.code(get_private_key())

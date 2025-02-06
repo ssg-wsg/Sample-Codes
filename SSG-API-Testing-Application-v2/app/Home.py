@@ -9,18 +9,18 @@ sys.path.append(os.path.dirname(FILE_LOC))
 
 # ignore E402 rule for this part only
 import base64  # noqa: E402
+from tempfile import NamedTemporaryFile  # noqa: E402
+
 import streamlit as st  # noqa: E402
 import streamlit_nested_layout  # noqa: E402
 
-from tempfile import NamedTemporaryFile  # noqa: E402
-
-from app.utils.streamlit_utils import init, display_config  # noqa: E402
+from app.utils.streamlit_utils import init, display_config, display_debug  # noqa: E402
 from app.utils.verify import Validators  # noqa: E402
 from app.core.system.cleaner import start_schedule  # noqa: E402
 from app.core.system.logger import Logger  # noqa: E402
 from app.core.constants import Endpoints  # noqa: E402
 
-from app.core.system.secrets import (ENV_NAME_ENCRYPT, ENV_NAME_CERT, ENV_NAME_KEY)  # noqa: E402
+from app.core.testdata import TestData  # noqa: E402
 
 # initialise all variables and logger
 init()
@@ -39,6 +39,9 @@ with st.sidebar:
     if st.button("Configs", key="config_display", type="primary"):
         display_config()
 
+    # uncomment the line below if you need the debug menu
+    # display_debug()
+
 
 st.image("assets/sf.png", width=200)
 st.title("SSG API Sample Application")
@@ -46,24 +49,28 @@ st.markdown("Welcome to the SSG API Sample Application!\n\n"
             "Select any one of the pages on the left sidebar to view sample codes for each of the different crucial "
             "components of the SSG API suite!")
 
+st.warning("This app is just for you to try out with sample data before you choose to subscribe "
+           "where you will have the support of our team during onboarding. ")
+
 st.subheader("Configurations")
-st.markdown("Before you continue, make sure to fill up the following configuration details needed for the demo app! "
-            "Failure to enter in any one of these variables may **prevent you from fully exploring all features "
-            "of the app**!\n\nYou can view your configurations at any time by clicking on the `Configs` button on the "
+st.markdown("Before you continue, make sure to fill up the following configuration details below "
+            "or you **may not be able to fully explore all features of the app**!\n\n"
+            "You can view your configurations at any time by clicking on the `Configs` button on the "
             "sidebar!")
 
-st.subheader("API Endpoint")
-st.markdown("Select the endpoint you wish to connect to!")
-st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
-                                       options=Endpoints,
-                                       format_func=lambda endpoint: endpoint.name)
+st.subheader("API Endpoint:")
+st.markdown(f"We will be using the UAT endpoint ({Endpoints.UAT.value}) throughout the app")
+# st.markdown("Select the endpoint you wish to connect to!")
+# st.session_state["url"] = st.selectbox(label="Select an API Endpoint to send your requests to",
+#                                        options=Endpoints,
+#                                        format_func=lambda endpoint: endpoint.name)
 
 st.subheader("UEN and Keys")
 st.markdown("Key in your UEN number, as well as your encryption keys, certificate key (`.pem`) and private key "
             "(`.pem`) below!")
 
 # UEN to be loaded outside of a form
-st.session_state["uen"] = st.text_input(label="Enter in your UEN",
+st.session_state["uen"] = st.text_input(label=f"Enter in your UEN (Sample data: {TestData.UEN.value})",
                                         help="UEN stands for **Unique Entity Number**. It is used by the SSG API "
                                              "to identify your organisation.",
                                         value=st.session_state["uen"])
@@ -79,12 +86,12 @@ if len(st.session_state["uen"]) > 0:
         # UENs only have upper case characters
         st.session_state.update(uen=st.session_state["uen"].upper())
 
-st.checkbox("Tick this if you would like to use our sample Encryption key, Certificate and Private Key instead",
-            key="default_secrets_checkbox",
-            help="This is a reminder that you need to have your own credentials when using the APIs in production")
-# logic here because streamlit will delete the session state when navigating to new page
-if st.session_state["default_secrets_checkbox"] is not None:
-    st.session_state["default_secrets"] = st.session_state["default_secrets_checkbox"]
+st.markdown("Since this app is serving as a sample, we are providing "
+            "a set of secrets for you to use.\n\n"
+            "While you may put in your secrets into the boxes below to be validated, "
+            "they are not used when calling the APIs. These are meant to emulate "
+            "the process of uploading your own secrets during onboarding."
+            )
 
 # AES Encryption Key to be loaded outside of a form
 st.session_state["encryption_key"] = st.text_input("Enter in your encryption key", type="password",
@@ -143,11 +150,21 @@ with st.form(key="init_config"):
                 LOGGER.info("Verifying certificate and key...")
                 if not Validators.verify_cert_private_key(st.session_state["cert_pem"], st.session_state["key_pem"]):
                     LOGGER.error("Certificate and private key are not valid!")
+                    st.session_state["cert_pem"] = "Error"
+                    st.session_state["key_pem"] = "Error"
                     raise AssertionError("Certificate and private key are not valid! Are you sure that you "
                                          "have uploaded your certificates and private keys properly?")
                 LOGGER.info("Certificate and key verified!")
                 st.success(
                     "**Certificate and Key loaded successfully!**\n\n", icon="✅")
+
+                LOGGER.info("Removing certificate and key after verifying")
+                os.remove(st.session_state["cert_pem"])
+                os.remove(st.session_state["key_pem"])
+                # rename to something appropriate since only validation is done
+                st.session_state["cert_pem"] = "Valid Certificate"
+                st.session_state["key_pem"] = "Valid Private Key"
+
             except base64.binascii.Error:
                 LOGGER.error(
                     "Certificate/Private key is not encoded in Base64, or that the cert/key is invalid!")

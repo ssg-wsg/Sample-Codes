@@ -1,6 +1,8 @@
 # Deployment Guide
 
-Welcome to the SSG-WSG Sample Application Deployment Guide!
+Welcome to the SSG-WSG Sample Application Deployment Guide! 
+
+Please read the `Instructions on setting up Sample App.docx` instead if you need to manually deploy the app to a single EC2 instance.
 
 ## Table of Contents
 

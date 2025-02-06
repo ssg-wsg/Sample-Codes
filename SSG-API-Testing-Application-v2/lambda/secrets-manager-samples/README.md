@@ -1,5 +1,7 @@
 This directory contains files specific to using AWS Secrets Manager instead of parameter store.
 
+The steps to set up the lambda function for AWS Secrets Manager is very similar to parameter store so please refer to the readme for parameter store for more detailed guidance.
+
 `deploy-secrets.yml` is the workflow file for github actions to deploy the secret to AWS Secret Manager
 
 The lambda function is given the role `SampleAppLambda` with the policies below:

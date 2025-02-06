@@ -38,11 +38,11 @@ class UploadDocument(AbstractRequest):
             .with_header("accept", "application/json") \
             .with_body(upload_doc.payload())
 
-    def execute(self) -> requests.Response:
+    def execute(self, encryption_key, cert_pem, key_pem) -> requests.Response:
         """
-        Executes the HTTP request and returns the response object
+        Executes the HTTP request and returns the response object.
 
         :return: requests.Response object
         """
 
-        return self.req.post_encrypted()
+        return self.req.post_encrypted(encryption_key, cert_pem, key_pem)
